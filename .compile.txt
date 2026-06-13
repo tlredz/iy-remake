@@ -1,0 +1,1 @@
+lua unfinished_lumarge/cli.lua --bundle --version luau --preset minify iy-remake/main.lua
