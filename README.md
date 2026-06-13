@@ -34,7 +34,9 @@ To run and test the project locally, clone or download the repository and place 
    * workspace/
      * iy-remake/
      * robloxBundle.luau *(optional)*
+
 After setting up the directory, you can execute the script using the bootstrap code below:
+
 ```luau
 -- Fetching the Luau bundler environment
 -- This bundle allows you to use a modular file structure (require) locally.
