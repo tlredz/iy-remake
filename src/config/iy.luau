@@ -9,7 +9,7 @@ return {
 	newVersionMessage = "You're using an old version of Infinite Yield RV",
 	
 	scale = {
-		minScale = 0.4,
+		minScale = 0.8,
 		maxScale = 2.0,
 	},
 	commands = {

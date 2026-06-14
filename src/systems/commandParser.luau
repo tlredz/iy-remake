@@ -1,6 +1,5 @@
 local commandsController = require("../controllers/commandsController")
 local searchController = require("../controllers/searchController")
-local argsController = require("../controllers/argsController")
 
 local commandsList = require("../commands/list")
 local colors = require("../config/colors")
@@ -8,12 +7,14 @@ local colors = require("../config/colors")
 local tools = require("../utils/tools")
 local logger = require("../utils/logger")
 
+local argsValidator = require("./argsValidator")
+
 local colorFromRGB = tools.colorFromRGB
 -- local richTextSize = tools.richTextSize
 
 local startStringChars = tools.lookupify({"`", "'", "\""})
 local whiteSpaceChars = tools.lookupify({" ", "\t", "\n", "\r"})
-local skipWhiteSpaceChars = tools.lookupify({",","|","&"})
+local skipWhiteSpaceChars = tools.lookupify({",", "|", "&"})
 
 local function createToken(kind, value, usedChar)
 	local text = value
@@ -32,8 +33,8 @@ end
 
 local function concatTokens(tokens, separator)
 	local buffer = {}
-	for i = 1, #tokens do
-		table.insert(buffer, tostring(tokens[i]))
+	for key = 1, #tokens do
+		table.insert(buffer, tostring(tokens[key]))
 	end
 	return table.concat(buffer, separator)
 end
@@ -157,40 +158,48 @@ end
 function commandParser:parseArg(arg, text)
 	local cmdInput = self.cmdInput
 	
-	local result = argsController:validate(arg, text)
+	local parsedData = { success = false, text = text }
+	table.insert(cmdInput.args, parsedData)
 	
-	if result.options and not result.success then
-		local bestMatch = searchController:searchAtArray(result.options, text)[1]
-		
-		if not bestMatch then
-			return { display = colorFromName(text, "error"), success = false }
-		end
-		
-		cmdInput.correctionText = bestMatch
-		local left, right = matchText(bestMatch, text)
-		local highlight = colorFromName(text, "warn")
-		
-		return {
-			success = false,
-			display = colorFromName(`{left}{highlight}{right}`, "comment")
-		}
-	end
-
-	if result.success then
-		if result.value == nil then
-			logger:error(`'{arg.kind}' is returning a nil value`)
-			return
-		end
+	local result = argsValidator:validate(arg, text)
+	
+	if result.success and #text > 0 then
+		parsedData.success = true
+		parsedData.value = result.value
 		
 		local color = result.color or "valid"
-		return {
-			success = true,
-			value   = result.value or text,
-			display = colorFromName(result.display or text, color)
-		}
+		local msg = result.display or text
+		local display = #msg > 0 and colorFromName(msg, color)
+		
+		return { success = true, display = display }
 	end
 	
-	self:setComment(result.message, result.comment and "comment" or "warn")
+	local options = result.options or arg.options
+	
+	if not result.isSerious and options and #options > 0 then
+		local bestMatch = options[1]
+		
+		if text ~= "" then
+			bestMatch = searchController:searchAtArray(options, text)[1]
+		end
+		
+		-- return { success = false, display = colorFromName(text, "error") }
+		if bestMatch then
+			cmdInput.correctionText = bestMatch
+			
+			local left, right = matchText(bestMatch, text)
+			local highlight = colorFromName(text, "warn")
+			
+			return {
+				success = false,
+				display = colorFromName(`{left}{highlight}{right}`, "comment")
+			}
+		end
+	end
+	
+	if result.message then
+		self:setComment(result.message, result.comment and "comment" or "warn")
+	end
 	
 	return {
 		display = colorFromName(text, result.color or "warn"),
@@ -258,10 +267,10 @@ function commandParser:highlight(parsed)
 		cmdInput.bestMatch = cmdInput.bestMatches[1]
 		
 		if hasSpaces or #parsed > 0 or not cmdInput.bestMatch then
-			cmdInput.highlightText = colorFromName(
-				table.concat({ cmdName, concatTokens(parsed, " ") }, " "),
-				"error"
-			) .. spacesAtEnd
+			local argsText = concatTokens(parsed, " ")
+			local text = `{cmdName}{#argsText > 0 and " " or ""}{argsText}`
+			
+			cmdInput.highlightText = colorFromName(text, "error") .. spacesAtEnd
 			self:setComment(" - invalid command", "error")
 			return
 		end
@@ -277,7 +286,7 @@ function commandParser:highlight(parsed)
 		local left, right = matchText(cmdInput.bestMatch, cmdName)
 		local last = buffer[#buffer]
 		buffer[#buffer] = colorFromName(`{left}{last}{right}`, "comment")
-		cmdInput.correctionText = cmdName
+		cmdInput.correctionText = cmdInput.bestMatch
 	end
 	
 	if isValidCommand then
@@ -291,32 +300,42 @@ function commandParser:highlight(parsed)
 			self:setComment(`: [{table.concat(clone, ", ")}]`, "comment")
 		end
 		
-		for key, arg in ipairs(cmdData.args) do
-			if isEmpty then break end
-			
-			local token = table.remove(parsed, 1)
-			
-			if token then
-				local result = self:parseArg(arg, tostring(token))
-				table.insert(buffer, result.display or tostring(token))
-				
-				table.insert(cmdInput.args, result)
-				if not result.success then hasBeenParsed = false break end
+		local function canShowType(text, index, arg)
+			if (isEmpty or isShowingType or #parsed > 0) then
+				return false
 			end
 			
-			if isShowingType then continue end
-			if #parsed > 0 then continue end
+			local nextArg = cmdData.args[index + 1]
+			if hasSpaces and text ~= "" and not nextArg then
+				return false
+			end
 			
-			local nextArg = cmdData.args[key + 1]
-			if hasSpaces and token ~= nil and not nextArg then continue end
-			
-			local currArg = (hasSpaces and token ~= nil) and nextArg or arg
+			local currArg = (hasSpaces and text ~= "") and nextArg or arg
 			
 			if currArg then
 				isShowingType = true
+				return currArg
+			end
+		end
+		
+		for index, arg in ipairs(cmdData.args) do
+			local text = tostring(table.remove(parsed, 1) or "")
+			
+			if (#text > 0 or hasSpaces) then
+				local result = self:parseArg(arg, text)
+				
+				if result.display then
+					table.insert(buffer, result.display)
+				end
+				
+				if not result.success then break end
+			end
+			
+			local currArg = canShowType(text, index, arg)
+			
+			if currArg then
 				local argType = self:highlightArgType(currArg)
-				local separator = hasSpaces and "" or ": "
-				self:setComment(`{separator}({argType})`)
+				self:setComment(`{hasSpaces and "" or ": "}({argType})`)
 			end
 		end
 		
@@ -325,6 +344,10 @@ function commandParser:highlight(parsed)
 			table.insert(buffer, colorFromName(`<b>{text}</b>`, "warn"))
 			self:setComment(` - extra arg`, "warn")
 		end
+	end
+	
+	if cmdInput.correctionText then
+		spacesAtEnd = ""
 	end
 	
 	local highlightText	 = table.concat(buffer, " ") .. spacesAtEnd

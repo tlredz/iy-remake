@@ -1,5 +1,8 @@
-local localPlayer = require("../services/localPlayer")
+local robloxServices = require("./robloxServices")
+local localPlayer = require("./localPlayer")
 local logger = require("../utils/logger")
+
+local teleportService = robloxServices.TeleportService
 
 local playerMouse = localPlayer:GetMouse()
 
@@ -9,10 +12,6 @@ function playerService:getMouse()
 	return playerMouse
 end
 
---[[function playerService:getMousePosition()
-	return Vector2.new(playerMouse.X, playerMouse.Y)
-end]]
-
 function playerService:isMouseInGuiObject(guiObject: GuiObject): boolean
 	local guiPosition = guiObject.AbsolutePosition
 	local guiSize = guiObject.AbsoluteSize
@@ -21,6 +20,11 @@ function playerService:isMouseInGuiObject(guiObject: GuiObject): boolean
 		and playerMouse.X < guiPosition.X + guiSize.X
 		and playerMouse.Y >= guiPosition.Y
 		and playerMouse.Y < guiPosition.Y + guiSize.Y
+end
+
+function playerService:teleportToJobId(jobId, placeId)
+	placeId = placeId or game.PlaceId
+	teleportService:TeleportToPlaceInstance(placeId, jobId, localPlayer)
 end
 
 function playerService:isAlive()
@@ -69,6 +73,10 @@ function playerService:getPlayersByName(query: string): { Player }
 	end
 	
 	return list
+end
+
+function playerService:getCamera()
+	return workspace.CurrentCamera
 end
 
 --[[function getPlayersByName(Name)

@@ -1,44 +1,45 @@
 return {
-	require("./discord"),
-	require("./guiscale"),
-	require("./console"),
-	require("./scripts"),
+	require("./discord"),        -- done
+	require("./guiscale"),       -- done
+	require("./console"),        -- done
+	require("./scripts"),        -- done
 	require("./serverinfo"),
 	require("./gameinfo"),
-	require("./creatorid"),
-	require("./rejoin"),
-	require("./autorejoin"),
+	require("./creatorid"),      -- done
+	require("./rejoin"),         -- done
+	require("./autorejoin"),     -- done
 	require("./serverhop"),
-	require("./gameteleport"),
-	require("./antiafk"),
-	require("./datalimit"),
-	require("./replicationlag"),
-	require("./showprompts"),
-	require("./togglegui"),
-	require("./showguis"),
-	require("./hideguis"),
-	require("./guidelete"),
+	require("./selfkick"),       -- done
+	require("./gameteleport"),   -- done
+	require("./antiafk"),        -- done
+	require("./datalimit"),      -- done
+	require("./replicationlag"), -- done
+	require("./setfpscap"),      -- done
+	require("./showprompts"),    -- done
+	require("./togglegui"),      -- done
+	require("./showguis"),       -- done
+	-- require("./guidelete"),   -- maybe later
 	require("./hideiy"),
 	require("./keepiy"),
-	require("./removeads"),
-	require("./saveinstance"),
+	require("./removeads"),      -- done
+	require("./saveinstance"),   -- maybe later
 	require("./clearerror"),
 	require("./antigameplaypaused"),
 	require("./clientantikick"),
 	require("./clientantiteleport"),
 	require("./allowrejoin"),
-	require("./cancelteleport"),
-	require("./volume"),
-	require("./antilag"),
-	require("./screen"),
-	require("./notify"),
-	require("./lastcommand"),
-	require("./notifyping"),
-	require("./render"),
-	require("./use2022materials"),
-	require("./alignmentkeys"),
-	require("./ctrllock"),
-	require("./exit"),
-	require("./removecommand"),
-	require("./breakloops")
+	require("./cancelteleport"),      -- done
+	require("./volume"),              -- done
+	require("./antilag"),             -- done
+	require("./screen"),              -- done
+	require("./notify"),              -- done
+	require("./lastcommand"),         -- done
+	require("./notifyping"),          -- done
+	require("./render"),              -- done
+	require("./use2022materials"),    -- done
+	require("./alignmentkeys"),       -- done
+	require("./ctrllock"),            -- done
+	require("./exit"),                -- done
+	-- require("./removecommand"),
+	-- require("./breakloops")
 }

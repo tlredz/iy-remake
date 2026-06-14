@@ -2,11 +2,16 @@ local logger = require("../utils/logger")
 
 local notifier = {}
 
-function notifier:notify(message)
-	logger:expect(message, {"string"}, "'notifier:notify' #1")
+function notifier:notify(title: string?, message: string?, duration: number?): (nil)
+	logger:expect(title, {"string"}, "'notifier:notify' #1")
+	
+	if message == nil then
+		message = title
+		title = "Notification"
+	end
 	
 	-- testing print
-	print("IY notification:", message)
+	print("notification:", duration or 5, title, message)
 end
 
 return notifier

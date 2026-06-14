@@ -4,6 +4,8 @@ local privateEnv = require("../config/privateEnv")
 local logger = require("../utils/logger")
 local tools = require("../utils/tools")
 
+local settingsData = require("../storage/datas/settings")
+
 local assetsController = require("../controllers/assetsController")
 local connectionService = require("../services/connectionService")
 local robloxServices = require("../services/robloxServices")
@@ -19,8 +21,7 @@ local uiScale = scaleObject.uiScale
 
 local scrollBarComponent = require("./components/scrollBar")
 local commandsComponent = require("./components/commands")
-local codeBoxComponent = require("./components/codeBox")
-local infoComponent = require("./components/codeBox")
+-- local codeBoxComponent = require("./components/codeBox")
 
 local infiniteYield = {}
 
@@ -82,6 +83,26 @@ local function getDisplayName()
 	return displayName
 end
 
+function infiniteYield:createScreenGui()
+	local maxDisplayOrder = (2 ^ 31) - 1
+	
+	self.screenGui = tools.simpleCreate("ScreenGui", {
+		IgnoreGuiInset = true,
+		Name = tools.randomString(math.random(30, 50)),
+		DisplayOrder = maxDisplayOrder
+	})
+	
+	local screenGui = self.screenGui
+	
+	local scale = settingsData:getValue("uiScale")
+	self:setScale(scale)
+	
+	screenGui.Parent = self:getProtectedFolder()
+	uiScale.Parent = screenGui
+	
+	return screenGui
+end
+
 function infiniteYield:getProtectedFolder()
 	local coreGui = robloxServices.CoreGui
 
@@ -108,7 +129,14 @@ function infiniteYield:createCommands()
 		scrolledSignal = scrollBar.scrolledSignal,
 		scrollContainer = self.scrollContainer,
 		scrollHolder = scrollHolder,
-		scrollBar = scrollBar
+		scrollBar = scrollBar,
+		
+		configs = {
+			placeholderText = iyConfig.commands.placeholderText,
+			padding = iyConfig.commands.padding,
+			labelSize = iyConfig.commands.labelSize,
+			textSize = iyConfig.commands.textSize
+		}
 	})
 	
 	logger:log("created commands interface")
@@ -178,6 +206,9 @@ function infiniteYield:createMainFrame()
 	
 	local topBar = mainFrame.TopBar
 	
+	self.mainFrame = mainFrame
+	self.topBar = topBar
+	
 	local title = createService.new("TextLabel", "Title", topBar, {
 		Text = getDisplayName(),
 		-- TextXAlignment = Enum.TextXAlignment.Center,
@@ -234,7 +265,7 @@ function infiniteYield:createMainFrame()
 	return mainFrame
 end
 
-function infiniteYield:calculateScale(newScale)
+function infiniteYield:calculateScale(newScale, screenGui)
 	return (self.screenGui.AbsoluteSize.Y / 450) * newScale
 end
 
@@ -245,7 +276,13 @@ function infiniteYield:setScale(newScale)
 		newScale = self:calculateScale(newScale)
 	end
 	
+	if settingsData:getValue("uiScale") ~= newScale then
+		settingsData:setValue("uiScale", newScale)
+		settingsData:save()
+	end
+	
 	scaleObject:setScale(newScale)
+	self:updateMainFramePosition()
 end
 
 function infiniteYield:calculateMainFramePosition()
@@ -256,16 +293,19 @@ function infiniteYield:calculateMainFramePosition()
 	local position = mainFrame.Position
 	local scale = scaleObject:getScale()
 	
-	local realWidth = mainFrame.AbsoluteSize.X
-	local realHeight = mainFrame.AbsoluteSize.Y
+	local realWidth = math.ceil(screenGui.AbsoluteSize.X / scale)
+	local realHeight = math.ceil(screenGui.AbsoluteSize.Y / scale)
 	
-	local maxBoundX = screenGui.AbsoluteSize.X - realWidth
-	local maxBoundY = screenGui.AbsoluteSize.Y - realHeight
-
-	return UDim2.new(
-		1, math.clamp(position.X.Offset, -math.max(0, maxBoundX), 9e9),
-		1, math.clamp(position.Y.Offset, -math.max(0, maxBoundY), 9e9)
+	return UDim2.fromOffset(
+		math.clamp(position.X.Offset, 0, math.max(realWidth - size.X.Offset, 0)),
+		math.clamp(position.Y.Offset, 0, math.max(realHeight - size.Y.Offset, 0))
 	)
+end
+
+function infiniteYield:updateMainFramePosition()
+	if self.mainFrame then
+		self.mainFrame.Position = self:calculateMainFramePosition()
+	end
 end
 
 function infiniteYield:dragMainFrame(mainFrame)
@@ -280,38 +320,35 @@ function infiniteYield:dragMainFrame(mainFrame)
 	-- print(screenGui.AbsoluteSize.X, screenGui.AbsoluteSize.Y)
 	
 	mainFrame.Size = windowSize
-	mainFrame.Position = UDim2.new(
-		1, -windowSize.X.Offset,
-		1, -windowSize.Y.Offset
-	)
+	mainFrame.Position = UDim2.fromOffset(1e5, 1e5)
+	mainFrame.Position = self:calculateMainFramePosition()
 	
 	-- print("absolute:", screenGui.AbsoluteSize)
 	-- print("pos:", mainFrame.Position)
 	
 	dragInstance:addGuiObject(mainFrame)
 	
-	--[[dragInstance:setFilter(mainFrame, function(pos)
+	dragInstance:setFilter(mainFrame, function(pos)
 		mainFrame.Position = pos
 		return self:calculateMainFramePosition()
-	end)]]
+	end)
+	
+	dragInstance.dragStarted:Connect(function(object)
+		if object ~= mainFrame then return end
+		self.scrollBar:disableScroll()
+	end)
+	
+	dragInstance.dragEnded:Connect(function(object)
+		if object ~= mainFrame then return end
+		self.scrollBar:enableScroll()
+	end)
 	
 	self.dragService = dragInstance
 end
 
 function infiniteYield:create()
-	local maxDisplayOrder = (2 ^ 31) - 1
-	
-	local screenGui = tools.simpleCreate("ScreenGui", {
-		IgnoreGuiInset = true,
-		Name = tools.randomString(math.random(30, 50)),
-		DisplayOrder = maxDisplayOrder
-	})
-	
-	screenGui.Parent = self:getProtectedFolder()
-	self.screenGui = screenGui
-	
+	local screenGui = self:createScreenGui()
 	local mainFrame = self:createMainFrame()
-	self.mainFrame = mainFrame
 	
 	-- mainFrame.Title.Text = getDisplayName()
 	-- print(mainFrame.Title.Text)
@@ -321,9 +358,6 @@ function infiniteYield:create()
 	self:dragMainFrame(mainFrame)
 	
 	self.commands:enable()
-	
-	uiScale.Scale = self:calculateScale(1)
-	uiScale.Parent = screenGui
 	
 	mainFrame.Parent = screenGui
 	privateEnv.screenGui = screenGui

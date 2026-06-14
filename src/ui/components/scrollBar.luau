@@ -74,7 +74,7 @@ function scrollBar:awake()
 	
 	connectionService:Connect(scrollBar.InputBegan, function(input)
 		if not isValidInputType(input) then return end
-		if self.isScrollBarDisabled then return end
+		if self:isScrollBarDisabled() then return end
 		
 		local isHoldingFrame = not playerService:isMouseInGuiObject(scrollThumb)
 		local direction = self.isHorizontal and "X" or "Y"
@@ -227,13 +227,12 @@ function scrollBar:createButtonsArrows()
 end
 
 function scrollBar:canScrollUp()
-	if self.isScrollBarDisabled then return false end
-	return self.index > 0
+	return self:isScrollBarEnabled() and self.index > 0
 end
 
 function scrollBar:canScrollDown()
-	if self.isScrollBarDisabled then return false end
-	return self.index + self.visibleSpace < self.totalSpace
+	local enabled = self:isScrollBarEnabled()
+	return enabled and self.index + self.visibleSpace < self.totalSpace
 end
 
 function scrollBar:canScroll(direction)
@@ -439,13 +438,21 @@ function scrollBar:setVisibleSpace(visible)
 end
 
 function scrollBar:disableScroll()
-	self.isScrollBarDisabled = true
+	self.scrollBarEnabled = false
 	self:drawThumb()
 end
 
 function scrollBar:enableScroll()
-	self.isScrollBarDisabled = false
+	self.scrollBarEnabled = true
 	self:drawThumb()
+end
+
+function scrollBar:isScrollBarEnabled()
+	return self.scrollBarEnabled
+end
+
+function scrollBar:isScrollBarDisabled()
+	return not self.scrollBarEnabled
 end
 
 function scrollBar.new(config)
@@ -455,7 +462,7 @@ function scrollBar.new(config)
 		wheelIncrement	= config.wheelIncrement or 3,
 		barThickness	  = config.barThickness or 16,
 		
-		isScrollBarDisabled = false,
+		scrollBarEnabled = true,
 		
 		index		= 0,
 		visibleSpace = config.visibleSpace or 0,

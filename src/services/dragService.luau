@@ -2,6 +2,8 @@ local connectionService = require("./connectionService")
 local robloxServices = require("./robloxServices")
 local tweenService = require("./tweenService")
 
+local signal = require("../utils/signal")
+
 local userInputService = robloxServices.UserInputService
 
 local inputBeganWhitelist = {
@@ -31,6 +33,8 @@ function dragService:addGuiObject(object: GuiObject): (nil)
 		if mouseConnection then
 			mouseConnection:Disconnect()
 		end
+		
+		self.dragEnded:Fire(object)
 	end
 	
 	local function startConnectionTimeout()
@@ -52,6 +56,8 @@ function dragService:addGuiObject(object: GuiObject): (nil)
 		self.isDragging = true
 		self.draggingObject = object
 		self.lastActivity = tick()
+		
+		self.dragStarted:Fire(object)
 		
 		task.spawn(startConnectionTimeout)
 		
@@ -104,7 +110,10 @@ function dragService.new(uiScale)
 		_uiScale = uiScale,
 		dragStart = nil,
 		startPos = nil,
-		filters = {}
+		filters = {},
+		
+		dragStarted = signal.new(),
+		dragEnded = signal.new(),
 	}, dragService)
 	
 	connectionService:Connect(userInputService.InputChanged, function(input)

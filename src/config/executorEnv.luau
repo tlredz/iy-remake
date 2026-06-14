@@ -16,6 +16,25 @@ end
 
 return setmetatable({
 	cloneref = register("function", cloneref, true),
+	setfpscap = register("function", setfpscap, function(cap)
+		if typeof(_ENV.FPS_CAP_THREAD) == "thread" then
+			task.cancel(_ENV.FPS_CAP_THREAD)
+		end
+		
+		_ENV.FPS_CAP_THREAD = task.spawn(function()
+			local os_clock = os.clock
+			local task_wait = task.wait
+			
+			local timer = os_clock() + (1 / cap)
+			
+			while true do
+				if os_clock() >= timer then
+					timer = os_clock() + (1 / cap)
+					task_wait()
+				end
+			end
+		end)
+	end),
 	gethui = register("function",
 		gethui or
 		get_hidden_gui

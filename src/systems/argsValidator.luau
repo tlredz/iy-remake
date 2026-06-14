@@ -1,10 +1,8 @@
 local playerService = require("../services/playerService")
-local waypointsData = require("../storage/waypointsData")
 local logger = require("../utils/logger")
 local tools = require("../utils/tools")
 
---[[local commandProperties = require("../config/commandProperties")
-local PROPERTIES_KEY = "$"]]
+local waypointsData = require("../storage/datas/waypoints")
 
 local argsController = {}
 

@@ -6,9 +6,9 @@ local commandData       = require("../../systems/commandData")
 
 local commandsController = require("../../controllers/commandsController")
 local commandParser      = require("../../systems/commandParser")
+local argsManager        = require("../../systems/argsManager")
 
 local inputConfig  = require("../../config/input")
-local iyConfig     = require("../../config/iy")
 local commandsList = require("../../commands/list")
 
 local signal      = require("../../utils/signal")
@@ -16,13 +16,7 @@ local logger      = require("../../utils/logger")
 local tools       = require("../../utils/tools")
 local scaleObject = require("../scaleObject")
 
-local settingsData = require("../../storage/settingsData")
-
-local commandsConfig  = iyConfig.commands
-local placeholderText = commandsConfig.placeholderText
-local padding         = commandsConfig.padding
-local labelSize       = commandsConfig.labelSize
-local textSize        = commandsConfig.textSize
+local settingsData = require("../../storage/datas/settings")
 
 local userInputService = robloxServices.UserInputService
 local runService       = robloxServices.RunService
@@ -85,56 +79,68 @@ function commands:awake()
 		end
 	end
 	
+	local function captureFocus()
+		searchBox:CaptureFocus()
+	end
+	
 	local function onEnterPressed()
+		if cmdInput.correctionText then
+			local split = searchBox.Text:split(" ")
+			split[#split] = cmdInput.correctionText
+			searchBox.Text = table.concat(split, " ")
+			
+			if settingsData:getValue("spaceAfterCorrection") then
+				searchBox.Text ..= " "
+			end
+			
+			task.defer(captureFocus)
+			return true
+		end
+		
 		if cmdInput.isValidCommand then
 			self:sendInputCommand()
 			return
 		end
-		
-		if cmdInput.bestMatch then
-			local cmdData = getCommand(cmdInput.bestMatch)
-			self.commandClickedSignal:Fire(cmdData)
-			return true
-		end
 	end
-
+	
+	local function updatePlaceholder()
+		local visible = not searchBox:IsFocused() and #searchBox.Text == 0
+		placeholder.Visible = visible
+	end
+	
 	self.commandClickedSignal:Connect(function(data)
 		searchBox.Text = data.aliases[1]
-		task.defer(function() searchBox:CaptureFocus() end)
+		task.defer(captureFocus)
 	end)
-
-	connectionService:Connect(searchHolder.Activated, function()
-		searchBox:CaptureFocus()
-	end)
-
+	
+	connectionService:Connect(searchHolder.Activated, captureFocus)
+	
 	connectionService:Connect(searchBox.Focused, function()
-		placeholder.Visible = false
+		updatePlaceholder()
 		self.markerConnection = connectionService:Connect(runService.Stepped, updateMarker)
 		
 		if #searchBox.Text == 0 then
 			self:setComment("")
 		end
 	end)
-
-	--[[connectionService:Connect(searchBox.FocusLost, function(enterPressed)
-		marker.Visible = false
+	
+	connectionService:Connect(searchBox.FocusLost, function(enterPressed)
+		updatePlaceholder()
+		marker.Visible = true
 		connectionService:disconnect(self.markerConnection)
 		
-		if #searchBox.Text == 0 then
-			placeholder.Visible = false
-		end
-		
-		--[=[if enterPressed then
+		if enterPressed then
 			onEnterPressed()
-		end]=]
-	end)]]
+		end
+	end)
 	
 	connectionService:Connect(textChangedSignal, function()
 		local text = searchBox.Text
+		updatePlaceholder()
 		
 		if isEnterPressed(text) then
-			if not onEnterPressed() then
-				-- closeSearchBox()
+            if not onEnterPressed() then
+                closeSearchBox()
 			end
 			return
 		end
@@ -150,17 +156,18 @@ end
 function commands:sendInputCommand()
 	local cmdInput = self.commandInput
 	
-	for key, argConfig in cmdInput.commandData.args do
-		if argConfig.optional then continue end
+	for key, argData in cmdInput.commandData.args do
+		if argData.optional then continue end
 		
 		local arg = cmdInput.args[key]
 		if arg and arg.success then
-			print(`arg {key}: {arg and arg.value}`)
+			arg.argData = argData
+			-- print(`arg {key}: {arg and arg.value}`)
 			continue
 		end
 		
 		local msg = arg and "invalid" or "missing"
-		local name = argConfig.name and `'{self.parser.removeWhiteSpace(argConfig.name)}'` or `#{key}`
+		local name = argData.name and `'{self.parser.removeWhiteSpace(argData.name)}'` or `#{key}`
 		self:setComment(` - {name} is {msg}`, "error")
 		return
 	end
@@ -169,17 +176,15 @@ function commands:sendInputCommand()
 	local name = getCommand(usedName).name
 	
 	local success, error = pcall(function()
-		return commandsController:run(name, cmdInput.args)
+		local args = argsManager.new(cmdInput.args)
+		return commandsController:run(name, args)
 	end)
 	
-	if success then
-		if not settingsData:getValue("clearOnEnter") then return end
-		
+	if settingsData:getValue("clearOnEnter") then
 		self.searchBox.Text = ""
-		
-		--[[ local text = "<b> - successfully executed!</b>"
-		self:setComment(richFontSize(text, textSize - 5), "valid")]]
-	else
+	end
+	
+	if not success then
 		self:setComment(`failed - {error}`, "error")
 		logger:error(`failed to run command '{name}': {error}`)
 	end
@@ -204,7 +209,7 @@ function commands:create()
 			TextYAlignment   = Enum.TextYAlignment.Center,
 			AutomaticSize    = Enum.AutomaticSize.X,
 			BackgroundTransparency = 1,
-			TextSize         = textSize,
+			TextSize         = self.configs.textSize,
 			Visible          = false,
 			RichText         = true,
 			ThemeTag = {
@@ -224,8 +229,8 @@ function commands:create()
 			TextXAlignment = Enum.TextXAlignment.Left,
 			TextYAlignment = Enum.TextYAlignment.Center,
 			BackgroundTransparency = 1,
-			TextSize       = textSize - 1,
-			Text           = placeholderText,
+			TextSize       = self.configs.textSize - 1,
+			Text           = self.configs.placeholderText,
 			ThemeTag = {
 				TextColor3 = "Colors.Text.Dark",
 				Font       = "Font.MonoSpace"
@@ -252,7 +257,7 @@ function commands:create()
 		TextXAlignment = Enum.TextXAlignment.Left,
 		TextYAlignment = Enum.TextYAlignment.Center,
 		BackgroundTransparency = 1,
-		TextSize       = textSize,
+		TextSize       = self.configs.textSize,
 		RichText       = true,
 		Text           = "",
 		ThemeTag = {
@@ -267,8 +272,8 @@ function commands:create()
 		AutomaticSize = Enum.AutomaticSize.Y,
 		TextYAlignment = Enum.TextYAlignment.Center,
 		TextXAlignment = Enum.TextXAlignment.Left,
-		Font = textFont,
-		TextSize = textSize - 5,
+		Font = self.configs.textFont,
+		TextSize = self.configs.textSize - 5,
 		Visible = false,
 		createService.new("UICorner", {
 			CornerRadius = UDim.new(0, 4)
@@ -378,7 +383,7 @@ function commands:updateElements()
 		element.Parent   = commandsFolder
 		element.Position = UDim2.fromOffset(
 			0,
-			elementPos * (element.Size.Y.Offset + padding)
+			elementPos * (element.Size.Y.Offset + self.configs.padding)
 		)
 		elementPos += 1
 	end
@@ -412,7 +417,7 @@ function commands:createSection(data)
 		TextXAlignment      = Enum.TextXAlignment.Left,
 		TextYAlignment      = Enum.TextYAlignment.Bottom,
 		RichText            = true,
-		TextSize            = textSize - 3,
+		TextSize            = self.configs.textSize - 3,
 		Text                = `<b>#{data.sectionName}</b>`,
 		ThemeTag = {
 			TextColor3 = "Colors.Text.Darker",
@@ -421,7 +426,7 @@ function commands:createSection(data)
 	})
     
 	return createService.new("Frame", {
-		Size = UDim2.new(1, -10, 0, labelSize),
+		Size = UDim2.new(1, -10, 0, self.configs.labelSize),
 		BackgroundTransparency = 1,
 		
 		sectionLabel
@@ -440,7 +445,7 @@ function commands:createCommandElement(data)
 		TextXAlignment      = Enum.TextXAlignment.Left,
 		AutomaticSize       = Enum.AutomaticSize.X,
 		RichText            = true,
-		TextSize            = textSize,
+		TextSize            = self.configs.textSize,
 		ThemeTag = {
 			TextColor3 = "Colors.Text.Default",
 			Font       = "Font.MonoSpace"
@@ -448,7 +453,7 @@ function commands:createCommandElement(data)
 	})
 
 	return createService.new("Frame", {
-		Size                = UDim2.new(1, 0, 0, labelSize),
+		Size                = UDim2.new(1, 0, 0, self.configs.labelSize),
 		AutomaticSize       = Enum.AutomaticSize.X,
 		BackgroundTransparency = 1,
 		commandLabel
@@ -465,7 +470,7 @@ function commands:createCommandDescription(data)
 		BackgroundTransparency = 1,
 		TextXAlignment     = Enum.TextXAlignment.Left,
 		RichText           = true,
-		TextSize           = textSize,
+		TextSize           = self.configs.textSize,
 		ThemeTag = {
 			TextColor3 = "Colors.Text.Dark",
 			Font       = "Font.MonoSpace"
@@ -473,7 +478,7 @@ function commands:createCommandDescription(data)
 	})
 	
 	return createService.new("Frame", "Description", {
-		Size = UDim2.new(1, -30, 0, labelSize),
+		Size = UDim2.new(1, -30, 0, self.configs.labelSize),
 		BackgroundTransparency = 1,
 		descriptionLabel
 	})
@@ -514,7 +519,7 @@ function commands:calculateVisibleSpace()
 end
 
 function commands:calculateLabelSize()
-	return padding + labelSize
+	return self.configs.padding + self.configs.labelSize
 end
 
 function commands:getElementMouseIn()
@@ -537,10 +542,9 @@ function commands:horizontalScroll(xOffset)
 end
 
 function commands:startedHoldingContainer(input)
-	if self.isPressingContainer then return end
 	if not isValidInputType(input) then return end
+	if self.scrollBar:isScrollBarDisabled() then return end
 
-	self.isPressingContainer = true
 	self.scrollAxis = nil
 	self.scrollBar:disableScroll()
 
@@ -587,7 +591,6 @@ function commands:startedHoldingContainer(input)
 	releaseEvent = connectionService:Connect(userInputService.InputEnded, function(inp)
 		if not isValidInputType(inp) then return end
 		disconnect()
-		self.isPressingContainer = false
 	end)
 	
 	mouseEvent = connectionService:Connect(userInputService.InputChanged, function(inp)
@@ -661,11 +664,22 @@ function commands:disable()
 end
 
 function commands.new(config)
+	local function cfg(name)
+		return assert(config.configs[name], `missing config.configs['{name}']`)
+	end
+	
 	local self = setmetatable({
 		scrollContainer = config.scrollContainer,
 		scrolledSignal  = config.scrolledSignal,
 		scrollHolder    = config.scrollHolder,
 		scrollBar       = config.scrollBar,
+		
+		configs = {
+			placeholderText = cfg("placeholderText"),
+			padding = cfg("padding"),
+			labelSize = cfg("labelSize"),
+			textSize = cfg("textSize")
+		},
 		
 		commandClickedSignal = signal.new(),
 		

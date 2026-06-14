@@ -4,6 +4,8 @@ local datas = require("../storage/datas")
 local function registerSettings()
 	local settingsData = datas.settings
 	settingsData:register("clearOnEnter", true)
+	settingsData:register("spaceAfterCorrection", true)
+	settingsData:register("uiScale", 1)
 	settingsData:save()
 end
 

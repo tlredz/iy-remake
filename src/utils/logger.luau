@@ -33,10 +33,12 @@ function logger:fail(message)
 	self:error("failed to load: " .. message)
 end
 
-function logger:assert(condition, message)
-	if not condition then
+function logger:assert(value, message)
+	if not value then
 		self:error(message)
+		return
 	end
+	return value 
 end
 
 function logger:expect(value, expected, message)
