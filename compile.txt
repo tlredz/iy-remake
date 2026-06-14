@@ -1,1 +1,1 @@
-lua lumarge/cli.lua --bundle --version luau --preset minify iy-remake/main.luau
+lua lumarge/cli.lua --bundle --version luau --preset minify iy-remake/main.luau iy-remake/compiled.luau
