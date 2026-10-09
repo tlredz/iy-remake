@@ -1,6 +1,6 @@
-local a={cache={}}do do local function __modImpl()local b=(getgenv or getfenv or getrenv)()
+local a={cache={}}do do local b=function()local b=(getgenv or getfenv or getrenv)()local c=function(
 
-local function register(c,d,e)
+c, d, e)
 if type(d)==c then
 return d
 end
@@ -11,103 +11,103 @@ e=function(...)return...end
 end
 
 return e
-end
-end
+end end
+
 
 return setmetatable({
-cloneref=register("function",cloneref,true),
-setfpscap=register("function",setfpscap,function(c)
+cloneref=c("function",cloneref,true),
+setfpscap=c("function",setfpscap,function(d)
 if typeof(b.FPS_CAP_THREAD)=="thread"then
 task.cancel(b.FPS_CAP_THREAD)
 end
 
 b.FPS_CAP_THREAD=task.spawn(function()
-local d=os.clock
-local e=task.wait
+local e=os.clock
+local f=task.wait
 
-local f=d()+(1/c)
+local g=e()+(1/d)
 
 while true do
-if d()>=f then
-f=d()+(1/c)
-e()
+if e()>=g then
+g=e()+(1/d)
+f()
 end
 end
 end)
 end),
-gethui=register("function",
+gethui=c("function",
 gethui or
 get_hidden_gui
 ),
-sethiddenproperty=register("function",
+sethiddenproperty=c("function",
 sethiddenproperty or
 set_hidden_property or
 set_hidden_prop
 ),
-gethiddenproperty=register("function",
+gethiddenproperty=c("function",
 gethiddenproperty or
 get_hidden_property or
 get_hidden_prop
 ),
-queueteleport=register("function",
+queueteleport=c("function",
 queue_on_teleport or
 (syn and syn.queue_on_teleport)or
 (fluxus and fluxus.queue_on_teleport)
 ),
-httprequest=register("function",
+httprequest=c("function",
 request or
 http_request or
 (syn and syn.request)or
 (http and http.request)or
 (fluxus and fluxus.request)
 ),
-setclipboard=register("function",
+setclipboard=c("function",
 setclipboard or
 toclipboard or
 set_clipboard or
 (Clipboard and Clipboard.set)
 ),
-firetouchinterest=register("function",firetouchinterest),
-makefolder=register("function",makefolder),
-isfolder=register("function",isfolder),
-getcustomasset=register("function",
+firetouchinterest=c("function",firetouchinterest),
+makefolder=c("function",makefolder),
+isfolder=c("function",isfolder),
+getcustomasset=c("function",
 getcustomasset or
 getsynasset
 ),
-hookfunction=register("function",hookfunction),
-hookmetamethod=register("function",hookmetamethod),
-getnamecallmethod=register("function",
+hookfunction=c("function",hookfunction),
+hookmetamethod=c("function",hookmetamethod),
+getnamecallmethod=c("function",
 getnamecallmethod or
 get_namecall_method
 ),
-checkcaller=register("function",checkcaller,
+checkcaller=c("function",checkcaller,
 function()return false end
 ),
-newcclosure=register("function",newcclosure),
-getgc=register("function",getgc or get_gc_objects),
-setthreadidentity=register("function",
+newcclosure=c("function",newcclosure),
+getgc=c("function",getgc or get_gc_objects),
+setthreadidentity=c("function",
 setthreadidentity or
 syn_context_set or
 setthreadcontext or
 (syn and syn.set_thread_identity)
 ),
-replicatesignal=register("function",replicatesignal),
-getconnections=register("function",
+replicatesignal=c("function",replicatesignal),
+getconnections=c("function",
 getconnections or
 get_signal_cons
 ),
-writefile=register("function",writefile),
-readfile=register("function",readfile),
-isfile=register("function",isfile,readfile and function(c)
-local d,e=pcall(readfile,c)
-return d and e~=nil and e~=""
+writefile=c("function",writefile),
+readfile=c("function",readfile),
+isfile=c("function",isfile,readfile and function(d)
+local e,f=pcall(readfile,d)
+return e and f~=nil and f~=""
 end)
 },{
 __index=b,
-__newindex=function(c,d,e)
-b[d]=e
+__newindex=function(d,e,f)
+b[e]=f
 end
-})end a.a=function()local b=a.cache.a if not b then b={c=__modImpl()}a.cache.a=b end return b.c end end do local function __modImpl()
+})end a.a=function()local c=a.cache.a if not c then c={c=b()}a.cache.a=c end return c.c end end do local b=function()
 local b=a.a()
 
 local c="IY-REMAKE-PRIVATEENV"
@@ -115,11 +115,11 @@ local c="IY-REMAKE-PRIVATEENV"
 local d=b[c]or{}
 b[c]=d
 
-return d end a.b=function()local b=a.cache.b if not b then b={c=__modImpl()}a.cache.b=b end return b.c end end do local function __modImpl()
+return d end a.b=function()local c=a.cache.b if not c then c={c=b()}a.cache.b=c end return c.c end end do local b=function()
 return{
 logText="infinite yield -> %s",
 isEnabled=false
-}end a.c=function()local b=a.cache.c if not b then b={c=__modImpl()}a.cache.c=b end return b.c end end do local function __modImpl()
+}end a.c=function()local c=a.cache.c if not c then c={c=b()}a.cache.c=c end return c.c end end do local b=function()
 local b=a.c()
 local c=b.logText
 
@@ -174,14 +174,14 @@ e:error((h or"")..` expected '{table.concat(g,", ")}'. got '{typeof(f)}'.`)
 end end
 
 
-return d end a.d=function()local b=a.cache.d if not b then b={c=__modImpl()}a.cache.d=b end return b.c end end do local function __modImpl()
+return d end a.d=function()local c=a.cache.d if not c then c={c=b()}a.cache.d=c end return c.c end end do local b=function()
 return{
 action="discord|support|help",
 description="Invite to the Infinite Yield discord server.",
 run=function(b)
 b.executorEnv.setclipboard(b.config.links.discord)
 end
-}end a.e=function()local b=a.cache.e if not b then b={c=__modImpl()}a.cache.e=b end return b.c end end do local function __modImpl()
+}end a.e=function()local c=a.cache.e if not c then c={c=b()}a.cache.e=c end return c.c end end do local b=function()
 local b=a.d()
 
 local c={}
@@ -222,7 +222,7 @@ encryptKey=d
 },c)end
 
 
-return c end a.f=function()local b=a.cache.f if not b then b={c=__modImpl()}a.cache.f=b end return b.c end end do local function __modImpl()
+return c end a.f=function()local c=a.cache.f if not c then c={c=b()}a.cache.f=c end return c.c end end do local b=function()
 local b={}
 
 local c=a.a()
@@ -238,7 +238,7 @@ rawset(e,f,h)
 return h end
 
 
-return setmetatable({},b)end a.g=function()local b=a.cache.g if not b then b={c=__modImpl()}a.cache.g=b end return b.c end end do local function __modImpl()
+return setmetatable({},b)end a.g=function()local c=a.cache.g if not c then c={c=b()}a.cache.g=c end return c.c end end do local b=function()
 local b=a.g()
 local c=a.d()
 
@@ -267,12 +267,12 @@ end
 
 return j
 end
-}end a.h=function()local b=a.cache.h if not b then b={c=__modImpl()}a.cache.h=b end return b.c end end do local function __modImpl()
+}end a.h=function()local c=a.cache.h if not c then c={c=b()}a.cache.h=c end return c.c end end do local b=function()
 return{
 privateFolder="infiniteYield",
 imagePath="assets/%s.png",
 encryptKey=676767
-}end a.i=function()local b=a.cache.i if not b then b={c=__modImpl()}a.cache.i=b end return b.c end end do local function __modImpl()
+}end a.i=function()local c=a.cache.i if not c then c={c=b()}a.cache.i=c end return c.c end end do local b=function()
 local b=a.a()
 
 local c=a.f()
@@ -291,257 +291,257 @@ g=g:sub(1,-2)
 end
 
 local i={}
-i.__index=i
+i.__index=i local j=function(
 
-local function isfile(j)
+j)
 local k,l=pcall(b.isfile,j)
 
 if k and type(l)=="boolean"then
 return l
 end
 
-return false
+return false end local k=function(
+
+
+k)
+local l,m=pcall(b.isfolder,k)
+
+if l and type(m)=="boolean"then
+return m
 end
 
-local function isfolder(j)
-local k,l=pcall(b.isfolder,j)
+return false end local l=function(
 
-if k and type(l)=="boolean"then
-return l
-end
 
-return false
-end
-
-local function readfile(j)
-if not isfile(j)then
-d:log(`the file '{j}' don't exist, skipped!`)
+l)
+if not j(l)then
+d:log(`the file '{l}' don't exist, skipped!`)
 return""
 end
 
-local k,l=pcall(b.readfile,j)
+local m,n=pcall(b.readfile,l)
 
-if not k then
-d:warn(`failed to read file '{j}':\n\t{l}`)
-l=nil
+if not m then
+d:warn(`failed to read file '{l}':\n\t{n}`)
+n=nil
 end
 
-if type(l)~="string"then
-l=""
+if type(n)~="string"then
+n=""
 end
 
-return l
+return n end local m=function(
+
+
+m)
+local n=m:split"/"
+local o={}
+
+for p,q in n do
+table.insert(o,q)
+
+local r=table.concat(o,"/")
+if k(r)then continue end
+
+local s,t=pcall(b.makefolder,r)
+
+if not s then
+d:warn(`failed to create a folder '{r}':\n\t{t}`)
 end
+end end local n=function(
 
-local function makefolder(j)
-local k=j:split"/"
-local l={}
 
-for m,n in k do
-table.insert(l,n)
+n, o)
+local p,q=pcall(b.writefile,n,o)
 
-local o=table.concat(l,"/")
-if isfolder(o)then continue end
-
-local p,q=pcall(b.makefolder,o)
-
-if not p then
-d:warn(`failed to create a folder '{o}':\n\t{q}`)
-end
-end
-end
-
-local function writefile(j,k)
-local l,m=pcall(b.writefile,j,k)
-
-if l then
-d:log(`successfully writed the file '{j}'!`)
+if p then
+d:log(`successfully writed the file '{n}'!`)
 else
-d:warn(`failed to write file '{j}':\n\t{m}`)
-end
-end
+d:warn(`failed to write file '{n}':\n\t{q}`)
+end end local o=function(
 
-local function getcustomasset(j)
-local k,l=pcall(b.getcustomasset,j)
 
-if not(k and type(l)=="string")then
-d:warn(`failed to get custom asset '{j}':\n\t{l}`)
+o)
+local p,q=pcall(b.getcustomasset,o)
+
+if not(p and type(q)=="string")then
+d:warn(`failed to get custom asset '{o}':\n\t{q}`)
 return
 end
 
-return l
+return q end local p=function(
+
+
+p)
+local q=string.split(p,"/")
+local r=table.remove(q)
+
+return table.concat(q,"/"),r end
+
+
+i.getRealPath=function(q, r)
+if r:sub(1,1)~="/"then
+r="/"..r
 end
 
-local function getFolderPath(j)
-local k=string.split(j,"/")
-local l=table.remove(k)
+r=g..r
+return r end
 
-return table.concat(k,"/"),l
+
+i.deep=function(q, r)
+local s=q.object
+local t=r:split"."
+local u=table.remove(t)
+
+for v,w in t do
+local x=s[w]
+if type(x)~="table"then x={}end
+s[w]=x
+s=x
 end
 
-i.getRealPath=function(j, k)
-if k:sub(1,1)~="/"then
-k="/"..k
-end
-
-k=g..k
-return k end
+return s,u end
 
 
-i.deep=function(j, k)
-local l=j.object
-local m=k:split"."
-local n=table.remove(m)
-
-for o,p in m do
-local q=l[p]
-if type(q)~="table"then q={}end
-l[p]=q
-l=q
-end
-
-return l,n end
+i.setValue=function(q, r, s)
+local t,u=q:deep(r)
+t[u]=s end
 
 
-i.setValue=function(j, k, l)
-local m,n=j:deep(k)
-m[n]=l end
+i.getValue=function(q, r)
+local s,t=q:deep(r)
+return s[t]end
 
 
-i.getValue=function(j, k)
-local l,m=j:deep(k)
-return l[m]end
+i.hasValue=function(q, r)
+return q:getValue(r)~=nil end
 
 
-i.hasValue=function(j, k)
-return j:getValue(k)~=nil end
+i.increment=function(q, r, s)
+return q:setValue(r,(q:getValue(r)or 0)+s)end
 
 
-i.increment=function(j, k, l)
-return j:setValue(k,(j:getValue(k)or 0)+l)end
+i.exist=function(q, r)
+r=q:getRealPath(r)
+return j(r)end
 
 
-i.exist=function(j, k)
-k=j:getRealPath(k)
-return isfile(k)end
-
-
-i.writeFile=function(j, k, l)
-if j.filePath~=nil then
-k,l=j.filePath,k
+i.writeFile=function(q, r, s)
+if q.filePath~=nil then
+r,s=q.filePath,r
 else
-k=j:getRealPath(k)
+r=q:getRealPath(r)
 end
 
-writefile(k,l)end
+n(r,s)end
 
 
-i.register=function(j, k, l)
-local m=j:getValue(k)
+i.register=function(q, r, s)
+local t=q:getValue(r)
 
-if typeof(m)~=typeof(l)then
-m=l
-j:setValue(k,m)
+if typeof(t)~=typeof(s)then
+t=s
+q:setValue(r,t)
 end
 
-return m end
+return t end
 
 
-i.add=function(j, k, l)
-local m=j:getValue(k)
-d:expect(m,{"table"},"'userData:add' #1")
+i.add=function(q, r, s)
+local t=q:getValue(r)
+d:expect(t,{"table"},"'userData:add' #1")
 
-if not table.find(m,l)then
-table.insert(m,l)
+if not table.find(t,s)then
+table.insert(t,s)
 end end
 
 
-i.save=function(j)
-if j.isSaving then return end
+i.save=function(q)
+if q.isSaving then return end
 
-j.isSaving=true
-j.lastSave=tick()
+q.isSaving=true
+q.lastSave=tick()
 
 task.delay(1,function()
-local k=e.encode(j.object,j.filePath)
+local r=e.encode(q.object,q.filePath)
 
-if j.encryptData then
-k=c:encrypt(k)
+if q.encryptData then
+r=c:encrypt(r)
 end
 
-j.isSaving=false
-j:writeFile(k)
+q.isSaving=false
+q:writeFile(r)
 end)end
 
 
-i.getCustomAsset=function(j, k)
-k=j:getRealPath(k)
-return getcustomasset(k)end
+i.getCustomAsset=function(q, r)
+r=q:getRealPath(r)
+return o(r)end
 
 
-i.getData=function(j)
-return table.clone(j.object)end
+i.getData=function(q)
+return table.clone(q.object)end
 
 
-i.new=function(j, k)
-d:expect(j,{"string"},"'fileSystem.new' #1")
-d:expect(k,{"table","nil"},"'fileSystem.new' #2")
+i.new=function(q, r)
+d:expect(q,{"string"},"'fileSystem.new' #1")
+d:expect(r,{"table","nil"},"'fileSystem.new' #2")
 
-if j:sub(-5,-1)~=".json"then
-j=j..".json"
+if q:sub(-5,-1)~=".json"then
+q=q..".json"
 end
 
-local l=setmetatable({
+local s=setmetatable({
 object={},
 lastSave=0,
 isSaving=false,
 
-encryptData=k and k.encrypt
+encryptData=r and r.encrypt
 },i)
 
-local m=l:getRealPath(j)
-local n=getFolderPath(m)
+local t=s:getRealPath(q)
+local u=p(t)
 
-l.filePath=m
-l.folderPath=n
+s.filePath=t
+s.folderPath=u
 
-if#n>0 then
-makefolder(n)
+if#u>0 then
+m(u)
 end
 
-local o=readfile(m)
+local v=l(t)
 
-if#o>0 then
-if l.encryptData then
-o=c:decrypt(o)
+if#v>0 then
+if s.encryptData then
+v=c:decrypt(v)
 end
 
-local p=e.decode(o)
+local w=e.decode(v)
 
-if type(p)~="table"then
-d:warn(`the json content has been returned a unexpected value '{m}'`)
-return l
+if type(w)~="table"then
+d:warn(`the json content has been returned a unexpected value '{t}'`)
+return s
 end
 
-l.object=p
+s.object=w
 end
 
-return l end
+return s end
 
 
-return i end a.j=function()local b=a.cache.j if not b then b={c=__modImpl()}a.cache.j=b end return b.c end end do local function __modImpl()
-return a.j().new"settings"end a.k=function()local b=a.cache.k if not b then b={c=__modImpl()}a.cache.k=b end return b.c end end do local function __modImpl()
-return"v0.0.6"end a.l=function()local b=a.cache.l if not b then b={c=__modImpl()}a.cache.l=b end return b.c end end do local function __modImpl()
+return i end a.j=function()local c=a.cache.j if not c then c={c=b()}a.cache.j=c end return c.c end end do local b=function()
+return a.j().new"settings"end a.k=function()local c=a.cache.k if not c then c={c=b()}a.cache.k=c end return c.c end end do local b=function()
+return"v0.0.6"end a.l=function()local c=a.cache.l if not c then c={c=b()}a.cache.l=c end return c.c end end do local b=function()
 return{
 owner="tlredz",
 repository="iy-remake"
-}end a.m=function()local b=a.cache.m if not b then b={c=__modImpl()}a.cache.m=b end return b.c end end do local function __modImpl()
+}end a.m=function()local c=a.cache.m if not c then c={c=b()}a.cache.m=c end return c.c end end do local b=function()
 local b=a.m()
 
 return{
 discord="https://discord.gg/78ZuWSq",
 github=`https://github.com/{b.owner}/{b.repository}`
-}end a.n=function()local b=a.cache.n if not b then b={c=__modImpl()}a.cache.n=b end return b.c end end do local function __modImpl()
+}end a.n=function()local c=a.cache.n if not c then c={c=b()}a.cache.n=c end return c.c end end do local b=function()
 
 
 local b=a.k()
@@ -591,7 +591,7 @@ draggable=true
 
 links=a.n(),
 storage=a.i(),
-}end a.o=function()local b=a.cache.o if not b then b={c=__modImpl()}a.cache.o=b end return b.c end end do local function __modImpl()
+}end a.o=function()local c=a.cache.o if not c then c={c=b()}a.cache.o=c end return c.c end end do local b=function()
 local b=a.o().ui.scale
 
 return{
@@ -605,14 +605,14 @@ run=function(c,d)
 local e=d:nextValue()
 c.infiniteYield:setScale(e)
 end
-}end a.p=function()local b=a.cache.p if not b then b={c=__modImpl()}a.cache.p=b end return b.c end end do local function __modImpl()
+}end a.p=function()local c=a.cache.p if not c then c={c=b()}a.cache.p=c end return c.c end end do local b=function()
 return{
 action="console",
 description="Opens the Roblox console",
 run=function(b)
 b.starterGui:SetCore("DevConsoleVisible",true)
 end
-}end a.q=function()local b=a.cache.q if not b then b={c=__modImpl()}a.cache.q=b end return b.c end end do local function __modImpl()
+}end a.q=function()local c=a.cache.q if not c then c={c=b()}a.cache.q=c end return c.c end end do local b=function()
 return{
 {
 action="oldconsole",
@@ -649,100 +649,100 @@ run=function(b)
 b.fetchService.load("backups/audiologger.luau","iy/audiologger")()
 end
 }
-}end a.r=function()local b=a.cache.r if not b then b={c=__modImpl()}a.cache.r=b end return b.c end end do local function __modImpl()
+}end a.r=function()local c=a.cache.r if not c then c={c=b()}a.cache.r=c end return c.c end end do local b=function()
 return{
 action="serverinfo|info",
 description="Gives you info about the server",
 run=function(b)
 b.infiniteYield:createInfoMenu()
 end
-}end a.s=function()local b=a.cache.s if not b then b={c=__modImpl()}a.cache.s=b end return b.c end end do local function __modImpl()
+}end a.s=function()local c=a.cache.s if not c then c={c=b()}a.cache.s=c end return c.c end end do local b=function()
 local b={
 kind="boolean",
 name="copy",
 optional=true
-}
+}local c=function(
 
 
-local function sendValue(c,d,e)
+c, d, e)
 if e==false then
 c:notify(d)
 else
 c.executorEnv.setclipboard(d)
-end
-end
+end end
+
 
 return{
 {
 action="jobid",
 description="Copies the games JobId to your clipboard, or notify",
 args=b,
-run=function(c,d)
-local e=`roblox://placeId={game.PlaceId}&gameInstanceId={game.JobId}`
-sendValue(c,e,d:nextValue())
+run=function(d,e)
+local f=`roblox://placeId={game.PlaceId}&gameInstanceId={game.JobId}`
+c(d,f,e:nextValue())
 end
 },
 {
 action="placeid",
 description="Copies the current place id to your clipboard, or notify",
 args=b,
-run=function(c,d)
-sendValue(c,tostring(game.PlaceId),d:nextValue())
+run=function(d,e)
+c(d,tostring(game.PlaceId),e:nextValue())
 end
 },
 {
 action="gameid",
 description="Copies the current game id to your clipboard, or notify",
 args=b,
-run=function(c,d)
-sendValue(c,tostring(game.GameId),d:nextValue())
+run=function(d,e)
+c(d,tostring(game.GameId),e:nextValue())
 end
 }
-}end a.t=function()local b=a.cache.t if not b then b={c=__modImpl()}a.cache.t=b end return b.c end end do local function __modImpl()
+}end a.t=function()local c=a.cache.t if not c then c={c=b()}a.cache.t=c end return c.c end end do local b=function()local b=function()
 
-local function getOwnerId()
+
 local b=game.CreatorId
 
 if game.CreatorType~=Enum.CreatorType.User then
 b=self.groupService:GetGroupInfoAsync(b).Owner.Id
 end
 
-return b
-end
+return b end
+
 
 return{
 {
 action="creatorid",
 description="Notify, or copies the creators ID to your clipboard",
 args={kind="boolean",name="copy",optional=true},
-run=function(b,c)
-local d=tostring(getOwnerId())
+run=function(c,d)
+local e=tostring(b())
 
-if c:nextValue()then
-b.executorEnv.setclipboard(d)
+if d:nextValue()then
+c.executorEnv.setclipboard(e)
 end
 
-b:notify("Creator Id",`the OwnerId is '{d}'`)
+c:notify("Creator Id",`the OwnerId is '{e}'`)
 end
 },
 {
 client=true,
 action="setcreatorid|setascreator",
 description="Sets your userid to the creators ID",
-run=function(b,c)
-local d=getOwnerId()
-b.localPlayer.UserId=d
-b:notify("Set ID",`Set UserId to '{d}'`)
+run=function(c,d)
+local e=b()
+c.localPlayer.UserId=e
+c:notify("Set ID",`Set UserId to '{e}'`)
 end
 }
-}end a.u=function()local b=a.cache.u if not b then b={c=__modImpl()}a.cache.u=b end return b.c end end do local function __modImpl()
+}end a.u=function()local c=a.cache.u if not c then c={c=b()}a.cache.u=c end return c.c end end do local b=function()
 return{
 action="rejoin|rj",
 description="Makes you rejoin the game",
 run=function(b)
 b.playerService:teleportToJobId(game.JobId)
 end
-}end a.v=function()local b=a.cache.v if not b then b={c=__modImpl()}a.cache.v=b end return b.c end end do local function __modImpl()
+}end a.v=function()local c=a.cache.v if not c then c={c=b()}a.cache.v=c end return c.c end end do local b=function()
 return{
 action="autorejoin|autorj",
 description="Automatically rejoins the server if you get kicked/disconnected",
@@ -756,11 +756,11 @@ b.privateEnv.autoRejoinConn=b:connect(b.guiService.ErrorMessageChanged,function(
 b:run"rejoin"
 end)
 end
-}end a.w=function()local b=a.cache.w if not b then b={c=__modImpl()}a.cache.w=b end return b.c end end do local function __modImpl()
+}end a.w=function()local c=a.cache.w if not c then c={c=b()}a.cache.w=c end return c.c end end do local b=function()
 return{
 action="serverhop|shop",
 description="Teleports you to a different server"
-}end a.x=function()local b=a.cache.x if not b then b={c=__modImpl()}a.cache.x=b end return b.c end end do local function __modImpl()
+}end a.x=function()local c=a.cache.x if not c then c={c=b()}a.cache.x=c end return c.c end end do local b=function()
 return{
 action="selfkick|kickmyself",
 description="Kick your self from the server",
@@ -773,7 +773,7 @@ run=function(b,c)
 local d=c:nextValue()
 b.localPlayer:Kick(d)
 end
-}end a.y=function()local b=a.cache.y if not b then b={c=__modImpl()}a.cache.y=b end return b.c end end do local function __modImpl()
+}end a.y=function()local c=a.cache.y if not c then c={c=b()}a.cache.y=c end return c.c end end do local b=function()
 local b=tostring(game.PlaceId)
 local c=tostring(game.JobId)
 
@@ -813,7 +813,7 @@ local g=e:nextValue()or game.PlaceId
 d.playerService:teleportToJobId(f,g)
 end
 }
-}end a.z=function()local b=a.cache.z if not b then b={c=__modImpl()}a.cache.z=b end return b.c end end do local function __modImpl()
+}end a.z=function()local c=a.cache.z if not c then c={c=b()}a.cache.z=c end return c.c end end do local b=function()
 return{
 action="antiafk|antiidle",
 description="Prevents the game from kicking you for being idle/afk",
@@ -846,7 +846,7 @@ end
 
 b:notify"anti AFK now is enabled enabled"
 end
-}end a.A=function()local b=a.cache.A if not b then b={c=__modImpl()}a.cache.A=b end return b.c end end do local function __modImpl()
+}end a.A=function()local c=a.cache.A if not c then c={c=b()}a.cache.A=c end return c.c end end do local b=function()
 return{
 action="datalimit",
 description="Set outgoing KBPS limit",
@@ -855,7 +855,7 @@ run=function(b,c)
 local d=c:nextValue()
 b.networkClient:SetOutgoingKBPSLimit(d)
 end
-}end a.B=function()local b=a.cache.B if not b then b={c=__modImpl()}a.cache.B=b end return b.c end end do local function __modImpl()
+}end a.B=function()local c=a.cache.B if not c then c={c=b()}a.cache.B=c end return c.c end end do local b=function()
 return{
 action="replicationlag|backtrack",
 description="Set IncomingReplicationLag",
@@ -863,7 +863,7 @@ args={kind="number"},
 run=function(b,c)
 b.gameNetworkSettings.IncomingReplicationLag=c:nextValue()
 end
-}end a.C=function()local b=a.cache.C if not b then b={c=__modImpl()}a.cache.C=b end return b.c end end do local function __modImpl()
+}end a.C=function()local c=a.cache.C if not c then c={c=b()}a.cache.C=c end return c.c end end do local b=function()
 return{
 action="setfpscap|fpscap|maxfps",
 description="limits your FPS",
@@ -877,7 +877,7 @@ run=function(b,c)
 local d=c:nextValue()
 b.executorEnv.setfpscap(d)
 end
-}end a.D=function()local b=a.cache.D if not b then b={c=__modImpl()}a.cache.D=b end return b.c end end do local function __modImpl()
+}end a.D=function()local c=a.cache.D if not c then c={c=b()}a.cache.D=c end return c.c end end do local b=function()
 return{
 {
 action="noprompts|nopurchaseprompts",
@@ -893,7 +893,7 @@ run=function(b)
 b.coreGui.PurchasePromptApp.Enabled=true
 end
 }
-}end a.E=function()local b=a.cache.E if not b then b={c=__modImpl()}a.cache.E=b end return b.c end end do local function __modImpl()
+}end a.E=function()local c=a.cache.E if not c then c={c=b()}a.cache.E=c end return c.c end end do local b=function()
 local b={inventory=
 Enum.CoreGuiType.Backpack,leaderboard=
 Enum.CoreGuiType.PlayerList,emotes=
@@ -933,8 +933,8 @@ if g then
 c.starterGui:SetCoreGuiEnabled(g,f)
 end
 end
-}end a.F=function()local b=a.cache.F if not b then b={c=__modImpl()}a.cache.F=b end return b.c end end do local function __modImpl()
-local function unbind(b,c)
+}end a.F=function()local c=a.cache.F if not c then c={c=b()}a.cache.F=c end return c.c end end do local b=function()local b=function(
+b, c)
 local d=b:collectGarbage(c)
 if not d then return end
 
@@ -943,60 +943,60 @@ e.Visible=f
 end
 
 local e=b:registerGarbage"bindedHideGuis"
-e[c]=nil
+e[c]=nil end local c=function(
+
+
+c, d, e)
+local f=c:registerGarbage"bindedHideGuis"
+
+for g,h in f do
+b(c,g)
 end
 
-local function bind(b,c,d)
-local e=b:registerGarbage"bindedHideGuis"
+f[d]=true
 
-for f,g in e do
-unbind(b,f)
-end
+local g=c:createGarbage(d)
+local h=c.localPlayer.PlayerGui
 
-e[c]=true
+for i,j in h:GetDescendants()do
+if j:IsA"GuiObject"and j.Visible~=e then
+local k=j.Visible
+j.Visible=e
+g[j]=k
+end
+end end
 
-local f=b:createGarbage(c)
-local g=b.localPlayer.PlayerGui
-
-for h,i in g:GetDescendants()do
-if i:IsA"GuiObject"and i.Visible~=d then
-local j=i.Visible
-i.Visible=d
-f[i]=j
-end
-end
-end
 
 return{
 {
 action="showguis",
 description="Shows any invisible GUIs",
-run=function(b)
-bind(b,"visibleGuiObjects",true)
+run=function(d)
+c(d,"visibleGuiObjects",true)
 end
 },
 {
 action="unshowguis",
 description="Undoes showguis",
-run=function(b)
-unbind(b,"visibleGuiObjects")
+run=function(d)
+b(d,"visibleGuiObjects")
 end
 },
 {
 action="hideguis",
 description="Hides any GUIs in PlayerGui",
-run=function(b)
-bind(b,"invisibleGuiObjects",false)
+run=function(d)
+c(d,"invisibleGuiObjects",false)
 end
 },
 {
 action="unhideguis",
 description="Undoes hideguis",
-run=function(b)
-unbind(b,"invisibleGuiObjects")
+run=function(d)
+b(d,"invisibleGuiObjects")
 end
 }
-}end a.G=function()local b=a.cache.G if not b then b={c=__modImpl()}a.cache.G=b end return b.c end end do local function __modImpl()
+}end a.G=function()local c=a.cache.G if not c then c={c=b()}a.cache.G=c end return c.c end end do local b=function()
 return{
 {
 action="hideiy|hideinterface",
@@ -1006,7 +1006,7 @@ description="Hides the main IY GUI"
 action="showiy|unhideiy|unhideinterface",
 description="Shows IY again"
 }
-}end a.H=function()local b=a.cache.H if not b then b={c=__modImpl()}a.cache.H=b end return b.c end end do local function __modImpl()
+}end a.H=function()local c=a.cache.H if not c then c={c=b()}a.cache.H=c end return c.c end end do local b=function()
 return{
 {
 action="keepiy",
@@ -1020,8 +1020,8 @@ description="Disable keepiy"
 action="togglekeepiy",
 description="Toggles keepiy"
 }
-}end a.I=function()local b=a.cache.I if not b then b={c=__modImpl()}a.cache.I=b end return b.c end end do local function __modImpl()
-local function tryDelete(b)
+}end a.I=function()local c=a.cache.I if not c then c={c=b()}a.cache.I=c end return c.c end end do local b=function()local b=function(
+b)
 if not b:IsA"PackageLink"then return end
 
 if b.Parent:FindFirstChild"ADpart"then
@@ -1030,32 +1030,32 @@ end
 
 if b.Parent:FindFirstChild"AdGuiAdornee"then
 b.Parent.Parent:Destroy()
-end
-end
+end end
+
 
 return{
 action="removeads|adblock",
 description="Automatically removes ad billboards",
-run=function(b)
-if b.privateEnv.adBlockConn then return end
+run=function(c)
+if c.privateEnv.adBlockConn then return end
 
-for c,d in workspace:GetDescendants()do
-tryDelete(d)
+for d,e in workspace:GetDescendants()do
+b(e)
 end
 
-b.privateEnv.adBlockConn=b:connect(workspace.DescendantAdded,function(c)
-task.defer(tryDelete,c)
+c.privateEnv.adBlockConn=c:connect(workspace.DescendantAdded,function(d)
+task.defer(b,d)
 end)
 end
-}end a.J=function()local b=a.cache.J if not b then b={c=__modImpl()}a.cache.J=b end return b.c end end do local function __modImpl()
+}end a.J=function()local c=a.cache.J if not c then c={c=b()}a.cache.J=c end return c.c end end do local b=function()
 return{
 action="saveinstance|savegame|saveplace|savep",
 description="Uses saveinstance to save the game"
-}end a.K=function()local b=a.cache.K if not b then b={c=__modImpl()}a.cache.K=b end return b.c end end do local function __modImpl()
+}end a.K=function()local c=a.cache.K if not c then c={c=b()}a.cache.K=c end return c.c end end do local b=function()
 return{
 action="clearerror",
 description="Clears the annoying box and blur when a game kicks you"
-}end a.L=function()local b=a.cache.L if not b then b={c=__modImpl()}a.cache.L=b end return b.c end end do local function __modImpl()
+}end a.L=function()local c=a.cache.L if not c then c={c=b()}a.cache.L=c end return c.c end end do local b=function()
 return{
 {
 action="antigameplaypaused",
@@ -1065,15 +1065,15 @@ description="Clears the annoying box shown when a game is loading assets due to 
 action="unantigameplaypaused",
 description="Disables antigameplaypaused"
 }
-}end a.M=function()local b=a.cache.M if not b then b={c=__modImpl()}a.cache.M=b end return b.c end end do local function __modImpl()
+}end a.M=function()local c=a.cache.M if not c then c={c=b()}a.cache.M=c end return c.c end end do local b=function()
 return{
 action="clientantikick|antikick",
 description="Prevents localscripts from kicking you (CLIENT)"
-}end a.N=function()local b=a.cache.N if not b then b={c=__modImpl()}a.cache.N=b end return b.c end end do local function __modImpl()
+}end a.N=function()local c=a.cache.N if not c then c={c=b()}a.cache.N=c end return c.c end end do local b=function()
 return{
 action="clientantiteleport|antiteleport",
 description="Prevents localscripts from teleporting you (CLIENT)"
-}end a.O=function()local b=a.cache.O if not b then b={c=__modImpl()}a.cache.O=b end return b.c end end do local function __modImpl()
+}end a.O=function()local c=a.cache.O if not c then c={c=b()}a.cache.O=c end return c.c end end do local b=function()
 return{
 cliemt=true,
 action="allowrejoin|allowrj",
@@ -1082,14 +1082,14 @@ args={kind="boolean"},
 run=function(b,c)
 b.datas.settings:setValue("allowRejoin",args:nextValue())
 end
-}end a.P=function()local b=a.cache.P if not b then b={c=__modImpl()}a.cache.P=b end return b.c end end do local function __modImpl()
+}end a.P=function()local c=a.cache.P if not c then c={c=b()}a.cache.P=c end return c.c end end do local b=function()
 return{
 action="cancelteleport|canceltp",
 description="Cancels teleports in progress",
 run=function(b)
 b.teleportService:TeleportCancel()
 end
-}end a.Q=function()local b=a.cache.Q if not b then b={c=__modImpl()}a.cache.Q=b end return b.c end end do local function __modImpl()
+}end a.Q=function()local c=a.cache.Q if not c then c={c=b()}a.cache.Q=c end return c.c end end do local b=function()
 return{
 action="volume|vol",
 description="Adjusts your game volume on a scale of 0 to 10",
@@ -1101,7 +1101,7 @@ run=function(b,c)
 local d=1/c:nextValue()
 b.userGameSettings.MasterVolume=d
 end
-}end a.R=function()local b=a.cache.R if not b then b={c=__modImpl()}a.cache.R=b end return b.c end end do local function __modImpl()
+}end a.R=function()local c=a.cache.R if not c then c={c=b()}a.cache.R=c end return c.c end end do local b=function()
 local b={
 BasePart={
 CastShadow=false,
@@ -1135,9 +1135,9 @@ local c={
 "Smoke",
 "Fire",
 "Beam"
-}
+}local d=function(
 
-local function optimizeGame(d)
+d)
 local e=workspace:FindFirstChildWhichIsA"Terrain"
 local f=d.rbxServices.Lighting
 
@@ -1174,22 +1174,22 @@ task.defer(function()
 g:Destroy()
 end)
 end
-end)
-end
+end)end
+
 
 return{
 action="antilag|boostfps|lowgraphics",
 description="Lowers game quality to boost FPS",
-run=function(d)
-if d.privateEnv.antiLagEnabled then
-d:notify"anti lag is already enabled"
+run=function(e)
+if e.privateEnv.antiLagEnabled then
+e:notify"anti lag is already enabled"
 return
 end
 
-d.privateEnv.antiLagEnabled=true
-optimizeGame(d)
+e.privateEnv.antiLagEnabled=true
+d(e)
 end
-}end a.S=function()local b=a.cache.S if not b then b={c=__modImpl()}a.cache.S=b end return b.c end end do local function __modImpl()
+}end a.S=function()local c=a.cache.S if not c then c={c=b()}a.cache.S=c end return c.c end end do local b=function()
 return{
 {
 action="record|rec",
@@ -1212,7 +1212,7 @@ run=function(b)
 b.guiService:ToggleFullscreen()
 end
 }
-}end a.T=function()local b=a.cache.T if not b then b={c=__modImpl()}a.cache.T=b end return b.c end end do local function __modImpl()
+}end a.T=function()local c=a.cache.T if not c then c={c=b()}a.cache.T=c end return c.c end end do local b=function()
 return{
 action="notify",
 description="Sends you a notification with the provided text",
@@ -1230,11 +1230,11 @@ optional=true
 run=function(b,c)
 b:notify("Notification",c:nextValue(),c:nextValue())
 end
-}end a.U=function()local b=a.cache.U if not b then b={c=__modImpl()}a.cache.U=b end return b.c end end do local function __modImpl()
+}end a.U=function()local c=a.cache.U if not c then c={c=b()}a.cache.U=c end return c.c end end do local b=function()
 return{
 action="lastcommand|lastcmd",
 description="Executes the previous command used"
-}end a.V=function()local b=a.cache.V if not b then b={c=__modImpl()}a.cache.V=b end return b.c end end do local function __modImpl()
+}end a.V=function()local c=a.cache.V if not c then c={c=b()}a.cache.V=c end return c.c end end do local b=function()
 return{
 action="notifyping|ping",
 description="Notify yourself your ping",
@@ -1242,7 +1242,7 @@ run=function(b)
 local c=b.localPlayer:GetNetworkPing()
 b:notify("Ping",`{math.round(c*1000)}ms`)
 end
-}end a.W=function()local b=a.cache.W if not b then b={c=__modImpl()}a.cache.W=b end return b.c end end do local function __modImpl()
+}end a.W=function()local c=a.cache.W if not c then c={c=b()}a.cache.W=c end return c.c end end do local b=function()
 return{
 {
 action="norender",
@@ -1258,7 +1258,7 @@ run=function(b)
 b.runService:Set3dRenderingEnabled(true)
 end
 }
-}end a.X=function()local b=a.cache.X if not b then b={c=__modImpl()}a.cache.X=b end return b.c end end do local function __modImpl()
+}end a.X=function()local c=a.cache.X if not c then c={c=b()}a.cache.X=c end return c.c end end do local b=function()
 return{
 {
 action="use2022materials|2022materials",
@@ -1274,7 +1274,7 @@ run=function(b)
 b.rbxServices.MaterialService.Use2022Materials=false
 end
 }
-}end a.Y=function()local b=a.cache.Y if not b then b={c=__modImpl()}a.cache.Y=b end return b.c end end do local function __modImpl()
+}end a.Y=function()local c=a.cache.Y if not c then c={c=b()}a.cache.Y=c end return c.c end end do local b=function()
 local b={
 [Enum.KeyCode.Comma]=-1,
 [Enum.KeyCode.Period]=1,
@@ -1318,8 +1318,8 @@ end
 d.akConn:Disconnect()
 end
 }
-}end a.Z=function()local b=a.cache.Z if not b then b={c=__modImpl()}a.cache.Z=b end return b.c end end do local function __modImpl()
-local function setShiftKey(b,c)
+}end a.Z=function()local c=a.cache.Z if not c then c={c=b()}a.cache.Z=c end return c.c end end do local b=function()local b=function(
+b, c)
 local d=b.localPlayer.PlayerScripts
 local e=d.PlayerModule.CameraModule.MouseLockController
 local f=e:FindFirstChild"BoundKeys"
@@ -1329,32 +1329,32 @@ f=Instance.new("StringValue",e)
 f.Name="BoundKeys"
 end
 
-f.Value=c
-end
+f.Value=c end
+
 
 return{
 {
 action="ctrllock",
 description="Binds Shiftlock to LeftControl",
-run=function(b)
-setShiftKey(b,"LeftControl")
+run=function(c)
+b(c,"LeftControl")
 end
 },
 {
 action="unctrllock",
 description="Re-binds Shiftlock to LeftShift",
-run=function(b)
-setShiftKey(b,"LeftShift")
+run=function(c)
+b(c,"LeftShift")
 end
 }
-}end a._=function()local b=a.cache._ if not b then b={c=__modImpl()}a.cache._=b end return b.c end end do local function __modImpl()
+}end a._=function()local c=a.cache._ if not c then c={c=b()}a.cache._=c end return c.c end end do local b=function()
 return{
 action="exit",
 description="Kills roblox process",
 run=function()
 game:shutdown()
 end
-}end a.aa=function()local b=a.cache.aa if not b then b={c=__modImpl()}a.cache.aa=b end return b.c end end do local function __modImpl()
+}end a.aa=function()local c=a.cache.aa if not c then c={c=b()}a.cache.aa=c end return c.c end end do local b=function()
 
 
 return{
@@ -1363,10 +1363,10 @@ description="Notifies the JobId and PlaceId of the current server",
 run=function(b)
 b:notify("JobId / PlaceId",`{game.JobId} / {game.PlaceId}`)
 end
-}end a.ab=function()local b=a.cache.ab if not b then b={c=__modImpl()}a.cache.ab=b end return b.c end end do local function __modImpl()
+}end a.ab=function()local c=a.cache.ab if not c then c={c=b()}a.cache.ab=c end return c.c end end do local b=function()
 
 local b=a.g()
-return b.Players.LocalPlayer end a.ac=function()local b=a.cache.ac if not b then b={c=__modImpl()}a.cache.ac=b end return b.c end end do local function __modImpl()
+return b.Players.LocalPlayer end a.ac=function()local c=a.cache.ac if not c then c={c=b()}a.cache.ac=c end return c.c end end do local b=function()
 local b=a.g()
 local c=a.ac()
 local d=a.d()
@@ -1521,52 +1521,52 @@ return workspace.CurrentCamera end
 
 
 
-return g end a.ad=function()local b=a.cache.ad if not b then b={c=__modImpl()}a.cache.ad=b end return b.c end end do local function __modImpl()
+return g end a.ad=function()local c=a.cache.ad if not c then c={c=b()}a.cache.ad=c end return c.c end end do local b=function()
 local b=a.g()
 local c=a.ad()
-local d=a.ac()
+local d=a.ac()local e=function(
 
 
 
 
 
-local function shuffle(e)
+e)
 for f=#e,2,-1 do
 local g=math.random(1,f)
 e[f],e[g]=e[g],e[f]
 end
-return e
-end
+return e end local f=function(
 
-local function resolvePlayers(e)
-local f=(e or"me"):lower()
-local g=b.Players:GetPlayers()
 
-if f=="me"then
+f)
+local g=(f or"me"):lower()
+local h=b.Players:GetPlayers()
+
+if g=="me"then
 return{d}
-elseif f=="all"then
-return g
-elseif f=="others"then
-local h={}
-for i,j in g do
-if j~=d then
-table.insert(h,j)
-end
-end
+elseif g=="all"then
 return h
-elseif f=="random"then
-return{g[math.random(1,#g)]}
+elseif g=="others"then
+local i={}
+for j,k in h do
+if k~=d then
+table.insert(i,k)
+end
+end
+return i
+elseif g=="random"then
+return{h[math.random(1,#h)]}
 end
 
-local h=tonumber(f:match"^#(%d+)$")
-if h then
-return table.move(shuffle(g),1,math.min(h,#g),1,{})
+local i=tonumber(g:match"^#(%d+)$")
+if i then
+return table.move(e(h),1,math.min(i,#h),1,{})
 end
 
-return c:getPlayersByName(e)
-end
+return c:getPlayersByName(f)end
 
-return resolvePlayers end a.ae=function()local b=a.cache.ae if not b then b={c=__modImpl()}a.cache.ae=b end return b.c end end do local function __modImpl()
+
+return f end a.ae=function()local c=a.cache.ae if not c then c={c=b()}a.cache.ae=c end return c.c end end do local b=function()
 
 local b=a.ae()
 
@@ -1617,7 +1617,7 @@ c.executorEnv.setclipboard(tostring(d))
 c:notify("Copied ID","Copied creator ID to clipboard")
 end
 }
-}end a.af=function()local b=a.cache.af if not b then b={c=__modImpl()}a.cache.af=b end return b.c end end do local function __modImpl()
+}end a.af=function()local c=a.cache.af if not c then c={c=b()}a.cache.af=c end return c.c end end do local b=function()
 
 local b={inventory=
 Enum.CoreGuiType.Backpack,leaderboard=
@@ -1627,9 +1627,9 @@ Enum.CoreGuiType.EmotesMenu
 
 for c,d in Enum.CoreGuiType:GetEnumItems()do
 b[string.lower(d.Name)]=d
-end
+end local c=function(
 
-local function setCoreGui(c,d,e)
+c, d, e)
 if d=="reset"then
 c.starterGui:SetCore("ResetButtonCallback",e)
 return
@@ -1638,27 +1638,27 @@ end
 local f=b[d]
 if f then
 c.starterGui:SetCoreGuiEnabled(f,e)
-end
-end
+end end
+
 
 return{
 {
 action="enable",
 description="Enables a CoreGui element (inventory, leaderboard, chat, reset, emotes...)",
 args={kind="string",name="gui name"},
-run=function(c,d)
-setCoreGui(c,d:nextValue():lower(),true)
+run=function(d,e)
+c(d,e:nextValue():lower(),true)
 end
 },
 {
 action="disable",
 description="Disables a CoreGui element (inventory, leaderboard, chat, reset, emotes...)",
 args={kind="string",name="gui name"},
-run=function(c,d)
-setCoreGui(c,d:nextValue():lower(),false)
+run=function(d,e)
+c(d,e:nextValue():lower(),false)
 end
 }
-}end a.ag=function()local b=a.cache.ag if not b then b={c=__modImpl()}a.cache.ag=b end return b.c end end do local function __modImpl()
+}end a.ag=function()local c=a.cache.ag if not c then c={c=b()}a.cache.ag=c end return c.c end end do local b=function()
 
 return{
 action="clearnilinstances|nonilinstances|cni",
@@ -1673,7 +1673,7 @@ for c,d in getnilinstances()do
 d:Destroy()
 end
 end
-}end a.ah=function()local b=a.cache.ah if not b then b={c=__modImpl()}a.cache.ah=b end return b.c end end do local function __modImpl()
+}end a.ah=function()local c=a.cache.ah if not c then c={c=b()}a.cache.ah=c end return c.c end end do local b=function()
 
 return{
 action="mousesensitivity|ms",
@@ -1682,7 +1682,7 @@ args={kind="number",name="sensitivity"},
 run=function(b,c)
 b.robloxServices.UserInputService.MouseDeltaSensitivity=c:nextValue()
 end
-}end a.ai=function()local b=a.cache.ai if not b then b={c=__modImpl()}a.cache.ai=b end return b.c end end do local function __modImpl()
+}end a.ai=function()local c=a.cache.ai if not c then c={c=b()}a.cache.ai=c end return c.c end end do local b=function()
 
 local b=a.ae()
 
@@ -1707,10 +1707,10 @@ c.localPlayer:RevokeFriendship(f)
 end
 end
 }
-}end a.aj=function()local b=a.cache.aj if not b then b={c=__modImpl()}a.cache.aj=b end return b.c end end do local function __modImpl()
+}end a.aj=function()local c=a.cache.aj if not c then c={c=b()}a.cache.aj=c end return c.c end end do local b=function()local b=function(
 
 
-local function respawn(b)
+b)
 local c=b.localPlayer
 local d=c.Character
 if not d then return end
@@ -1729,48 +1729,48 @@ task.wait()
 c.Character=f
 task.wait()
 c.Character=d
-f:Destroy()
-end
+f:Destroy()end
+
 
 return{
 {
 action="respawn",
 description="Respawns your character in place (client side)",
-run=function(b)
-respawn(b)
+run=function(c)
+b(c)
 end
 },
 {
 action="refresh|re",
 description="Respawns your character and puts you back where you were",
-run=function(b)
-local c=b.playerService:getRootPart()
-if not c then return end
+run=function(c)
+local d=c.playerService:getRootPart()
+if not d then return end
 
-local d=b.localPlayer
-local e=c.CFrame
-local f=workspace.CurrentCamera.CFrame
+local e=c.localPlayer
+local f=d.CFrame
+local g=workspace.CurrentCamera.CFrame
 
-respawn(b)
+b(c)
 
 task.spawn(function()
-local g=d.CharacterAdded:Wait()
-local h=g:WaitForChild("HumanoidRootPart",10)
-if not h then return end
+local h=e.CharacterAdded:Wait()
+local i=h:WaitForChild("HumanoidRootPart",10)
+if not i then return end
 
-h.CFrame=e
-workspace.CurrentCamera.CFrame=f
+i.CFrame=f
+workspace.CurrentCamera.CFrame=g
 end)
 end
 },
 {
 action="reset",
 description="Resets your character",
-run=function(b)
-b.playerService:resetCharacter()
+run=function(c)
+c.playerService:resetCharacter()
 end
 }
-}end a.ak=function()local b=a.cache.ak if not b then b={c=__modImpl()}a.cache.ak=b end return b.c end end do local function __modImpl()
+}end a.ak=function()local c=a.cache.ak if not c then c={c=b()}a.cache.ak=c end return c.c end end do local b=function()
 
 local b=a.d()
 
@@ -1792,7 +1792,7 @@ end
 
 c:notify("debug",tostring(e))
 end
-}end a.al=function()local b=a.cache.al if not b then b={c=__modImpl()}a.cache.al=b end return b.c end end do local function __modImpl()
+}end a.al=function()local c=a.cache.al if not c then c={c=b()}a.cache.al=c end return c.c end end do local b=function()
 
 return{
 {
@@ -1802,7 +1802,7 @@ args={
 kind="team"
 }
 }
-}end a.am=function()local b=a.cache.am if not b then b={c=__modImpl()}a.cache.am=b end return b.c end end do local function __modImpl()
+}end a.am=function()local c=a.cache.am if not c then c={c=b()}a.cache.am=c end return c.c end end do local b=function()
 
 return{
 {
@@ -1818,7 +1818,7 @@ name="radius"
 }
 }
 }
-}end a.an=function()local b=a.cache.an if not b then b={c=__modImpl()}a.cache.an=b end return b.c end end do local function __modImpl()
+}end a.an=function()local c=a.cache.an if not c then c={c=b()}a.cache.an=c end return c.c end end do local b=function()
 
 return{
 {
@@ -1860,7 +1860,7 @@ name="release delay"
 action="unautokeypress|noautokeypress|unkeypress|nokeypress",
 description="Stops autokeypress"
 }
-}end a.ao=function()local b=a.cache.ao if not b then b={c=__modImpl()}a.cache.ao=b end return b.c end end do local function __modImpl()
+}end a.ao=function()local c=a.cache.ao if not c then c={c=b()}a.cache.ao=c end return c.c end end do local b=function()
 
 return{
 {
@@ -1897,7 +1897,7 @@ description="Disable Staffwatch"
 action="findfriendgroups",
 description="Notifies you if any players are friends with each other"
 }
-}end a.ap=function()local b=a.cache.ap if not b then b={c=__modImpl()}a.cache.ap=b end return b.c end end do local function __modImpl()
+}end a.ap=function()local c=a.cache.ap if not c then c={c=b()}a.cache.ap=c end return c.c end end do local b=function()
 
 return{
 {
@@ -1908,7 +1908,7 @@ description="Go to Settings > Keybinds > Add for click delete"
 action="clickteleport",
 description="Go to Settings > Keybinds > Add for click teleport"
 }
-}end a.aq=function()local b=a.cache.aq if not b then b={c=__modImpl()}a.cache.aq=b end return b.c end end do local function __modImpl()
+}end a.aq=function()local c=a.cache.aq if not c then c={c=b()}a.cache.aq=c end return c.c end end do local b=function()
 
 return{
 {
@@ -1919,7 +1919,7 @@ description="Prompts the game to switch your rig type to R6"
 action="promptr15",
 description="Prompts the game to switch your rig type to R15"
 }
-}end a.ar=function()local b=a.cache.ar if not b then b={c=__modImpl()}a.cache.ar=b end return b.c end end do local function __modImpl()
+}end a.ar=function()local c=a.cache.ar if not c then c={c=b()}a.cache.ar=c end return c.c end end do local b=function()
 
 return{a.e()
 ,a.p()
@@ -1979,7 +1979,7 @@ return{a.e()
 ,a.aq()
 ,a.ar()
 
-}end a.as=function()local b=a.cache.as if not b then b={c=__modImpl()}a.cache.as=b end return b.c end end do local function __modImpl()
+}end a.as=function()local c=a.cache.as if not c then c={c=b()}a.cache.as=c end return c.c end end do local b=function()
 
 return{
 {
@@ -2003,7 +2003,7 @@ name="fly speed"
 action="unfly",
 description="Disables fly"
 }
-}end a.at=function()local b=a.cache.at if not b then b={c=__modImpl()}a.cache.at=b end return b.c end end do local function __modImpl()
+}end a.at=function()local c=a.cache.at if not c then c={c=b()}a.cache.at=c end return c.c end end do local b=function()
 return{
 {
 action="noclip",
@@ -2013,7 +2013,7 @@ description="Go through objects"
 action="unnoclip|clip",
 description="Disables noclip"
 }
-}end a.au=function()local b=a.cache.au if not b then b={c=__modImpl()}a.cache.au=b end return b.c end end do local function __modImpl()
+}end a.au=function()local c=a.cache.au if not c then c={c=b()}a.cache.au=c end return c.c end end do local b=function()
 return{
 {
 action="vehiclefly|vfly",
@@ -2036,7 +2036,7 @@ name="vehicle fly speed"
 action="unvehiclefly|unvfly",
 description="Disables vehicle fly"
 }
-}end a.av=function()local b=a.cache.av if not b then b={c=__modImpl()}a.cache.av=b end return b.c end end do local function __modImpl()
+}end a.av=function()local c=a.cache.av if not c then c={c=b()}a.cache.av=c end return c.c end end do local b=function()
 return{
 {
 action="cframefly|cfly",
@@ -2058,14 +2058,14 @@ kind="number"
 action="uncframefly|uncfly",
 description="Disables cfly"
 }
-}end a.aw=function()local b=a.cache.aw if not b then b={c=__modImpl()}a.cache.aw=b end return b.c end end do local function __modImpl()
+}end a.aw=function()local c=a.cache.aw if not c then c={c=b()}a.cache.aw=c end return c.c end end do local b=function()
 return{
 action="qefly",
 description="Enables or disables the Q and E hotkeys for fly",
 args={
 kind="boolean"
 }
-}end a.ax=function()local b=a.cache.ax if not b then b={c=__modImpl()}a.cache.ax=b end return b.c end end do local function __modImpl()
+}end a.ax=function()local c=a.cache.ax if not c then c={c=b()}a.cache.ax=c end return c.c end end do local b=function()
 return{
 {
 action="vehiclenoclip|vnoclip",
@@ -2075,7 +2075,7 @@ description="Turns off vehicle collision"
 action="vehicleclip|vclip|unvnoclip",
 description="Enables vehicle collision"
 },
-}end a.ay=function()local b=a.cache.ay if not b then b={c=__modImpl()}a.cache.ay=b end return b.c end end do local function __modImpl()
+}end a.ay=function()local c=a.cache.ay if not c then c={c=b()}a.cache.ay=c end return c.c end end do local b=function()
 return{
 {
 action="float|platform",
@@ -2085,7 +2085,7 @@ description="Spawns a platform beneath you causing you to float"
 action="unfloat|noplatform",
 description="Removes the platform"
 }
-}end a.az=function()local b=a.cache.az if not b then b={c=__modImpl()}a.cache.az=b end return b.c end end do local function __modImpl()
+}end a.az=function()local c=a.cache.az if not c then c={c=b()}a.cache.az=c end return c.c end end do local b=function()
 return{
 {
 action="swim",
@@ -2099,46 +2099,46 @@ description="Stops you from swimming everywhere"
 action="toggleswim",
 description="Toggles swimming"
 }
-}end a.aA=function()local b=a.cache.aA if not b then b={c=__modImpl()}a.cache.aA=b end return b.c end end do local function __modImpl()
-local function setHumanoidProperty(b,c,d)
+}end a.aA=function()local c=a.cache.aA if not c then c={c=b()}a.cache.aA=c end return c.c end end do local b=function()local b=function(
+b, c, d)
 local e=b.playerService:getHumanoid()
 if e then
 e[c]=d
-end
-end
+end end local c=function(
 
-local function humanoidToggle(b,c,d,e)
+
+c, d, e, f)
 return{
-action=b,
-description=c,
-run=function(f)
-setHumanoidProperty(f,d,e)
+action=c,
+description=d,
+run=function(g)
+b(g,e,f)
 end
-}
-end
+}end
+
 
 return{
 {
 action="speed|ws|walkspeed",
 description="Sets your walk speed (default is 16)",
 args={kind="number",name="walk speed",optional=true},
-run=function(b,c)
-setHumanoidProperty(b,"WalkSpeed",c:nextValue()or 16)
+run=function(d,e)
+b(d,"WalkSpeed",e:nextValue()or 16)
 end
 },
 {
 action="jpower|jumppower|jp",
 description="Sets your jump power (default is 50)",
 args={kind="number",name="jump power",optional=true},
-run=function(b,c)
-local d=b.playerService:getHumanoid()
-if not d then return end
+run=function(d,e)
+local f=d.playerService:getHumanoid()
+if not f then return end
 
-local e=c:nextValue()or 50
-if d.UseJumpPower then
-d.JumpPower=e
+local g=e:nextValue()or 50
+if f.UseJumpPower then
+f.JumpPower=g
 else
-d.JumpHeight=e
+f.JumpHeight=g
 end
 end
 },
@@ -2146,52 +2146,52 @@ end
 action="maxslopeangle|msa",
 description="Sets the max slope angle your humanoid can walk up (default is 89)",
 args={kind="number",name="angle",optional=true},
-run=function(b,c)
-setHumanoidProperty(b,"MaxSlopeAngle",c:nextValue()or 89)
+run=function(d,e)
+b(d,"MaxSlopeAngle",e:nextValue()or 89)
 end
 },
 {
 action="hipheight|hheight",
 description="Sets your hip height (default depends on your rig)",
 args={kind="number",name="hip height",optional=true},
-run=function(b,c)
-local d=b.playerService:getHumanoid()
-if not d then return end
+run=function(d,e)
+local f=d.playerService:getHumanoid()
+if not f then return end
 
-local e=d.RigType==Enum.HumanoidRigType.R15
-d.HipHeight=c:nextValue()or(e and 2.1 or 0)
+local g=f.RigType==Enum.HumanoidRigType.R15
+f.HipHeight=e:nextValue()or(g and 2.1 or 0)
 end
 },
-humanoidToggle("stun|platformstand","Makes your character stiff (PlatformStand)","PlatformStand",true),
-humanoidToggle("unstun|nostun|unplatformstand|noplatformstand","Disables stun","PlatformStand",false),
-humanoidToggle("norotate|noautorotate","Stops your character from auto rotating","AutoRotate",false),
-humanoidToggle("unnorotate|autorotate","Lets your character auto rotate again","AutoRotate",true),
+c("stun|platformstand","Makes your character stiff (PlatformStand)","PlatformStand",true),
+c("unstun|nostun|unplatformstand|noplatformstand","Disables stun","PlatformStand",false),
+c("norotate|noautorotate","Stops your character from auto rotating","AutoRotate",false),
+c("unnorotate|autorotate","Lets your character auto rotate again","AutoRotate",true),
 {
 action="trip",
 description="Trips your character forward",
-run=function(b)
-local c=b.playerService:getHumanoid()
-local d=b.playerService:getRootPart()
-if not(c and d)then return end
+run=function(d)
+local e=d.playerService:getHumanoid()
+local f=d.playerService:getRootPart()
+if not(e and f)then return end
 
-c:ChangeState(Enum.HumanoidStateType.FallingDown)
-d.AssemblyLinearVelocity=d.CFrame.LookVector*30
+e:ChangeState(Enum.HumanoidStateType.FallingDown)
+f.AssemblyLinearVelocity=f.CFrame.LookVector*30
 end
 },
 {
 action="breakvelocity",
 description="Stops the character's movement for one second",
-run=function(b)
-local c=b.localPlayer.Character
-if not c then return end
+run=function(d)
+local e=d.localPlayer.Character
+if not e then return end
 
-local d=os.clock()
+local f=os.clock()
 task.spawn(function()
-while os.clock()-d<1 do
-for e,f in c:GetDescendants()do
-if f:IsA"BasePart"then
-f.AssemblyLinearVelocity=Vector3.zero
-f.AssemblyAngularVelocity=Vector3.zero
+while os.clock()-f<1 do
+for g,h in e:GetDescendants()do
+if h:IsA"BasePart"then
+h.AssemblyLinearVelocity=Vector3.zero
+h.AssemblyAngularVelocity=Vector3.zero
 end
 end
 task.wait()
@@ -2202,28 +2202,28 @@ end
 {
 action="deletevelocity|dv|removevelocity|removeforces",
 description="Deletes the force and velocity objects on your character",
-run=function(b)
-local c=b.localPlayer.Character
-if not c then return end
+run=function(d)
+local e=d.localPlayer.Character
+if not e then return end
 
-local d={
+local f={
 "BodyVelocity","BodyGyro","RocketPropulsion","BodyThrust",
 "BodyAngularVelocity","AngularVelocity","BodyForce","VectorForce","LineForce"
 }
 
-for e,f in c:GetDescendants()do
-for g,h in d do
-if f:IsA(h)then
-f:Destroy()
+for g,h in e:GetDescendants()do
+for i,j in f do
+if h:IsA(j)then
+h:Destroy()
 break
 end
 end
 end
 end
 }
-}end a.aB=function()local b=a.cache.aB if not b then b={c=__modImpl()}a.cache.aB=b end return b.c end end do local function __modImpl()
+}end a.aB=function()local c=a.cache.aB if not c then c={c=b()}a.cache.aB=c end return c.c end end do local b=function()local b=function(
 
-local function startJumpLoop(b,c,d)
+b, c, d)
 if b:hasGarbage(c)then
 b:notify(`{c} is already enabled`)
 return
@@ -2240,209 +2240,209 @@ e.debouncing=true
 f:ChangeState(Enum.HumanoidStateType.Jumping)
 task.wait()
 e.debouncing=false
+end)end local c=function(
+
+
+c, d)
+local e=c:collectGarbage(d)
+if e and e.connection then
+e.connection:Disconnect()
+end end local d=function(
+
+
+d, e, f)
+local g=d.playerService:getHumanoid()
+local h,i=pcall(function()
+return Enum.HumanoidStateType[e]
 end)
-end
 
-local function stopJumpLoop(b,c)
-local d=b:collectGarbage(c)
-if d and d.connection then
-d.connection:Disconnect()
-end
-end
-
-local function setHumanoidState(b,c,d)
-local e=b.playerService:getHumanoid()
-local f,g=pcall(function()
-return Enum.HumanoidStateType[c]
-end)
-
-if not f then
-b:notify("Invalid state",`{c} is not a HumanoidStateType`)
+if not h then
+d:notify("Invalid state",`{e} is not a HumanoidStateType`)
 return
 end
 
-if e then
-e:SetStateEnabled(g,d)
-end
-end
+if g then
+g:SetStateEnabled(i,f)
+end end
+
 
 return{
 {
 action="sit",
 description="Makes your character sit",
-run=function(b)
-local c=b.playerService:getHumanoid()
-if c then
-c.Sit=true
+run=function(e)
+local f=e.playerService:getHumanoid()
+if f then
+f.Sit=true
 end
 end
 },
 {
 action="nosit",
 description="Stops your character from being able to sit",
-run=function(b)
-setHumanoidState(b,"Seated",false)
+run=function(e)
+d(e,"Seated",false)
 end
 },
 {
 action="unnosit",
 description="Lets your character sit again",
-run=function(b)
-setHumanoidState(b,"Seated",true)
+run=function(e)
+d(e,"Seated",true)
 end
 },
 {
 action="enablestate",
 description="Enables a humanoid state (example: Jumping)",
 args={kind="string",name="state name"},
-run=function(b,c)
-setHumanoidState(b,c:nextValue(),true)
+run=function(e,f)
+d(e,f:nextValue(),true)
 end
 },
 {
 action="disablestate",
 description="Disables a humanoid state (example: Jumping)",
 args={kind="string",name="state name"},
-run=function(b,c)
-setHumanoidState(b,c:nextValue(),false)
+run=function(e,f)
+d(e,f:nextValue(),false)
 end
 },
 {
 action="lay|laydown",
 description="Lays your character down",
-run=function(b)
-local c=b.playerService:getHumanoid()
-local d=b.playerService:getRootPart()
-if not(c and d)then return end
+run=function(e)
+local f=e.playerService:getHumanoid()
+local g=e.playerService:getRootPart()
+if not(f and g)then return end
 
-c.Sit=true
+f.Sit=true
 task.wait(0.1)
 
-d=b.playerService:getRootPart()
-if not d then return end
-d.CFrame=d.CFrame*CFrame.Angles(math.pi*0.5,0,0)
+g=e.playerService:getRootPart()
+if not g then return end
+g.CFrame=g.CFrame*CFrame.Angles(math.pi*0.5,0,0)
 
-for e,f in c:GetPlayingAnimationTracks()do
-f:Stop()
+for h,i in f:GetPlayingAnimationTracks()do
+i:Stop()
 end
 end
 },
 {
 action="jump",
 description="Makes your character jump once",
-run=function(b)
-local c=b.playerService:getHumanoid()
-if c then
-c:ChangeState(Enum.HumanoidStateType.Jumping)
+run=function(e)
+local f=e.playerService:getHumanoid()
+if f then
+f:ChangeState(Enum.HumanoidStateType.Jumping)
 end
 end
 },
 {
 action="infjump|infinitejump",
 description="Lets you jump again while in the air",
-run=function(b)
-startJumpLoop(b,"infjump",true)
+run=function(e)
+b(e,"infjump",true)
 end
 },
 {
 action="uninfjump|uninfinitejump|noinfjump|noinfinitejump",
 description="Disables infinite jump",
-run=function(b)
-stopJumpLoop(b,"infjump")
+run=function(e)
+c(e,"infjump")
 end
 },
 {
 action="flyjump",
 description="Makes you jump every time a jump is requested",
-run=function(b)
-startJumpLoop(b,"flyjump",false)
+run=function(e)
+b(e,"flyjump",false)
 end
 },
 {
 action="unflyjump|noflyjump",
 description="Disables flyjump",
-run=function(b)
-stopJumpLoop(b,"flyjump")
+run=function(e)
+c(e,"flyjump")
 end
 },
 {
 action="nilchar",
 description="Removes your character from the workspace (client side)",
-run=function(b)
-local c=b.localPlayer.Character
-if c then
-c.Parent=nil
+run=function(e)
+local f=e.localPlayer.Character
+if f then
+f.Parent=nil
 end
 end
 },
 {
 action="unnilchar|nonilchar",
 description="Puts your character back into the workspace",
-run=function(b)
-local c=b.localPlayer.Character
-if c then
-c.Parent=workspace
+run=function(e)
+local f=e.localPlayer.Character
+if f then
+f.Parent=workspace
 end
 end
 }
-}end a.aC=function()local b=a.cache.aC if not b then b={c=__modImpl()}a.cache.aC=b end return b.c end end do local function __modImpl()
+}end a.aC=function()local c=a.cache.aC if not c then c={c=b()}a.cache.aC=c end return c.c end end do local b=function()local b=function(
 
 
-local function destroyWhere(b,c)
+b, c)
 if not b then return end
 
 for d,e in b:GetDescendants()do
 if c(e)then
 e:Destroy()
 end
-end
-end
+end end local c=function(
 
-local function getCharacter(b)
-return b.localPlayer.Character
-end
 
-local function getAccessories(b)
-local c=b.playerService:getHumanoid()
-return c and c:GetAccessories()or{}
-end
+c)
+return c.localPlayer.Character end local d=function(
 
-local function isSpecialMesh(b)
-return b:IsA"SpecialMesh"
-end
+
+d)
+local e=d.playerService:getHumanoid()
+return e and e:GetAccessories()or{}end local e=function(
+
+
+e)
+return e:IsA"SpecialMesh"end
+
 
 return{
 {
 action="blockhead",
 description="Removes the mesh from your head (makes it block-like)",
-run=function(b)
-local c=getCharacter(b)
-local d=c and c:FindFirstChild"Head"
-local e=d and d:FindFirstChildOfClass"SpecialMesh"
-if e then
-e:Destroy()
+run=function(f)
+local g=c(f)
+local h=g and g:FindFirstChild"Head"
+local i=h and h:FindFirstChildOfClass"SpecialMesh"
+if i then
+i:Destroy()
 end
 end
 },
 {
 action="blockhats",
 description="Removes the meshes from your accessories",
-run=function(b)
-for c,d in getAccessories(b)do
-destroyWhere(d,isSpecialMesh)
+run=function(f)
+for g,h in d(f)do
+b(h,e)
 end
 end
 },
 {
 action="blocktool",
 description="Removes the meshes from your equipped tools",
-run=function(b)
-local c=getCharacter(b)
-if not c then return end
+run=function(f)
+local g=c(f)
+if not g then return end
 
-for d,e in c:GetChildren()do
-if e:IsA"Tool"or e:IsA"HopperBin"then
-destroyWhere(e,isSpecialMesh)
+for h,i in g:GetChildren()do
+if i:IsA"Tool"or i:IsA"HopperBin"then
+b(i,e)
 end
 end
 end
@@ -2450,120 +2450,120 @@ end
 {
 action="nobgui|unbgui|nobillboardgui|unbillboardgui|noname|rohg",
 description="Removes BillboardGuis and SurfaceGuis from your character",
-run=function(b)
-destroyWhere(getCharacter(b),function(c)
-return c:IsA"BillboardGui"or c:IsA"SurfaceGui"
+run=function(f)
+b(c(f),function(g)
+return g:IsA"BillboardGui"or g:IsA"SurfaceGui"
 end)
 end
 },
 {
 action="naked",
 description="Removes your clothing and shirt graphics",
-run=function(b)
-destroyWhere(getCharacter(b),function(c)
-return c:IsA"Clothing"or c:IsA"ShirtGraphic"
+run=function(f)
+b(c(f),function(g)
+return g:IsA"Clothing"or g:IsA"ShirtGraphic"
 end)
 end
 },
 {
 action="noface|removeface",
 description="Removes your face decal",
-run=function(b)
-destroyWhere(getCharacter(b),function(c)
-return c:IsA"Decal"and c.Name=="face"
+run=function(f)
+b(c(f),function(g)
+return g:IsA"Decal"and g.Name=="face"
 end)
 end
 },
 {
 action="deletehats|nohats|rhats",
 description="Removes the welds that hold your accessories on",
-run=function(b)
-destroyWhere(getCharacter(b),function(c)
-return c:IsA"Weld"and c:FindFirstAncestorWhichIsA"Accessory"~=nil
+run=function(f)
+b(c(f),function(g)
+return g:IsA"Weld"and g:FindFirstAncestorWhichIsA"Accessory"~=nil
 end)
 end
 },
 {
 action="drophats|drophat",
 description="Drops your accessories into the workspace",
-run=function(b)
-for c,d in getAccessories(b)do
-d.Parent=workspace
+run=function(f)
+for g,h in d(f)do
+h.Parent=workspace
 end
 end
 },
 {
 action="clearcharappearance|clearchar|clrchar",
 description="Clears your character appearance",
-run=function(b)
-b.localPlayer:ClearCharacterAppearance()
+run=function(f)
+f.localPlayer:ClearCharacterAppearance()
 end
 },
 {
 action="split",
 description="Splits your R15 character in half (removes the waist)",
-run=function(b)
-local c=getCharacter(b)
-local d=b.playerService:getHumanoid()
-if not(c and d)then return end
+run=function(f)
+local g=c(f)
+local h=f.playerService:getHumanoid()
+if not(g and h)then return end
 
-if d.RigType~=Enum.HumanoidRigType.R15 then
-b:notify("R15 Required","This command requires the R15 rig type")
+if h.RigType~=Enum.HumanoidRigType.R15 then
+f:notify("R15 Required","This command requires the R15 rig type")
 return
 end
 
-local e=c:FindFirstChild"UpperTorso"
-local f=e and e:FindFirstChild"Waist"
-if f then
-f:Destroy()
+local i=g:FindFirstChild"UpperTorso"
+local j=i and i:FindFirstChild"Waist"
+if j then
+j:Destroy()
 end
 end
 }
-}end a.aD=function()local b=a.cache.aD if not b then b={c=__modImpl()}a.cache.aD=b end return b.c end end do local function __modImpl()
+}end a.aD=function()local c=a.cache.aD if not c then c={c=b()}a.cache.aD=c end return c.c end end do local b=function()
 
-local b=a.ae()
+local b=a.ae()local c=function(
 
-local function isTool(c)
-return c:IsA"Tool"or c:IsA"HopperBin"
-end
+c)
+return c:IsA"Tool"or c:IsA"HopperBin"end local d=function(
 
-local function destroyTools(c)
-if not c then return end
 
-for d,e in c:GetDescendants()do
-if isTool(e)then
-e:Destroy()
+d)
+if not d then return end
+
+for e,f in d:GetDescendants()do
+if c(f)then
+f:Destroy()
 end
-end
-end
+end end
+
 
 return{
 {
 action="notools|rtools|clrtools|removetools|deletetools|dtools",
 description="Deletes every tool in your backpack and character",
-run=function(c)
-destroyTools(c.localPlayer:FindFirstChildOfClass"Backpack")
-destroyTools(c.localPlayer.Character)
+run=function(e)
+d(e.localPlayer:FindFirstChildOfClass"Backpack")
+d(e.localPlayer.Character)
 end
 },
 {
 action="deleteselectedtool|dst",
 description="Deletes the tools you are currently holding",
-run=function(c)
-destroyTools(c.localPlayer.Character)
+run=function(e)
+d(e.localPlayer.Character)
 end
 },
 {
 action="equiptools",
 description="Equips every tool in your backpack",
-run=function(c)
-local d=c.localPlayer:FindFirstChildOfClass"Backpack"
-local e=c.localPlayer.Character
-if not(d and e)then return end
+run=function(e)
+local f=e.localPlayer:FindFirstChildOfClass"Backpack"
+local g=e.localPlayer.Character
+if not(f and g)then return end
 
-for f,g in d:GetChildren()do
-if isTool(g)then
-g.Parent=e
+for h,i in f:GetChildren()do
+if c(i)then
+i.Parent=g
 end
 end
 end
@@ -2571,32 +2571,32 @@ end
 {
 action="unequiptools",
 description="Unequips all your tools",
-run=function(c)
-local d=c.playerService:getHumanoid()
-if d then
-d:UnequipTools()
+run=function(e)
+local f=e.playerService:getHumanoid()
+if f then
+f:UnequipTools()
 end
 end
 },
 {
 action="droptools|droptool",
 description="Drops every tool from your backpack to the workspace",
-run=function(c)
-local d=c.localPlayer:FindFirstChildOfClass"Backpack"
-local e=c.localPlayer.Character
-if not(d and e)then return end
+run=function(e)
+local f=e.localPlayer:FindFirstChildOfClass"Backpack"
+local g=e.localPlayer.Character
+if not(f and g)then return end
 
-for f,g in d:GetChildren()do
-if isTool(g)then
-g.Parent=e
+for h,i in f:GetChildren()do
+if c(i)then
+i.Parent=g
 end
 end
 
 task.wait()
 
-for f,g in e:GetChildren()do
-if isTool(g)then
-g.Parent=workspace
+for h,i in g:GetChildren()do
+if c(i)then
+i.Parent=workspace
 end
 end
 end
@@ -2605,24 +2605,24 @@ end
 action="copytools",
 description="Copies the tools from a player's backpack into yours",
 args={kind="player"},
-run=function(c,d)
-local e=c.localPlayer:FindFirstChildOfClass"Backpack"
-if not e then return end
+run=function(e,f)
+local g=e.localPlayer:FindFirstChildOfClass"Backpack"
+if not g then return end
 
-for f,g in b(d:nextValue())do
-local h=g:FindFirstChildOfClass"Backpack"
-if h then
-for i,j in h:GetChildren()do
-if isTool(j)then
-local k=j:Clone()
-k.Parent=e
+for h,i in b(f:nextValue())do
+local j=i:FindFirstChildOfClass"Backpack"
+if j then
+for k,l in j:GetChildren()do
+if c(l)then
+local m=l:Clone()
+m.Parent=g
 end
 end
 end
 end
 end
 }
-}end a.aE=function()local b=a.cache.aE if not b then b={c=__modImpl()}a.cache.aE=b end return b.c end end do local function __modImpl()
+}end a.aE=function()local c=a.cache.aE if not c then c={c=b()}a.cache.aE=c end return c.c end end do local b=function()
 
 local b={
 "27789359","30196114","248263260","45834924","33796059","28488254","52155728"
@@ -2631,49 +2631,49 @@ local b={
 local c={
 "3333432454","4555808220","4049037604","4555782893","10214311282",
 "10714010337","10713981723","10714372526","10714076981","10714392151","11444443576"
-}
+}local d=function(
 
-local function stopTracks(d)
+d)
 for e,f in d:GetPlayingAnimationTracks()do
 f:Stop()
-end
-end
+end end local e=function(
 
-local function setAnimateDisabled(d,e)
-local f=d.localPlayer.Character
-local g=f and f:FindFirstChild"Animate"
-if g then
-g.Disabled=e
-end
-end
 
-local function refreshAnimations(d)
-local e=d.playerService:getHumanoid()
-local f=d.localPlayer.Character
-local g=f and f:FindFirstChild"Animate"
+e, f)
+local g=e.localPlayer.Character
+local h=g and g:FindFirstChild"Animate"
+if h then
+h.Disabled=f
+end end local f=function(
 
-if not(e and g)then
-d:notify("Refresh Animations","Failed to get Animate/Humanoid")
+
+f)
+local g=f.playerService:getHumanoid()
+local h=f.localPlayer.Character
+local i=h and h:FindFirstChild"Animate"
+
+if not(g and i)then
+f:notify("Refresh Animations","Failed to get Animate/Humanoid")
 return
 end
 
-g.Disabled=true
-stopTracks(e)
-g.Disabled=false
-end
+i.Disabled=true
+d(g)
+i.Disabled=false end local g=function(
 
-local function stopDance(d)
-local e=d:collectGarbage"dance"
-if e and e.track then
-e.track:Stop()
-e.track:Destroy()
-end
-end
 
-local function setCustomAnimations(d,e)
-d.robloxServices.StarterPlayer.AllowCustomAnimations=e
-refreshAnimations(d)
-end
+g)
+local h=g:collectGarbage"dance"
+if h and h.track then
+h.track:Stop()
+h.track:Destroy()
+end end local h=function(
+
+
+h, i)
+h.robloxServices.StarterPlayer.AllowCustomAnimations=i
+f(h)end
+
 
 return{
 {
@@ -2683,25 +2683,25 @@ args={
 {kind="string",name="animation id"},
 {kind="number",name="speed",optional=true}
 },
-run=function(d,e)
-local f=d.playerService:getHumanoid()
-if not f then return end
+run=function(i,j)
+local k=i.playerService:getHumanoid()
+if not k then return end
 
-local g=tostring(e:nextValue())
-local h=e:nextValue()
-if not g:find"rbxassetid://"then
-g="rbxassetid://"..g
+local l=tostring(j:nextValue())
+local m=j:nextValue()
+if not l:find"rbxassetid://"then
+l="rbxassetid://"..l
 end
 
-local i=Instance.new"Animation"
-i.AnimationId=g
+local n=Instance.new"Animation"
+n.AnimationId=l
 
-local j=f:LoadAnimation(i)
-j.Priority=Enum.AnimationPriority.Movement
-j:Play()
+local o=k:LoadAnimation(n)
+o.Priority=Enum.AnimationPriority.Movement
+o:Play()
 
-if h then
-j:AdjustSpeed(h)
+if m then
+o:AdjustSpeed(m)
 end
 end
 },
@@ -2712,118 +2712,118 @@ args={
 {kind="number",name="emote id"},
 {kind="number",name="speed",optional=true}
 },
-run=function(d,e)
-local f=d.playerService:getHumanoid()
-if not f then return end
+run=function(i,j)
+local k=i.playerService:getHumanoid()
+if not k then return end
 
-local g=f:PlayEmoteAndGetAnimTrackById(e:nextValue())
-local h=e:nextValue()
-if g and h then
-g:AdjustSpeed(h)
+local l=k:PlayEmoteAndGetAnimTrackById(j:nextValue())
+local m=j:nextValue()
+if l and m then
+l:AdjustSpeed(m)
 end
 end
 },
 {
 action="noanim",
 description="Disables the default Roblox animations",
-run=function(d)
-setAnimateDisabled(d,true)
+run=function(i)
+e(i,true)
 end
 },
 {
 action="reanim",
 description="Enables the default Roblox animations again",
-run=function(d)
-setAnimateDisabled(d,false)
+run=function(i)
+e(i,false)
 end
 },
 {
 action="animspeed",
 description="Sets the speed of every playing animation (default is 1)",
 args={kind="number",name="speed",optional=true},
-run=function(d,e)
-local f=d.playerService:getHumanoid()
-if not f then return end
+run=function(i,j)
+local k=i.playerService:getHumanoid()
+if not k then return end
 
-local g=e:nextValue()or 1
-for h,i in f:GetPlayingAnimationTracks()do
-i:AdjustSpeed(g)
+local l=j:nextValue()or 1
+for m,n in k:GetPlayingAnimationTracks()do
+n:AdjustSpeed(l)
 end
 end
 },
 {
 action="stopanimations|stopanims|stopanim",
 description="Stops every playing animation",
-run=function(d)
-local e=d.playerService:getHumanoid()
-if e then
-stopTracks(e)
+run=function(i)
+local j=i.playerService:getHumanoid()
+if j then
+d(j)
 end
 end
 },
 {
 action="refreshanimations|refreshanimation|refreshanims|refreshanim",
 description="Restarts your character's default animations",
-run=function(d)
-refreshAnimations(d)
+run=function(i)
+f(i)
 end
 },
 {
 action="allowcustomanim|allowcustomanimations",
 description="Allows custom animations on your character",
-run=function(d)
-setCustomAnimations(d,true)
+run=function(i)
+h(i,true)
 end
 },
 {
 action="unallowcustomanim|unallowcustomanimations",
 description="Stops custom animations on your character",
-run=function(d)
-setCustomAnimations(d,false)
+run=function(i)
+h(i,false)
 end
 },
 {
 action="loopanimation|loopanim",
 description="Makes the animations that are currently playing loop",
-run=function(d)
-local e=d.playerService:getHumanoid()
-if not e then return end
+run=function(i)
+local j=i.playerService:getHumanoid()
+if not j then return end
 
-for f,g in e:GetPlayingAnimationTracks()do
-g.Looped=true
+for k,l in j:GetPlayingAnimationTracks()do
+l.Looped=true
 end
 end
 },
 {
 action="dance",
 description="Plays a random dance on a loop",
-run=function(d)
-local e=d.playerService:getHumanoid()
-if not e then return end
+run=function(i)
+local j=i.playerService:getHumanoid()
+if not j then return end
 
-stopDance(d)
+g(i)
 
-local f=e.RigType==Enum.HumanoidRigType.R15 and c or b
-local g=Instance.new"Animation"
-g.AnimationId="rbxassetid://"..f[math.random(1,#f)]
+local k=j.RigType==Enum.HumanoidRigType.R15 and c or b
+local l=Instance.new"Animation"
+l.AnimationId="rbxassetid://"..k[math.random(1,#k)]
 
-local h=e:LoadAnimation(g)
-h.Looped=true
-h:Play()
+local m=j:LoadAnimation(l)
+m.Looped=true
+m:Play()
 
-d:registerGarbage"dance".track=h
+i:registerGarbage"dance".track=m
 end
 },
 {
 action="undance|nodance",
 description="Stops the dance",
-run=function(d)
-stopDance(d)
+run=function(i)
+g(i)
 end
 }
-}end a.aF=function()local b=a.cache.aF if not b then b={c=__modImpl()}a.cache.aF=b end return b.c end end do local function __modImpl()
+}end a.aF=function()local c=a.cache.aF if not c then c={c=b()}a.cache.aF=c end return c.c end end do local b=function()local b=function(
 
-local function setDensity(b,c)
+b, c)
 local d=b.localPlayer.Character
 if not d then return end
 
@@ -2831,34 +2831,34 @@ for e,f in d:GetDescendants()do
 if f:IsA"BasePart"then
 f.CustomPhysicalProperties=PhysicalProperties.new(c,0.3,0.5)
 end
-end
-end
+end end
+
 
 return{
 {
 action="strengthen",
 description="Makes your body parts heavier (default is 100)",
 args={kind="number",name="density",optional=true},
-run=function(b,c)
-setDensity(b,c:nextValue()or 100)
+run=function(c,d)
+b(c,d:nextValue()or 100)
 end
 },
 {
 action="weaken",
 description="Makes your body parts lighter (default is 0)",
 args={kind="number",name="density",optional=true},
-run=function(b,c)
-setDensity(b,-(c:nextValue()or 0))
+run=function(c,d)
+b(c,-(d:nextValue()or 0))
 end
 },
 {
 action="unweaken|unstrengthen",
 description="Resets your body parts' density",
-run=function(b)
-setDensity(b,0.7)
+run=function(c)
+b(c,0.7)
 end
 }
-}end a.aG=function()local b=a.cache.aG if not b then b={c=__modImpl()}a.cache.aG=b end return b.c end end do local function __modImpl()
+}end a.aG=function()local c=a.cache.aG if not c then c={c=b()}a.cache.aG=c end return c.c end end do local b=function()
 
 
 local b=workspace.FallenPartsDestroyHeight
@@ -2895,225 +2895,225 @@ c:notify("antivoid","Disabled")
 end
 end
 }
-}end a.aH=function()local b=a.cache.aH if not b then b={c=__modImpl()}a.cache.aH=b end return b.c end end do local function __modImpl()
+}end a.aH=function()local c=a.cache.aH if not c then c={c=b()}a.cache.aH=c end return c.c end end do local b=function()local b=function(
 
-local function stopSpasm(b)
+b)
 local c=b:collectGarbage"spasm"
 if c and c.track then
 c.track:Stop()
 c.track:Destroy()
-end
-end
+end end local c=function(
 
-local function removeSpinners(b)
-for c,d in b:GetChildren()do
-if d.Name=="Spinning"then
-d:Destroy()
+
+c)
+for d,e in c:GetChildren()do
+if e.Name=="Spinning"then
+e:Destroy()
 end
-end
-end
+end end
+
 
 return{
 {
 action="spasm",
 description="Makes your R6 character spasm (uses an animation)",
-run=function(b)
-local c=b.playerService:getHumanoid()
-if not c then return end
+run=function(d)
+local e=d.playerService:getHumanoid()
+if not e then return end
 
-if c.RigType==Enum.HumanoidRigType.R15 then
-b:notify("R6 Required","This command requires the r6 rig type")
+if e.RigType==Enum.HumanoidRigType.R15 then
+d:notify("R6 Required","This command requires the r6 rig type")
 return
 end
 
-stopSpasm(b)
+b(d)
 
-local d=Instance.new"Animation"
-d.AnimationId="rbxassetid://33796059"
+local f=Instance.new"Animation"
+f.AnimationId="rbxassetid://33796059"
 
-local e=c:LoadAnimation(d)
-e:Play()
-e:AdjustSpeed(99)
+local g=e:LoadAnimation(f)
+g:Play()
+g:AdjustSpeed(99)
 
-b:registerGarbage"spasm".track=e
+d:registerGarbage"spasm".track=g
 end
 },
 {
 action="unspasm|nospasm",
 description="Stops the spasm",
-run=function(b)
-stopSpasm(b)
+run=function(d)
+b(d)
 end
 },
 {
 action="headthrow",
 description="Throws your R6 character's head (uses an animation)",
-run=function(b)
-local c=b.playerService:getHumanoid()
-if not c then return end
+run=function(d)
+local e=d.playerService:getHumanoid()
+if not e then return end
 
-if c.RigType==Enum.HumanoidRigType.R15 then
-b:notify("R6 Required","This command requires the r6 rig type")
+if e.RigType==Enum.HumanoidRigType.R15 then
+d:notify("R6 Required","This command requires the r6 rig type")
 return
 end
 
-local d=Instance.new"Animation"
-d.AnimationId="rbxassetid://35154961"
+local f=Instance.new"Animation"
+f.AnimationId="rbxassetid://35154961"
 
-local e=c:LoadAnimation(d)
-e:Play(0)
-e:AdjustSpeed(1)
+local g=e:LoadAnimation(f)
+g:Play(0)
+g:AdjustSpeed(1)
 end
 },
 {
 action="sitwalk",
 description="Uses the sit animation while walking, running and jumping",
-run=function(b)
-local c=b.localPlayer.Character
-local d=b.playerService:getHumanoid()
-local e=c and c:FindFirstChild"Animate"
-if not(d and e)then return end
+run=function(d)
+local e=d.localPlayer.Character
+local f=d.playerService:getHumanoid()
+local g=e and e:FindFirstChild"Animate"
+if not(f and g)then return end
 
-local f=e:FindFirstChild"sit"
-local g=f and f:FindFirstChildWhichIsA"Animation"
-if not g then return end
+local h=g:FindFirstChild"sit"
+local i=h and h:FindFirstChildWhichIsA"Animation"
+if not i then return end
 
-for h,i in{"idle","walk","run","jump"}do
-local j=e:FindFirstChild(i)
-local k=j and j:FindFirstChildWhichIsA"Animation"
-if k then
-k.AnimationId=g.AnimationId
+for j,k in{"idle","walk","run","jump"}do
+local l=g:FindFirstChild(k)
+local m=l and l:FindFirstChildWhichIsA"Animation"
+if m then
+m.AnimationId=i.AnimationId
 end
 end
 
-d.HipHeight=d.RigType==Enum.HumanoidRigType.R15 and 0.5 or-1.5
+f.HipHeight=f.RigType==Enum.HumanoidRigType.R15 and 0.5 or-1.5
 end
 },
 {
 action="spin",
 description="Spins your character (default speed is 20)",
 args={kind="number",name="spin speed",optional=true},
-run=function(b,c)
-local d=b.playerService:getRootPart()
-if not d then return end
+run=function(d,e)
+local f=d.playerService:getRootPart()
+if not f then return end
 
-removeSpinners(d)
+c(f)
 
-local e=Instance.new"BodyAngularVelocity"
-e.Name="Spinning"
-e.MaxTorque=Vector3.new(0,math.huge,0)
-e.AngularVelocity=Vector3.new(0,c:nextValue()or 20,0)
-e.Parent=d
+local g=Instance.new"BodyAngularVelocity"
+g.Name="Spinning"
+g.MaxTorque=Vector3.new(0,math.huge,0)
+g.AngularVelocity=Vector3.new(0,e:nextValue()or 20,0)
+g.Parent=f
 end
 },
 {
 action="unspin",
 description="Stops spinning your character",
-run=function(b)
-local c=b.playerService:getRootPart()
-if c then
-removeSpinners(c)
+run=function(d)
+local e=d.playerService:getRootPart()
+if e then
+c(e)
 end
 end
 }
-}end a.aI=function()local b=a.cache.aI if not b then b={c=__modImpl()}a.cache.aI=b end return b.c end end do local function __modImpl()
+}end a.aI=function()local c=a.cache.aI if not c then c={c=b()}a.cache.aI=c end return c.c end end do local b=function()local b=function(
 
-local function isGui(b)
-return b:IsA"BillboardGui"or b:IsA"SurfaceGui"
-end
+b)
+return b:IsA"BillboardGui"or b:IsA"SurfaceGui"end local c=function(
 
-local function destroyNamedChildren(b,c)
-for d,e in c do
-local f=b:FindFirstChild(e)
-if f then
-f:Destroy()
+
+c, d)
+for e,f in d do
+local g=c:FindFirstChild(f)
+if g then
+g:Destroy()
 end
-end
-end
+end end
+
 
 return{
 {
 action="creeper",
 description="Gives your character a creeper look (removes the face mesh, arms and accessories)",
-run=function(b)
-local c=b.localPlayer.Character
-local d=b.playerService:getHumanoid()
-if not(c and d)then return end
+run=function(d)
+local e=d.localPlayer.Character
+local f=d.playerService:getHumanoid()
+if not(e and f)then return end
 
-local e=c:FindFirstChild"Head"
-local f=e and e:FindFirstChildOfClass"SpecialMesh"
-if f then
-f:Destroy()
+local g=e:FindFirstChild"Head"
+local h=g and g:FindFirstChildOfClass"SpecialMesh"
+if h then
+h:Destroy()
 end
 
-if d.RigType==Enum.HumanoidRigType.R15 then
-destroyNamedChildren(c,{"LeftUpperArm","RightUpperArm"})
+if f.RigType==Enum.HumanoidRigType.R15 then
+c(e,{"LeftUpperArm","RightUpperArm"})
 else
-destroyNamedChildren(c,{"Left Arm","Right Arm"})
+c(e,{"Left Arm","Right Arm"})
 end
 
-d:RemoveAccessories()
+f:RemoveAccessories()
 end
 },
 {
 action="chardelete|charremove|cd",
 description="Deletes every part of your character with the given name",
 args={kind="string",name="item name"},
-run=function(b,c)
-local d=b.localPlayer.Character
-local e=c:nextValue()or""
-if not d then return end
+run=function(d,e)
+local f=d.localPlayer.Character
+local g=e:nextValue()or""
+if not f then return end
 
-for f,g in d:GetDescendants()do
-if g.Name:lower()==e:lower()then
-g:Destroy()
+for h,i in f:GetDescendants()do
+if i.Name:lower()==g:lower()then
+i:Destroy()
 end
 end
 
-b:notify("Item(s) Deleted",`Deleted {e}`)
+d:notify("Item(s) Deleted",`Deleted {g}`)
 end
 },
 {
 action="chardeleteclass|charremoveclass|chardeleteclassname|charremoveclassname|cdc",
 description="Deletes every part of your character with the given class name",
 args={kind="className",name="class name"},
-run=function(b,c)
-local d=b.localPlayer.Character
-local e=c:nextValue()or""
-if not d then return end
+run=function(d,e)
+local f=d.localPlayer.Character
+local g=e:nextValue()or""
+if not f then return end
 
-for f,g in d:GetDescendants()do
-if g.ClassName:lower()==e:lower()then
-g:Destroy()
+for h,i in f:GetDescendants()do
+if i.ClassName:lower()==g:lower()then
+i:Destroy()
 end
 end
 
-b:notify("Item(s) Deleted",`Deleted items with ClassName {e}`)
+d:notify("Item(s) Deleted",`Deleted items with ClassName {g}`)
 end
 },
 {
 action="loopnobgui|loopunbgui|loopnobillboardgui|loopunbillboardgui|loopnoname|looprohg",
 description="Removes BillboardGuis and SurfaceGuis from your character, including new ones",
-run=function(b)
-local c=b.localPlayer.Character
-if not c then return end
+run=function(d)
+local e=d.localPlayer.Character
+if not e then return end
 
-local d=b:collectGarbage"nobgui"
-if d and d.connection then
-d.connection:Disconnect()
+local f=d:collectGarbage"nobgui"
+if f and f.connection then
+f.connection:Disconnect()
 end
 
-for e,f in c:GetDescendants()do
-if isGui(f)then
-f:Destroy()
+for g,h in e:GetDescendants()do
+if b(h)then
+h:Destroy()
 end
 end
 
-local e=b:createGarbage"nobgui"
-e.connection=b:connect(c.DescendantAdded,function(f)
-if isGui(f)then
+local g=d:createGarbage"nobgui"
+g.connection=d:connect(e.DescendantAdded,function(h)
+if b(h)then
 task.wait()
-f:Destroy()
+h:Destroy()
 end
 end)
 end
@@ -3121,14 +3121,14 @@ end
 {
 action="unloopnobgui|unloopunbgui|unloopnobillboardgui|unloopunbillboardgui|unloopnoname|unlooprohg",
 description="Stops removing BillboardGuis and SurfaceGuis from your character",
-run=function(b)
-local c=b:collectGarbage"nobgui"
-if c and c.connection then
-c.connection:Disconnect()
+run=function(d)
+local e=d:collectGarbage"nobgui"
+if e and e.connection then
+e.connection:Disconnect()
 end
 end
 }
-}end a.aJ=function()local b=a.cache.aJ if not b then b={c=__modImpl()}a.cache.aJ=b end return b.c end end do local function __modImpl()
+}end a.aJ=function()local c=a.cache.aJ if not c then c={c=b()}a.cache.aJ=c end return c.c end end do local b=function()
 
 return{
 {
@@ -3167,34 +3167,34 @@ g.CFrame=f
 c.Parent=e
 end
 }
-}end a.aK=function()local b=a.cache.aK if not b then b={c=__modImpl()}a.cache.aK=b end return b.c end end do local function __modImpl()
+}end a.aK=function()local c=a.cache.aK if not c then c={c=b()}a.cache.aK=c end return c.c end end do local b=function()local b=function(
 
 
 
 
-local function getFilter(b)
+b)
 local c=b:registerGarbage"removespecifictool"
 c.connections=c.connections or{}
-return c
-end
+return c end
+
 
 return{
 {
 action="removespecifictool",
 description="Keeps removing tools with the given name from your backpack",
 args={kind="string",name="tool name"},
-run=function(b,c)
-local d=(c:nextValue()or""):lower()
-local e=getFilter(b)
-if e.connections[d]then return end
+run=function(c,d)
+local e=(d:nextValue()or""):lower()
+local f=b(c)
+if f.connections[e]then return end
 
-e.connections[d]=b:connect(b.runService.RenderStepped,function()
-local f=b.localPlayer:FindFirstChildOfClass"Backpack"
-if not f then return end
+f.connections[e]=c:connect(c.runService.RenderStepped,function()
+local g=c.localPlayer:FindFirstChildOfClass"Backpack"
+if not g then return end
 
-for g,h in f:GetChildren()do
-if h.Name:lower()==d then
-h:Destroy()
+for h,i in g:GetChildren()do
+if i.Name:lower()==e then
+i:Destroy()
 end
 end
 end)
@@ -3204,30 +3204,30 @@ end
 action="unremovespecifictool",
 description="Stops removing tools with the given name",
 args={kind="string",name="tool name"},
-run=function(b,c)
-local d=(c:nextValue()or""):lower()
-local e=b:getGarbage"removespecifictool"
-local f=e and e.connections and e.connections[d]
+run=function(c,d)
+local e=(d:nextValue()or""):lower()
+local f=c:getGarbage"removespecifictool"
+local g=f and f.connections and f.connections[e]
 
-if f then
-f:Disconnect()
-e.connections[d]=nil
+if g then
+g:Disconnect()
+f.connections[e]=nil
 end
 end
 },
 {
 action="clearremovespecifictool",
 description="Stops removing every tool that is being filtered",
-run=function(b)
-local c=b:collectGarbage"removespecifictool"
-if not(c and c.connections)then return end
+run=function(c)
+local d=c:collectGarbage"removespecifictool"
+if not(d and d.connections)then return end
 
-for d,e in c.connections do
-e:Disconnect()
+for e,f in d.connections do
+f:Disconnect()
 end
 end
 }
-}end a.aL=function()local b=a.cache.aL if not b then b={c=__modImpl()}a.cache.aL=b end return b.c end end do local function __modImpl()
+}end a.aL=function()local c=a.cache.aL if not c then c={c=b()}a.cache.aL=c end return c.c end end do local b=function()
 
 local b=a.ae()
 
@@ -3279,179 +3279,179 @@ d.running=false
 end
 end
 }
-}end a.aM=function()local b=a.cache.aM if not b then b={c=__modImpl()}a.cache.aM=b end return b.c end end do local function __modImpl()
+}end a.aM=function()local c=a.cache.aM if not c then c={c=b()}a.cache.aM=c end return c.c end end do local b=function()local b=function(
 
-local function applyWalkSpeed(b,c)
-b.WalkSpeed=c
-end
+b, c)
+b.WalkSpeed=c end local c=function(
 
-local function applyJumpPower(b,c)
-if b.UseJumpPower then
-b.JumpPower=c
+
+c, d)
+if c.UseJumpPower then
+c.JumpPower=d
 else
-b.JumpHeight=c
-end
-end
-
-local function stopLoop(b,c)
-local d=b:collectGarbage(c)
-if d and d.connections then
-for e,f in d.connections do
-f:Disconnect()
-end
-end
-end
+c.JumpHeight=d
+end end local d=function(
 
 
-local function startLoop(b,c,d,e,f)
-stopLoop(b,c)
+d, e)
+local f=d:collectGarbage(e)
+if f and f.connections then
+for g,h in f.connections do
+h:Disconnect()
+end
+end end local e=function(
 
-local g=b:createGarbage(c)
-g.connections={}
 
-local function watch(h)
-e(h,f)
-table.insert(g.connections,b:connect(h:GetPropertyChangedSignal(d),function()
-e(h,f)
-end))
+
+e, f, g, h, i)
+d(e,f)
+
+local j=e:createGarbage(f)
+j.connections={}local k=function(
+
+k)
+h(k,i)
+table.insert(j.connections,e:connect(k:GetPropertyChangedSignal(g),function()
+h(k,i)
+end))end
+
+
+local l=e.playerService:getHumanoid()
+if l then
+k(l)
 end
 
-local h=b.playerService:getHumanoid()
-if h then
-watch(h)
-end
+table.insert(j.connections,e:connect(e.localPlayer.CharacterAdded,function(m)
+k(m:WaitForChild"Humanoid")
+end))end
 
-table.insert(g.connections,b:connect(b.localPlayer.CharacterAdded,function(i)
-watch(i:WaitForChild"Humanoid")
-end))
-end
 
 return{
 {
 action="loopspeed|loopws",
 description="Keeps your walk speed set, even after respawning (default is 16)",
 args={kind="number",name="walk speed",optional=true},
-run=function(b,c)
-startLoop(b,"loopspeed","WalkSpeed",applyWalkSpeed,c:nextValue()or 16)
+run=function(f,g)
+e(f,"loopspeed","WalkSpeed",b,g:nextValue()or 16)
 end
 },
 {
 action="unloopspeed|unloopws",
 description="Stops the walk speed loop",
-run=function(b)
-stopLoop(b,"loopspeed")
+run=function(f)
+d(f,"loopspeed")
 end
 },
 {
 action="loopjumppower|loopjp|loopjpower",
 description="Keeps your jump power set, even after respawning (default is 50)",
 args={kind="number",name="jump power",optional=true},
-run=function(b,c)
-startLoop(b,"loopjumppower","JumpPower",applyJumpPower,c:nextValue()or 50)
+run=function(f,g)
+e(f,"loopjumppower","JumpPower",c,g:nextValue()or 50)
 end
 },
 {
 action="unloopjumppower|unloopjp|unloopjpower",
 description="Stops the jump power loop",
-run=function(b)
-stopLoop(b,"loopjumppower")
+run=function(f)
+d(f,"loopjumppower")
 end
 }
-}end a.aN=function()local b=a.cache.aN if not b then b={c=__modImpl()}a.cache.aN=b end return b.c end end do local function __modImpl()
+}end a.aN=function()local c=a.cache.aN if not c then c={c=b()}a.cache.aN=c end return c.c end end do local b=function()
 
-local b=PhysicalProperties.new(100,0.3,0.5)
+local b=PhysicalProperties.new(100,0.3,0.5)local c=function()
 
-local function createFlingTemplate()
+
 local c=Instance.new"BodyAngularVelocity"
 c.MaxTorque=Vector3.yAxis*math.huge
 c.P=math.huge
-return c
-end
+return c end local d=function(
 
-local function flingRun(c,d)
-if c:hasGarbage"fling"then
-c:notify"fling is already enabled\ndisable using 'unfling'"
+
+d, e)
+if d:hasGarbage"fling"then
+d:notify"fling is already enabled\ndisable using 'unfling'"
 return
 end
 
-local e=c.playerService:getHumanoid()
-if not(e and e.Health~=0)then return end
+local f=d.playerService:getHumanoid()
+if not(f and f.Health~=0)then return end
 
-local f=e.Parent
+local g=f.Parent
 
-c:notify"fling now is activated"
-c:run"noclip"
+d:notify"fling now is activated"
+d:run"noclip"
 
-local g=c:createGarbage"fling"
-g.originalStates={}
+local h=d:createGarbage"fling"
+h.originalStates={}
 
-for h,i in f:GetDescendants()do
-if not i:IsA"BasePart"then continue end
+for i,j in g:GetDescendants()do
+if not j:IsA"BasePart"then continue end
 
-g.originalStates[i]={
-CustomPhysicalProperties=i.CustomPhysicalProperties,
-CanCollide=i.CanCollide,
-Massless=i.Massless
+h.originalStates[j]={
+CustomPhysicalProperties=j.CustomPhysicalProperties,
+CanCollide=j.CanCollide,
+Massless=j.Massless
 }
 
-i.CustomPhysicalProperties=b
+j.CustomPhysicalProperties=b
 
-if i.Parent==f then
-i.CanCollide=false
-i.Massless=true
-i.Velocity=Vector3.zero
+if j.Parent==g then
+j.CanCollide=false
+j.Massless=true
+j.Velocity=Vector3.zero
 end
 end
 
-local h=createFlingTemplate()
+local i=c()
 
-g.flingVelocity=h
-g.flingConnection=e.Died:Once(function()
-c:notify"player died: disabling fling..."
-c:run"unfling"
+h.flingVelocity=i
+h.flingConnection=f.Died:Once(function()
+d:notify"player died: disabling fling..."
+d:run"unfling"
 end)
 
-h.Parent=f:WaitForChild"HumanoidRootPart"
+i.Parent=g:WaitForChild"HumanoidRootPart"
 
-while h and f and f.Parent do
-h.AngularVelocity=Vector3.yAxis*99999
+while i and g and g.Parent do
+i.AngularVelocity=Vector3.yAxis*99999
 task.wait(0.2)
-h.AngularVelocity=Vector3.one
+i.AngularVelocity=Vector3.one
 task.wait(0.1)
+end end local e=function(
+
+
+e)
+local f=e:collectGarbage"fling"
+if not f then return end
+
+if f.flingVelocity then
+f.flingVelocity:Destroy()
+end
+
+if f.flingConnection then
+f.flingConnection:Disconnect()
+end
+
+for g,h in f.originalStates do
+for i,j in h do
+g[i]=j
 end
 end
 
-local function unflingRun(c)
-local d=c:collectGarbage"fling"
-if not d then return end
+e:notify"fling disabled"end
 
-if d.flingVelocity then
-d.flingVelocity:Destroy()
-end
-
-if d.flingConnection then
-d.flingConnection:Disconnect()
-end
-
-for e,f in d.originalStates do
-for g,h in f do
-e[g]=h
-end
-end
-
-c:notify"fling disabled"
-end
 
 return{
 {
 action="fling|forcefling",
 description="Flings anyone you touch",
-run=flingRun
+run=d
 },
 {
 action="unfling",
 description="Disables the fling command",
-run=unflingRun
+run=e
 },
 {
 action="flyfling",
@@ -3486,7 +3486,7 @@ description="Disables player collisions to prevent you from being flung"
 action="unantifling",
 description="Disables antifling"
 }
-}end a.aO=function()local b=a.cache.aO if not b then b={c=__modImpl()}a.cache.aO=b end return b.c end end do local function __modImpl()
+}end a.aO=function()local c=a.cache.aO if not c then c={c=b()}a.cache.aO=c end return c.c end end do local b=function()
 
 return{
 {
@@ -3501,56 +3501,56 @@ description="Makes you visible to other players"
 action="toolinvisible|toolinvis|tinvis",
 description="Makes you invisible to other players and able to use tools"
 }
-}end a.aP=function()local b=a.cache.aP if not b then b={c=__modImpl()}a.cache.aP=b end return b.c end end do local function __modImpl()
+}end a.aP=function()local c=a.cache.aP if not c then c={c=b()}a.cache.aP=c end return c.c end end do local b=function()local b=function(
 
-local function destroyParts(b,c)
+b, c)
 for d,e in c do
 local f=b:FindFirstChild(e)
 if f then
 f:Destroy()
 end
-end
-end
+end end local c=function(
 
-local function isR15(b)
-local c=b.playerService:getHumanoid()
-return c~=nil and c.RigType==Enum.HumanoidRigType.R15
-end
+
+c)
+local d=c.playerService:getHumanoid()
+return d~=nil and d.RigType==Enum.HumanoidRigType.R15 end
+
 
 return{
 {
 action="noarms",
 description="Removes your arms",
-run=function(b)
-local c=b.localPlayer.Character
-if c then
-destroyParts(c,isR15(b)and{"RightUpperArm","LeftUpperArm"}or{"Right Arm","Left Arm"})
+run=function(d)
+local e=d.localPlayer.Character
+if e then
+b(e,c(d)and{"RightUpperArm","LeftUpperArm"}or{"Right Arm","Left Arm"})
 end
 end
 },
 {
 action="nolegs",
 description="Removes your legs",
-run=function(b)
-local c=b.localPlayer.Character
-if c then
-destroyParts(c,isR15(b)and{"RightUpperLeg","LeftUpperLeg"}or{"Right Leg","Left Leg"})
+run=function(d)
+local e=d.localPlayer.Character
+if e then
+b(e,c(d)and{"RightUpperLeg","LeftUpperLeg"}or{"Right Leg","Left Leg"})
 end
 end
 },
 {
 action="nolimbs",
 description="Removes your limbs",
-run=function(b)
-local c=b.localPlayer.Character
-if c then
-destroyParts(c,isR15(b)
+run=function(d)
+local e=d.localPlayer.Character
+if e then
+b(e,c(d)
 and{"RightUpperLeg","LeftUpperLeg","RightUpperArm","LeftUpperArm"}
 or{"Right Leg","Left Leg","Right Arm","Left Arm"})
 end
 end
 }
-}end a.aQ=function()local b=a.cache.aQ if not b then b={c=__modImpl()}a.cache.aQ=b end return b.c end end do local function __modImpl()
+}end a.aQ=function()local c=a.cache.aQ if not c then c={c=b()}a.cache.aQ=c end return c.c end end do local b=function()
 
 return{
 {
@@ -3565,7 +3565,7 @@ description="Undoes spinhats"
 action="clearhats|cleanhats",
 description="Clears hats in the workspace"
 }
-}end a.aR=function()local b=a.cache.aR if not b then b={c=__modImpl()}a.cache.aR=b end return b.c end end do local function __modImpl()
+}end a.aR=function()local c=a.cache.aR if not c then c={c=b()}a.cache.aR=c end return c.c end end do local b=function()
 
 return{
 {
@@ -3646,7 +3646,7 @@ optional=true
 }
 }
 }
-}end a.aS=function()local b=a.cache.aS if not b then b={c=__modImpl()}a.cache.aS=b end return b.c end end do local function __modImpl()
+}end a.aS=function()local c=a.cache.aS if not c then c={c=b()}a.cache.aS=c end return c.c end end do local b=function()
 
 return{
 {
@@ -3665,7 +3665,7 @@ description="Automatically jumps when you get to the edge of an object"
 action="unedgejump|unejump",
 description="Disables edgejump"
 }
-}end a.aT=function()local b=a.cache.aT if not b then b={c=__modImpl()}a.cache.aT=b end return b.c end end do local function __modImpl()
+}end a.aT=function()local c=a.cache.aT if not c then c={c=b()}a.cache.aT=c end return c.c end end do local b=function()
 
 return{
 {
@@ -3682,7 +3682,7 @@ args={
 kind="number"
 }
 }
-}end a.aU=function()local b=a.cache.aU if not b then b={c=__modImpl()}a.cache.aU=b end return b.c end end do local function __modImpl()
+}end a.aU=function()local c=a.cache.aU if not c then c={c=b()}a.cache.aU=c end return c.c end end do local b=function()
 
 return{
 {
@@ -3716,7 +3716,7 @@ clamp={0,1}
 }
 }
 }
-}end a.aV=function()local b=a.cache.aV if not b then b={c=__modImpl()}a.cache.aV=b end return b.c end end do local function __modImpl()
+}end a.aV=function()local c=a.cache.aV if not c then c={c=b()}a.cache.aV=c end return c.c end end do local b=function()
 
 return{
 {
@@ -3740,7 +3740,7 @@ name="distance"
 action="unorbit",
 description="Disables orbit"
 }
-}end a.aW=function()local b=a.cache.aW if not b then b={c=__modImpl()}a.cache.aW=b end return b.c end end do local function __modImpl()
+}end a.aW=function()local c=a.cache.aW if not c then c={c=b()}a.cache.aW=c end return c.c end end do local b=function()
 
 return{
 {
@@ -3750,14 +3750,14 @@ args={
 kind="player"
 }
 }
-}end a.aX=function()local b=a.cache.aX if not b then b={c=__modImpl()}a.cache.aX=b end return b.c end end do local function __modImpl()
+}end a.aX=function()local c=a.cache.aX if not c then c={c=b()}a.cache.aX=c end return c.c end end do local b=function()
 
 return{
 {
 action="god",
 description="Makes your character difficult to kill in most games"
 }
-}end a.aY=function()local b=a.cache.aY if not b then b={c=__modImpl()}a.cache.aY=b end return b.c end end do local function __modImpl()
+}end a.aY=function()local c=a.cache.aY if not c then c={c=b()}a.cache.aY=c end return c.c end end do local b=function()
 
 return{
 {
@@ -3775,7 +3775,7 @@ kind="player"
 action="jerk",
 description="Makes you jork it"
 }
-}end a.aZ=function()local b=a.cache.aZ if not b then b={c=__modImpl()}a.cache.aZ=b end return b.c end end do local function __modImpl()
+}end a.aZ=function()local c=a.cache.aZ if not c then c={c=b()}a.cache.aZ=c end return c.c end end do local b=function()
 
 return{
 {
@@ -3807,7 +3807,7 @@ kind="player"
 action="uncarpet",
 description="Undoes carpet"
 }
-}end a.a_=function()local b=a.cache.a_ if not b then b={c=__modImpl()}a.cache.a_=b end return b.c end end do local function __modImpl()
+}end a.a_=function()local c=a.cache.a_ if not c then c={c=b()}a.cache.a_=c end return c.c end end do local b=function()
 
 return{
 {
@@ -3825,7 +3825,7 @@ kind="player",
 optional=true
 }
 }
-}end a.a0=function()local b=a.cache.a0 if not b then b={c=__modImpl()}a.cache.a0=b end return b.c end end do local function __modImpl()
+}end a.a0=function()local c=a.cache.a0 if not c then c={c=b()}a.cache.a0=c end return c.c end end do local b=function()
 
 return{a.at()
 ,a.au()
@@ -3863,63 +3863,61 @@ return{a.at()
 ,a.a_()
 ,a.a0()
 
-}end a.a1=function()local b=a.cache.a1 if not b then b={c=__modImpl()}a.cache.a1=b end return b.c end end do local function __modImpl()
+}end a.a1=function()local c=a.cache.a1 if not c then c={c=b()}a.cache.a1=c end return c.c end end do local b=function()
 
-local b=tostring(game.PlaceId)
+local b=tostring(game.PlaceId)local c=function(
 
 
 
-local function registerWP(c,d,e)
+c, d, e)
 wpsData:setValue(`{b}.{d}`,e)
-wpsData:save()
-end
-
-local function createWaypoint(c,d)
-
-local e=c.playerService:getRootPart()
-if not e then return end
+wpsData:save()end local d=function(
 
 
-local f=d:nextValue()
+d, e)
+
+local f=d.playerService:getRootPart()
+if not f then return end
 
 
-local g=e.Position
-local h=c:stringify(g)
+local g=e:nextValue()
 
 
-local i=registerWP(c)
-i:setValue(tostring(game.PlaceId),0)
-i:save()
+local h=f.Position
+local i=d:stringify(h)
 
 
-c:notify(`seted a waypoint '{f}' at '{g}'`)
-end
-
-local function gotoWaypoint(c,d)
-local e=c.playerService:getRootPart()
-if not e then return end
-
-local f=d:nextValue()
-
-end
-
-local function hideWaypoints(c)
-local d=c:collectGarbage"showingWaypoints"
-if d==nil then return end
-
-for e,f in d do
-f:Destroy()
-end
-end
-
-local function showWaypoints(c)
-hideWaypoints(c)
-
-local d=c:createGarbage"showingWaypoints"
-
-local e=c.storage.waypointsData:getData()[tostring(game.PlaceId)]
+local j=c(d)
+j:setValue(tostring(game.PlaceId),0)
+j:save()
 
 
+d:notify(`seted a waypoint '{g}' at '{h}'`)end local e=function(
+
+
+e, f)
+local g=e.playerService:getRootPart()
+if not g then return end
+
+local h=f:nextValue()end local f=function(
+
+
+
+f)
+local g=f:collectGarbage"showingWaypoints"
+if g==nil then return end
+
+for h,i in g do
+i:Destroy()
+end end local g=function(
+
+
+g)
+f(g)
+
+local h=g:createGarbage"showingWaypoints"
+
+local i=g.storage.waypointsData:getData()[tostring(game.PlaceId)]end local h=function(
 
 
 
@@ -3950,18 +3948,20 @@ local e=c.storage.waypointsData:getData()[tostring(game.PlaceId)]
 
 
 
-end
 
 
-local function clearWaypoints(c)
-local d=c.storage.waypointsData
-local e=d:register(b,{})
-local f=#e
 
-table.clear(e)
 
-c:notify(`deleted a total of {f} waypoints`)
-end
+
+h)
+local i=h.storage.waypointsData
+local j=i:register(b,{})
+local k=#j
+
+table.clear(j)
+
+h:notify(`deleted a total of {k} waypoints`)end
+
 
 
 
@@ -4069,7 +4069,7 @@ return{
 action="setwaypoint|swp",
 description="Sets a waypoint at your position",
 args={kind="string"},
-run=createWaypoint
+run=d
 },
 {
 action="waypointpos|wpp",
@@ -4116,9 +4116,9 @@ description="Clears all waypoints"
 action="cleargamewaypoints|cgamewp",
 description="Clears all waypoints for the game you are in",
 args={kind="boolean",name="confirm"},
-run=clearWaypoints
+run=h
 }
-}end a.a2=function()local b=a.cache.a2 if not b then b={c=__modImpl()}a.cache.a2=b end return b.c end end do local function __modImpl()
+}end a.a2=function()local c=a.cache.a2 if not c then c={c=b()}a.cache.a2=c end return c.c end end do local b=function()
 return{
 action="tweenspeed|tspeed",
 description="Sets how fast all tween commands go (default is 1)",
@@ -4126,7 +4126,7 @@ args={kind="number",name="tween speed",optional=true},
 run=function(b,c)
 b.privateEnv.tweenSpeed=c:nextValue()or 1
 end
-}end a.a3=function()local b=a.cache.a3 if not b then b={c=__modImpl()}a.cache.a3=b end return b.c end end do local function __modImpl()
+}end a.a3=function()local c=a.cache.a3 if not c then c={c=b()}a.cache.a3=c end return c.c end end do local b=function()
 
 return{
 {
@@ -4164,12 +4164,12 @@ name="delay"
 action="unloopgoto",
 description="Stops teleporting you to a player"
 }
-}end a.a4=function()local b=a.cache.a4 if not b then b={c=__modImpl()}a.cache.a4=b end return b.c end end do local function __modImpl()
+}end a.a4=function()local c=a.cache.a4 if not c then c={c=b()}a.cache.a4=c end return c.c end end do local b=function()
 return{
 action="vehiclegoto|vgoto",
 description="Go to a player while in a vehicle",
 args={kind="player"}
-}end a.a5=function()local b=a.cache.a5 if not b then b={c=__modImpl()}a.cache.a5=b end return b.c end end do local function __modImpl()
+}end a.a5=function()local c=a.cache.a5 if not c then c={c=b()}a.cache.a5=c end return c.c end end do local b=function()
 return{
 action="pulsetp|ptp",
 description="Teleports you to a player for a specified amount of time",
@@ -4182,7 +4182,7 @@ kind="number",
 name="time amount"
 }
 }
-}end a.a6=function()local b=a.cache.a6 if not b then b={c=__modImpl()}a.cache.a6=b end return b.c end end do local function __modImpl()
+}end a.a6=function()local c=a.cache.a6 if not c then c={c=b()}a.cache.a6=c end return c.c end end do local b=function()
 return{
 {
 action="clientbring|cbring",
@@ -4215,7 +4215,7 @@ action="unloopbring",
 description="Undoes loopbring",
 args={kind="player"}
 }
-}end a.a7=function()local b=a.cache.a7 if not b then b={c=__modImpl()}a.cache.a7=b end return b.c end end do local function __modImpl()
+}end a.a7=function()local c=a.cache.a7 if not c then c={c=b()}a.cache.a7=c end return c.c end end do local b=function()
 return{
 {
 client=true,
@@ -4229,7 +4229,7 @@ action="thaw|unfr",
 description="Unfreezes a player",
 args={kind="player"}
 }
-}end a.a8=function()local b=a.cache.a8 if not b then b={c=__modImpl()}a.cache.a8=b end return b.c end end do local function __modImpl()
+}end a.a8=function()local c=a.cache.a8 if not c then c={c=b()}a.cache.a8=c end return c.c end end do local b=function()
 return{
 {
 action="freezeanims",
@@ -4239,30 +4239,30 @@ description="Freezes your animations / pauses your animations - Does not work on
 action="unfreezeanims",
 description="Unfreezes your animations / plays your animations"
 }
-}end a.a9=function()local b=a.cache.a9 if not b then b={c=__modImpl()}a.cache.a9=b end return b.c end end do local function __modImpl()
-local function setRootAnchored(b,c)
+}end a.a9=function()local c=a.cache.a9 if not c then c={c=b()}a.cache.a9=c end return c.c end end do local b=function()local b=function(
+b, c)
 local d=b.playerService:getRootPart()
 if d then
 d.Anchored=c
-end
-end
+end end
+
 
 return{
 {
 action="anchor",
 description="Anchors your characters RootPart",
-run=function(b)
-setRootAnchored(b,true)
+run=function(c)
+b(c,true)
 end
 },
 {
 action="unanchor",
 description="Unanchors your characters RootPart",
-run=function(b)
-setRootAnchored(b,false)
+run=function(c)
+b(c,false)
 end
 }
-}end a.ba=function()local b=a.cache.ba if not b then b={c=__modImpl()}a.cache.ba=b end return b.c end end do local function __modImpl()
+}end a.ba=function()local c=a.cache.ba if not c then c={c=b()}a.cache.ba=c end return c.c end end do local b=function()
 
 return{
 {
@@ -4308,7 +4308,7 @@ action="thru",
 description="Teleports you [num] studs ahead of where your character is facing",
 args={kind="number"}
 }
-}end a.bb=function()local b=a.cache.bb if not b then b={c=__modImpl()}a.cache.bb=b end return b.c end end do local function __modImpl()
+}end a.bb=function()local c=a.cache.bb if not c then c={c=b()}a.cache.bb=c end return c.c end end do local b=function()
 return{
 {
 action="notifyposition|notifypos",
@@ -4326,12 +4326,12 @@ kind="player",
 optional=true
 }
 }
-}end a.bc=function()local b=a.cache.bc if not b then b={c=__modImpl()}a.cache.bc=b end return b.c end end do local function __modImpl()
+}end a.bc=function()local c=a.cache.bc if not c then c={c=b()}a.cache.bc=c end return c.c end end do local b=function()
 return{
 action="walktoposition|walktopos",
 description="Makes you walk to a coordinate",
 args={kind="vector3"}
-}end a.bd=function()local b=a.cache.bd if not b then b={c=__modImpl()}a.cache.bd=b end return b.c end end do local function __modImpl()
+}end a.bd=function()local c=a.cache.bd if not c then c={c=b()}a.cache.bd=c end return c.c end end do local b=function()
 return{
 {
 action="spawnpoint|spawn",
@@ -4346,11 +4346,11 @@ optional=true
 action="nospawnpoint|nospawn",
 description="Removes your custom spawn point"
 }
-}end a.be=function()local b=a.cache.be if not b then b={c=__modImpl()}a.cache.be=b end return b.c end end do local function __modImpl()
+}end a.be=function()local c=a.cache.be if not c then c={c=b()}a.cache.be=c end return c.c end end do local b=function()
 return{
 action="flashback|diedtp",
 description="Teleports you to where you last died"
-}end a.bf=function()local b=a.cache.bf if not b then b={c=__modImpl()}a.cache.bf=b end return b.c end end do local function __modImpl()
+}end a.bf=function()local c=a.cache.bf if not c then c={c=b()}a.cache.bf=c end return c.c end end do local b=function()
 return{
 {
 action="walltp",
@@ -4360,14 +4360,14 @@ description="Teleports you above/over any wall you run into"
 action="nowalltp|unwalltp",
 description="Disables walltp"
 }
-}end a.bg=function()local b=a.cache.bg if not b then b={c=__modImpl()}a.cache.bg=b end return b.c end end do local function __modImpl()
+}end a.bg=function()local c=a.cache.bg if not c then c={c=b()}a.cache.bg=c end return c.c end end do local b=function()
 return{
 action="teleporttool|tptool",
 description="Gives you a teleport tool"
-}end a.bh=function()local b=a.cache.bh if not b then b={c=__modImpl()}a.cache.bh=b end return b.c end end do local function __modImpl()
+}end a.bh=function()local c=a.cache.bh if not c then c={c=b()}a.cache.bh=c end return c.c end end do local b=function()local b=function(
 
 
-local function travelTo(b,c,d)
+b, c, d)
 local e=b.playerService:getHumanoid()
 if e and e.SeatPart then
 e.Sit=false
@@ -4384,99 +4384,99 @@ local g=TweenInfo.new(b.privateEnv.tweenSpeed or 1,Enum.EasingStyle.Linear)
 b.robloxServices.TweenService:Create(f,g,{CFrame=c}):Play()
 else
 f.CFrame=c
-end
-end
+end end local c=function(
 
 
-local function createGotoCommand(b)
+
+c)
 return{
-action=b.action,
-description=b.description,
-args={kind=b.kind,name=b.argName},
-run=function(c,d)
-local e=(d:nextValue()or""):lower()
-
-for f,g in workspace:GetDescendants()do
-if g:IsA(b.className)and g[b.field]:lower()==e then
-travelTo(c,b.cframeOf(g),b.tween)
-end
-end
-end
-}
-end
-
-
-local function createBringCommand(b)
-return{
-action=b.action,
-description=b.description,
-args={kind=b.kind,name=b.argName},
-run=function(c,d)
-local e=(d:nextValue()or""):lower()
-local f=c.playerService:getRootPart()
-if not f then return end
+action=c.action,
+description=c.description,
+args={kind=c.kind,name=c.argName},
+run=function(d,e)
+local f=(e:nextValue()or""):lower()
 
 for g,h in workspace:GetDescendants()do
-if h:IsA(b.className)and h[b.field]:lower()==e then
-h.CFrame=f.CFrame
+if h:IsA(c.className)and h[c.field]:lower()==f then
+b(d,c.cframeOf(h),c.tween)
 end
 end
 end
-}
-end
+}end local d=function(
 
-local function partCFrame(b)
-return b.CFrame
-end
 
-local function modelCFrame(b)
-return b:GetPivot()
+
+d)
+return{
+action=d.action,
+description=d.description,
+args={kind=d.kind,name=d.argName},
+run=function(e,f)
+local g=(f:nextValue()or""):lower()
+local h=e.playerService:getRootPart()
+if not h then return end
+
+for i,j in workspace:GetDescendants()do
+if j:IsA(d.className)and j[d.field]:lower()==g then
+j.CFrame=h.CFrame
 end
+end
+end
+}end local e=function(
+
+
+e)
+return e.CFrame end local f=function(
+
+
+f)
+return f:GetPivot()end
+
 
 return{
-createGotoCommand{
+c{
 action="gotopart|topart",
 description="Teleports you to every part with the given name",
 kind="string",argName="part name",
-className="BasePart",field="Name",cframeOf=partCFrame,tween=false
+className="BasePart",field="Name",cframeOf=e,tween=false
 },
-createGotoCommand{
+c{
 action="tweengotopart|tgotopart|ttopart",
 description="Tweens you to every part with the given name",
 kind="string",argName="part name",
-className="BasePart",field="Name",cframeOf=partCFrame,tween=true
+className="BasePart",field="Name",cframeOf=e,tween=true
 },
-createGotoCommand{
+c{
 action="gotopartclass|gpc",
 description="Teleports you to every part with the given class name",
 kind="className",argName="class name",
-className="BasePart",field="ClassName",cframeOf=partCFrame,tween=false
+className="BasePart",field="ClassName",cframeOf=e,tween=false
 },
-createGotoCommand{
+c{
 action="tweengotopartclass|tgpc",
 description="Tweens you to every part with the given class name",
 kind="className",argName="class name",
-className="BasePart",field="ClassName",cframeOf=partCFrame,tween=true
+className="BasePart",field="ClassName",cframeOf=e,tween=true
 },
-createGotoCommand{
+c{
 action="gotomodel|tomodel",
 description="Teleports you to every model with the given name",
 kind="string",argName="model name",
-className="Model",field="Name",cframeOf=modelCFrame,tween=false
+className="Model",field="Name",cframeOf=f,tween=false
 },
-createGotoCommand{
+c{
 action="tweengotomodel|tgotomodel|ttomodel",
 description="Tweens you to every model with the given name",
 kind="string",argName="model name",
-className="Model",field="Name",cframeOf=modelCFrame,tween=true
+className="Model",field="Name",cframeOf=f,tween=true
 },
-createBringCommand{
+d{
 action="bringpart",
 description="Brings every part with the given name to you",
 kind="string",argName="part name",
 className="BasePart",field="Name"
 },
-createBringCommand{
+d{
 action="bringpartclass|bpc",
 description="Brings every part with the given class name to you",
 kind="className",argName="class name",
@@ -4486,11 +4486,11 @@ className="BasePart",field="ClassName"
 action="gotopartdelay",
 description="Sets the delay before the goto part commands teleport (default is 0.1)",
 args={kind="number",name="delay",optional=true},
-run=function(b,c)
-b.privateEnv.gotopartDelay=c:nextValue()or 0.1
+run=function(g,h)
+g.privateEnv.gotopartDelay=h:nextValue()or 0.1
 end
 }
-}end a.bi=function()local b=a.cache.bi if not b then b={c=__modImpl()}a.cache.bi=b end return b.c end end do local function __modImpl()
+}end a.bi=function()local c=a.cache.bi if not c then c={c=b()}a.cache.bi=c end return c.c end end do local b=function()
 
 return{
 action="mouseteleport|mousetp",
@@ -4504,7 +4504,7 @@ local e=d.Hit.Position+Vector3.new(0,3,0)
 c.CFrame=CFrame.new(e)*(c.CFrame-c.CFrame.Position)
 c.AssemblyLinearVelocity=Vector3.zero
 end
-}end a.bj=function()local b=a.cache.bj if not b then b={c=__modImpl()}a.cache.bj=b end return b.c end end do local function __modImpl()
+}end a.bj=function()local c=a.cache.bj if not c then c={c=b()}a.cache.bj=c end return c.c end end do local b=function()
 
 return{
 {
@@ -4530,7 +4530,7 @@ description="Undoes tpwalk / teleportwalk"
 action="wallwalk|walkonwalls",
 description="Walk on walls"
 }
-}end a.bk=function()local b=a.cache.bk if not b then b={c=__modImpl()}a.cache.bk=b end return b.c end end do local function __modImpl()
+}end a.bk=function()local c=a.cache.bk if not c then c={c=b()}a.cache.bk=c end return c.c end end do local b=function()
 
 return{
 {
@@ -4547,7 +4547,7 @@ args={
 kind="waypoint"
 }
 }
-}end a.bl=function()local b=a.cache.bl if not b then b={c=__modImpl()}a.cache.bl=b end return b.c end end do local function __modImpl()
+}end a.bl=function()local c=a.cache.bl if not c then c={c=b()}a.cache.bl=c end return c.c end end do local b=function()
 
 return{a.a3()
 ,a.a4()
@@ -4569,7 +4569,7 @@ return{a.a3()
 ,a.bk()
 ,a.bl()
 
-}end a.bm=function()local b=a.cache.bm if not b then b={c=__modImpl()}a.cache.bm=b end return b.c end end do local function __modImpl()
+}end a.bm=function()local c=a.cache.bm if not c then c={c=b()}a.cache.bm=c end return c.c end end do local b=function()
 
 return{
 {
@@ -4593,7 +4593,7 @@ name="url",
 optional=true
 }
 }
-}end a.bn=function()local b=a.cache.bn if not b then b={c=__modImpl()}a.cache.bn=b end return b.c end end do local function __modImpl()
+}end a.bn=function()local c=a.cache.bn if not c then c={c=b()}a.cache.bn=c end return c.c end end do local b=function()
 return{
 {
 action="chat|say",
@@ -4651,7 +4651,7 @@ action="spamspeed|spamdelay",
 description="How quickly you spam (default is 1)",
 args={kind="number"}
 }
-}end a.bo=function()local b=a.cache.bo if not b then b={c=__modImpl()}a.cache.bo=b end return b.c end end do local function __modImpl()
+}end a.bo=function()local c=a.cache.bo if not c then c={c=b()}a.cache.bo=c end return c.c end end do local b=function()
 return{
 {
 action="bubblechat",
@@ -4661,7 +4661,7 @@ description="Enables bubble chat for your client (CLIENT)"
 action="unbubblechat|nobubblechat",
 description="Disables the bubblechat command"
 }
-}end a.bp=function()local b=a.cache.bp if not b then b={c=__modImpl()}a.cache.bp=b end return b.c end end do local function __modImpl()
+}end a.bp=function()local c=a.cache.bp if not c then c={c=b()}a.cache.bp=c end return c.c end end do local b=function()
 return{
 {
 action="chatwindow",
@@ -4675,7 +4675,7 @@ description="Disables the chat window for your client"
 action="darkchat",
 description="Makes the chat window dark for your client"
 }
-}end a.bq=function()local b=a.cache.bq if not b then b={c=__modImpl()}a.cache.bq=b end return b.c end end do local function __modImpl()
+}end a.bq=function()local c=a.cache.bq if not c then c={c=b()}a.cache.bq=c end return c.c end end do local b=function()
 return{
 {
 action="listento",
@@ -4708,7 +4708,7 @@ args={kind="player"}
 action="phonebook|call",
 description="Prompts the Roblox phonebook UI to let you call your friends. Needs voice chat enabled"
 }
-}end a.br=function()local b=a.cache.br if not b then b={c=__modImpl()}a.cache.br=b end return b.c end end do local function __modImpl()
+}end a.br=function()local c=a.cache.br if not c then c={c=b()}a.cache.br=c end return c.c end end do local b=function()
 return{
 {
 action="loopoof",
@@ -4749,7 +4749,7 @@ c.running=false
 end
 end
 }
-}end a.bs=function()local b=a.cache.bs if not b then b={c=__modImpl()}a.cache.bs=b end return b.c end end do local function __modImpl()
+}end a.bs=function()local c=a.cache.bs if not c then c={c=b()}a.cache.bs=c end return c.c end end do local b=function()
 
 local b=a.ae()
 
@@ -4796,7 +4796,7 @@ end)
 end
 end
 }
-}end a.bt=function()local b=a.cache.bt if not b then b={c=__modImpl()}a.cache.bt=b end return b.c end end do local function __modImpl()
+}end a.bt=function()local c=a.cache.bt if not c then c={c=b()}a.cache.bt=c end return c.c end end do local b=function()
 
 return{a.bn()
 ,a.bo()
@@ -4806,7 +4806,7 @@ return{a.bn()
 ,a.bs()
 ,a.bt()
 
-}end a.bu=function()local b=a.cache.bu if not b then b={c=__modImpl()}a.cache.bu=b end return b.c end end do local function __modImpl()
+}end a.bu=function()local c=a.cache.bu if not c then c={c=b()}a.cache.bu=c end return c.c end end do local b=function()
 
 return{
 {
@@ -4850,7 +4850,7 @@ description="ESP but without text in the way"
 action="nochams|unchams",
 description="Removes chams"
 }
-}end a.bv=function()local b=a.cache.bv if not b then b={c=__modImpl()}a.cache.bv=b end return b.c end end do local function __modImpl()
+}end a.bv=function()local c=a.cache.bv if not c then c={c=b()}a.cache.bv=c end return c.c end end do local b=function()
 return{
 {
 action="locate",
@@ -4862,7 +4862,7 @@ action="unlocate|nolocate",
 description="Removes locate",
 args={kind="player"}
 },
-}end a.bw=function()local b=a.cache.bw if not b then b={c=__modImpl()}a.cache.bw=b end return b.c end end do local function __modImpl()
+}end a.bw=function()local c=a.cache.bw if not c then c={c=b()}a.cache.bw=c end return c.c end end do local b=function()
 return{
 {
 action="xray",
@@ -4884,7 +4884,7 @@ description="Unloops xray"
 action="togglexray",
 description="Toggles xray"
 }
-}end a.bx=function()local b=a.cache.bx if not b then b={c=__modImpl()}a.cache.bx=b end return b.c end end do local function __modImpl()
+}end a.bx=function()local c=a.cache.bx if not c then c={c=b()}a.cache.bx=c end return c.c end end do local b=function()
 return{
 {
 action="hovername",
@@ -4894,14 +4894,14 @@ description="Shows a players username when your mouse is hovered over them"
 action="unhovername|nohovername",
 description="Turns off hovername"
 }
-}end a.by=function()local b=a.cache.by if not b then b={c=__modImpl()}a.cache.by=b end return b.c end end do local function __modImpl()
+}end a.by=function()local c=a.cache.by if not c then c={c=b()}a.cache.by=c end return c.c end end do local b=function()
 
 return{a.bv()
 ,a.bw()
 ,a.bx()
 ,a.by()
 
-}end a.bz=function()local b=a.cache.bz if not b then b={c=__modImpl()}a.cache.bz=b end return b.c end end do local function __modImpl()
+}end a.bz=function()local c=a.cache.bz if not c then c={c=b()}a.cache.bz=c end return c.c end end do local b=function()
 
 return{
 {
@@ -4921,7 +4921,7 @@ name="part name"
 action="unspectate|unview",
 description="Stops viewing player, or part."
 }
-}end a.bA=function()local b=a.cache.bA if not b then b={c=__modImpl()}a.cache.bA=b end return b.c end end do local function __modImpl()
+}end a.bA=function()local c=a.cache.bA if not c then c={c=b()}a.cache.bA=c end return c.c end end do local b=function()
 return{
 {
 action="freecam|fc",
@@ -4966,7 +4966,7 @@ description="Noitifies you your freecam coordinates"
 action="copyfreecamposition|copyfcpos",
 description="Copies your freecam coordinates to your clipboard"
 },
-}end a.bB=function()local b=a.cache.bB if not b then b={c=__modImpl()}a.cache.bB=b end return b.c end end do local function __modImpl()
+}end a.bB=function()local c=a.cache.bB if not c then c={c=b()}a.cache.bB=c end return c.c end end do local b=function()
 return{
 {
 action="gotocamera|gotocam",
@@ -4976,7 +4976,7 @@ description="Teleports you to the location of your camera"
 action="tweengotocam|tgotocam",
 description="Tweens you to the location of your camera"
 }
-}end a.bC=function()local b=a.cache.bC if not b then b={c=__modImpl()}a.cache.bC=b end return b.c end end do local function __modImpl()
+}end a.bC=function()local c=a.cache.bC if not c then c={c=b()}a.cache.bC=c end return c.c end end do local b=function()
 return{
 {
 action="firstp",
@@ -4992,12 +4992,12 @@ run=function(b)
 b.localPlayer.CameraMode=Enum.CameraMode.Classic
 end
 }
-}end a.bD=function()local b=a.cache.bD if not b then b={c=__modImpl()}a.cache.bD=b end return b.c end end do local function __modImpl()
+}end a.bD=function()local c=a.cache.bD if not c then c={c=b()}a.cache.bD=c end return c.c end end do local b=function()
 
 return{
 action="noclipcam|nccam",
 description="Allows camera to go through objects like walls"
-}end a.bE=function()local b=a.cache.bE if not b then b={c=__modImpl()}a.cache.bE=b end return b.c end end do local function __modImpl()
+}end a.bE=function()local c=a.cache.bE if not c then c={c=b()}a.cache.bE=c end return c.c end end do local b=function()
 return{
 {
 action="maxzoom",
@@ -5036,7 +5036,7 @@ e.CameraMaxZoomDistance=f
 e.CameraMinZoomDistance=g
 end
 }
-}end a.bF=function()local b=a.cache.bF if not b then b={c=__modImpl()}a.cache.bF=b end return b.c end end do local function __modImpl()
+}end a.bF=function()local c=a.cache.bF if not c then c={c=b()}a.cache.bF=c end return c.c end end do local b=function()
 
 return{
 action="fov",
@@ -5046,7 +5046,7 @@ run=function(b,c)
 local d=math.abs(c:nextValue())
 workspace.CurrentCamera.FieldOfView=d
 end
-}end a.bG=function()local b=a.cache.bG if not b then b={c=__modImpl()}a.cache.bG=b end return b.c end end do local function __modImpl()
+}end a.bG=function()local c=a.cache.bG if not c then c={c=b()}a.cache.bG=c end return c.c end end do local b=function()
 return{
 action="fixcam|restorecam",
 description="Fixes camera",
@@ -5070,16 +5070,16 @@ d.CameraMode=Enum.CameraMode.Classic
 b:notify"camera has been reseted successfully"
 end
 end
-}end a.bH=function()local b=a.cache.bH if not b then b={c=__modImpl()}a.cache.bH=b end return b.c end end do local function __modImpl()
+}end a.bH=function()local c=a.cache.bH if not c then c={c=b()}a.cache.bH=c end return c.c end end do local b=function()
 return{
 action="enableshiftlock|enablesl",
 description="Enables the shift lock option"
-}end a.bI=function()local b=a.cache.bI if not b then b={c=__modImpl()}a.cache.bI=b end return b.c end end do local function __modImpl()
+}end a.bI=function()local c=a.cache.bI if not c then c={c=b()}a.cache.bI=c end return c.c end end do local b=function()
 return{
 action="lookat",
 description="Moves your camera view to a player",
 args={kind="player"}
-}end a.bJ=function()local b=a.cache.bJ if not b then b={c=__modImpl()}a.cache.bJ=b end return b.c end end do local function __modImpl()
+}end a.bJ=function()local c=a.cache.bJ if not c then c={c=b()}a.cache.bJ=c end return c.c end end do local b=function()
 return{
 {
 action="stareat|stare",
@@ -5095,7 +5095,7 @@ args={
 kind="player"
 }
 }
-}end a.bK=function()local b=a.cache.bK if not b then b={c=__modImpl()}a.cache.bK=b end return b.c end end do local function __modImpl()
+}end a.bK=function()local c=a.cache.bK if not c then c={c=b()}a.cache.bK=c end return c.c end end do local b=function()
 
 return{a.bA()
 ,a.bB()
@@ -5109,7 +5109,7 @@ return{a.bA()
 ,a.bJ()
 ,a.bK()
 
-}end a.bL=function()local b=a.cache.bL if not b then b={c=__modImpl()}a.cache.bL=b end return b.c end end do local function __modImpl()
+}end a.bL=function()local c=a.cache.bL if not c then c={c=b()}a.cache.bL=c end return c.c end end do local b=function()
 
 return{
 {
@@ -5122,11 +5122,11 @@ client=true,
 action="f3x",
 description="Gives you F3X building tools (DOES NOT REPLICATE)"
 },
-}end a.bM=function()local b=a.cache.bM if not b then b={c=__modImpl()}a.cache.bM=b end return b.c end end do local function __modImpl()
+}end a.bM=function()local c=a.cache.bM if not c then c={c=b()}a.cache.bM=c end return c.c end end do local b=function()
 return{
 action="partname|partpath",
 description="Allows you to click a part to see its path & name"
-}end a.bN=function()local b=a.cache.bN if not b then b={c=__modImpl()}a.cache.bN=b end return b.c end end do local function __modImpl()
+}end a.bN=function()local c=a.cache.bN if not c then c={c=b()}a.cache.bN=c end return c.c end end do local b=function()
 return{
 {
 client=true,
@@ -5157,7 +5157,7 @@ name="confirm"
 }
 }
 }
-}end a.bO=function()local b=a.cache.bO if not b then b={c=__modImpl()}a.cache.bO=b end return b.c end end do local function __modImpl()
+}end a.bO=function()local c=a.cache.bO if not c then c={c=b()}a.cache.bO=c end return c.c end end do local b=function()
 return{
 {
 action="lockworkspace|lockws",
@@ -5167,7 +5167,7 @@ description="Locks the whole workspace"
 action="unlockworkspace|unlockws",
 description="Unlocks the whole workspace"
 }
-}end a.bP=function()local b=a.cache.bP if not b then b={c=__modImpl()}a.cache.bP=b end return b.c end end do local function __modImpl()
+}end a.bP=function()local c=a.cache.bP if not c then c={c=b()}a.cache.bP=c end return c.c end end do local b=function()
 return{
 {
 client=true,
@@ -5179,8 +5179,8 @@ client=true,
 action="uninvisibleparts|uninvisparts",
 description="Makes parts affected by invisparts return to normal"
 }
-}end a.bQ=function()local b=a.cache.bQ if not b then b={c=__modImpl()}a.cache.bQ=b end return b.c end end do local function __modImpl()
-local function createLimitCommand(b,c,d)
+}end a.bQ=function()local c=a.cache.bQ if not c then c={c=b()}a.cache.bQ=c end return c.c end end do local b=function()local b=function(
+b, c, d)
 return{
 action=b,
 description=c,
@@ -5191,16 +5191,16 @@ f.MaxActivationDistance=math.huge
 end
 end
 end
-}
-end
+}end
+
 
 return{
-createLimitCommand(
+b(
 "noclickdetectorlimits|nocdlimits|removecdlimits",
 "Removes the activation distance limit of ClickDetectors",
 "ClickDetector"
 ),
-createLimitCommand(
+b(
 "noproximitypromptlimits|nopplimits|removepplimits",
 "Removes the activation distance limit of ProximityPrompts",
 "ProximityPrompt"
@@ -5208,36 +5208,36 @@ createLimitCommand(
 {
 action="instantproximityprompts|instantpp",
 description="Fires proximity prompts as soon as they are held (needs fireproximityprompt)",
-run=function(b)
-local c=b.executorEnv.fireproximityprompt
+run=function(c)
+local d=c.executorEnv.fireproximityprompt
 
-if not c then
-b:notify("Incompatible Exploit","Your exploit does not support this command (missing fireproximityprompt)")
+if not d then
+c:notify("Incompatible Exploit","Your exploit does not support this command (missing fireproximityprompt)")
 return
 end
 
-if b:hasGarbage"instantpp"then
-b:notify"instant proximity prompts is already enabled"
+if c:hasGarbage"instantpp"then
+c:notify"instant proximity prompts is already enabled"
 return
 end
 
-local d=b:createGarbage"instantpp"
-d.connection=b:connect(b.proximityPromptService.PromptButtonHoldBegan,function(e)
-c(e)
+local e=c:createGarbage"instantpp"
+e.connection=c:connect(c.proximityPromptService.PromptButtonHoldBegan,function(f)
+d(f)
 end)
 end
 },
 {
 action="uninstantproximityprompts|uninstantpp",
 description="Disables instant proximity prompts",
-run=function(b)
-local c=b:collectGarbage"instantpp"
-if c and c.connection then
-c.connection:Disconnect()
+run=function(c)
+local d=c:collectGarbage"instantpp"
+if d and d.connection then
+d.connection:Disconnect()
 end
 end
 }
-}end a.bR=function()local b=a.cache.bR if not b then b={c=__modImpl()}a.cache.bR=b end return b.c end end do local function __modImpl()
+}end a.bR=function()local c=a.cache.bR if not c then c={c=b()}a.cache.bR=c end return c.c end end do local b=function()
 
 local b=workspace.Gravity
 local c=-500
@@ -5259,7 +5259,7 @@ run=function(d,e)
 workspace.FallenPartsDestroyHeight=e:nextValue()or c
 end
 }
-}end a.bS=function()local b=a.cache.bS if not b then b={c=__modImpl()}a.cache.bS=b end return b.c end end do local function __modImpl()
+}end a.bS=function()local c=a.cache.bS if not c then c={c=b()}a.cache.bS=c end return c.c end end do local b=function()
 
 return{
 {
@@ -5283,61 +5283,61 @@ b:Clear()
 end
 end
 }
-}end a.bT=function()local b=a.cache.bT if not b then b={c=__modImpl()}a.cache.bT=b end return b.c end end do local function __modImpl()
+}end a.bT=function()local c=a.cache.bT if not c then c={c=b()}a.cache.bT=c end return c.c end end do local b=function()local b=function(
 
-local function matchName(b,c)
+b, c)
 return c==""
 or b.Name:lower()==c
-or(b.Parent~=nil and b.Parent.Name:lower()==c)
-end
+or(b.Parent~=nil and b.Parent.Name:lower()==c)end local c=function(
 
-local function getPromptPosition(b)
-local c=b.Parent
-if c==nil then
+
+c)
+local d=c.Parent
+if d==nil then
 return nil
-elseif c:IsA"Attachment"then
-return c.WorldPosition
-elseif c:IsA"BasePart"then
-return c.Position
-elseif c:IsA"Model"then
-return c:GetPivot().Position
+elseif d:IsA"Attachment"then
+return d.WorldPosition
+elseif d:IsA"BasePart"then
+return d.Position
+elseif d:IsA"Model"then
+return d:GetPivot().Position
 end
+return nil end local d=function(
+
+
+d)
+local e=d.playerService:getRootPart()
+if not e then
 return nil
 end
 
-local function getClosestPrompt(b)
-local c=b.playerService:getRootPart()
-if not c then
-return nil
-end
+local f
+local g=math.huge
 
-local d
-local e=math.huge
+for h,i in workspace:GetDescendants()do
+if i:IsA"ProximityPrompt"and i.Enabled then
+local j=c(i)
+if not j then continue end
 
-for f,g in workspace:GetDescendants()do
-if g:IsA"ProximityPrompt"and g.Enabled then
-local h=getPromptPosition(g)
-if not h then continue end
+local k=(j-e.Position).Magnitude
 
-local i=(h-c.Position).Magnitude
-
-if i<e then
-d,e=g,i
+if k<g then
+f,g=i,k
 end
 end
 end
 
-return d
-end
+return f end local e=function(
 
-local function teleportToPrompt(b,c)
-local d=b.playerService:getRootPart()
-local e=getPromptPosition(c)
 
-if d and e then
-d.CFrame=CFrame.new(e+Vector3.new(0,3,0))
-end
-end
+e, f)
+local g=e.playerService:getRootPart()
+local h=c(f)
+
+if g and h then
+g.CFrame=CFrame.new(h+Vector3.new(0,3,0))
+end end
+
 
 return{
 {
@@ -5347,15 +5347,15 @@ args={
 kind="object",
 optional=true
 },
-run=function(b,c)
-local d=b:expectExploit"fireclickdetector"
-if not d then return end
+run=function(f,g)
+local h=f:expectExploit"fireclickdetector"
+if not h then return end
 
-local e=(c:nextValue()or""):lower()
+local i=(g:nextValue()or""):lower()
 
-for f,g in workspace:GetDescendants()do
-if g:IsA"ClickDetector"and matchName(g,e)then
-d(g)
+for j,k in workspace:GetDescendants()do
+if k:IsA"ClickDetector"and b(k,i)then
+h(k)
 end
 end
 end
@@ -5367,15 +5367,15 @@ args={
 kind="object",
 optional=true
 },
-run=function(b,c)
-local d=b:expectExploit"fireproximityprompt"
-if not d then return end
+run=function(f,g)
+local h=f:expectExploit"fireproximityprompt"
+if not h then return end
 
-local e=(c:nextValue()or""):lower()
+local i=(g:nextValue()or""):lower()
 
-for f,g in workspace:GetDescendants()do
-if g:IsA"ProximityPrompt"and matchName(g,e)then
-d(g)
+for j,k in workspace:GetDescendants()do
+if k:IsA"ProximityPrompt"and b(k,i)then
+h(k)
 end
 end
 end
@@ -5388,23 +5388,23 @@ optional=true,
 kind="boolean",
 name="teleport to prompt"
 },
-run=function(b,c)
-local d=b:expectExploit"fireproximityprompt"
-if not d then return end
+run=function(f,g)
+local h=f:expectExploit"fireproximityprompt"
+if not h then return end
 
-local e=getClosestPrompt(b)
-if not e then
-b:notify"Can't find any ProximityPrompt on workspace"
+local i=d(f)
+if not i then
+f:notify"Can't find any ProximityPrompt on workspace"
 return
 end
 
-if c:nextValue()then
-teleportToPrompt(b,e)
+if g:nextValue()then
+e(f,i)
 task.wait(0.25)
 end
 
-d(e)
-b:notify(`fired prompt: {e:GetFullName()}`)
+h(i)
+f:notify(`fired prompt: {i:GetFullName()}`)
 end
 },
 {
@@ -5415,7 +5415,7 @@ kind="object",
 optional=true
 }
 }
-}end a.bU=function()local b=a.cache.bU if not b then b={c=__modImpl()}a.cache.bU=b end return b.c end end do local function __modImpl()
+}end a.bU=function()local c=a.cache.bU if not c then c={c=b()}a.cache.bU=c end return c.c end end do local b=function()
 return{
 {
 action="tpunanchored|tpua",
@@ -5432,7 +5432,7 @@ description="Freezes unanchored parts"
 action="thawunanchored|thawua|unfreezeua",
 description="Thaws unanchored parts"
 }
-}end a.bV=function()local b=a.cache.bV if not b then b={c=__modImpl()}a.cache.bV=b end return b.c end end do local function __modImpl()
+}end a.bV=function()local c=a.cache.bV if not c then c={c=b()}a.cache.bV=c end return c.c end end do local b=function()
 
 return{a.bM()
 ,a.bN()
@@ -5445,7 +5445,7 @@ return{a.bM()
 ,a.bU()
 ,a.bV()
 
-}end a.bW=function()local b=a.cache.bW if not b then b={c=__modImpl()}a.cache.bW=b end return b.c end end do local function __modImpl()
+}end a.bW=function()local c=a.cache.bW if not c then c={c=b()}a.cache.bW=c end return c.c end end do local b=function()
 
 return{
 {
@@ -5460,7 +5460,7 @@ description="Makes the map brighter / more visible but looped (CLIENT)"
 action="unloopfullbright|unloopfb",
 description="Unloops fullbright"
 }
-}end a.bX=function()local b=a.cache.bX if not b then b={c=__modImpl()}a.cache.bX=b end return b.c end end do local function __modImpl()
+}end a.bX=function()local c=a.cache.bX if not c then c={c=b()}a.cache.bX=c end return c.c end end do local b=function()
 return{
 client=true,
 action="ambient",
@@ -5473,7 +5473,7 @@ local e=b.robloxServices.Lighting
 e.Ambient=d
 e.OutdoorAmbient=d
 end
-}end a.bY=function()local b=a.cache.bY if not b then b={c=__modImpl()}a.cache.bY=b end return b.c end end do local function __modImpl()
+}end a.bY=function()local c=a.cache.bY if not c then c={c=b()}a.cache.bY=c end return c.c end end do local b=function()
 
 return{
 {
@@ -5492,7 +5492,7 @@ run=function(b)
 b.robloxServices.Lighting.ClockTime=0
 end
 }
-}end a.bZ=function()local b=a.cache.bZ if not b then b={c=__modImpl()}a.cache.bZ=b end return b.c end end do local function __modImpl()
+}end a.bZ=function()local c=a.cache.bZ if not c then c={c=b()}a.cache.bZ=c end return c.c end end do local b=function()
 
 return{
 client=true,
@@ -5508,7 +5508,7 @@ e:Destroy()
 end
 end
 end
-}end a.b_=function()local b=a.cache.b_ if not b then b={c=__modImpl()}a.cache.b_=b end return b.c end end do local function __modImpl()
+}end a.b_=function()local c=a.cache.b_ if not c then c={c=b()}a.cache.b_=c end return c.c end end do local b=function()
 
 return{
 client=true,
@@ -5518,7 +5518,7 @@ args={kind="number"},
 run=function(b,c)
 b.robloxServices.Lighting.Brightness=c:nextValue()
 end
-}end a.b0=function()local b=a.cache.b0 if not b then b={c=__modImpl()}a.cache.b0=b end return b.c end end do local function __modImpl()
+}end a.b0=function()local c=a.cache.b0 if not c then c={c=b()}a.cache.b0=c end return c.c end end do local b=function()
 
 return{
 {
@@ -5537,7 +5537,7 @@ run=function(b)
 b.robloxServices.Lighting.GlobalShadows=false
 end
 }
-}end a.b1=function()local b=a.cache.b1 if not b then b={c=__modImpl()}a.cache.b1=b end return b.c end end do local function __modImpl()
+}end a.b1=function()local c=a.cache.b1 if not c then c={c=b()}a.cache.b1=c end return c.c end end do local b=function()
 
 return{
 {
@@ -5562,7 +5562,7 @@ optional=true
 action="nolight|unlight",
 description="Removes dynamic light from your player"
 }
-}end a.b2=function()local b=a.cache.b2 if not b then b={c=__modImpl()}a.cache.b2=b end return b.c end end do local function __modImpl()
+}end a.b2=function()local c=a.cache.b2 if not c then c={c=b()}a.cache.b2=c end return c.c end end do local b=function()
 return{a.bX()
 ,a.bY()
 ,a.bZ()
@@ -5571,7 +5571,7 @@ return{a.bX()
 ,a.b1()
 ,a.b2()
 
-}end a.b3=function()local b=a.cache.b3 if not b then b={c=__modImpl()}a.cache.b3=b end return b.c end end do local function __modImpl()
+}end a.b3=function()local c=a.cache.b3 if not c then c={c=b()}a.cache.b3=c end return c.c end end do local b=function()
 return{
 {
 action="addalias",
@@ -5599,7 +5599,7 @@ kind="boolean",
 name="confirm"
 }
 }
-}end a.b4=function()local b=a.cache.b4 if not b then b={c=__modImpl()}a.cache.b4=b end return b.c end end do local function __modImpl()
+}end a.b4=function()local c=a.cache.b4 if not c then c={c=b()}a.cache.b4=c end return c.c end end do local b=function()
 return{
 {
 action="addplugin|plugin",
@@ -5623,16 +5623,16 @@ args={kind="plugin"}
 action="addallplugins|loadallplugins",
 description="Adds all available plugins from the workspace folder"
 }
-}end a.b5=function()local b=a.cache.b5 if not b then b={c=__modImpl()}a.cache.b5=b end return b.c end end do local function __modImpl()
-local b=a.d()
+}end a.b5=function()local c=a.cache.b5 if not c then c={c=b()}a.cache.b5=c end return c.c end end do local b=function()
+local b=a.d()local c=function(
 
 
-local function createCommands(c)
+c)
 local d={}
 local e={}
-local f={}
+local f={}local g=function(
 
-local function newCommand(g)
+g)
 b:expect(g.action,{"string"},"command action")
 table.insert(d,g)
 
@@ -5660,27 +5660,27 @@ g.args={i}
 end
 
 g.aliases=h
-g.action=nil
-end
+g.action=nil end
 
-for g,h in c do
-b:expect(h.name,{"string"},"section name")
-b:expect(h.commands,{"table"},"section commands")
+
+for h,i in c do
+b:expect(i.name,{"string"},"section name")
+b:expect(i.commands,{"table"},"section commands")
 
 table.insert(d,{
 isSection=true,
-sectionName=h.name
+sectionName=i.name
 })
 
-for i,j in h.commands do
-if#j==0 then
-b:assert(next(j),"the command cannot be empty")
-newCommand(j)
+for j,k in i.commands do
+if#k==0 then
+b:assert(next(k),"the command cannot be empty")
+g(k)
 continue
 end
 
-for k=1,#j do
-newCommand(j[k])
+for l=1,#k do
+g(k[l])
 end
 end
 end
@@ -5689,10 +5689,10 @@ return{
 array=f,
 lookup=e,
 original=d
-}
-end
+}end
 
-return createCommands{
+
+return c{
 {
 name="general",
 commands=a.as()
@@ -5737,7 +5737,7 @@ commands=a.b4()
 name="plugins",
 commands=a.b5()
 }
-}end a.b6=function()local b=a.cache.b6 if not b then b={c=__modImpl()}a.cache.b6=b end return b.c end end do local function __modImpl()
+}end a.b6=function()local c=a.cache.b6 if not c then c={c=b()}a.cache.b6=c end return c.c end end do local b=function()
 
 
 
@@ -6936,14 +6936,14 @@ Connections={}
 },c)end
 
 
-return c end a.b7=function()local b=a.cache.b7 if not b then b={c=__modImpl()}a.cache.b7=b end return b.c end end do local function __modImpl()
-return a.j().new"createdWaypoints"end a.b8=function()local b=a.cache.b8 if not b then b={c=__modImpl()}a.cache.b8=b end return b.c end end do local function __modImpl()
-return a.j().new"installedPlugins"end a.b9=function()local b=a.cache.b9 if not b then b={c=__modImpl()}a.cache.b9=b end return b.c end end do local function __modImpl()
+return c end a.b7=function()local c=a.cache.b7 if not c then c={c=b()}a.cache.b7=c end return c.c end end do local b=function()
+return a.j().new"createdWaypoints"end a.b8=function()local c=a.cache.b8 if not c then c={c=b()}a.cache.b8=c end return c.c end end do local b=function()
+return a.j().new"installedPlugins"end a.b9=function()local c=a.cache.b9 if not c then c={c=b()}a.cache.b9=c end return c.c end end do local b=function()
 return a.j().new(".userData",{
 encrypt=true
-})end a.ca=function()local b=a.cache.ca if not b then b={c=__modImpl()}a.cache.ca=b end return b.c end end do local function __modImpl()
-return a.j().new"aliases"end a.cb=function()local b=a.cache.cb if not b then b={c=__modImpl()}a.cache.cb=b end return b.c end end do local function __modImpl()
-return a.j().new"totalUsedCommands"end a.cc=function()local b=a.cache.cc if not b then b={c=__modImpl()}a.cache.cc=b end return b.c end end do local function __modImpl()
+})end a.ca=function()local c=a.cache.ca if not c then c={c=b()}a.cache.ca=c end return c.c end end do local b=function()
+return a.j().new"aliases"end a.cb=function()local c=a.cache.cb if not c then c={c=b()}a.cache.cb=c end return c.c end end do local b=function()
+return a.j().new"totalUsedCommands"end a.cc=function()local c=a.cache.cc if not c then c={c=b()}a.cache.cc=c end return c.c end end do local b=function()
 return{
 waypoints=a.b8(),
 plugins=a.b9(),
@@ -6951,7 +6951,7 @@ settings=a.k(),
 user=a.ca(),
 aliases=a.cb(),
 usedCmds=a.cc()
-}end a.cd=function()local b=a.cache.cd if not b then b={c=__modImpl()}a.cache.cd=b end return b.c end end do local function __modImpl()
+}end a.cd=function()local c=a.cache.cd if not c then c={c=b()}a.cache.cd=c end return c.c end end do local b=function()
 local b={}
 
 
@@ -6987,7 +6987,7 @@ end
 return h end
 
 
-return b end a.ce=function()local b=a.cache.ce if not b then b={c=__modImpl()}a.cache.ce=b end return b.c end end do local function __modImpl()
+return b end a.ce=function()local c=a.cache.ce if not c then c={c=b()}a.cache.ce=c end return c.c end end do local b=function()
 
 local b={
 connections={}
@@ -7014,7 +7014,7 @@ table.insert(d.connections,g)
 return g end
 
 
-return b end a.cf=function()local b=a.cache.cf if not b then b={c=__modImpl()}a.cache.cf=b end return b.c end end do local function __modImpl()
+return b end a.cf=function()local c=a.cache.cf if not c then c={c=b()}a.cache.cf=c end return c.c end end do local b=function()
 local b={}
 
 local c={Vector3=
@@ -7051,7 +7051,7 @@ assert(h,"can't convert to value")
 return h(f)end
 
 
-return b end a.cg=function()local b=a.cache.cg if not b then b={c=__modImpl()}a.cache.cg=b end return b.c end end do local function __modImpl()
+return b end a.cg=function()local c=a.cache.cg if not c then c={c=b()}a.cache.cg=c end return c.c end end do local b=function()
 local b=a.d()
 
 local c={}
@@ -7068,7 +7068,7 @@ end
 print("notification:",g or 5,e,f)end
 
 
-return c end a.ch=function()local b=a.cache.ch if not b then b={c=__modImpl()}a.cache.ch=b end return b.c end end do local function __modImpl()
+return c end a.ch=function()local c=a.cache.ch if not c then c={c=b()}a.cache.ch=c end return c.c end end do local b=function()
 
 
 local b=a.b()
@@ -7078,10 +7078,10 @@ local d={
 
 _callbacks={},
 _nextId=0,
-}
+}local e=function(
 
 
-local function runLoop(e)
+e)
 while true do
 task.wait()
 
@@ -7098,55 +7098,55 @@ h.lastCall=f
 task.defer(h.func)
 end
 end
-end
-end
+end end
 
 
-d.start=function(e)
+
+d.start=function(f)
 if b.loopThread~=nil then
 return
 end
 
-b.loopThread=task.defer(runLoop,e)end
+b.loopThread=task.defer(e,f)end
 
 
 
-d.stop=function(e)
-local f=b.loopThread
+d.stop=function(f)
+local g=b.loopThread
 b.loopThread=nil
-table.clear(e._callbacks)
+table.clear(f._callbacks)
 
-if f~=nil then
-task.cancel(f)
+if g~=nil then
+task.cancel(g)
 end end
 
 
 
 
-d.add=function(e, f, g)
-c:expect(f,{"function"},"'loopService:add' #1")
-c:expect(g,{"number","nil"},"'loopService:add' #2")
+d.add=function(f, g, h)
+c:expect(g,{"function"},"'loopService:add' #1")
+c:expect(h,{"number","nil"},"'loopService:add' #2")
 
-e._nextId=e._nextId+1
-local h=e._nextId
+f._nextId=f._nextId+1
+local i=f._nextId
 
-e._callbacks[h]={
-func=f,
-cooldown=math.max(g or 0,0),
+f._callbacks[i]={
+func=g,
+cooldown=math.max(h or 0,0),
 lastCall=-math.huge
 }
 
-e:start()
-return h end
+f:start()
+return i end
 
 
 
-d.remove=function(e, f)
-c:expect(f,{"number"},"'loopService:remove' #1")
-e._callbacks[f]=nil end
+d.remove=function(f, g)
+c:expect(g,{"number"},"'loopService:remove' #1")
+f._callbacks[g]=nil end
 
 
-return d end a.ci=function()local b=a.cache.ci if not b then b={c=__modImpl()}a.cache.ci=b end return b.c end end do local function __modImpl()
+return d end a.ci=function()local c=a.cache.ci if not c then c={c=b()}a.cache.ci=c end return c.c end end do local b=function()
 local b=a.b()
 local c=a.a()
 
@@ -7237,159 +7237,159 @@ t.run(q,s)
 return
 end
 
-f:warn(`missing command run func: {t.name}`)end
+f:warn(`missing command run func: {t.name}`)end local q=function(
 
 
-local function getUsage(q)
+q)
 local r=d.lookup[q:lower()]
 if r==nil then return 0 end
 
 
-return g:getValue(r.name)or 0
-end
+return g:getValue(r.name)or 0 end
 
-p.search=function(q, r, s)
-local t=j:searchAtArray(d.array,r,s)
-local u=r:lower()
-local v={}
 
-for w,x in t do
-table.insert(v,{
-alias=x,
-index=w,
-isPrefix=x:lower():sub(1,#u)==u,
-usage=getUsage(x),
+p.search=function(r, s, t)
+local u=j:searchAtArray(d.array,s,t)
+local v=s:lower()
+local w={}
+
+for x,y in u do
+table.insert(w,{
+alias=y,
+index=x,
+isPrefix=y:lower():sub(1,#v)==v,
+usage=q(y),
 })
 end
 
-table.sort(v,function(w,x)
-if w.isPrefix~=x.isPrefix then return w.isPrefix end
-if w.usage~=x.usage then return w.usage>x.usage end
-return w.index<x.index
+table.sort(w,function(x,y)
+if x.isPrefix~=y.isPrefix then return x.isPrefix end
+if x.usage~=y.usage then return x.usage>y.usage end
+return x.index<y.index
 end)
 
-local w={}
-for x,y in v do
-w[x]=y.alias
+local x={}
+for y,z in w do
+x[y]=z.alias
 end
 
-return w end
+return x end
 
 
-p.init=function(q, r)
-f:assert(r,"'commandsController:init' #1 expected a config to init")
+p.init=function(r, s)
+f:assert(s,"'commandsController:init' #1 expected a config to init")
 
-local s=a.cf()
-local t=a.cg()
-local u=a.ch()
-
-
-q.notify=function(v, ...)
-return u:notify(...)end
+local t=a.cf()
+local u=a.cg()
+local v=a.ch()
 
 
-q.stringify=function(v, ...)
-return t:stringify(...)end
+r.notify=function(w, ...)
+return v:notify(...)end
 
 
-q.unstringify=function(v, ...)
-return t:unstringify(...)end
+r.stringify=function(w, ...)
+return u:stringify(...)end
 
 
-q.connect=function(v, ...)
-return s:Connect(...)end
+r.unstringify=function(w, ...)
+return u:unstringify(...)end
 
 
-q.expectExploit=function(v, w)
-local x=c[w]
-if x~=nil then return x end
-
-v:notify("Incompatible Exploit",`Your exploit does not support this command (missing {w})`)end
+r.connect=function(w, ...)
+return t:Connect(...)end
 
 
+r.expectExploit=function(w, x)
+local y=c[x]
+if y~=nil then return y end
 
-q.localPlayer=a.ac()
-q.executorEnv=c
-q.privateEnv=b
-
-
-q.infiniteYield=r.infiniteYield
-q.playerService=r.playerService
-q.fetchService=r.fetchService
+w:notify("Incompatible Exploit",`Your exploit does not support this command (missing {x})`)end
 
 
-q.signals={
+
+r.localPlayer=a.ac()
+r.executorEnv=c
+r.privateEnv=b
+
+
+r.infiniteYield=s.infiniteYield
+r.playerService=s.playerService
+r.fetchService=s.fetchService
+
+
+r.signals={
 onCameraReset=e.new()
 }
 
 
-q.config={
+r.config={
 links=i.links
 }
 
 
-q.userSettings=UserSettings()
-q.gameSettings=settings()
+r.userSettings=UserSettings()
+r.gameSettings=settings()
 
-q.userGameSettings=q.userSettings:GetService"UserGameSettings"
-q.gameNetworkSettings=q.gameSettings:GetService"NetworkSettings"
-
-
-q.loopService=a.ci()
+r.userGameSettings=r.userSettings:GetService"UserGameSettings"
+r.gameNetworkSettings=r.gameSettings:GetService"NetworkSettings"
 
 
-q.datas=a.cd()
+r.loopService=a.ci()
 
 
-q.robloxServices=h
-q.rbxServices=h
-
-q.teleportService=h.TeleportService
-q.groupService=h.GroupService
-q.runService=h.RunService
-q.starterGui=h.StarterGui
-q.coreGui=h.CoreGui
-q.players=h.Players
-q.guiService=h.GuiService
-q.networkClient=h.NetworkClient
-q.proximityPromptService=h.ProximityPromptService end
+r.datas=a.cd()
 
 
-return p end a.cj=function()local b=a.cache.cj if not b then b={c=__modImpl()}a.cache.cj=b end return b.c end end do local function __modImpl()
+r.robloxServices=h
+r.rbxServices=h
+
+r.teleportService=h.TeleportService
+r.groupService=h.GroupService
+r.runService=h.RunService
+r.starterGui=h.StarterGui
+r.coreGui=h.CoreGui
+r.players=h.Players
+r.guiService=h.GuiService
+r.networkClient=h.NetworkClient
+r.proximityPromptService=h.ProximityPromptService end
+
+
+return p end a.cj=function()local c=a.cache.cj if not c then c={c=b()}a.cache.cj=c end return c.c end end do local b=function()
 local b=a.m()
 local c=a.d()
 
 local d="https://raw.githubusercontent.com/%s/%s/refs/heads/main/"
 d=d:format(b.owner,b.repository)
 
-local e={}
+local e={}local f=function(
 
-local function request(f)
-return game:HttpGet(f)
+f)
+return game:HttpGet(f)end
+
+
+e.fetch=function(g)
+if g:sub(1,1)=="/"then
+g=g:sub(2)
 end
 
-e.fetch=function(f)
-if f:sub(1,1)=="/"then
-f=f:sub(2)
-end
+local h,i=pcall(f,d..g)
 
-local g,h=pcall(request,d..f)
-
-if not g then
-c:warn(`failed to fetch http url '{f}':\n\t{h}`)
+if not h then
+c:warn(`failed to fetch http url '{g}':\n\t{i}`)
 return
 end
 
-return h end
+return i end
 
 
-return e end a.ck=function()local b=a.cache.ck if not b then b={c=__modImpl()}a.cache.ck=b end return b.c end end do local function __modImpl()
+return e end a.ck=function()local c=a.cache.ck if not c then c={c=b()}a.cache.ck=c end return c.c end end do local b=function()
 
 
 
-local b=a.b6()
+local b=a.b6()local c=function()
 
-local function findStubs()
+
 local c={}
 local d="unknown"
 
@@ -7401,36 +7401,36 @@ table.insert(c,{section=d,name=f.name})
 end
 end
 
-return c
-end
+return c end
 
-return function(c)
-local d=findStubs()
-if#d==0 then
+
+return function(d)
+local e=c()
+if#e==0 then
 return
 end
 
-local e={}
 local f={}
-
-for g,h in d do
-if not e[h.section]then
-e[h.section]={}
-table.insert(f,h.section)
-end
-table.insert(e[h.section],h.name)
-end
-
 local g={}
-for h,i in f do
-local j=table.concat(e[i],", ")
-table.insert(g,`[{i}] {j}`)
+
+for h,i in e do
+if not f[i.section]then
+f[i.section]={}
+table.insert(g,i.section)
+end
+table.insert(f[i.section],i.name)
 end
 
-local h=table.concat(g,"\n")
-print(`infinite yield: {#d} command(s) without run:\n{h}`)
-c:notify("Commands without run",`{#d} command(s) still need a run function, see console`)
-end end a.cl=function()local b=a.cache.cl if not b then b={c=__modImpl()}a.cache.cl=b end return b.c end end do local function __modImpl()
+local h={}
+for i,j in g do
+local k=table.concat(f[j],", ")
+table.insert(h,`[{j}] {k}`)
+end
+
+local i=table.concat(h,"\n")
+print(`infinite yield: {#e} command(s) without run:\n{i}`)
+d:notify("Commands without run",`{#e} command(s) still need a run function, see console`)
+end end a.cl=function()local c=a.cache.cl if not c then c={c=b()}a.cache.cl=c end return c.c end end do local b=function()
 local b={}
 
 local c="abcdefghijklmnopqrstuvABCDEFGHIJKLMNOPQRSTUV_0123456789"
@@ -7529,10 +7529,10 @@ b.richFontSize=function(e, f)
 return`<font size="{f}">{e}</font>`end
 
 
-return b end a.cm=function()local b=a.cache.cm if not b then b={c=__modImpl()}a.cache.cm=b end return b.c end end do local function __modImpl()
+return b end a.cm=function()local c=a.cache.cm if not c then c={c=b()}a.cache.cm=c end return c.c end end do local b=function()
 local b={}
 
-return b end a.cn=function()local b=a.cache.cn if not b then b={c=__modImpl()}a.cache.cn=b end return b.c end end do local function __modImpl()
+return b end a.cn=function()local c=a.cache.cn if not c then c={c=b()}a.cache.cn=c end return c.c end end do local b=function()
 local b=a.cn()
 local c=a.d()
 
@@ -7575,7 +7575,7 @@ local f=Instance.new(e)
 return d.setup(f,...)end
 
 
-return d end a.co=function()local b=a.cache.co if not b then b={c=__modImpl()}a.cache.co=b end return b.c end end do local function __modImpl()
+return d end a.co=function()local c=a.cache.co if not c then c={c=b()}a.cache.co=c end return c.c end end do local b=function()
 local b=a.g()
 local c=b.CoreGui
 
@@ -7602,12 +7602,12 @@ message=Instance.new"Message"
 },d)end
 
 
-return d end a.cp=function()local b=a.cache.cp if not b then b={c=__modImpl()}a.cache.cp=b end return b.c end end do local function __modImpl()
+return d end a.cp=function()local c=a.cache.cp if not c then c={c=b()}a.cache.cp=c end return c.c end end do local b=function()
 return{
 isEnabled=true,
 animationScale=1,
 scrollSpeed=1
-}end a.cq=function()local b=a.cache.cq if not b then b={c=__modImpl()}a.cache.cq=b end return b.c end end do local function __modImpl()
+}end a.cq=function()local c=a.cache.cq if not c then c={c=b()}a.cache.cq=c end return c.c end end do local b=function()
 local b=a.cq()
 
 local c={}
@@ -7620,7 +7620,7 @@ c.getScrollSpeed=function(d, e)
 return(e*b.scrollSpeed)end
 
 
-return c end a.cr=function()local b=a.cache.cr if not b then b={c=__modImpl()}a.cache.cr=b end return b.c end end do local function __modImpl()
+return c end a.cr=function()local c=a.cache.cr if not c then c={c=b()}a.cache.cr=c end return c.c end end do local b=function()
 return{
 createService=a.co(),
 specialProps=a.cn(),
@@ -7632,7 +7632,7 @@ messageService=a.cp(),
 playerService=a.ad(),
 rbxServices=a.g(),
 tweenService=a.cr(),
-}end a.cs=function()local b=a.cache.cs if not b then b={c=__modImpl()}a.cache.cs=b end return b.c end end do local function __modImpl()
+}end a.cs=function()local c=a.cache.cs if not c then c={c=b()}a.cache.cs=c end return c.c end end do local b=function()
 return{
 DisplayName="Classic",
 
@@ -7644,7 +7644,7 @@ DefaultText=Color3.new(1,1,1),
 DarkText=Color3.new(0,0,0),
 
 ScrollBar=Color3.fromRGB(78,78,79)
-}end a.ct=function()local b=a.cache.ct if not b then b={c=__modImpl()}a.cache.ct=b end return b.c end end do local function __modImpl()
+}end a.ct=function()local c=a.cache.ct if not c then c={c=b()}a.cache.ct=c end return c.c end end do local b=function()
 return{
 DisplayName="Dark",
 
@@ -7687,10 +7687,10 @@ SliderBar=Color3.fromRGB(1,76,105),
 SliderNumber=Color3.fromRGB(232,233,235),
 },
 }
-}end a.cu=function()local b=a.cache.cu if not b then b={c=__modImpl()}a.cache.cu=b end return b.c end end do local function __modImpl()
+}end a.cu=function()local c=a.cache.cu if not c then c={c=b()}a.cache.cu=c end return c.c end end do local b=function()
 return{
 DisplayName="Light"
-}end a.cv=function()local b=a.cache.cv if not b then b={c=__modImpl()}a.cache.cv=b end return b.c end end do local function __modImpl()
+}end a.cv=function()local c=a.cache.cv if not c then c={c=b()}a.cache.cv=c end return c.c end end do local b=function()
 local b={a.ct()
 ,a.cu()
 ,a.cv()
@@ -7704,7 +7704,7 @@ local f=string.lower(e.DisplayName)
 c[f]=e
 end
 
-return c end a.cw=function()local b=a.cache.cw if not b then b={c=__modImpl()}a.cache.cw=b end return b.c end end do local function __modImpl()
+return c end a.cw=function()local c=a.cache.cw if not c then c={c=b()}a.cache.cw=c end return c.c end end do local b=function()
 local b=a.cw()
 
 local c=a.d()
@@ -7767,7 +7767,7 @@ f:selectTheme(g.theme)
 end end
 
 
-return e end a.cx=function()local b=a.cache.cx if not b then b={c=__modImpl()}a.cache.cx=b end return b.c end end do local function __modImpl()
+return e end a.cx=function()local c=a.cache.cx if not c then c={c=b()}a.cache.cx=c end return c.c end end do local b=function()
 
 
 local b=a.cs()
@@ -7785,7 +7785,7 @@ end
 e:addObject(f,g)end
 
 
-return a.co()end a.cy=function()local b=a.cache.cy if not b then b={c=__modImpl()}a.cache.cy=b end return b.c end end do local function __modImpl()return{bindsandplugins="rbxassetid://5147695474",close="rbxassetid://5054663650",editaliases="rbxassetid://5147488658",editkeybinds="rbxassetid://129697930",edittheme="rbxassetid://4911962991",editwaypoints="rbxassetid://5147488592",imgstudiopluginlogo="rbxassetid://4113050383",logo="rbxassetid://1352543873",minimize="rbxassetid://2406617031",pin="rbxassetid://6234691350",reference="rbxassetid://3523243755",settings="rbxassetid://1204397029",}end a.cz=function()local b=a.cache.cz if not b then b={c=__modImpl()}a.cache.cz=b end return b.c end end do local function __modImpl()local b=a.a()
+return a.co()end a.cy=function()local c=a.cache.cy if not c then c={c=b()}a.cache.cy=c end return c.c end end do local b=function()return{bindsandplugins="rbxassetid://5147695474",close="rbxassetid://5054663650",editaliases="rbxassetid://5147488658",editkeybinds="rbxassetid://129697930",edittheme="rbxassetid://4911962991",editwaypoints="rbxassetid://5147488592",imgstudiopluginlogo="rbxassetid://4113050383",logo="rbxassetid://1352543873",minimize="rbxassetid://2406617031",pin="rbxassetid://6234691350",reference="rbxassetid://3523243755",settings="rbxassetid://1204397029",}end a.cz=function()local c=a.cache.cz if not c then c={c=b()}a.cache.cz=c end return c.c end end do local b=function()local b=a.a()
 local c=a.o()
 
 local d=c.storage.imagePath
@@ -7878,7 +7878,7 @@ j[o]=nil
 end)end
 
 
-return l end a.cA=function()local b=a.cache.cA if not b then b={c=__modImpl()}a.cache.cA=b end return b.c end end do local function __modImpl()
+return l end a.cA=function()local c=a.cache.cA if not c then c={c=b()}a.cache.cA=c end return c.c end end do local b=function()
 local b=a.cf()
 local c=a.g()
 
@@ -7902,9 +7902,9 @@ local i={}
 i.__index=i
 
 i.addGuiObject=function(j, k)
-local l
+local l local m=function()
 
-local function disconnectMouse()
+
 j.isDragging=false
 j.draggingObject=nil
 j.dragStart=nil
@@ -7914,23 +7914,23 @@ if l then
 l:Disconnect()
 end
 
-j.dragEnded:Fire(k)
-end
+j.dragEnded:Fire(k)end local n=function()
 
-local function startConnectionTimeout()
+
+
 while j.draggingObject==k do
 if(tick()-j.lastActivity)>=1 then
-disconnectMouse()
+m()
 end
 task.wait()
-end
-end
+end end
 
-b:Connect(k.InputBegan,function(m)
-if not f[m.UserInputType]then return end
+
+b:Connect(k.InputBegan,function(o)
+if not f[o.UserInputType]then return end
 if j.isDragging then return end
 
-j.dragStart=m.Position
+j.dragStart=o.Position
 j.startPos=k.Position
 
 j.isDragging=true
@@ -7939,11 +7939,11 @@ j.lastActivity=tick()
 
 j.dragStarted:Fire(k)
 
-task.spawn(startConnectionTimeout)
+task.spawn(n)
 
-l=m.Changed:Connect(function()
-if m.UserInputState==Enum.UserInputState.End then
-disconnectMouse()
+l=o.Changed:Connect(function()
+if o.UserInputState==Enum.UserInputState.End then
+m()
 end
 end)
 end)end
@@ -8004,11 +8004,11 @@ end)
 return k end
 
 
-return i end a.cB=function()local b=a.cache.cB if not b then b={c=__modImpl()}a.cache.cB=b end return b.c end end do local function __modImpl()
+return i end a.cB=function()local c=a.cache.cB if not c then c={c=b()}a.cache.cB=c end return c.c end end do local b=function()
 local b=a.g()
-local c=a.a()
+local c=a.a()local d=function()
 
-local function getCoreGui()
+
 local d=b.CoreGui
 local e=c.gethui
 
@@ -8025,10 +8025,10 @@ local f=d:FindFirstChild"RobloxGui"
 d=if f~=nil then f else d
 end
 
-return d
-end
+return d end
 
-return getCoreGui()end a.cC=function()local b=a.cache.cC if not b then b={c=__modImpl()}a.cache.cC=b end return b.c end end do local function __modImpl()
+
+return d()end a.cC=function()local c=a.cache.cC if not c then c={c=b()}a.cache.cC=c end return c.c end end do local b=function()
 return{NEW_YEAR=
 "🎆",VALENTINE_DAYS=
 "💝",CLOVER=
@@ -8036,7 +8036,7 @@ return{NEW_YEAR=
 "🎃",CHRISTMAS=
 "🎄",EASTER=
 "🥚",
-}end a.cD=function()local b=a.cache.cD if not b then b={c=__modImpl()}a.cache.cD=b end return b.c end end do local function __modImpl()
+}end a.cD=function()local c=a.cache.cD if not c then c={c=b()}a.cache.cD=c end return c.c end end do local b=function()
 
 
 
@@ -8101,7 +8101,7 @@ end
 return e end
 
 
-return b end a.cE=function()local b=a.cache.cE if not b then b={c=__modImpl()}a.cache.cE=b end return b.c end end do local function __modImpl()
+return b end a.cE=function()local c=a.cache.cE if not c then c={c=b()}a.cache.cE=c end return c.c end end do local b=function()
 return{
 uiScale=Instance.new"UIScale",
 getScale=function(b)
@@ -8112,7 +8112,7 @@ setScale=function(b,c)
 local d=b.uiScale
 if d then d.Scale=c end
 end
-}end a.cF=function()local b=a.cache.cF if not b then b={c=__modImpl()}a.cache.cF=b end return b.c end end do local function __modImpl()
+}end a.cF=function()local c=a.cache.cF if not c then c={c=b()}a.cache.cF=c end return c.c end end do local b=function()
 
 
 local b=a.cy()
@@ -8180,7 +8180,7 @@ reference=i
 }end
 
 
-return c end a.cG=function()local b=a.cache.cG if not b then b={c=__modImpl()}a.cache.cG=b end return b.c end end do local function __modImpl()
+return c end a.cG=function()local c=a.cache.cG if not c then c={c=b()}a.cache.cG=c end return c.c end end do local b=function()
 
 local b=a.cy()
 
@@ -8263,13 +8263,13 @@ BackgroundColor3="Colors.Icons"
 end
 
 return h
-end end a.cH=function()local b=a.cache.cH if not b then b={c=__modImpl()}a.cache.cH=b end return b.c end end do local function __modImpl()
+end end a.cH=function()local c=a.cache.cH if not c then c={c=b()}a.cache.cH=c end return c.c end end do local b=function()
 return{
 pressingInputs={
 [Enum.UserInputType.MouseButton1]=true,
 [Enum.UserInputType.Touch]=true
 }
-}end a.cI=function()local b=a.cache.cI if not b then b={c=__modImpl()}a.cache.cI=b end return b.c end end do local function __modImpl()
+}end a.cI=function()local c=a.cache.cI if not c then c={c=b()}a.cache.cI=c end return c.c end end do local b=function()
 local b=a.cf()
 local c=a.g()
 local d=a.cy()
@@ -8286,173 +8286,173 @@ local j=a.cI()
 local k=c.UserInputService
 
 local l={}
-l.__index=l
+l.__index=l local m=function(
 
-local function isValidInputType(m)
-return j.pressingInputs[m.UserInputType]~=nil
-end
+m)
+return j.pressingInputs[m.UserInputType]~=nil end
 
-l.awake=function(m)
-local n=e:getMouse()
 
-local o=m.scrollThumbFrame
-local p=m.scrollThumb
-local q=m.scrollBar
+l.awake=function(n)
+local o=e:getMouse()
 
-local r=false
+local p=n.scrollThumbFrame
+local q=n.scrollThumb
+local r=n.scrollBar
+
 local s=false
-local t
+local t=false
+local u local v=function(
 
-local function handleButtonPress(u,v)
-local function onStartedPressing()
-if r then return end
-if not m:canScroll(v)then return end
+v, w)local x=function()
 
-r=true
+if s then return end
+if not n:canScroll(w)then return end
 
-m:scrollToDirection(v)
+s=true
 
-local w
-w=b:Connect(k.InputEnded,function(x)
-if not isValidInputType(x)then return end
+n:scrollToDirection(w)
 
-w:Disconnect()
-r=false
+local x
+x=b:Connect(k.InputEnded,function(y)
+if not m(y)then return end
+
+x:Disconnect()
+s=false
 end)
 
 task.wait(0.4)
 
-while m:canScroll(v)and r do
-m:scrollToDirection(v)
+while n:canScroll(w)and s do
+n:scrollToDirection(w)
 task.wait(6.666666666666666E-2)
-end
-end
-
-b:Connect(u.MouseButton1Down,onStartedPressing)
+end end
 
 
-end
+b:Connect(v.MouseButton1Down,x)end
 
-handleButtonPress(m.upButton,"up")
-handleButtonPress(m.downButton,"down")
 
-b:Connect(q.MouseWheelForward,function()
-m:scrollTo(m.index-m.wheelIncrement)
+
+
+v(n.upButton,"up")
+v(n.downButton,"down")
+
+b:Connect(r.MouseWheelForward,function()
+n:scrollTo(n.index-n.wheelIncrement)
 end)
 
-b:Connect(q.MouseWheelBackward,function()
-m:scrollTo(m.index+m.wheelIncrement)
+b:Connect(r.MouseWheelBackward,function()
+n:scrollTo(n.index+n.wheelIncrement)
 end)
 
-b:Connect(q.InputBegan,function(u)
-if not isValidInputType(u)then return end
-if m:isScrollBarDisabled()then return end
+b:Connect(r.InputBegan,function(w)
+if not m(w)then return end
+if n:isScrollBarDisabled()then return end
 
-local v=not e:isMouseInGuiObject(p)
-local w=m.isHorizontal and"X"or"Y"
+local x=not e:isMouseInGuiObject(q)
+local y=n.isHorizontal and"X"or"Y"
 
-local x
-s=true
+local z
+t=true
 
-f:updateObjectProperties(p,{
+f:updateObjectProperties(q,{
 BackgroundColor3="Colors.Primary"
 })
 
-local y=n[w]-p.AbsolutePosition[w]
-local z
-local A
+local A=o[y]-q.AbsolutePosition[y]
+local B
+local C local D=function()
 
-local function disconnect()
-if z then z:Disconnect()end
-if A then A:Disconnect()end
-end
 
-z=b:Connect(k.InputEnded,function(B)
-if not isValidInputType(B)then return end
+if B then B:Disconnect()end
+if C then C:Disconnect()end end
 
-disconnect()
-s=false
 
-f:updateObjectProperties(p,{
+B=b:Connect(k.InputEnded,function(E)
+if not m(E)then return end
+
+D()
+t=false
+
+f:updateObjectProperties(q,{
 BackgroundColor3="Colors.OnPrimary"
 })
 end)
 
-if v then
-local function updateDirection()
-local B=(n[w]>=p.AbsolutePosition[w]+p.AbsoluteSize[w])and 1 or 0
-local C=m.visibleSpace-1
+if x then local E=function()
 
-if B==0 and(
-n[w]<p.AbsolutePosition[w]
-)then
-m:scrollTo(m.index-C)
-elseif B==1 and(
-n[w]>=p.AbsolutePosition[w]+p.AbsoluteSize[w]
-)then
-m:scrollTo(m.index+C)
-end
-end
+local E=(o[y]>=q.AbsolutePosition[y]+q.AbsoluteSize[y])and 1 or 0
+local F=n.visibleSpace-1
 
-while s do
-updateDirection()
+if E==0 and(
+o[y]<q.AbsolutePosition[y]
+)then
+n:scrollTo(n.index-F)
+elseif E==1 and(
+o[y]>=q.AbsolutePosition[y]+q.AbsoluteSize[y]
+)then
+n:scrollTo(n.index+F)
+end end
+
+
+while t do
+E()
 task.wait(0.25)
 end
 return
 end
 
-A=b:Connect(k.InputChanged,function(B)
-if not s then return end
-if not isValidInputType(B)then return end
+C=b:Connect(k.InputChanged,function(E)
+if not t then return end
+if not m(E)then return end
 
-local C=o.AbsoluteSize[w]-p.AbsoluteSize[w]
-local D=n[w]-o.AbsolutePosition[w]-y
+local F=p.AbsoluteSize[y]-q.AbsoluteSize[y]
+local G=o[y]-p.AbsolutePosition[y]-A
 
-if D>C then
-D=C
-elseif D<0 then
-D=0
+if G>F then
+G=F
+elseif G<0 then
+G=0
 end
 
-if x~=D then
-x=D
-m:scrollTo(math.floor(0.5+D/C*(m.totalSpace-m.visibleSpace)))
+if z~=G then
+z=G
+n:scrollTo(math.floor(0.5+G/F*(n.totalSpace-n.visibleSpace)))
 end
 end)
 end)end
 
 
-l.create=function(m)
-m.upButton=d.new("ImageButton",m.upButtonName,{
+l.create=function(n)
+n.upButton=d.new("ImageButton",n.upButtonName,{
 BackgroundTransparency=1,
 AutoButtonColor=false
 })
 
-m.downButton=d.new("ImageButton",m.downButtoName,{
+n.downButton=d.new("ImageButton",n.downButtoName,{
 BackgroundTransparency=1,
 AutoButtonColor=false
 })
 
-m:createButtonsArrows()
+n:createButtonsArrows()
 
-local n=d.new("Frame","ScrollBar",{
+local o=d.new("Frame","ScrollBar",{
 Active=true,
 BackgroundTransparency=1,
 
-m.upButton,
-m.downButton,
+n.upButton,
+n.downButton,
 
 d.new("Frame","ScrollThumbFrame",{
 BackgroundTransparency=1,
-AnchorPoint=m.isHorizontal
+AnchorPoint=n.isHorizontal
 and Vector2.new(0.5,0)
 or Vector2.new(0,0.5),
-Position=m.isHorizontal
+Position=n.isHorizontal
 and UDim2.fromScale(0.5,0)
 or UDim2.fromScale(0,0.5),
 
 d.new("Frame","ScrollThumb",{
-AnchorPoint=m.isHorizontal
+AnchorPoint=n.isHorizontal
 and Vector2.new(0,0.5)
 or Vector2.new(0.5,0),
 ThemeTag={
@@ -8471,297 +8471,300 @@ Size=UDim2.fromScale(1,1),
 }),
 })
 
-m.scrollBar=n
-m.scrollThumbFrame=n.ScrollThumbFrame
-m.scrollThumb=n.ScrollThumbFrame.ScrollThumb
-m.markerFrame=n.ScrollThumbFrame.MarkerFrame
+n.scrollBar=o
+n.scrollThumbFrame=o.ScrollThumbFrame
+n.scrollThumb=o.ScrollThumbFrame.ScrollThumb
+n.markerFrame=o.ScrollThumbFrame.MarkerFrame
 
-m.container=d.new("Frame","Container",{
+n.container=d.new("Frame","Container",{
 BackgroundTransparency=1,
 ClipsDescendants=true,
 Active=true
 })
 
-m:setScrollBarThickness(m.barThickness)
-m:awake()
-m:update()
+n:setScrollBarThickness(n.barThickness)
+n:awake()
+n:update()
 
 
-return n end
+return o end
 
 
-l.createButtonsArrows=function(m)
-local n=m.downButton
-local o=m.upButton
+l.createButtonsArrows=function(n)
+local o=n.downButton
+local p=n.upButton
 
-g(4,0.55,n.Name).Parent=n
-g(4,0.55,o.Name).Parent=o end
-
-
-l.canScrollUp=function(m)
-return m:isScrollBarEnabled()and m.index>0 end
+g(4,0.55,o.Name).Parent=o
+g(4,0.55,p.Name).Parent=p end
 
 
-l.canScrollDown=function(m)
-local n=m:isScrollBarEnabled()
-return n and m.index+m.visibleSpace<m.totalSpace end
+l.canScrollUp=function(n)
+return n:isScrollBarEnabled()and n.index>0 end
 
 
-l.canScroll=function(m, n)
-if n=="up"or n=="left"then
-return m:canScrollUp()
-elseif n=="down"or n=="right"then
-return m:canScrollDown()
+l.canScrollDown=function(n)
+local o=n:isScrollBarEnabled()
+return o and n.index+n.visibleSpace<n.totalSpace end
+
+
+l.canScroll=function(n, o)
+if o=="up"or o=="left"then
+return n:canScrollUp()
+elseif o=="down"or o=="right"then
+return n:canScrollDown()
 end
 return false end
 
 
-l.getScrollPercent=function(m)
-local n=m.totalSpace-m.visibleSpace
-if n<=0 then return 0 end
-return m.index/n end
+l.getScrollPercent=function(n)
+local o=n.totalSpace-n.visibleSpace
+if o<=0 then return 0 end
+return n.index/o end
 
 
-l.scrollTo=function(m, n, o)
-local p=math.max(0,m.totalSpace-m.visibleSpace)
+l.scrollTo=function(n, o, p)
+local q=math.max(0,n.totalSpace-n.visibleSpace)
 
-m.index=math.clamp(n,0,p)
-m:update()
+n.index=math.clamp(o,0,q)
+n:update()
 
-if not o then
-m.scrolledSignal:Fire(m.index)
+if not p then
+n.scrolledSignal:Fire(n.index)
 end end
 
 
-l.scrollUp=function(m)
-m:scrollTo(m.index-m.increment)end
+l.scrollUp=function(n)
+n:scrollTo(n.index-n.increment)end
 
 
-l.scrollDown=function(m)
-m:scrollTo(m.index+m.increment)end
+l.scrollDown=function(n)
+n:scrollTo(n.index+n.increment)end
 
 
-l.scrollToDirection=function(m, n)
-if n=="up"or n=="left"then
-return m:scrollUp()
-elseif n=="down"or n=="right"then
-return m:scrollDown()
+l.scrollToDirection=function(n, o)
+if o=="up"or o=="left"then
+return n:scrollUp()
+elseif o=="down"or o=="right"then
+return n:scrollDown()
 end end
 
 
-l.isVisible=function(m, n)
-local o=m.index
-if n>=o and n<(o+m.visibleSpace)then
+l.isVisible=function(n, o)
+local p=n.index
+if o>=p and o<(p+n.visibleSpace)then
 return true
 end
 return false end
 
 
-l.setScrollPercent=function(m, n)
-local o=m.totalSpace-m.visibleSpace
-m:scrollTo(math.floor(n*o))end
+l.setScrollPercent=function(n, o)
+local p=n.totalSpace-n.visibleSpace
+n:scrollTo(math.floor(o*p))end
 
 
-l.update=function(m)
-m:drawThumb()end
+l.update=function(n)
+n:drawThumb()end
 
 
-l.setScrollBarThickness=function(m, n)
-local o=m.scrollThumbFrame
-local p=m.downButton
-local q=m.container
-local r=m.scrollBar
-local s=m.upButton
+l.setScrollBarThickness=function(n, o)
+local p=n.scrollThumbFrame
+local q=n.downButton
+local r=n.container
+local s=n.scrollBar
+local t=n.upButton
 
-m.barThickness=n
+n.barThickness=o
 
-if q then
-q.Size=UDim2.new(
+if r then
+r.Size=UDim2.new(
 1,
-m.isHorizontal and 0 or-n,
+n.isHorizontal and 0 or-o,
 1,
-m.isHorizontal and-n or 0
+n.isHorizontal and-o or 0
 )
 end
 
-if r then
-r.Size=m.isHorizontal
-and UDim2.new(1,0,0,n)
-or UDim2.new(0,n,1,0)
-r.Position=m.isHorizontal
-and UDim2.new(0,0,1,-n)
-or UDim2.new(1,-n,0,0)
-end
-
-if o then
-o.Size=m.isHorizontal
-and UDim2.new(1,-(n*2),0,n)
-or UDim2.new(0,n,1,-(n*2))
+if s then
+s.Size=n.isHorizontal
+and UDim2.new(1,0,0,o)
+or UDim2.new(0,o,1,0)
+s.Position=n.isHorizontal
+and UDim2.new(0,0,1,-o)
+or UDim2.new(1,-o,0,0)
 end
 
 if p then
-p.Size=UDim2.fromOffset(n,n)
-p.Position=m.isHorizontal
-and UDim2.new(1,-n,0,0)
-or UDim2.new(0,0,1,-n)
+p.Size=n.isHorizontal
+and UDim2.new(1,-(o*2),0,o)
+or UDim2.new(0,o,1,-(o*2))
 end
 
-if s then
-s.Size=UDim2.fromOffset(n,n)
-s.Position=UDim2.fromOffset(0,0)
+if q then
+q.Size=UDim2.fromOffset(o,o)
+q.Position=n.isHorizontal
+and UDim2.new(1,-o,0,0)
+or UDim2.new(0,0,1,-o)
+end
+
+if t then
+t.Size=UDim2.fromOffset(o,o)
+t.Position=UDim2.fromOffset(0,0)
 end end
 
 
-l.updateArrowTransparency=function(m, n, o)
-if not n:FindFirstChild"Arrow"then return end
+l.updateArrowTransparency=function(n, o, p)
+if not o:FindFirstChild"Arrow"then return end
 
-for p,q in n.Arrow:GetChildren()do
-if not q:IsA"GuiObject"then continue end
-q.Transparency=o and 0.6 or 0
+for q,r in o.Arrow:GetChildren()do
+if not r:IsA"GuiObject"then continue end
+r.Transparency=p and 0.6 or 0
 end end
 
 
-l.drawThumb=function(m)
-local n=m.scrollThumb
-local o=m.scrollThumbFrame
+l.drawThumb=function(n)
+local o=n.scrollThumb
+local p=n.scrollThumbFrame
 
-local p=m:canScrollUp()
-local q=m:canScrollDown()
+local q=n:canScrollUp()
+local r=n:canScrollDown()
 
-m:updateArrowTransparency(m.upButton,not p)
-m:updateArrowTransparency(m.downButton,not q)
+n:updateArrowTransparency(n.upButton,not q)
+n:updateArrowTransparency(n.downButton,not r)
 
-if not n or not o then return end
+if not o or not p then return end
 
-if not p and not q then
-n.Visible=false
+if not q and not r then
+o.Visible=false
 return
 end
 
-n.Visible=true
+o.Visible=true
 
-local r=m:getScrollPercent()
-local s=h:getScale()
-local t=m.barThickness
+local s=n:getScrollPercent()
+local t=h:getScale()
+local u=n.barThickness
 
-if m.isHorizontal then
-local u=o.AbsoluteSize.X/s
-local v=math.max(t,(m.visibleSpace/m.totalSpace)*u)
-n.Size=UDim2.new(0,v,1,-2)
-n.Position=UDim2.new(0,r*(u-v),0.5,0)
+if n.isHorizontal then
+local v=p.AbsoluteSize.X/t
+local w=math.max(u,(n.visibleSpace/n.totalSpace)*v)
+o.Size=UDim2.new(0,w,1,-2)
+o.Position=UDim2.new(0,s*(v-w),0.5,0)
 else
-local u=o.AbsoluteSize.Y/s
-local v=math.max(t,(m.visibleSpace/m.totalSpace)*u)
-n.Size=UDim2.new(1,-2,0,v)
-n.Position=UDim2.new(0.5,0,0,r*(u-v))
+local v=p.AbsoluteSize.Y/t
+local w=math.max(u,(n.visibleSpace/n.totalSpace)*v)
+o.Size=UDim2.new(1,-2,0,w)
+o.Position=UDim2.new(0.5,0,0,s*(v-w))
 end end
 
 
-l.addMarker=function(m, n, o)
-m.markers[n]=o or Color3.new(1,1,0)
-m:updateMarkers()end
+l.addMarker=function(n, o, p)
+n.markers[o]=p or Color3.new(1,1,0)
+n:updateMarkers()end
 
 
-l.removeMarker=function(m, n)
-m.markers[n]=nil
-m:updateMarkers()end
+l.removeMarker=function(n, o)
+n.markers[o]=nil
+n:updateMarkers()end
 
 
-l.updateMarkers=function(m)
-local n=m.markerFrame
-if not n then return end
+l.updateMarkers=function(n)
+local o=n.markerFrame
+if not o then return end
 
-for o,p in pairs(n:GetChildren())do
-p:Destroy()
+for p,q in pairs(o:GetChildren())do
+q:Destroy()
 end
 
-for o,p in pairs(m.markers)do
-if o>=m.totalSpace then continue end
+for p,q in pairs(n.markers)do
+if p>=n.totalSpace then continue end
 
-local q=Instance.new"Frame"
-q.BackgroundColor3=p
-q.BorderSizePixel=0
-q.BackgroundTransparency=0
-q.Parent=n
+local r=Instance.new"Frame"
+r.BackgroundColor3=q
+r.BorderSizePixel=0
+r.BackgroundTransparency=0
+r.Parent=o
 
-local r=o/m.totalSpace
-if m.isHorizontal then
-q.Position=UDim2.new(r,0,1,-4)
-q.Size=UDim2.new(0,2,0,4)
+local s=p/n.totalSpace
+if n.isHorizontal then
+r.Position=UDim2.new(s,0,1,-4)
+r.Size=UDim2.new(0,2,0,4)
 else
-q.Position=UDim2.new(1,-4,r,0)
-q.Size=UDim2.new(0,4,0,2)
+r.Position=UDim2.new(1,-4,s,0)
+r.Size=UDim2.new(0,4,0,2)
 end
 
-q.Name="Marker_"..tostring(o)
+r.Name="Marker_"..tostring(p)
 end end
 
 
-l.setTotalSpace=function(m, n)
-m.totalSpace=n
-m:scrollTo(m.index,true)
-m:update()end
+l.setTotalSpace=function(n, o)
+n.totalSpace=o
+n:scrollTo(n.index,true)
+n:update()end
 
 
-l.setVisibleSpace=function(m, n)
-m.visibleSpace=n
-m:scrollTo(m.index,true)
-m:update()end
+l.setVisibleSpace=function(n, o)
+n.visibleSpace=o
+n:scrollTo(n.index,true)
+n:update()end
 
 
-l.disableScroll=function(m)
-m.scrollBarEnabled=false
-m:drawThumb()end
+l.disableScroll=function(n)
+n.scrollBarEnabled=false
+n:drawThumb()end
 
 
-l.enableScroll=function(m)
-m.scrollBarEnabled=true
-m:drawThumb()end
+l.enableScroll=function(n)
+n.scrollBarEnabled=true
+n:drawThumb()end
 
 
-l.isScrollBarEnabled=function(m)
-return m.scrollBarEnabled end
+l.isScrollBarEnabled=function(n)
+return n.scrollBarEnabled end
 
 
-l.isScrollBarDisabled=function(m)
-return not m.scrollBarEnabled end
+l.isScrollBarDisabled=function(n)
+return not n.scrollBarEnabled end
 
 
-l.new=function(m)
-local n=setmetatable({
-isHorizontal=m.isHorizontal or false,
-increment=m.increment or 1,
-wheelIncrement=m.wheelIncrement or 3,
-barThickness=m.barThickness or 16,
+l.new=function(n)
+local o=setmetatable({
+isHorizontal=n.isHorizontal or false,
+increment=n.increment or 1,
+wheelIncrement=n.wheelIncrement or 3,
+barThickness=n.barThickness or 16,
 
 scrollBarEnabled=true,
 
 index=0,
-visibleSpace=m.visibleSpace or 0,
-totalSpace=m.totalSpace or 0,
+visibleSpace=n.visibleSpace or 0,
+totalSpace=n.totalSpace or 0,
 
 markers={},
 
-scrollBar=m.scrollBar or nil,
-scrollThumb=m.scrollThumb or nil,
-scrollThumbFrame=m.scrollThumbFrame or nil,
-markerFrame=m.markerFrame or nil,
+scrollBar=n.scrollBar or nil,
+scrollThumb=n.scrollThumb or nil,
+scrollThumbFrame=n.scrollThumbFrame or nil,
+markerFrame=n.markerFrame or nil,
 
 scrolledSignal=i.new(),
 },l)
 
-n.upButtonName=n.isHorizontal and"left"or"up"
-n.downButtoName=n.isHorizontal and"right"or"down"
+o.upButtonName=o.isHorizontal and"left"or"up"
+o.downButtoName=o.isHorizontal and"right"or"down"
 
-return n end
+return o end
 
 
-return l end a.cJ=function()local b=a.cache.cJ if not b then b={c=__modImpl()}a.cache.cJ=b end return b.c end end do local function __modImpl()
+return l end a.cJ=function()local c=a.cache.cJ if not c then c={c=b()}a.cache.cJ=c end return c.c end end do local b=function()
 local b={}
 b.__index=b
 
 b.new=function(c)
 return setmetatable({
+isClient=c.client or c.isClient or c.onlyClient,
+isDeprecated=c.deprecated or c.isDeprecated,
+
 name=c.name,
 isSection=c.isSection,
 sectionName=c.sectionName,
@@ -8772,7 +8775,7 @@ description=c.description
 },b)end
 
 
-return b end a.cK=function()local b=a.cache.cK if not b then b={c=__modImpl()}a.cache.cK=b end return b.c end end do local function __modImpl()
+return b end a.cK=function()local c=a.cache.cK if not c then c={c=b()}a.cache.cK=c end return c.c end end do local b=function()
 local b=Color3.fromRGB(248,109,115)
 local c=Color3.fromRGB(223,215,136)
 local d=Color3.fromRGB(156,121,223)
@@ -8795,8 +8798,13 @@ g,warn=
 h,error=
 i,valid=
 j
+},
+commands={undefined=
+i,client=
+c,deprecated=
+f
 }
-}end a.cL=function()local b=a.cache.cL if not b then b={c=__modImpl()}a.cache.cL=b end return b.c end end do local function __modImpl()
+}end a.cL=function()local c=a.cache.cL if not c then c={c=b()}a.cache.cL=c end return c.c end end do local b=function()
 local b=a.g()
 local c=a.ad()
 local d=a.b6()
@@ -8821,389 +8829,389 @@ local h=a.cm()
 
 
 
-local i={}
+local i={}local j=function(
 
-local function fail(j,k,l)
+j, k, l)
 return{
 success=false,
 message=j,
 options=k,
 comment=l,
-}
+}end
+
+
+
+i.normalizeOptions=function(k)
+if type(k)=="string"then
+return string.split(k,"|")
+end
+return k or{}end
+
+
+
+i.getOptions=function(k, l)
+local m=(l and l.options)or k.options
+return i.normalizeOptions(m)end local k=function(
+
+
+
+k, l)
+local m=l:lower()
+
+for n,o in k do
+local p=tostring(o)
+if p:lower()==m then
+return p
+end
 end
 
-
-i.normalizeOptions=function(j)
-if type(j)=="string"then
-return string.split(j,"|")
-end
-return j or{}end
+return nil end local l=function(
 
 
-
-i.getOptions=function(j, k)
-local l=(k and k.options)or j.options
-return i.normalizeOptions(l)end
-
+l)
+if type(l)~="table"then return{}end
+return h.unlookupify(l)end local m=function(
 
 
-local function findOption(j,k)
-local l=k:lower()
-
-for m,n in j do
-local o=tostring(n)
-if o:lower()==l then
-return o
-end
-end
-
-return nil
-end
-
-local function keysOf(j)
-if type(j)~="table"then return{}end
-return h.unlookupify(j)
-end
-
-local function validateFreeText(j)
+m)
 return{
 success=true,
-value=j,
+value=m,
 color="string",
-}
+}end local n=function(
+
+
+n, o)
+local p=i.normalizeOptions(o.options)
+
+if#p==0 then
+return m(n)
 end
 
-local function validateString(j,k)
-local l=i.normalizeOptions(k.options)
+local q=k(p,n)
 
-if#l==0 then
-return validateFreeText(j)
+if q then
+return{success=true,value=q,color="string"}
 end
 
-local m=findOption(l,j)
+return j(" - invalid option",p)end
 
-if m then
-return{success=true,value=m,color="string"}
-end
 
-return fail(" - invalid option",l)
-end
-
-local j={
+local o={
 ["true"]=true,yes=
 true,enabled=
 true,
 ["false"]=false,no=
 false,disabled=
 false,
-}
+}local p=function(
 
-local function validateBoolean(k)
-local l=j[k:lower()]
+p)
+local q=o[p:lower()]
 
-if l==nil then
-return fail(" - invalid boolean",{"false","true"})
+if q==nil then
+return j(" - invalid boolean",{"false","true"})
 end
 
 return{
 success=true,
-value=l,
+value=q,
 color="boolean",
-}
+}end local q=function(
+
+
+q, r)
+local s=tonumber(q)
+
+if s==nil or s~=s or math.abs(s)==math.huge then
+return j" - invalid number"
 end
 
-local function validateNumber(k,l)
-local m=tonumber(k)
+local t,u=r.min,r.max
 
-if m==nil or m~=m or math.abs(m)==math.huge then
-return fail" - invalid number"
+if r.clamp then
+t,u=r.clamp[1],r.clamp[2]
 end
 
-local n,o=l.min,l.max
-
-if l.clamp then
-n,o=l.clamp[1],l.clamp[2]
+if t and s<t then
+return j(` - the <b>MIN</b> is <b>{t}</b>`)
 end
 
-if n and m<n then
-return fail(` - the <b>MIN</b> is <b>{n}</b>`)
+if u and s>u then
+return j(` - the <b>MAX</b> is <b>{u}</b>`)
 end
 
-if o and m>o then
-return fail(` - the <b>MAX</b> is <b>{o}</b>`)
-end
-
-if l.floor and math.floor(m)~=m then
-return fail" - whole numbers only"
+if r.floor and math.floor(s)~=s then
+return j" - whole numbers only"
 end
 
 
-if tonumber(string.format("%.5f",m))~=m then
-return fail" - too many decimal places"
+if tonumber(string.format("%.5f",s))~=s then
+return j" - too many decimal places"
 end
 
 return{
 success=true,
-value=m,
-display=`<b>{m}</b>`,
+value=s,
+display=`<b>{s}</b>`,
 color="number",
-}
+}end local r=function(
+
+
+r)
+local s=r:split","
+
+if#s>3 then
+return j" - too many args"
 end
 
-local function validateVector3(k)
-local l=k:split","
+local t={}
 
-if#l>3 then
-return fail" - too many args"
+for u,v in s do
+
+if v:match"^%s*$"then
+v="0"
 end
 
-local m={}
+local w=q(v,{})
 
-for n,o in l do
-
-if o:match"^%s*$"then
-o="0"
+if not w.success then
+return w
 end
 
-local p=validateNumber(o,{})
-
-if not p.success then
-return p
+t[u]=w.value
 end
 
-m[n]=p.value
-end
-
-if#m~=3 then
+if#t~=3 then
 return{
 success=false,
 comment=true,
-message=`: {({"X","Y","Z"})[#m+1]}`,
+message=`: {({"X","Y","Z"})[#t+1]}`,
 }
 end
 
-local n=Vector3.new(m[1],m[2],m[3])
+local u=Vector3.new(t[1],t[2],t[3])
 
 return{
 success=true,
-value=n,
-display=`({n})`,
+value=u,
+display=`({u})`,
+color="others",
+}end local s=function(
+
+
+s)
+local t=s:match"^#?(%x%x%x%x%x%x)$"
+
+if t then
+local u=tonumber(t:sub(1,2),16)
+local v=tonumber(t:sub(3,4),16)
+local w=tonumber(t:sub(5,6),16)
+
+return{
+success=true,
+value=Color3.fromRGB(u,v,w),
 color="others",
 }
 end
 
-local function validateColor3(k)
-local l=k:match"^#?(%x%x%x%x%x%x)$"
+local u=s:split","
 
-if l then
-local m=tonumber(l:sub(1,2),16)
-local n=tonumber(l:sub(3,4),16)
-local o=tonumber(l:sub(5,6),16)
-
-return{
-success=true,
-value=Color3.fromRGB(m,n,o),
-color="others",
-}
+if#u~=3 then
+return j" - use R,G,B or #hex"
 end
 
-local m=k:split","
+local v={}
 
-if#m~=3 then
-return fail" - use R,G,B or #hex"
+for w,x in u do
+local y=q(x,{min=0,max=255,floor=true})
+
+if not y.success then
+return y
 end
 
-local n={}
-
-for o,p in m do
-local q=validateNumber(p,{min=0,max=255,floor=true})
-
-if not q.success then
-return q
-end
-
-n[o]=q.value
+v[w]=y.value
 end
 
 return{
 success=true,
-value=Color3.fromRGB(n[1],n[2],n[3]),
+value=Color3.fromRGB(v[1],v[2],v[3]),
 color="others",
-}
-end
+}end
 
-local k={
+
+local t={
 me=true,
 all=true,
 others=true,
 random=true,
-}
+}local u=function(
 
-local function validatePlayer(l)
-if l==""then
-return fail" - player missing"
+u)
+if u==""then
+return j" - player missing"
 end
 
-local m=l:lower()
+local v=u:lower()
 
 
-if k[m]or m:match"^#%d+$"or m:match"^%%.+$"then
-return{success=true,value=l,color="valid"}
+if t[v]or v:match"^#%d+$"or v:match"^%%.+$"then
+return{success=true,value=u,color="valid"}
 end
 
-if#c:getPlayersByName(l)>0 then
-return{success=true,value=l,color="valid"}
+if#c:getPlayersByName(u)>0 then
+return{success=true,value=u,color="valid"}
 end
 
-local n={}
-for o,p in b.Players:GetPlayers()do
-table.insert(n,p.Name)
+local w={}
+for x,y in b.Players:GetPlayers()do
+table.insert(w,y.Name)
 end
 
-return fail(" - player not found",n)
-end
+return j(" - player not found",w)end
 
-local l={
+
+local v={
 "BasePart","Part","MeshPart","Model","Folder","Script","LocalScript",
 "ModuleScript","Sound","Humanoid","Tool","ClickDetector",
 "ProximityPrompt","TouchTransmitter","SpawnLocation","Seat","VehicleSeat",
-}
+}local w=function(
 
-local function validateClassName(m)
+w)
 
-local n=pcall(function()
-local n=Instance.new(m)
-n:Destroy()
+local x=pcall(function()
+local x=Instance.new(w)
+x:Destroy()
 end)
 
-if n then
-return{success=true,value=m,color="valid"}
+if x then
+return{success=true,value=w,color="valid"}
 end
 
-return fail(" - invalid class name",l)
+return j(" - invalid class name",v)end local x=function(
+
+
+x)
+
+local y=l(e:getValue(tostring(game.PlaceId)))
+
+if#y==0 then
+return j" - no waypoints created"
 end
 
-local function validateWaypoint(m)
+local z=k(y,x)
 
-local n=keysOf(e:getValue(tostring(game.PlaceId)))
-
-if#n==0 then
-return fail" - no waypoints created"
+if z then
+return{success=true,value=z,color="valid"}
 end
 
-local o=findOption(n,m)
+return j(" - invalid waypoint",y)end local y=function(
 
-if o then
-return{success=true,value=o,color="valid"}
+
+y)
+local z={}
+
+for A,B in b.Teams:GetTeams()do
+table.insert(z,B.Name)
 end
 
-return fail(" - invalid waypoint",n)
+if#z==0 then
+return j" - there are no teams"
 end
 
-local function validateTeam(m)
-local n={}
+local A=k(z,y)
 
-for o,p in b.Teams:GetTeams()do
-table.insert(n,p.Name)
+if A then
+return{success=true,value=A,color="valid"}
 end
 
-if#n==0 then
-return fail" - there are no teams"
-end
+return j(" - invalid team",z)end local z=function(
 
-local o=findOption(n,m)
 
-if o then
-return{success=true,value=o,color="valid"}
-end
+z)
+local A=z:lower()
+local B={}
+local C
 
-return fail(" - invalid team",n)
-end
+for D,E in Enum.KeyCode:GetEnumItems()do
+table.insert(B,E.Name)
 
-local function validateKeycode(m)
-local n=m:lower()
-local o={}
-local p
-
-for q,r in Enum.KeyCode:GetEnumItems()do
-table.insert(o,r.Name)
-
-if r.Name:lower()==n then
-p=r
+if E.Name:lower()==A then
+C=E
 end
 end
 
-if p then
-return{success=true,value=p,color="valid"}
+if C then
+return{success=true,value=C,color="valid"}
 end
 
-return fail(" - invalid key",o)
+return j(" - invalid key",B)end local A=function(
+
+
+A)
+local B=d.lookup[A:lower()]
+
+if B then
+return{success=true,value=B.name,color="valid"}
 end
 
-local function validateCommand(m)
-local n=d.lookup[m:lower()]
+return j(" - invalid command",d.array)end local B=function(
 
-if n then
-return{success=true,value=n.name,color="valid"}
+
+
+B, C, D, E)
+local F=l(B:getData())
+
+if#F==0 then
+return j(D)
 end
 
-return fail(" - invalid command",d.array)
+local G=k(F,C)
+
+if G then
+return{success=true,value=G,color="valid"}
 end
 
+return j(E,F)end local C=function(
 
-local function validateStoredName(m,n,o,p)
-local q=keysOf(m:getData())
 
-if#q==0 then
-return fail(o)
-end
+C)
+return B(f,C," - no custom aliases"," - invalid alias")end local D=function(
 
-local r=findOption(q,n)
 
-if r then
-return{success=true,value=r,color="valid"}
-end
+D)
+return B(g,D," - no plugins installed"," - invalid plugin")end
 
-return fail(p,q)
-end
 
-local function validateAlias(m)
-return validateStoredName(f,m," - no custom aliases"," - invalid alias")
-end
-
-local function validatePlugin(m)
-return validateStoredName(g,m," - no plugins installed"," - invalid plugin")
-end
-
-local m={
-string=validateString,
-text=validateString,
-object=validateFreeText,
-boolean=validateBoolean,
-number=validateNumber,
-vector3=validateVector3,
-color3=validateColor3,
-player=validatePlayer,
-waypoint=validateWaypoint,
-className=validateClassName,
-team=validateTeam,
-keycode=validateKeycode,
-command=validateCommand,
-alias=validateAlias,
-plugin=validatePlugin,
+local E={
+string=n,
+text=n,
+object=m,
+boolean=p,
+number=q,
+vector3=r,
+color3=s,
+player=u,
+waypoint=x,
+className=w,
+team=y,
+keycode=z,
+command=A,
+alias=C,
+plugin=D,
 }
 
-i.validate=function(n, o, p)
-local q=m[o.kind]
+i.validate=function(F, G, H)
+local I=E[G.kind]
 
-if not q then
-return fail(` - missing parser {o.kind}`)
+if not I then
+return j(` - missing parser {G.kind}`)
 end
 
-return q(p,o)end
+return I(H,G)end
 
 
-return i end a.cM=function()local b=a.cache.cM if not b then b={c=__modImpl()}a.cache.cM=b end return b.c end end do local function __modImpl()
+return i end a.cM=function()local c=a.cache.cM if not c then c={c=b()}a.cache.cM=c end return c.c end end do local b=function()
 
 local b=a.cj()
 local c=a.ce()
@@ -9219,460 +9227,460 @@ local i=f.escapeRichText
 
 local j=f.lookupify{"`","'","\""}
 local k=f.lookupify{" ","\t","\n","\r"}
-local l=f.lookupify{",","|","&"}
+local l=f.lookupify{",","|","&"}local m=function(
 
-local function getCommand(m)
-return d.lookup[m]
-end
+m)
+return d.lookup[m]end local n=function(
 
-local function colorFromName(m,n,o)
-local p=e.args
-return h(m,p[n]or o or p.others)
-end
 
-local function removeWhiteSpace(m)
-local n=m:gsub(".",function(n)
-return k[n]and"_"or n
+n, o, p)
+local q=e.args
+return h(n,q[o]or p or q.others)end local o=function(
+
+
+o)
+local p=o:gsub(".",function(p)
+return k[p]and"_"or p
 end)
-return n
-end
-
-local function argName(m,n)
-if m.name then
-return`'{removeWhiteSpace(m.name)}'`
-end
-return`#{n}`
-end
+return p end local p=function(
 
 
-local function findClosingQuote(m,n,o)
-local p=o+1
+p, q)
+if p.name then
+return`'{o(p.name)}'`
+end
+return`#{q}`end local q=function(
+
+
+
+q, r, s)
+local t=s+1
 
 while true do
-local q=m:find(n,p,true)
+local u=q:find(r,t,true)
 
-if not q then
+if not u then
 return nil
 end
 
-if m:sub(q-1,q-1)~="\\"then
-return q
+if q:sub(u-1,u-1)~="\\"then
+return u
 end
 
-p=q+1
-end
-end
+t=u+1
+end end local r=function(
 
 
 
-local function readIdentifier(m,n)
-local o={}
-local p=n
-local q=#m
 
-while p<=q do
-local r=m:sub(p,p)
+r, s)
+local t={}
+local u=s
+local v=#r
 
-if k[r]then
+while u<=v do
+local w=r:sub(u,u)
+
+if k[w]then
 break
 end
 
-table.insert(o,r)
-p=p+1
+table.insert(t,w)
+u=u+1
 
-if l[r]then
-while p<=q and k[m:sub(p,p)]do
-p=p+1
+if l[w]then
+while u<=v and k[r:sub(u,u)]do
+u=u+1
 end
 end
-end
-
-return table.concat(o),p-1
 end
 
-local function makeToken(m,n,o,p,q,r)
+return table.concat(t),u-1 end local s=function(
+
+
+s, t, u, v, w, x)
 return{
-kind=m,
-value=n,
-usedChar=r,
-from=p,
-to=q,
-raw=o:sub(p,q),
-}
+kind=s,
+value=t,
+usedChar=x,
+from=v,
+to=w,
+raw=u:sub(v,w),
+}end local t=function(
+
+
+
+t, u)
+if u==""then
+return"","",t
 end
 
+local v,w=t:lower():find(u:lower(),1,true)
 
-local function splitMatch(m,n)
-if n==""then
-return"","",m
+if not v then
+return"","",t
 end
 
-local o,p=m:lower():find(n:lower(),1,true)
+return t:sub(1,v-1),t:sub(v,w),t:sub(w+1)end local u=function(
 
-if not o then
-return"","",m
+
+u, v)
+if v then
+return v..u..v
 end
 
-return m:sub(1,o-1),m:sub(o,p),m:sub(p+1)
+if u:find"%s"then
+return`"{u}"`
 end
 
-local function quoteIfNeeded(m,n)
-if n then
-return n..m..n
-end
+return u end local v=function(
 
-if m:find"%s"then
-return`"{m}"`
-end
 
-return m
-end
-
-local function makeCorrection(m,n,o,p)
+v, w, x, y)
 return{
-from=m,
-to=n,
-text=quoteIfNeeded(o,p),
-}
-end
+from=v,
+to=w,
+text=u(x,y),
+}end
 
-local m={}
-m.__index=m
-m.colorFromName=colorFromName
-m.removeWhiteSpace=removeWhiteSpace
-
-
-m.parse=function(n, o)
-local p=n.cmdInput
-local q={}
-local r=1
-local s=#o
-
-while r<=s do
-local t=o:sub(r,r)
-
-if k[t]then
-r=r+1
-else
-local u=j[t]and findClosingQuote(o,t,r)
-
-if u then
-local v=(o:sub(r+1,u-1):gsub("\\"..t,t))
-table.insert(q,makeToken("string",v,o,r,u,t))
-r=u+1
-else
-local v,w=readIdentifier(o,r)
-table.insert(q,makeToken("identifier",v,o,r,w))
-r=w+1
-end
-end
-end
-
-local t=q[#q]
-local u=t and(t.to+1)or 1
-local v=o:sub(u)
 
 local w={}
-for x,y in q do
-table.insert(w,y.value)
+w.__index=w
+w.colorFromName=n
+w.removeWhiteSpace=o
+
+
+w.parse=function(x, y)
+local z=x.cmdInput
+local A={}
+local B=1
+local C=#y
+
+while B<=C do
+local D=y:sub(B,B)
+
+if k[D]then
+B=B+1
+else
+local E=j[D]and q(y,D,B)
+
+if E then
+local F=(y:sub(B+1,E-1):gsub("\\"..D,D))
+table.insert(A,s("string",F,y,B,E,D))
+B=E+1
+else
+local F,G=r(y,B)
+table.insert(A,s("identifier",F,y,B,G))
+B=G+1
+end
+end
 end
 
-p.rawText=o
-p.parsed=q
-p.spacesAtEnd=v
-p.noHighlightText=table.concat(w," ")..v
+local D=A[#A]
+local E=D and(D.to+1)or 1
+local F=y:sub(E)
 
-return q end
-
-
-
-m.parseArg=function(n, o, p, q)
-local r=n.cmdInput
-local s=p.value
-local t=g:validate(o,s)
-local u=t.success and#s>0
-
-local v={success=u,text=s}
-if u then
-v.value=t.value
-end
-r.args[q]=v
-
-if u then
-local w=t.display or i(s)
-return{success=true,display=colorFromName(w,t.color or"valid")}
+local G={}
+for H,I in A do
+table.insert(G,I.value)
 end
 
-local w=g.getOptions(o,t)
-local x
+z.rawText=y
+z.parsed=A
+z.spacesAtEnd=F
+z.noHighlightText=table.concat(G," ")..F
 
-if#s>0 then
-x=c:searchAtArray(w,s)[1]
+return A end
+
+
+
+w.parseArg=function(x, y, z, A)
+local B=x.cmdInput
+local C=z.value
+local D=g:validate(y,C)
+local E=D.success and#C>0
+
+local F={success=E,text=C}
+if E then
+F.value=D.value
+end
+B.args[A]=F
+
+if E then
+local G=D.display or i(C)
+return{success=true,display=n(G,D.color or"valid")}
 end
 
-if x then
-local y,z,A=splitMatch(x,s)
-r.correction=makeCorrection(p.from,p.to,x,p.usedChar)
+local G=g.getOptions(y,D)
+local H
+
+if#C>0 then
+H=c:searchAtArray(G,C)[1]
+end
+
+if H then
+local I,J,K=t(H,C)
+B.correction=v(z.from,z.to,H,z.usedChar)
 
 return{
 success=false,
 suggestion=true,
-display=colorFromName(i(y)..colorFromName(i(z),"warn")..i(A),"comment"),
+display=n(i(I)..n(i(J),"warn")..i(K),"comment"),
 }
 end
 
 return{
 success=false,
-display=colorFromName(i(s),t.color or"warn"),
-message=t.message,
-comment=t.comment,
+display=n(i(C),D.color or"warn"),
+message=D.message,
+comment=D.comment,
 }end
 
 
 
-m.parsePending=function(n, o)
-local p=n.cmdInput
-local q=g:validate(o,"")
-local r=g.getOptions(o,q)
+w.parsePending=function(x, y)
+local z=x.cmdInput
+local A=g:validate(y,"")
+local B=g.getOptions(y,A)
 
-if#r==0 then
+if#B==0 then
 return nil
 end
 
-local s=r[1]
-local t=#p.rawText+1
+local C=B[1]
+local D=#z.rawText+1
 
-if not o.optional then
-p.correction={from=t,to=t-1,text=quoteIfNeeded(s)}
+if not y.optional then
+z.correction={from=D,to=D-1,text=u(C)}
 else
-p.hasGhost=true
+z.hasGhost=true
 end
 
-return colorFromName(i(s),"comment")end
+return n(i(C),"comment")end
 
 
 
-m.highlightArgs=function(n, o, p, q, r)
-local s=n.cmdInput
-local t=o.args
-local u=#t
-local v=#p-1
+w.highlightArgs=function(x, y, z, A, B)
+local C=x.cmdInput
+local D=y.args
+local E=#D
+local F=#z-1
 
-local w=1
-local x
+local G=1
+local H
 
-for y,z in t do
-local A=p[y+1]
+for I,J in D do
+local K=z[I+1]
 
-if A==nil then
-if q then
-local B=n:parsePending(z)
-if B then
-table.insert(r,B)
+if K==nil then
+if A then
+local L=x:parsePending(J)
+if L then
+table.insert(B,L)
 end
 end
 break
 end
 
-local B=n:parseArg(z,A,y)
-w=y+1
+local L=x:parseArg(J,K,I)
+G=I+1
 
-if B.display then
-table.insert(r,B.display)
+if L.display then
+table.insert(B,L.display)
 end
 
-if not B.success then
-x={index=y,result=B}
+if not L.success then
+H={index=I,result=L}
 break
 end
 end
 
 
-for y=w+1,math.min(#p,u+1)do
-table.insert(r,i(p[y].raw))
+for I=G+1,math.min(#z,E+1)do
+table.insert(B,i(z[I].raw))
 end
 
-local y=#p>u+1
+local I=#z>E+1
 
-if y then
-local z=s.rawText:sub(p[u+2].from,p[#p].to)
-table.insert(r,colorFromName(`<b>{i(z)}</b>`,"warn"))
+if I then
+local J=C.rawText:sub(z[E+2].from,z[#z].to)
+table.insert(B,n(`<b>{i(J)}</b>`,"warn"))
 
-s.runError=" - extra arg"
-n:setComment(" - extra arg","warn")
+C.runError=" - extra arg"
+x:setComment(" - extra arg","warn")
 return
 end
 
-if x then
-local z=x.result
+if H then
+local J=H.result
 
 
-s.runError=` - {argName(t[x.index],x.index)} is invalid`
+C.runError=` - {p(D[H.index],H.index)} is invalid`
 
-if z.message and not z.suggestion then
-n:setComment(z.message,z.comment and"comment"or"warn")
+if J.message and not J.suggestion then
+x:setComment(J.message,J.comment and"comment"or"warn")
 end
 return
 end
 
 
-for z=v+1,u do
-local A=t[z]
+for J=F+1,E do
+local K=D[J]
 
-if not A.optional then
-s.runError=` - {argName(A,z)} is missing`
+if not K.optional then
+C.runError=` - {p(K,J)} is missing`
 break
 end
 end
 
-local z
-
-if q then
-z=v+1
-elseif v>0 then
-z=v
-end
-
-local A=z and t[z]
+local J
 
 if A then
-local B=q and""or": "
-n:setComment(`{B}({n:highlightArgType(A)})`)
+J=F+1
+elseif F>0 then
+J=F
+end
+
+local K=J and D[J]
+
+if K then
+local L=A and""or": "
+x:setComment(`{L}({x:highlightArgType(K)})`)
 end end
 
 
-m.highlightArgType=function(n, o)
-local p=o.optional and colorFromName("?","symbol")or""
-local q=`{colorFromName(o.kind,o.kind)}{p}`
+w.highlightArgType=function(x, y)
+local z=y.optional and n("?","symbol")or""
+local A=`{n(y.kind,y.kind)}{z}`
 
-if o.name then
-return`{removeWhiteSpace(o.name)}: {q}`
+if y.name then
+return`{o(y.name)}: {A}`
 end
 
-return q end
+return A end
 
 
-m.highlightArgsType=function(n, o)
-if#o==0 then return""end
+w.highlightArgsType=function(x, y)
+if#y==0 then return""end
 
-local p={}
+local z={}
 
-for q,r in o do
-table.insert(p,n:highlightArgType(r))
+for A,B in y do
+table.insert(z,x:highlightArgType(B))
 end
 
-return`({table.concat(p,", ")})`end
+return`({table.concat(z,", ")})`end
 
 
-m.resetInput=function(n)
-local o=n.cmdInput
+w.resetInput=function(x)
+local y=x.cmdInput
 
-o.highlightText=""
-o.commandName=""
-o.commandData=nil
-o.isValidCommand=false
-o.isAbreviated=false
-o.bestMatch=nil
-o.bestMatches={}
-o.correctionText=nil
-o.correction=nil
-o.runError=nil
-o.hasGhost=false
-o.args={}
+y.highlightText=""
+y.commandName=""
+y.commandData=nil
+y.isValidCommand=false
+y.isAbreviated=false
+y.bestMatch=nil
+y.bestMatches={}
+y.correctionText=nil
+y.correction=nil
+y.runError=nil
+y.hasGhost=false
+y.args={}
 
-n:setComment""end
+x:setComment""end
 
 
 
-m.highlight=function(n, o)
-local p=n.cmdInput
-n:resetInput()
+w.highlight=function(x, y)
+local z=x.cmdInput
+x:resetInput()
 
-if#o==0 then return""end
+if#y==0 then return""end
 
-local q=o[1]
-local r=q.value
-local s=r:lower()
-local t=getCommand(s)
-local u=t~=nil
-local v=p.spacesAtEnd
-local w=#v>0
+local A=y[1]
+local B=A.value
+local C=B:lower()
+local D=m(C)
+local E=D~=nil
+local F=z.spacesAtEnd
+local G=#F>0
 
-p.commandName=s
-p.commandData=t
-p.isValidCommand=u
-p.isAbreviated=u and t.name~=s
+z.commandName=C
+z.commandData=D
+z.isValidCommand=E
+z.isAbreviated=E and D.name~=C
 
-if not u then
-p.bestMatches=b:search(s)
-p.bestMatch=p.bestMatches[1]
+if not E then
+z.bestMatches=b:search(C)
+z.bestMatch=z.bestMatches[1]
 
-if w or#o>1 or not p.bestMatch then
-local x=p.rawText:sub(q.from,o[#o].to)
+if G or#y>1 or not z.bestMatch then
+local H=z.rawText:sub(A.from,y[#y].to)
 
-p.runError=" - invalid command"
-n:setComment(" - invalid command","error")
-p.highlightText=colorFromName(i(x),"error")..v
+z.runError=" - invalid command"
+x:setComment(" - invalid command","error")
+z.highlightText=n(i(H),"error")..F
 
-return p.highlightText
+return z.highlightText
 end
 end
 
-local x={}
+local H={}
 
-if u then
-table.insert(x,colorFromName(i(r),"valid"))
+if E then
+table.insert(H,n(i(B),"valid"))
 else
-local y=p.bestMatch
-local z,A,B=splitMatch(y,r)
+local I=z.bestMatch
+local J,K,L=t(I,B)
 
-table.insert(x,colorFromName(i(z)..colorFromName(i(A),"warn")..i(B),"comment"))
+table.insert(H,n(i(J)..n(i(K),"warn")..i(L),"comment"))
 
-p.correctionText=y
-p.correction=makeCorrection(q.from,q.to,y,q.usedChar)
-p.runError=" - invalid command"
+z.correctionText=I
+z.correction=v(A.from,A.to,I,A.usedChar)
+z.runError=" - invalid command"
 end
 
-if u then
+if E then
 
-local y=#o==1 and not w
+local I=#y==1 and not G
 
-if y and#t.aliases>1 then
-local z=table.clone(t.aliases)
-local A=table.find(z,s)
+if I and#D.aliases>1 then
+local J=table.clone(D.aliases)
+local K=table.find(J,C)
 
-if A then
-table.remove(z,A)
+if K then
+table.remove(J,K)
 end
 
-n:setComment(`: [{table.concat(z,", ")}]`,"comment")
+x:setComment(`: [{table.concat(J,", ")}]`,"comment")
 end
 
-n:highlightArgs(t,o,w,x)
+x:highlightArgs(D,y,G,H)
 end
 
-if p.correction or p.hasGhost then
-v=""
+if z.correction or z.hasGhost then
+F=""
 end
 
-local y=table.concat(x," ")..v
-p.highlightText=y
+local I=table.concat(H," ")..F
+z.highlightText=I
 
-return y end
-
-
-m.setComment=function(n, ...)
-return n.setCommentCallback(...)end
+return I end
 
 
-m.new=function(n, o)
+w.setComment=function(x, ...)
+return x.setCommentCallback(...)end
+
+
+w.new=function(x, y)
 return setmetatable({
-cmdInput=n,
-setCommentCallback=o
-},m)end
+cmdInput=x,
+setCommentCallback=y
+},w)end
 
 
-return m end a.cN=function()local b=a.cache.cN if not b then b={c=__modImpl()}a.cache.cN=b end return b.c end end do local function __modImpl()
+return w end a.cN=function()local c=a.cache.cN if not c then c={c=b()}a.cache.cN=c end return c.c end end do local b=function()
 
 local b={}
 b.__index=b
@@ -9709,7 +9717,7 @@ index=1
 },b)end
 
 
-return b end a.cO=function()local b=a.cache.cO if not b then b={c=__modImpl()}a.cache.cO=b end return b.c end end do local function __modImpl()
+return b end a.cO=function()local c=a.cache.cO if not c then c={c=b()}a.cache.cO=c end return c.c end end do local b=function()
 local b=a.cf()
 local c=a.g()
 local d=a.ad()
@@ -9729,185 +9737,184 @@ local n=a.cm()
 local o=a.cF()
 
 local p=a.k()
+local q=a.cL().commands
 
-local q=c.UserInputService
-local r=c.RunService
+local r=c.UserInputService
+local s=c.RunService
 
-local s=n.richFontSize
+local t=n.richFontSize
+local u=n.colorFromRGB
 
-local t={}
-t.__index=t
+local v={}
+v.__index=v local w=function(
 
-local function isValidInputType(u)
-return j.pressingInputs[u.UserInputType]~=nil
-end
-
-local function getCommand(u)
-return k.lookup[u]
-end
-
-local function zerofloor(u)
-return math[(u<0)and"ceil"or"floor"](u)
-end
+w)
+return j.pressingInputs[w.UserInputType]~=nil end local x=function(
 
 
-local function cleanInput(u)
-u=u:gsub("[\r\n]+$","")
-u=u:gsub("[\r\n]+"," ")
-return u
-end
+x)
+return k.lookup[x]end local y=function(
 
 
-t.refresh=function(u, v)
-local w=u.parser:parse(v)
-u.parser:highlight(w)
-
-u:updateSearchBoxHighlight()
-u:updateSearchedCommand()end
+y)
+return math[(y<0)and"ceil"or"floor"](y)end local z=function(
 
 
+z)
+z=z:gsub("[\r\n]+$","")
+z=z:gsub("[\r\n]+"," ")
+return z end
 
-t.applyCorrection=function(u)
-local v=u.commandInput
-local w=v.correction
-local x=v.rawText
 
-local y=x:sub(1,w.from-1)..w.text..x:sub(w.to+1)
+v.refresh=function(A, B)
+local C=A.parser:parse(B)
+A.parser:highlight(C)
+
+A:updateSearchBoxHighlight()
+A:updateSearchedCommand()end
+
+
+v.applyCorrection=function(A)
+local B=A.commandInput
+local C=B.correction
+local D=B.rawText
+
+local E=D:sub(1,C.from-1)..C.text..D:sub(C.to+1)
 
 if p:getValue"spaceAfterCorrection"then
-y=y.." "
+E=E.." "
 end
 
-u.searchBox.Text=y end
+A.searchBox.Text=E end
 
 
-t.awake=function(u)
-local v=u.commandInput
-local w=u.searchBox
-local x=u.searchBoxHolder
-local y=u.inputMarker
+v.awake=function(A)
+local B=A.commandInput
+local C=A.searchBox
+local D=A.searchBoxHolder
+local E=A.inputMarker
 
-local z=x.Placeholder
+local F=D.Placeholder
 
-local A=w:GetPropertyChangedSignal"Text"
+local G=C:GetPropertyChangedSignal"Text"
 
-local B=0
-
-local function updateMarker()
-if(tick()-B)>0.5 then
-y.Visible=not y.Visible
-B=tick()
-end
-end
-
-local function closeSearchBox()
-if w:IsFocused()then
-w:ReleaseFocus()
-end
-end
-
-local function captureFocus()
-w:CaptureFocus()
-end
+local H=0 local I=function()
 
 
-local function onEnterPressed()
-if v.correction then
-u:applyCorrection()
-task.defer(captureFocus)
+if(tick()-H)>0.5 then
+E.Visible=not E.Visible
+H=tick()
+end end local J=function()
+
+
+
+if C:IsFocused()then
+C:ReleaseFocus()
+end end local K=function()
+
+
+
+C:CaptureFocus()end local L=function()
+
+
+
+
+if B.correction then
+A:applyCorrection()
+task.defer(K)
 return true
 end
 
 
-u:sendInputCommand()
-return false
-end
+A:sendInputCommand()
+return false end local M=function()
 
-local function updatePlaceholder()
-local C=not w:IsFocused()and#w.Text==0
-z.Visible=C
-end
 
-u.commandClickedSignal:Connect(function(C)
-w.Text=C.aliases[1]
-task.defer(captureFocus)
+
+local M=not C:IsFocused()and#C.Text==0
+F.Visible=M end
+
+
+A.commandClickedSignal:Connect(function(N)
+C.Text=N.aliases[1]
+task.defer(K)
 end)
 
-b:Connect(x.Activated,captureFocus)
+b:Connect(D.Activated,K)
 
-b:Connect(w.Focused,function()
-updatePlaceholder()
-u.markerConnection=b:Connect(r.Stepped,updateMarker)
+b:Connect(C.Focused,function()
+M()
+A.markerConnection=b:Connect(s.Stepped,I)
 
-if#w.Text==0 then
-u:setComment""
-end
-end)
-
-b:Connect(w.FocusLost,function(C)
-updatePlaceholder()
-y.Visible=true
-b:disconnect(u.markerConnection)
-
-if C then
-u:refresh(cleanInput(w.Text))
-onEnterPressed()
+if#C.Text==0 then
+A:setComment""
 end
 end)
 
-b:Connect(A,function()
-local C=w.Text
-local D=C:sub(-1)=="\n"or C:sub(-1)=="\r"
+b:Connect(C.FocusLost,function(N)
+M()
+E.Visible=true
+b:disconnect(A.markerConnection)
 
-if C:find"[\r\n]"then
-C=cleanInput(C)
-w.Text=C
+if N then
+A:refresh(z(C.Text))
+L()
+end
+end)
 
-if D then
-u:refresh(C)
+b:Connect(G,function()
+local N=C.Text
+local O=N:sub(-1)=="\n"or N:sub(-1)=="\r"
 
-if not onEnterPressed()then
-closeSearchBox()
+if N:find"[\r\n]"then
+N=z(N)
+C.Text=N
+
+if O then
+A:refresh(N)
+
+if not L()then
+J()
 end
 return
 end
 end
 
-updatePlaceholder()
-u:refresh(C)
+M()
+A:refresh(N)
 end)end
 
 
-t.sendInputCommand=function(u)
-local v=u.commandInput
+v.sendInputCommand=function(A)
+local B=A.commandInput
 
-if v.runError then
-u:setComment(v.runError,"error")
+if B.runError then
+A:setComment(B.runError,"error")
 return
 end
 
-local w=v.commandData
-if not w then return end
+local C=B.commandData
+if not C then return end
 
-local x=w.name
+local D=C.name
 
-local y,z=pcall(function()
-local y=i.new(v.args)
-return g:run(x,y)
+local E,F=pcall(function()
+local E=i.new(B.args)
+return g:run(D,E)
 end)
 
 if p:getValue"clearOnEnter"then
-u.searchBox.Text=""
+A.searchBox.Text=""
 end
 
-if not y then
-u:setComment(`failed - {z}`,"error")
-m:error(`failed to run command '{x}': {z}`)
+if not E then
+A:setComment(`failed - {F}`,"error")
+m:error(`failed to run command '{D}': {F}`)
 end end
 
 
-t.create=function(u)
-u.searchBoxHolder=e.new("ImageButton",{
+v.create=function(A)
+A.searchBoxHolder=e.new("ImageButton",{
 Size=UDim2.new(1,-10,0,18),
 Position=UDim2.fromScale(0.5,0),
 AnchorPoint=Vector2.new(0.5,1),
@@ -9925,7 +9932,7 @@ TextXAlignment=Enum.TextXAlignment.Left,
 TextYAlignment=Enum.TextYAlignment.Center,
 AutomaticSize=Enum.AutomaticSize.X,
 BackgroundTransparency=1,
-TextSize=u.configs.textSize,
+TextSize=A.configs.textSize,
 Visible=false,
 RichText=true,
 ThemeTag={
@@ -9945,8 +9952,8 @@ AnchorPoint=Vector2.new(0,0.5),
 TextXAlignment=Enum.TextXAlignment.Left,
 TextYAlignment=Enum.TextYAlignment.Center,
 BackgroundTransparency=1,
-TextSize=u.configs.textSize-1,
-Text=u.configs.placeholderText,
+TextSize=A.configs.textSize-1,
+Text=A.configs.placeholderText,
 ThemeTag={
 TextColor3="Colors.Text.Dark",
 Font="Font.MonoSpace"
@@ -9954,10 +9961,10 @@ Font="Font.MonoSpace"
 }),
 })
 
-local v=u.searchBoxHolder
-local w=v.Input.Holder
+local B=A.searchBoxHolder
+local C=B.Input.Holder
 
-u.inputMarker=e.new("Frame","Marker",w,{
+A.inputMarker=e.new("Frame","Marker",C,{
 Size=UDim2.new(0,1.5,1,-3),
 Position=UDim2.new(1,0.2,0.5,0),
 AnchorPoint=Vector2.new(0,0.5),
@@ -9966,14 +9973,14 @@ Visible=false,
 ThemeTag={BackgroundColor3="Colors.Primary"}
 })
 
-u.inputComment=e.new("TextLabel","Comment",w,{
+A.inputComment=e.new("TextLabel","Comment",C,{
 Size=UDim2.fromScale(1,1),
 Position=UDim2.fromScale(1,0.5),
 AnchorPoint=Vector2.new(0,0.5),
 TextXAlignment=Enum.TextXAlignment.Left,
 TextYAlignment=Enum.TextYAlignment.Center,
 BackgroundTransparency=1,
-TextSize=u.configs.textSize,
+TextSize=A.configs.textSize,
 RichText=true,
 Text="",
 ThemeTag={
@@ -9982,14 +9989,14 @@ Font="Font.MonoSpace"
 }
 })
 
-u.commandInfo=e.new("TextLabel","Info",{
+A.commandInfo=e.new("TextLabel","Info",{
 Size=UDim2.new(1,-25,0,0),
 Position=UDim2.new(0,10,0,0),
 AutomaticSize=Enum.AutomaticSize.Y,
 TextYAlignment=Enum.TextYAlignment.Center,
 TextXAlignment=Enum.TextXAlignment.Left,
-Font=u.configs.textFont,
-TextSize=u.configs.textSize-5,
+Font=A.configs.textFont,
+TextSize=A.configs.textSize-5,
 Visible=false,
 e.new("UICorner",{
 CornerRadius=UDim.new(0,4)
@@ -10000,7 +10007,7 @@ TextColor3="Colors.Text.Default"
 }
 })
 
-u.searchBox=e.new("TextBox","SearchBox",{
+A.searchBox=e.new("TextBox","SearchBox",{
 BackgroundTransparency=1,
 TextTransparency=1,
 Size=UDim2.fromScale(1,0),
@@ -10012,135 +10019,135 @@ Text="",
 MultiLine=true
 })
 
-u.commandsFolder=e.new("Folder","Commands")end
+A.commandsFolder=e.new("Folder","Commands")end
 
 
-t.createCommandsData=function(u)
-for v,w in k.original do
-local x=f.new(w)
-w.commandData=x
-x.position=v-1
-table.insert(u.commandsData,x)
+v.createCommandsData=function(A)
+for B,C in k.original do
+local D=f.new(C)
+C.commandData=D
+D.position=B-1
+table.insert(A.commandsData,D)
 end end
 
 
-t.updateSearchBoxHighlight=function(u)
-local v=u.commandInput.highlightText
-local w=u.searchBoxHolder
-local x=w.Input
-local y=o:getScale()
+v.updateSearchBoxHighlight=function(A)
+local B=A.commandInput.highlightText
+local C=A.searchBoxHolder
+local D=C.Input
+local E=o:getScale()
 
-x.Text=v
-x.Visible=#v>0
+D.Text=B
+D.Visible=#B>0
 
-local z=w.AbsoluteSize.X*y
-local A=z/2
-local B=x.AbsoluteSize.X*y
+local F=C.AbsoluteSize.X*E
+local G=F/2
+local H=D.AbsoluteSize.X*E
 
-if B<=A then
-x.AnchorPoint=Vector2.new(0,0.5)
-x.Position=UDim2.new(0,5,0.5,0)
+if H<=G then
+D.AnchorPoint=Vector2.new(0,0.5)
+D.Position=UDim2.new(0,5,0.5,0)
 else
-x.AnchorPoint=Vector2.new(1,0.5)
-x.Position=UDim2.new(0.5,0,0.5,0)
+D.AnchorPoint=Vector2.new(1,0.5)
+D.Position=UDim2.new(0.5,0,0.5,0)
 end end
 
 
-t.updateSearchedCommand=function(u)
-local v=u.commandInput.bestMatch
-local w=u.commandInput.commandName
-if w==""then return end
+v.updateSearchedCommand=function(A)
+local B=A.commandInput.bestMatch
+local C=A.commandInput.commandName
+if C==""then return end
 
-local x=getCommand(w)
-or(v and getCommand(v))
+local D=x(C)
+or(B and x(B))
 
-if x then
-u.scrollBar:scrollTo(x.commandData.position)
+if D then
+A.scrollBar:scrollTo(D.commandData.position)
 end end
 
 
-t.setComment=function(u, v, w)
-if w~=nil then
-v=h.colorFromName(v,w)
+v.setComment=function(A, B, C)
+if C~=nil then
+B=h.colorFromName(B,C)
 end
 
-u.inputComment.Text=v
-u.inputComment.Visible=#v>0 end
+A.inputComment.Text=B
+A.inputComment.Visible=#B>0 end
 
 
-t.updateElementColor=function(u, v, w)
-local x=if w%2==1 then 1 else 0.96
-v.BackgroundTransparency=x end
+v.updateElementColor=function(A, B, C)
+local D=if C%2==1 then 1 else 0.96
+B.BackgroundTransparency=D end
 
 
-t.updateElements=function(u)
-local v=0
-local w=0
-local x={}
-local y=u.scrollBar
-local z=u.commandsFolder
+v.updateElements=function(A)
+local B=0
+local C=0
+local D={}
+local E=A.scrollBar
+local F=A.commandsFolder
 
-for A,B in u.commandsData do
-local C=y:isVisible(B.position)
+for G,H in A.commandsData do
+local I=E:isVisible(H.position)
 
-if not C then
-if B.element then B.element.Parent=nil end
+if not I then
+if H.element then H.element.Parent=nil end
 continue
 end
 
-local D=B.element
-if not D then
-D=u:createCommandElement(B)
-B.element=D
+local J=H.element
+if not J then
+J=A:createCommandElement(H)
+H.element=J
 end
 
-if not B.isSection then
-if#B.args>0 and#B.name>w then
-w=#B.name
+if not H.isSection then
+if#H.args>0 and#H.name>C then
+C=#H.name
 end
-table.insert(x,B)
+table.insert(D,H)
 end
 
-u:updateElementColor(D,A)
-D.Parent=z
-D.Position=UDim2.fromOffset(
+A:updateElementColor(J,G)
+J.Parent=F
+J.Position=UDim2.fromOffset(
 0,
-v*(D.Size.Y.Offset+u.configs.padding)
+B*(J.Size.Y.Offset+A.configs.padding)
 )
-v=v+1
+B=B+1
 end
 
-for A,B in x do
-u:updateDisplayName(B,w+3)
+for G,H in D do
+A:updateDisplayName(H,C+3)
 end
 
-u.visibleCommands=x end
+A.visibleCommands=D end
 
 
-t.setCommandInfo=function(u, v)
-v=v or""
+v.setCommandInfo=function(A, B)
+B=B or""
 
-if v==""then
-u.commandInfo.Visible=false
+if B==""then
+A.commandInfo.Visible=false
 return
 end
 
-u.commandInfo.Visible=true
-u.commandInfo.Text=v end
+A.commandInfo.Visible=true
+A.commandInfo.Text=B end
 
 
-t.createSection=function(u, v)
+v.createSection=function(A, B)
 
 
-local w=e.new("TextLabel","Command",{
+local C=e.new("TextLabel","Command",{
 Size=UDim2.fromScale(1,1),
 Position=UDim2.fromOffset(5,0),
 BackgroundTransparency=1,
 TextXAlignment=Enum.TextXAlignment.Left,
 TextYAlignment=Enum.TextYAlignment.Bottom,
 RichText=true,
-TextSize=u.configs.textSize-3,
-Text=`<b>#{v.sectionName}</b>`,
+TextSize=A.configs.textSize-3,
+Text=`<b>#{B.sectionName}</b>`,
 ThemeTag={
 TextColor3="Colors.Text.Darker",
 Font="Font.MonoSpace"
@@ -10148,26 +10155,26 @@ Font="Font.MonoSpace"
 })
 
 return e.new("Frame",{
-Size=UDim2.new(1,-10,0,u.configs.labelSize),
+Size=UDim2.new(1,-10,0,A.configs.labelSize),
 BackgroundTransparency=1,
 
-w
+C
 })end
 
 
-t.createCommandElement=function(u, v)
-if v.isSection then
-return u:createSection(v)
+v.createCommandElement=function(A, B)
+if B.isSection then
+return A:createSection(B)
 end
 
-local w=e.new("TextLabel","Command",{
+local C=e.new("TextLabel","Command",{
 Size=UDim2.fromScale(0,1),
 Position=UDim2.fromOffset(5,0),
 BackgroundTransparency=1,
 TextXAlignment=Enum.TextXAlignment.Left,
 AutomaticSize=Enum.AutomaticSize.X,
 RichText=true,
-TextSize=u.configs.textSize,
+TextSize=A.configs.textSize,
 ThemeTag={
 TextColor3="Colors.Text.Default",
 Font="Font.MonoSpace"
@@ -10175,24 +10182,24 @@ Font="Font.MonoSpace"
 })
 
 return e.new("Frame",{
-Size=UDim2.new(1,0,0,u.configs.labelSize),
+Size=UDim2.new(1,0,0,A.configs.labelSize),
 AutomaticSize=Enum.AutomaticSize.X,
 BackgroundTransparency=1,
-w
+C
 })end
 
 
-t.createCommandDescription=function(u, v)
-if v.isSection then return end
-if not v.description then return end
+v.createCommandDescription=function(A, B)
+if B.isSection then return end
+if not B.description then return end
 
-local w=e.new("TextLabel","Description",{
+local C=e.new("TextLabel","Description",{
 Size=UDim2.fromScale(1,1),
 Position=UDim2.fromOffset(25,0),
 BackgroundTransparency=1,
 TextXAlignment=Enum.TextXAlignment.Left,
 RichText=true,
-TextSize=u.configs.textSize,
+TextSize=A.configs.textSize,
 ThemeTag={
 TextColor3="Colors.Text.Dark",
 Font="Font.MonoSpace"
@@ -10200,210 +10207,228 @@ Font="Font.MonoSpace"
 })
 
 return e.new("Frame","Description",{
-Size=UDim2.new(1,-30,0,u.configs.labelSize),
+Size=UDim2.new(1,-30,0,A.configs.labelSize),
 BackgroundTransparency=1,
-w
+C
 })end
 
 
-t.updateDisplayName=function(u, v, w)
-local x=v.element
-local y=v.name
+v.getCommandColor=function(A, B, C)
+local D=x(B)
 
-local z=string.rep("—",(w-#y)-2)
-local A=`{y} {h.colorFromName(z,"comment")} `
+local E=
+if type(D.run)~="function"then"undefined"
+elseif C.isClient then"client"
+elseif C.isDeprecated then"deprecated"
+else nil
 
-local B=u.parser:highlightArgsType(v.args)
-local C=A..B
+if E~=nil then
+B=u(B,q[E])
+end
 
-if v.isHolding then
-v.originalText=C
+return B end
+
+
+v.updateDisplayName=function(A, B, C)
+local D=B.element
+local E=B.name
+
+local F=string.rep("—",(C-#E)-2)
+
+E=A:getCommandColor(E,B)
+local G=`{E} {h.colorFromName(F,"comment")} `
+
+local H=A.parser:highlightArgsType(B.args)
+local I=G..H
+
+if B.isHolding then
+B.originalText=I
 else
-u:setCommandText(v,C)
+A:setCommandText(B,I)
 end end
 
 
-t.setCommandText=function(u, v, w)
-local x=v.element
-if not x then return end
+v.setCommandText=function(A, B, C)
+local D=B.element
+if not D then return end
 
-x.Command.Text=w end
-
-
-t.getCommandText=function(u, v)
-local w=v.element
-return w and w.Command.Text or""end
+D.Command.Text=C end
 
 
-t.calculateTotalSpace=function(u)
-return#u.commandsData end
+v.getCommandText=function(A, B)
+local C=B.element
+return C and C.Command.Text or""end
 
 
-t.calculateVisibleSpace=function(u)
-local v=u.scrollContainer.AbsoluteSize.Y
-return math.floor(v/u:calculateLabelSize())end
+v.calculateTotalSpace=function(A)
+return#A.commandsData end
 
 
-t.calculateLabelSize=function(u)
-return u.configs.padding+u.configs.labelSize end
+v.calculateVisibleSpace=function(A)
+local B=A.scrollContainer.AbsoluteSize.Y
+return math.floor(B/A:calculateLabelSize())end
 
 
-t.getElementMouseIn=function(u)
-for v,w in u.visibleCommands do
-if d:isMouseInGuiObject(w.element)then
-return w
+v.calculateLabelSize=function(A)
+return A.configs.padding+A.configs.labelSize end
+
+
+v.getElementMouseIn=function(A)
+for B,C in A.visibleCommands do
+if d:isMouseInGuiObject(C.element)then
+return C
 end
 end end
 
 
-t.horizontalScroll=function(u, v)
-for w,x in u.visibleCommands do
-local y=x.element
+v.horizontalScroll=function(A, B)
+for C,D in A.visibleCommands do
+local E=D.element
 
-y.Position=UDim2.fromOffset(
-math.min(y.Position.X.Offset+v,0),
-y.Position.Y.Offset
+E.Position=UDim2.fromOffset(
+math.min(E.Position.X.Offset+B,0),
+E.Position.Y.Offset
 )
 end end
 
 
-t.startedHoldingContainer=function(u, v)
-if not isValidInputType(v)then return end
-if u.scrollBar:isScrollBarDisabled()then return end
+v.startedHoldingContainer=function(A, B)
+if not w(B)then return end
+if A.scrollBar:isScrollBarDisabled()then return end
 
-u.scrollAxis=nil
-u.scrollBar:disableScroll()
+A.scrollAxis=nil
+A.scrollBar:disableScroll()
 
-local w=d:getMouse()
-local x=u:calculateLabelSize()
-local y=u:getElementMouseIn()
-local z=tick()
+local C=d:getMouse()
+local D=A:calculateLabelSize()
+local E=A:getElementMouseIn()
+local F=tick()
 
-if y and y.description then
-y.isHolding=true
+if E and E.description then
+E.isHolding=true
 
-local A=u.parser.colorFromName(y.description,"comment")
+local G=A.parser.colorFromName(E.description,"comment")
 
-y.originalText=u:getCommandText(y)
-u:setCommandText(y,A)
+E.originalText=A:getCommandText(E)
+A:setCommandText(E,G)
 end
 
-local A=w.Y
-local B=w.X
+local G=C.Y
+local H=C.X
 
-local C,D
+local I,J local K=function()
 
-local function disconnect()
-u.scrollBar:enableScroll()
 
-if y then
-y.isHolding=nil
+A.scrollBar:enableScroll()
 
-if y.originalText then
-u:setCommandText(y,y.originalText)
-y.originalText=nil
+if E then
+E.isHolding=nil
+
+if E.originalText then
+A:setCommandText(E,E.originalText)
+E.originalText=nil
 end
 
-if(tick()-z)<=0.15 then
-u.commandClickedSignal:Fire(y)
+if(tick()-F)<=0.15 then
+A.commandClickedSignal:Fire(E)
 end
 end
 
-if D then D:Disconnect()end
-if C then C:Disconnect()end
-end
+if J then J:Disconnect()end
+if I then I:Disconnect()end end
 
-D=b:Connect(q.InputEnded,function(E)
-if not isValidInputType(E)then return end
-disconnect()
+
+J=b:Connect(r.InputEnded,function(L)
+if not w(L)then return end
+K()
 end)
 
-C=b:Connect(q.InputChanged,function(E)
-if not isValidInputType(E)then return end
+I=b:Connect(r.InputChanged,function(L)
+if not w(L)then return end
 
-local F=w.X-B
-local G=w.Y-A
+local M=C.X-H
+local N=C.Y-G
 
-if not u.scrollAxis then
-if math.abs(F)>4 or math.abs(G)>4 then
-u.scrollAxis=math.abs(F)>math.abs(G)and"x"or"y"
+if not A.scrollAxis then
+if math.abs(M)>4 or math.abs(N)>4 then
+A.scrollAxis=math.abs(M)>math.abs(N)and"x"or"y"
 end
 return
 end
 
-if u.scrollAxis=="x"then
-local H=zerofloor(F/3)
-if math.floor(H)~=0 then
-u:horizontalScroll(H)
-B=w.X
+if A.scrollAxis=="x"then
+local O=y(M/3)
+if math.floor(O)~=0 then
+A:horizontalScroll(O)
+H=C.X
 end
 else
-local H=zerofloor(G/x)
-if math.floor(H)~=0 then
-u.scrollBar:scrollTo(u.scrollBar.index-H)
-A=w.Y
+local O=y(N/D)
+if math.floor(O)~=0 then
+A.scrollBar:scrollTo(A.scrollBar.index-O)
+G=C.Y
 end
 end
 end)end
 
 
-t.update=function(u)
-u.scrollBar:setVisibleSpace(u:calculateVisibleSpace())
-u.scrollBar:setTotalSpace(u:calculateTotalSpace())
-u:updateElements()end
+v.update=function(A)
+A.scrollBar:setVisibleSpace(A:calculateVisibleSpace())
+A.scrollBar:setTotalSpace(A:calculateTotalSpace())
+A:updateElements()end
 
 
-t.enable=function(u)
-if u.isEnabled then return end
-local v=u.scrollContainer
-u.isEnabled=true
+v.enable=function(A)
+if A.isEnabled then return end
+local B=A.scrollContainer
+A.isEnabled=true
 
-u.commandsFolder.Parent=v
-u.searchBox.Parent=u.scrollHolder
-u.searchBoxHolder.Parent=u.scrollHolder
-u.commandInfo.Parent=u.scrollHolder
+A.commandsFolder.Parent=B
+A.searchBox.Parent=A.scrollHolder
+A.searchBoxHolder.Parent=A.scrollHolder
+A.commandInfo.Parent=A.scrollHolder
 
-u.scrollConnection=u.scrolledSignal:Connect(function()
-u:updateElements()
+A.scrollConnection=A.scrolledSignal:Connect(function()
+A:updateElements()
 end)
 
-u.containerConnection=v.InputBegan:Connect(function(w)
-u:startedHoldingContainer(w)
+A.containerConnection=B.InputBegan:Connect(function(C)
+A:startedHoldingContainer(C)
 end)
 
-u:update()end
+A:update()end
 
 
-t.disable=function(u)
-if not u.isEnabled then return end
-u.isEnabled=false
+v.disable=function(A)
+if not A.isEnabled then return end
+A.isEnabled=false
 
-u.commandsFolder.Parent=nil
-u.searchBox.Parent=nil
-u.searchBoxHolder.Parent=nil
-u.commandInfo.Parent=nil
+A.commandsFolder.Parent=nil
+A.searchBox.Parent=nil
+A.searchBoxHolder.Parent=nil
+A.commandInfo.Parent=nil
 
-b:disconnect(u.containerConnection)
-b:disconnect(u.markerConnection)
-b:disconnect(u.scrollConnection)end
+b:disconnect(A.containerConnection)
+b:disconnect(A.markerConnection)
+b:disconnect(A.scrollConnection)end
 
 
-t.new=function(u)
-local function cfg(v)
-return assert(u.configs[v],`missing config.configs['{v}']`)
-end
+v.new=function(A)local B=function(
+B)
+return assert(A.configs[B],`missing config.configs['{B}']`)end
 
-local v=setmetatable({
-scrollContainer=u.scrollContainer,
-scrolledSignal=u.scrolledSignal,
-scrollHolder=u.scrollHolder,
-scrollBar=u.scrollBar,
+
+local C=setmetatable({
+scrollContainer=A.scrollContainer,
+scrolledSignal=A.scrolledSignal,
+scrollHolder=A.scrollHolder,
+scrollBar=A.scrollBar,
 
 configs={
-placeholderText=cfg"placeholderText",
-padding=cfg"padding",
-labelSize=cfg"labelSize",
-textSize=cfg"textSize"
+placeholderText=B"placeholderText",
+padding=B"padding",
+labelSize=B"labelSize",
+textSize=B"textSize"
 },
 
 commandClickedSignal=l.new(),
@@ -10421,16 +10446,19 @@ commandName=""
 
 visibleCommands={},
 commandsData={}
-},t)
+},v)
 
-v.parser=h.new(v.commandInput,function(w,x)
-return v:setComment(w,x)
+C.parser=h.new(C.commandInput,function(D,E)
+return C:setComment(D,E)
 end)
 
-return v end
+return C end
 
 
-return t end a.cP=function()local b=a.cache.cP if not b then b={c=__modImpl()}a.cache.cP=b end return b.c end end do local function __modImpl()
+return v end a.cP=function()local c=a.cache.cP if not c then c={c=b()}a.cache.cP=c end return c.c end end do local b=function()
+local b=a.cm().colorFromRGB
+local c=a.cL().commands
+
 return{
 cases={
 {"all","- includes everyone"},
@@ -10455,6 +10483,12 @@ cases={
 {"dead","- gets players who are dead"},
 },
 sections={
+{
+{"title","Commands Colors"},
+{"text",`{b("COMMAND_UNDEFINED",c.undefined)} -> This command don't work (BETA)`},
+{"text",`{b("CLIENT",c.client)} -> Only works on client`},
+{"text",`{b("DEPRECATED",c.deprecated)} -> This command is deprecated`}
+},
 {
 {"title","Special Player Cases"},
 {"text","These keywords can be used to quickly select groups of players in commands:"},
@@ -10503,7 +10537,7 @@ sections={
 {"invite"},
 },
 }
-}end a.cQ=function()local b=a.cache.cQ if not b then b={c=__modImpl()}a.cache.cQ=b end return b.c end end do local function __modImpl()
+}end a.cQ=function()local c=a.cache.cQ if not c then c={c=b()}a.cache.cQ=c end return c.c end end do local b=function()
 
 
 local b=a.cy()
@@ -10538,46 +10572,47 @@ local v=i.cases
 local w=i.sections
 
 local x={}
-x.__index=x
+x.__index=x local y=function(
 
-local function escapeRichText(y)
-return(y:gsub("[&<>]",u))
-end
+y)
+return(y:gsub("[&<>]",u))end local z=function(
 
-local function createTitle(y)
+
+z)
 return b.new("TextLabel","Header",{
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundTransparency=1,
 Size=UDim2.new(1,0,0,0),
-Text=y,
+Text=z,
 TextSize=20,
 TextXAlignment=Enum.TextXAlignment.Left,
 ThemeTag={
 Font="Font.Bold",
 TextColor3="Colors.Text.Default",
 },
-})
-end
+})end local A=function(
 
-local function createParagraph(y,z)
-return b.new("TextLabel",z and"Bold"or"Text",{
+
+A, B)
+return b.new("TextLabel",B and"Bold"or"Text",{
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundTransparency=1,
 Size=UDim2.new(1,0,0,0),
-Text=y,
+Text=A,
 TextSize=14,
 TextWrapped=true,
+RichText=true,
 TextXAlignment=Enum.TextXAlignment.Left,
 TextYAlignment=Enum.TextYAlignment.Top,
 ThemeTag={
-Font=z and"Font.Bold"or"Font.Normal",
+Font=B and"Font.Bold"or"Font.Normal",
 TextColor3="Colors.Text.Default",
 },
-})
-end
+})end local B=function()
 
-local function createCases()
-local y=b.new("Frame","Cases",{
+
+
+local B=b.new("Frame","Cases",{
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundTransparency=1,
 Size=UDim2.new(1,0,0,0),
@@ -10587,16 +10622,16 @@ SortOrder=Enum.SortOrder.LayoutOrder,
 }),
 })
 
-for z,A in v do
-local B,C=A[1],A[2]
+for C,D in v do
+local E,F=D[1],D[2]
 
-b.new("TextLabel","Case",y,{
+b.new("TextLabel","Case",B,{
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundTransparency=1,
-LayoutOrder=z,
+LayoutOrder=C,
 RichText=true,
 Size=UDim2.new(1,0,0,0),
-Text=`<b>{escapeRichText(B)}</b> {escapeRichText(C)}`,
+Text=`<b>{y(E)}</b> {y(F)}`,
 TextSize=14,
 TextWrapped=true,
 TextXAlignment=Enum.TextXAlignment.Left,
@@ -10608,14 +10643,14 @@ TextColor3="Colors.Text.Default",
 })
 end
 
-return y
-end
+return B end local C=function(
 
-local function createInviteButton(y)
-local z=b.new("TextButton","InviteButton",{
+
+C)
+local D=b.new("TextButton","InviteButton",{
 BorderSizePixel=0,
 Size=UDim2.new(1,0,0,25),
-Text=`Copy Discord Invite Link ({y})`,
+Text=`Copy Discord Invite Link ({C})`,
 TextSize=16,
 ThemeTag={
 BackgroundColor3="Colors.Primary",
@@ -10624,48 +10659,48 @@ TextColor3="Colors.Text.Default",
 },
 })
 
-local A=z.Text
-local B
+local E=D.Text
+local F
 
-f:Connect(z.Activated,function()
+f:Connect(D.Activated,function()
 if g.setclipboard then
-g.setclipboard(y)
-z.Text="Copied"
+g.setclipboard(C)
+D.Text="Copied"
 else
-z.Text="No Clipboard Function, type out the link"
+D.Text="No Clipboard Function, type out the link"
 end
 
-local C=tick()
-B=C
+local G=tick()
+F=G
 
 task.wait(r)
-if B~=C then return end
+if F~=G then return end
 
-z.Text=A
+D.Text=E
 end)
 
-return z
+return D end local D=function(
+
+
+D)
+local E=D[1]
+
+if E=="title"then
+return z(D[2])
+elseif E=="cases"then
+return B()
+elseif E=="invite"then
+return C(h.links.discord)
 end
 
-local function createBlock(y)
-local z=y[1]
+return A(D[2],E=="bold")end local E=function(
 
-if z=="title"then
-return createTitle(y[2])
-elseif z=="cases"then
-return createCases()
-elseif z=="invite"then
-return createInviteButton(h.links.discord)
-end
 
-return createParagraph(y[2],z=="bold")
-end
-
-local function createSection(y,z,A)
-local B=b.new("Frame","Section",{
+E, F, G)
+local H=b.new("Frame","Section",{
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundTransparency=1,
-LayoutOrder=y,
+LayoutOrder=E,
 Size=UDim2.new(1,0,0,0),
 b.new("UIPadding",{
 PaddingBottom=UDim.new(0,8),
@@ -10679,16 +10714,16 @@ SortOrder=Enum.SortOrder.LayoutOrder,
 }),
 })
 
-for C,D in z do
-local E=createBlock(D)
-E.LayoutOrder=C
-E.Parent=B
+for I,J in F do
+local K=D(J)
+K.LayoutOrder=I
+K.Parent=H
 end
 
-if not A then
-b.new("Frame","Line",B,{
+if not G then
+b.new("Frame","Line",H,{
 BorderSizePixel=0,
-LayoutOrder=#z+1,
+LayoutOrder=#F+1,
 Size=UDim2.new(1,0,0,1),
 ThemeTag={
 BackgroundColor3="Colors.Stroke",
@@ -10696,23 +10731,23 @@ BackgroundColor3="Colors.Stroke",
 })
 end
 
-return B
-end
+return H end
+
 
 x.new=function()
 return setmetatable({},x)end
 
 
-x.open=function(y)
-y.frame:TweenPosition(t,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,q,true)end
+x.open=function(F)
+F.frame:TweenPosition(t,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,q,true)end
 
 
-x.close=function(y)
-y.frame:TweenPosition(s,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,q,true)end
+x.close=function(F)
+F.frame:TweenPosition(s,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,q,true)end
 
 
-x.create=function(y)
-local z=b.new("Frame","ReferenceFrame",{
+x.create=function(F)
+local G=b.new("Frame","ReferenceFrame",{
 Active=true,
 BorderSizePixel=0,
 Position=s,
@@ -10722,7 +10757,7 @@ BackgroundColor3="Colors.Background",
 },
 })
 
-local A=b.new("Frame","TopBar",z,{
+local H=b.new("Frame","TopBar",G,{
 BorderSizePixel=0,
 Size=UDim2.new(1,0,0,k),
 ThemeTag={
@@ -10730,7 +10765,7 @@ BackgroundColor3="Colors.Background",
 },
 })
 
-b.new("TextLabel","Title",A,{
+b.new("TextLabel","Title",H,{
 BackgroundTransparency=1,
 Size=UDim2.fromScale(1,1),
 Text="Reference",
@@ -10741,14 +10776,14 @@ TextColor3="Colors.Text.Default",
 },
 })
 
-local B=b.new("TextButton","Close",A,{
+local I=b.new("TextButton","Close",H,{
 BackgroundTransparency=1,
 Position=UDim2.new(1,-k,0,0),
 Size=UDim2.fromOffset(k,k),
 Text="",
 })
 
-local C=b.new("ImageLabel","Icon",B,{
+local J=b.new("ImageLabel","Icon",I,{
 BackgroundTransparency=1,
 Position=UDim2.fromOffset(5,5),
 Size=UDim2.fromOffset(10,10),
@@ -10757,17 +10792,17 @@ ImageColor3="Colors.Icons",
 },
 })
 
-local D=d.new{
+local K=d.new{
 isHorizontal=false,
 barThickness=n,
 increment=o,
 wheelIncrement=p,
 }
 
-local E=D:create()
-local F=D.container
+local L=K:create()
+local M=K.container
 
-local G=b.new("Frame","Content",F,{
+local N=b.new("Frame","Content",M,{
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundTransparency=1,
 Size=UDim2.new(1,0,0,0),
@@ -10776,74 +10811,74 @@ SortOrder=Enum.SortOrder.LayoutOrder,
 }),
 })
 
-b.new("Frame","ScrollHolder",z,{
+b.new("Frame","ScrollHolder",G,{
 Active=true,
 BackgroundTransparency=1,
 Position=UDim2.fromOffset(0,k),
 Size=UDim2.new(1,0,0,l),
 
-E,
-F,
+L,
+M,
 })
 
-for H,I in w do
-local J=createSection(H,I,H==#w)
-J.Parent=G
-end
+for O,P in w do
+local Q=E(O,P,O==#w)
+Q.Parent=N
+end local O=function(
 
 
-local function applyScroll(H)
-G.Position=UDim2.fromOffset(0,-H)
-end
+O)
+N.Position=UDim2.fromOffset(0,-O)end local P=function()
 
-local function refreshScroll()
-local H=e:getScale()
 
-D:setTotalSpace(math.ceil(G.AbsoluteSize.Y/H))
-D:setVisibleSpace(math.ceil(F.AbsoluteSize.Y/H))
-applyScroll(D.index)
-end
 
-f:Connect(D.scrolledSignal,applyScroll)
-f:Connect(G:GetPropertyChangedSignal"AbsoluteSize",refreshScroll)
-f:Connect(F:GetPropertyChangedSignal"AbsoluteSize",refreshScroll)
+local P=e:getScale()
 
-f:Connect(F.MouseWheelForward,function()
-D:scrollTo(D.index-D.wheelIncrement)
+K:setTotalSpace(math.ceil(N.AbsoluteSize.Y/P))
+K:setVisibleSpace(math.ceil(M.AbsoluteSize.Y/P))
+O(K.index)end
+
+
+f:Connect(K.scrolledSignal,O)
+f:Connect(N:GetPropertyChangedSignal"AbsoluteSize",P)
+f:Connect(M:GetPropertyChangedSignal"AbsoluteSize",P)
+
+f:Connect(M.MouseWheelForward,function()
+K:scrollTo(K.index-K.wheelIncrement)
 end)
 
-f:Connect(F.MouseWheelBackward,function()
-D:scrollTo(D.index+D.wheelIncrement)
+f:Connect(M.MouseWheelBackward,function()
+K:scrollTo(K.index+K.wheelIncrement)
 end)
 
-f:Connect(B.Activated,function()
-y:close()
+f:Connect(I.Activated,function()
+F:close()
 end)
 
-local H=c.new(e.uiScale)
-H:addGuiObject(z)
+local Q=c.new(e.uiScale)
+Q:addGuiObject(G)
 
-H.dragStarted:Connect(function(I)
-if I~=z then return end
-D:disableScroll()
+Q.dragStarted:Connect(function(R)
+if R~=G then return end
+K:disableScroll()
 end)
 
-H.dragEnded:Connect(function(I)
-if I~=z then return end
-D:enableScroll()
+Q.dragEnded:Connect(function(R)
+if R~=G then return end
+K:enableScroll()
 end)
 
-refreshScroll()
+P()
 
-y.frame=z
-y.closeIcon=C
-y.scrollBar=D
-y.dragInstance=H
+F.frame=G
+F.closeIcon=J
+F.scrollBar=K
+F.dragInstance=Q
 
-return z end
+return G end
 
 
-return x end a.cR=function()local b=a.cache.cR if not b then b={c=__modImpl()}a.cache.cR=b end return b.c end end do local function __modImpl()
+return x end a.cR=function()local c=a.cache.cR if not c then c={c=b()}a.cache.cR=c end return c.c end end do local b=function()
 
 
 return{
@@ -10908,7 +10943,7 @@ unknownPlace="Unknown",
 alreadyEnabled="the info menu is already enabled",
 noClipboard="this executor doesn't support clipboard",
 },
-}end a.cS=function()local b=a.cache.cS if not b then b={c=__modImpl()}a.cache.cS=b end return b.c end end do local function __modImpl()
+}end a.cS=function()local c=a.cache.cS if not c then c={c=b()}a.cache.cS=c end return c.c end end do local b=function()
 
 
 local b=a.cy()
@@ -10937,107 +10972,107 @@ local r
 local s=g.charset":#()[]-"
 local t=g.charset"0123456789"
 
-local u={}
+local u={}local v=function(
 
-local function getCharColor(v)
+v)
 if t[v]then
 return o.number
 elseif s[v]then
 return o.symbol
 end
 
-return nil
-end
+return nil end local w=function(
 
-local function highlight(v)
-local w=tostring(v)
-local x={}
-local y=""
-local z
 
-local function flushRun()
-if y==""then return end
+w)
+local x=tostring(w)
+local y={}
+local z=""
+local A local B=function()
 
-local A=g.escapeRichText(y)
 
-if z then
-table.insert(x,g.colorFromRGB(A,z))
+if z==""then return end
+
+local B=g.escapeRichText(z)
+
+if A then
+table.insert(y,g.colorFromRGB(B,A))
 else
-table.insert(x,A)
+table.insert(y,B)
 end
 
-y=""
+z=""end
+
+
+for C in x:gmatch"."do
+local D=v(C)
+
+if D~=A then
+B()
+A=D
 end
 
-for A in w:gmatch"."do
-local B=getCharColor(A)
-
-if B~=z then
-flushRun()
-z=B
+z=z..C
 end
 
-y=y..A
-end
+B()
 
-flushRun()
+return table.concat(y)end local x=function(
 
-return table.concat(x)
-end
 
-local function line(v,w)
-return`{g.escapeRichText(v)}{highlight(w)}`
-end
+x, y)
+return`{g.escapeRichText(x)}{w(y)}`end local y=function(
 
-local function copyToClipboard(v)
-if v==nil then return false end
+
+y)
+if y==nil then return false end
 
 if j.setclipboard then
-j.setclipboard(tostring(v))
+j.setclipboard(tostring(y))
 return true
 end
 
 f:notify(n.messages.noClipboard)
-return false
+return false end local z=function(
+
+
+z)
+local A=n.time
+local B=math.floor(z/3600)
+local C=math.floor((z%3600)/60)
+local D=math.floor(z%60)
+
+if B>0 then
+return`{B} {A.hour}, {C} {A.minute}, {D} {A.second}`
+elseif C>0 then
+return`{C} {A.minute}, {D} {A.second}`
 end
 
-local function formatTime(v)
-local w=n.time
-local x=math.floor(v/3600)
-local y=math.floor((v%3600)/60)
-local z=math.floor(v%60)
+return`{D} {A.second}`end local A=function()
 
-if x>0 then
-return`{x} {w.hour}, {y} {w.minute}, {z} {w.second}`
-elseif y>0 then
-return`{y} {w.minute}, {z} {w.second}`
-end
 
-return`{z} {w.second}`
-end
 
-local function fetchPlaceName()
-local v,w=pcall(function()
+local A,B=pcall(function()
 return l.MarketplaceService:GetProductInfo(game.PlaceId)
 end)
 
-if v and w then
-return w.Name
+if A and B then
+return B.Name
 end
 
-return n.messages.unknownPlace
-end
+return n.messages.unknownPlace end local B=function(
 
-local function createCopyButton(v,w)
-local x=n.copyButton
 
-local y=b.new("TextButton","Copy",v,{
+B, C)
+local D=n.copyButton
+
+local E=b.new("TextButton","Copy",B,{
 AnchorPoint=Vector2.new(1,0.5),
 AutoButtonColor=false,
 BorderSizePixel=0,
 Position=UDim2.new(1,-n.window.textInset,0.5,0),
-Size=UDim2.fromOffset(x.width,x.height),
-Text=x.idleText,
+Size=UDim2.fromOffset(D.width,D.height),
+Text=D.idleText,
 TextSize=n.textSizes.copyButton,
 ThemeTag={
 BackgroundColor3="Colors.Buttons.Default",
@@ -11046,123 +11081,123 @@ TextColor3="Colors.Text.Default",
 },
 
 b.new("UICorner",{
-CornerRadius=UDim.new(0,x.cornerRadius),
+CornerRadius=UDim.new(0,D.cornerRadius),
 }),
 })
 
-i:Connect(y.MouseEnter,function()
-e:updateObjectProperties(y,{
+i:Connect(E.MouseEnter,function()
+e:updateObjectProperties(E,{
 BackgroundColor3="Colors.Buttons.Holding",
 })
 end)
 
-i:Connect(y.MouseLeave,function()
-e:updateObjectProperties(y,{
+i:Connect(E.MouseLeave,function()
+e:updateObjectProperties(E,{
 BackgroundColor3="Colors.Buttons.Default",
 })
 end)
 
-i:Connect(y.Activated,function()
-if not copyToClipboard(w())then return end
+i:Connect(E.Activated,function()
+if not y(C())then return end
 
-y.Text=x.copiedText
-task.wait(x.feedbackTime)
-y.Text=x.idleText
+E.Text=D.copiedText
+task.wait(D.feedbackTime)
+E.Text=D.idleText
 end)
 
-return y
+return E end local C=function(
+
+
+C, D, E, F)
+local G=n.window
+local H=G.textInset
+local I=0
+
+if F.getCopyValue then
+I=n.copyButton.width+n.copyButton.gap
 end
 
-local function createLine(v,w,x,y)
-local z=n.window
-local A=z.textInset
-local B=0
-
-if y.getCopyValue then
-B=n.copyButton.width+n.copyButton.gap
-end
-
-local C=b.new("Frame","Row",v,{
+local J=b.new("Frame","Row",C,{
 BackgroundColor3=Color3.new(1,1,1),
-BackgroundTransparency=(w%2==1)and z.stripeTransparency or 1,
+BackgroundTransparency=(D%2==1)and G.stripeTransparency or 1,
 BorderSizePixel=0,
-LayoutOrder=w,
-Size=UDim2.new(1,0,0,z.rowHeight),
+LayoutOrder=D,
+Size=UDim2.new(1,0,0,G.rowHeight),
 })
 
-local D=b.new("TextLabel",y.name,C,{
+local K=b.new("TextLabel",F.name,J,{
 BackgroundTransparency=1,
-Position=UDim2.fromOffset(A,0),
+Position=UDim2.fromOffset(H,0),
 RichText=true,
-Size=UDim2.new(1,-(A*2+B),1,0),
-Text=x,
-TextSize=y.textSize,
+Size=UDim2.new(1,-(H*2+I),1,0),
+Text=E,
+TextSize=F.textSize,
 TextTruncate=Enum.TextTruncate.AtEnd,
 TextXAlignment=Enum.TextXAlignment.Left,
 TextYAlignment=Enum.TextYAlignment.Center,
 ThemeTag={
 Font="Font.MonoSpace",
-TextColor3=y.textColor,
+TextColor3=F.textColor,
 },
 })
 
-if y.getCopyValue then
-createCopyButton(C,y.getCopyValue)
+if F.getCopyValue then
+B(J,F.getCopyValue)
 end
 
-return D
-end
+return K end local D=function(
 
-local function createSection(v,w,x)
-return createLine(v,w,`<b>{g.escapeRichText(x)}</b>`,{
+
+D, E, F)
+return C(D,E,`<b>{g.escapeRichText(F)}</b>`,{
 name="Section",
 textSize=n.textSizes.section,
 textColor="Colors.Text.Darker",
-})
-end
+})end local E=function(
 
-local function createValueLine(v,w,x,y)
-return createLine(v,w,x,{
+
+E, F, G, H)
+return C(E,F,G,{
 name="Value",
 textSize=n.textSizes.value,
 textColor="Colors.Text.Default",
-getCopyValue=y,
-})
-end
+getCopyValue=H,
+})end local F=function()
 
-local function createWindow()
-local v=n.window
 
-local w={
+
+local F=n.window
+
+local G={
 labels={},
 placeName=nil,
 }
 
-local x=b.new("Frame","ServerInfo",{
+local H=b.new("Frame","ServerInfo",{
 Active=true,
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundTransparency=1,
 Position=q,
-Size=UDim2.fromOffset(v.width,0),
+Size=UDim2.fromOffset(F.width,0),
 
 b.new("UIListLayout",{
 SortOrder=Enum.SortOrder.LayoutOrder,
 }),
 })
 
-local y=b.new("Frame","TopBar",x,{
+local I=b.new("Frame","TopBar",H,{
 BorderSizePixel=0,
 LayoutOrder=1,
-Size=UDim2.new(1,0,0,v.topBarHeight),
+Size=UDim2.new(1,0,0,F.topBarHeight),
 ThemeTag={
 BackgroundColor3="Colors.Background",
 },
 })
 
-b.new("TextLabel","Title",y,{
+b.new("TextLabel","Title",I,{
 BackgroundTransparency=1,
 Size=UDim2.fromScale(1,1),
-Text=v.title,
+Text=F.title,
 TextSize=n.textSizes.title,
 ThemeTag={
 Font="Font.Normal",
@@ -11170,23 +11205,23 @@ TextColor3="Colors.Text.Default",
 },
 })
 
-local z=b.new("ImageButton","Exit",y,{
+local J=b.new("ImageButton","Exit",I,{
 AnchorPoint=Vector2.new(1,0.5),
 BackgroundTransparency=1,
-Position=UDim2.new(1,-v.closeInset,0.5,0),
-Size=UDim2.fromOffset(v.closeIconSize,v.closeIconSize),
+Position=UDim2.new(1,-F.closeInset,0.5,0),
+Size=UDim2.fromOffset(F.closeIconSize,F.closeIconSize),
 ThemeTag={
 ImageColor3="Colors.Icons",
 },
 })
 
-d:loadImage(z,"close")
+d:loadImage(J,"close")
 
-i:Connect(z.Activated,function()
+i:Connect(J.Activated,function()
 u:close()
 end)
 
-local A=b.new("Frame","Body",x,{
+local K=b.new("Frame","Body",H,{
 Active=true,
 AutomaticSize=Enum.AutomaticSize.Y,
 BorderSizePixel=0,
@@ -11197,115 +11232,115 @@ BackgroundColor3="Colors.Background",
 },
 
 b.new("UIPadding",{
-PaddingBottom=UDim.new(0,v.verticalPadding),
-PaddingTop=UDim.new(0,v.verticalPadding),
+PaddingBottom=UDim.new(0,F.verticalPadding),
+PaddingTop=UDim.new(0,F.verticalPadding),
 }),
 
 b.new("UIListLayout",{
-Padding=UDim.new(0,v.rowGap),
+Padding=UDim.new(0,F.rowGap),
 SortOrder=Enum.SortOrder.LayoutOrder,
 }),
 })
 
-local B=w.labels
-local C=n.labels
-local D=n.messages.loading
+local L=G.labels
+local M=n.labels
+local N=n.messages.loading
 
-local E=0
-local function nextOrder()
-E=E+1
-return E
-end
+local O=0 local P=function()
 
-createSection(A,nextOrder(),n.headers.localPlayer)
+O=O+1
+return O end
 
-B.playerId=createValueLine(A,nextOrder(),line(C.playerId,k.UserId),function()
+
+D(K,P(),n.headers.localPlayer)
+
+L.playerId=E(K,P(),x(M.playerId,k.UserId),function()
 return k.UserId
 end)
 
-B.appearance=createValueLine(A,nextOrder(),line(C.appearance,k.CharacterAppearanceId),function()
+L.appearance=E(K,P(),x(M.appearance,k.CharacterAppearanceId),function()
 return k.CharacterAppearanceId
 end)
 
-createSection(A,nextOrder(),n.headers.runTime)
-B.time=createValueLine(A,nextOrder(),highlight(D))
+D(K,P(),n.headers.runTime)
+L.time=E(K,P(),w(N))
 
-createSection(A,nextOrder(),n.headers.statistics)
-B.players=createValueLine(A,nextOrder(),line(C.players,D))
-B.maxPlayers=createValueLine(A,nextOrder(),line(C.maxPlayers,D))
+D(K,P(),n.headers.statistics)
+L.players=E(K,P(),x(M.players,N))
+L.maxPlayers=E(K,P(),x(M.maxPlayers,N))
 
-B.placeId=createValueLine(A,nextOrder(),line(C.placeId,game.PlaceId),function()
+L.placeId=E(K,P(),x(M.placeId,game.PlaceId),function()
 return game.PlaceId
 end)
 
-B.placeName=createValueLine(A,nextOrder(),line(C.placeName,D),function()
-return w.placeName
+L.placeName=E(K,P(),x(M.placeName,N),function()
+return G.placeName
 end)
 
 r=r or c.new(h.uiScale)
-r:addGuiObject(x)
+r:addGuiObject(H)
 
-w.frame=x
-return w
-end
+G.frame=H
+return G end local G=function(
 
-local function updateWindow(v)
-local w=v.labels
-local x=n.labels
-local y=l.Players
 
-while u.window==v do
-w.players.Text=line(x.players,#y:GetPlayers())
-w.maxPlayers.Text=line(x.maxPlayers,y.MaxPlayers)
-w.time.Text=highlight(formatTime(workspace.DistributedGameTime))
+G)
+local H=G.labels
+local I=n.labels
+local J=l.Players
+
+while u.window==G do
+H.players.Text=x(I.players,#J:GetPlayers())
+H.maxPlayers.Text=x(I.maxPlayers,J.MaxPlayers)
+H.time.Text=w(z(workspace.DistributedGameTime))
 
 task.wait(n.window.updateInterval)
-end
-end
+end end
 
-u.create=function(v)
-if v.isEnabled then
+
+u.create=function(H)
+if H.isEnabled then
 f:notify(n.messages.alreadyEnabled)
 return
 end
 
-v.isEnabled=true
+H.isEnabled=true
 
-local w=createWindow()
-v.window=w
+local I=F()
+H.window=I
 
-local x=n.window.tweenTime
+local J=n.window.tweenTime
 
-w.frame.Parent=m.screenGui
-w.frame:TweenPosition(p,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,x,true)
+I.frame.Parent=m.screenGui
+I.frame:TweenPosition(p,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,J,true)
 
 task.spawn(function()
-w.placeName=fetchPlaceName()
-w.labels.placeName.Text=line(n.labels.placeName,w.placeName)
+I.placeName=A()
+I.labels.placeName.Text=x(n.labels.placeName,I.placeName)
 end)
 
-task.spawn(updateWindow,w)
+task.spawn(G,I)
 
-return w end
+return I end
 
 
-u.close=function(v)
-local w=v.window
-if not w then return end
+u.close=function(H)
+local I=H.window
+if not I then return end
 
-local x=n.window.tweenTime
+local J=n.window.tweenTime
 
-v.window=nil
-v.isEnabled=false
+H.window=nil
+H.isEnabled=false
 
-w.frame:TweenPosition(q,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,x,true)
+I.frame:TweenPosition(q,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,J,true)
 
-task.delay(x,function()
-w.frame:Destroy()
+task.delay(J,function()
+I.frame:Destroy()
 end)end
 
 
-return u end a.cT=function()local b=a.cache.cT if not b then b={c=__modImpl()}a.cache.cT=b end return b.c end end do local function __modImpl()
+return u end a.cT=function()local c=a.cache.cT if not c then c={c=b()}a.cache.cT=c end return c.c end end do local b=function()
 
 
 local b=a.o()
@@ -11334,129 +11369,129 @@ local t=a.cT()
 
 local u=o.uiScale
 
-local v={}
+local v={}local w=function(
 
-local function resolveTheme(w)
+w)
 local x=type(w)=="string"and l[w:lower()]
 
 if x and x.Colors and x.Font then
 return w
 end
 
-return b.theme.defaultTheme
-end
+return b.theme.defaultTheme end
 
-v.createScreenGui=function(w)
-local x=h.new("ScreenGui",{
+
+v.createScreenGui=function(x)
+local y=h.new("ScreenGui",{
 IgnoreGuiInset=true,
 Name=g.randomString(math.random(30,50)),
 DisplayOrder=2147483647
 })
 
-w.screenGui=x
-return x end
+x.screenGui=y
+return y end
 
 
-v.calculateScale=function(w, x)
-return(w.screenGui.AbsoluteSize.Y/450)*x end
+v.calculateScale=function(x, y)
+return(x.screenGui.AbsoluteSize.Y/450)*y end
 
 
-v.setScale=function(w, x)
-x=math.abs(x)
+v.setScale=function(x, y)
+y=math.abs(y)
 
-if x>=3 then
-x=w:calculateScale(x)
+if y>=3 then
+y=x:calculateScale(y)
 end
 
-if e:getValue"interface.uiScale"~=x then
-e:setValue("interface.uiScale",x)
+if e:getValue"interface.uiScale"~=y then
+e:setValue("interface.uiScale",y)
 e:save()
 end
 
-o:setScale(x)
-w:updateMainFramePosition()end
+o:setScale(y)
+x:updateMainFramePosition()end
 
 
-v.calculateMainFramePosition=function(w)
-local x=w.mainFrame
-local y=w.screenGui
+v.calculateMainFramePosition=function(x)
+local y=x.mainFrame
+local z=x.screenGui
 
-local z=x.Size
-local A=x.Position
-local B=o:getScale()
+local A=y.Size
+local B=y.Position
+local C=o:getScale()
 
-local C=math.ceil(y.AbsoluteSize.X/B)
-local D=math.ceil(y.AbsoluteSize.Y/B)
+local D=math.ceil(z.AbsoluteSize.X/C)
+local E=math.ceil(z.AbsoluteSize.Y/C)
 
 return UDim2.fromOffset(
-math.clamp(A.X.Offset,0,math.max(C-z.X.Offset,0)),
-math.clamp(A.Y.Offset,0,math.max(D-z.Y.Offset,0))
+math.clamp(B.X.Offset,0,math.max(D-A.X.Offset,0)),
+math.clamp(B.Y.Offset,0,math.max(E-A.Y.Offset,0))
 )end
 
 
-v.updateMainFramePosition=function(w)
-if w.mainFrame then
-w.mainFrame.Position=w:calculateMainFramePosition()
+v.updateMainFramePosition=function(x)
+if x.mainFrame then
+x.mainFrame.Position=x:calculateMainFramePosition()
 end end
 
 
-v.createMainScroll=function(w, x)
-local y=q.new{
+v.createMainScroll=function(x, y)
+local z=q.new{
 isHorizontal=false,
 barThickness=12
 }
 
-local z=y:create()
-local A=y.container
+local A=z:create()
+local B=z.container
 
-local B=h.new("Frame","ScrollHolder",x,{
+local C=h.new("Frame","ScrollHolder",y,{
 Size=UDim2.new(1,0,0,180),
 Position=UDim2.fromScale(0.5,1),
 AnchorPoint=Vector2.new(0.5,1),
 BackgroundTransparency=1,
 Active=true,
 
-z,
-A
+A,
+B
 })
 
-w.scrollHolder=B
-w.scrollBar=y
-w.scrollContainer=A
+x.scrollHolder=C
+x.scrollBar=z
+x.scrollContainer=B
 
-return y end
+return z end
 
 
-v.createMainFrame=function(w)
-local x=p:create()
-local y=x.mainFrame
+v.createMainFrame=function(x)
+local y=p:create()
+local z=y.mainFrame
 
-x.titleLabel.Text=n.getDisplayName()
+y.titleLabel.Text=n.getDisplayName()
 
-w.mainFrame=y
-w.topBar=x.topBar
-w.buttons=x.buttons
+x.mainFrame=z
+x.topBar=y.topBar
+x.buttons=y.buttons
 
-i:loadImage(w.buttons.settings,"settings")
-i:loadImage(w.buttons.reference,"reference")
+i:loadImage(x.buttons.settings,"settings")
+i:loadImage(x.buttons.reference,"reference")
 
-d:Connect(w.buttons.settings.Activated,function()
+d:Connect(x.buttons.settings.Activated,function()
 print"clicked settings"
 end)
 
-w:createMainScroll(y)
+x:createMainScroll(z)
 
-return y end
+return z end
 
 
-v.createCommands=function(w)
-local x=w.scrollBar
+v.createCommands=function(x)
+local y=x.scrollBar
 
-local y=r.new{
-scrolledSignal=x.scrolledSignal,
-scrollContainer=w.scrollContainer,
-scrollHolder=w.scrollHolder,
-scrollBar=x,
+local z=r.new{
+scrolledSignal=y.scrolledSignal,
+scrollContainer=x.scrollContainer,
+scrollHolder=x.scrollHolder,
+scrollBar=y,
 
 configs={
 placeholderText=b.ui.commands.placeholderText,
@@ -11467,99 +11502,99 @@ textSize=b.ui.commands.textSize
 }
 
 f:log"created commands interface"
-y:create()
+z:create()
 
 f:log"initialized commands"
-y:createCommandsData()
+z:createCommandsData()
 
 f:log"awaked commands module"
-y:awake()
+z:awake()
 
-w.commands=y
-return y end
+x.commands=z
+return z end
 
 
-v.createInfoMenu=function(w)
+v.createInfoMenu=function(x)
 return t:create()end
 
 
-v.dragMainFrame=function(w, x)
-local y=k.new(u)
+v.dragMainFrame=function(x, y)
+local z=k.new(u)
 
-x.Size=b.ui.window.windowSize
-x.Position=UDim2.fromOffset(1e5,1e5)
-x.Position=w:calculateMainFramePosition()
+y.Size=b.ui.window.windowSize
+y.Position=UDim2.fromOffset(1e5,1e5)
+y.Position=x:calculateMainFramePosition()
 
-y:addGuiObject(x)
+z:addGuiObject(y)
 
-y:setFilter(x,function(z)
-x.Position=z
-return w:calculateMainFramePosition()
+z:setFilter(y,function(A)
+y.Position=A
+return x:calculateMainFramePosition()
 end)
 
-y.dragStarted:Connect(function(z)
-if z~=x then return end
-w.scrollBar:disableScroll()
+z.dragStarted:Connect(function(A)
+if A~=y then return end
+x.scrollBar:disableScroll()
 end)
 
-y.dragEnded:Connect(function(z)
-if z~=x then return end
-w.scrollBar:enableScroll()
+z.dragEnded:Connect(function(A)
+if A~=y then return end
+x.scrollBar:enableScroll()
 end)
 
-w.dragService=y end
+x.dragService=z end
 
 
-v.createReference=function(w)
-local x=s.new()
-local y=x:create()
+v.createReference=function(x)
+local y=s.new()
+local z=y:create()
 
-i:loadImage(x.closeIcon,"close")
+i:loadImage(y.closeIcon,"close")
 
-y.Parent=w.screenGui
-w.reference=x
+z.Parent=x.screenGui
+x.reference=y
 
-d:Connect(w.buttons.reference.Activated,function()
-x:open()
+d:Connect(x.buttons.reference.Activated,function()
+y:open()
 end)
 
-return x end
+return y end
 
 
-v.destroy=function(w)
-if w.screenGui then
-w.screenGui:Destroy()
+v.destroy=function(x)
+if x.screenGui then
+x.screenGui:Destroy()
 end end
 
 
-v.init=function(w)
+v.init=function(x)
 f:debug"interface: initializing theme service"
 j:init{
-theme=resolveTheme(b.theme.selectedTheme)
+theme=w(b.theme.selectedTheme)
 }
 
-local x=w:createScreenGui()
+local y=x:createScreenGui()
 
 
-x.Parent=m
-c.screenGui=x
+y.Parent=m
+c.screenGui=y
 
-u.Parent=x
-w:setScale(e:getValue"interface.uiScale"or 1)
+u.Parent=y
+x:setScale(e:getValue"interface.uiScale"or 1)
 
-local y=w:createMainFrame()
+local z=x:createMainFrame()
 
-w:createCommands()
-w:dragMainFrame(y)
-w.commands:enable()
+x:createCommands()
+x:dragMainFrame(z)
+x.commands:enable()
 
-y.Parent=x
-w:createReference()
+z.Parent=y
+x:createReference()
 
-return x end
+return y end
 
 
-return v end a.cU=function()local b=a.cache.cU if not b then b={c=__modImpl()}a.cache.cU=b end return b.c end end do local function __modImpl()
+return v end a.cU=function()local c=a.cache.cU if not c then c={c=b()}a.cache.cU=c end return c.c end end do local b=function()
 
 local b=a.b()
 local c=a.d()
@@ -11580,7 +11615,7 @@ end
 c:log"finished cleanup!"end
 
 
-return d end a.cV=function()local b=a.cache.cV if not b then b={c=__modImpl()}a.cache.cV=b end return b.c end end do local function __modImpl()
+return d end a.cV=function()local c=a.cache.cV if not c then c={c=b()}a.cache.cV=c end return c.c end end do local b=function()
 
 
 local b=a.cj()
@@ -11607,7 +11642,7 @@ e(b)
 f:init()end
 
 
-return g end a.cW=function()local b=a.cache.cW if not b then b={c=__modImpl()}a.cache.cW=b end return b.c end end end
+return g end a.cW=function()local c=a.cache.cW if not c then c={c=b()}a.cache.cW=c end return c.c end end end
 
 
 
