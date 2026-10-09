@@ -1,3 +1,6 @@
+local colorFromRGB = require("../../utils/tools").colorFromRGB
+local cmdsColors = require("./colors").commands
+
 return {
 	cases = {
 		{ "all", "- includes everyone" },
@@ -22,6 +25,12 @@ return {
 		{ "dead", "- gets players who are dead" },
 	},
 	sections = {
+		{
+			{ "title", "Commands Colors" },
+			{ "text", `{colorFromRGB("COMMAND_UNDEFINED", cmdsColors.undefined)} -> This command don't work (BETA)` },
+			{ "text", `{colorFromRGB("CLIENT", cmdsColors.client)} -> Only works on client` },
+			{ "text", `{colorFromRGB("DEPRECATED", cmdsColors.deprecated)} -> This command is deprecated` }
+		},
 		{
 			{ "title", "Special Player Cases" },
 			{ "text", "These keywords can be used to quickly select groups of players in commands:" },

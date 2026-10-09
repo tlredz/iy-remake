@@ -1,5 +1,9 @@
 # 🪄 Infinite Yield RV (Remake Version)
 
+<div align="center">
+  <img src="https://raw.githubusercontent.com/tlredz/iy-remake/refs/heads/main/images/infiniteYieldUI.jpg" width="500" height="440">
+</div>
+
 > [!IMPORTANT]
 > **Infinite Yield RV** was built using a modular structure.
 > To compile the code, you must use a Lua/Luau bundler, or run it locally by placing the project inside your executor's folder.
@@ -10,6 +14,9 @@
 > [!WARNING]
 > **Infinite Yield RV** is currently **UNDER DEVELOPMENT**.
 > There is no official release date yet, and you may encounter bugs.
+
+> [!WARNING]
+> **AI Use** AI was used to fix, reorganize, and rebuild some code. 
 
 ## 📌 About
 - **Infinite Yield** is a feature-rich admin command panel designed for Roblox games.

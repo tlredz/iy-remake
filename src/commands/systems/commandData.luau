@@ -3,6 +3,9 @@ commandData.__index = commandData
 
 function commandData.new(command)
 	return setmetatable({
+		isClient = command.client or command.isClient or command.onlyClient,
+		isDeprecated = command.deprecated or command.isDeprecated,
+		
 		name = command.name,
 		isSection = command.isSection,
 		sectionName = command.sectionName,

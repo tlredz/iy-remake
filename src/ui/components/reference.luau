@@ -61,6 +61,7 @@ local function createParagraph(text, isBold)
 		Text = text,
 		TextSize = 14,
 		TextWrapped = true,
+		RichText = true,
 		TextXAlignment = Enum.TextXAlignment.Left,
 		TextYAlignment = Enum.TextYAlignment.Top,
 		ThemeTag = {

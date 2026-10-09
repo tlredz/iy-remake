@@ -20,5 +20,10 @@ return {
 		["warn"] = warnColor,
 		["error"] = errorColor,
 		["valid"] = validColor
+	},
+	commands = {
+		["undefined"] = errorColor,
+		["client"] = stringColor,
+		["deprecated"] = commentColor
 	}
 }

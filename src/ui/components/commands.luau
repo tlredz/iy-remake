@@ -17,11 +17,13 @@ local tools       = require("../../utils/tools")
 local scaleObject = require("../utils/scaleObject")
 
 local settingsData = require("../../storage/data/settings")
+local cmdsColors = require("../../framework/config/colors").commands
 
 local userInputService = robloxServices.UserInputService
 local runService       = robloxServices.RunService
 
 local richFontSize     = tools.richFontSize
+local colorFromRGB     = tools.colorFromRGB
 
 local commands = {}
 commands.__index = commands
@@ -38,14 +40,12 @@ local function zerofloor(number)
 	return math[(number < 0) and "ceil" or "floor"](number)
 end
 
--- A trailing newline is the Enter key; newlines inside the text (pastes) become spaces.
 local function cleanInput(text)
 	text = text:gsub("[\r\n]+$", "")
 	text = text:gsub("[\r\n]+", " ")
 	return text
 end
 
--- Parses and highlights the text, then refreshes the search results and scroll position.
 function commands:refresh(text)
 	local parsed = self.parser:parse(text)
 	self.parser:highlight(parsed)
@@ -54,7 +54,6 @@ function commands:refresh(text)
 	self:updateSearchedCommand()
 end
 
--- Replaces the part of the text the parser suggested (an alias, a value, an option).
 function commands:applyCorrection()
 	local cmdInput   = self.commandInput
 	local correction = cmdInput.correction
@@ -494,11 +493,29 @@ function commands:createCommandDescription(data)
 	})
 end
 
+function commands:getCommandColor(cmdName, cmdData)
+	local command = getCommand(cmdName)
+	
+	local colorName =
+		if type(command.run) ~= "function" then "undefined"
+		elseif cmdData.isClient then "client"
+		elseif cmdData.isDeprecated then "deprecated"
+		else nil
+	
+	if colorName ~= nil then
+		cmdName = colorFromRGB(cmdName, cmdsColors[colorName])
+	end
+	
+	return cmdName
+end
+
 function commands:updateDisplayName(cmdData, spaceBeforeArgs)
 	local element     = cmdData.element
 	local commandName = cmdData.name
-
+	
 	local spaces      = string.rep("—", (spaceBeforeArgs - #commandName) - 2)
+	
+	commandName = self:getCommandColor(commandName, cmdData)
 	local displayName = `{commandName} {commandParser.colorFromName(spaces, "comment")} `
 	
 	local argsText = self.parser:highlightArgsType(cmdData.args)
