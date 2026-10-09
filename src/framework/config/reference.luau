@@ -1,0 +1,73 @@
+return {
+	cases = {
+		{ "all", "- includes everyone" },
+		{ "others", "- includes everyone except you" },
+		{ "me", "- includes your player only" },
+		{ "@username", "- searches for players by username only (ignores displaynames)" },
+		{ "#[number]", "- gets a specified amount of random players" },
+		{ "random", "- affects a random player" },
+		{ "%[team name]", "- includes everyone on a given team" },
+		{ "allies / team", "- players who are on your team" },
+		{ "enemies / nonteam", "- players who are not on your team" },
+		{ "friends", "- anyone who is friends with you" },
+		{ "nonfriends", "- anyone who is not friends with you" },
+		{ "guests", "- guest players (obsolete)" },
+		{ "bacons", "- anyone with the \"bacon\" or pal hair" },
+		{ "age[number]", "- includes anyone below or at the given age" },
+		{ "rad[number]", "- includes anyone within the given radius" },
+		{ "nearest", "- gets the closest player to you" },
+		{ "farthest", "- gets the farthest player from you" },
+		{ "group[ID]", "- gets players who are in a certain group" },
+		{ "alive", "- gets players who are alive" },
+		{ "dead", "- gets players who are dead" },
+	},
+	sections = {
+		{
+			{ "title", "Special Player Cases" },
+			{ "text", "These keywords can be used to quickly select groups of players in commands:" },
+			{ "cases" },
+		},
+		{
+			{ "title", "Various Operators" },
+			{ "bold", "Use commas to separate multiple expressions:" },
+			{ "text", ";locate noob,noob2,bob" },
+			{ "bold", "Use - to exclude, and + to include players in your expression:" },
+			{ "text", ";locate %blue-friends (gets players in blue team who aren't your friends)" },
+			{ "bold", "Put ! before a command to run it with the last arguments it was ran with:" },
+			{ "text", "After running ;offset 0 100 0,  you can run !offset anytime to repeat that command with the same arguments that were used to run it last time" },
+		},
+		{
+			{ "title", "Command Looping" },
+			{ "bold", "Form: [How many times it loops]^[delay (optional)]^[command]" },
+			{ "text", "Use the 'breakloops' command to stop all running loops." },
+			{ "bold", "Examples:" },
+			{ "text", ";5^btools - gives you 5 sets of btools\n;10^3^drophats - drops your hats every 3 seconds 10 times\n;inf^0.1^animspeed 100 - infinitely loops your animation speed to 100" },
+		},
+		{
+			{ "title", "Execute Multiple Commands at Once" },
+			{ "bold", 'You can execute multiple commands at once using "\\"' },
+			{ "bold", "Examples:" },
+			{ "text", ";drophats\\respawn - drops your hats and respawns you\n;enable inventory\\enable playerlist\\refresh - enables those coregui items and refreshes you" },
+		},
+		{
+			{ "title", "Browse Command History" },
+			{ "text", "While focused on the command bar, you can use the up and down arrow keys to browse recently used commands" },
+		},
+		{
+			{ "title", "Autocomplete in the Command Bar" },
+			{ "text", "While focused on the command bar, you can use the tab key to insert the top suggested command into the command bar." },
+		},
+		{
+			{ "title", "Using Event Binds" },
+			{ "text", "Use event binds to set up commands that get executed when certain events happen. You can edit the conditions for an event command to run (such as which player triggers it)." },
+			{ "text", "Some events may send arguments; you can use them in your event command by using $ followed by the argument number ($1, $2, etc). You can find out the order and types of these arguments by looking at the settings of the event command." },
+			{ "bold", "Example:" },
+			{ "text", "Setting up 'goto $1' on the OnChatted event will teleport you to any player that chats." },
+		},
+		{
+			{ "title", "Get Further Help" },
+			{ "text", "You can join the Discord server to get support with IY,  and read up on more documentation such as the Plugin API." },
+			{ "invite" },
+		},
+	}
+}

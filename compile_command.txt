@@ -1,0 +1,8 @@
+# old method
+# lua unfinished_lumarge/cli.lua --bundle --version luau --preset minify iy-remake/main.lua
+
+# project
+cd /sdcard/delta/workspace/iy-remake
+
+# compressing
+darklua process main.luau compiled.luau -c darklua.json

@@ -1,0 +1,20 @@
+{
+    "bundle": {
+        "require_mode": "path"
+    },
+    "process": [
+        "remove_comments",
+        "remove_types",
+        "remove_empty_do",
+        "remove_unused_while",
+        "convert_index_to_field",
+        "convert_function_to_assignment",
+        "remove_function_call_parens",
+        "remove_nil_declaration",
+        "remove_method_definition",
+        "compute_expression",
+        "remove_compound_assignment",
+        "rename_variables",
+        "remove_spaces"
+    ]
+}

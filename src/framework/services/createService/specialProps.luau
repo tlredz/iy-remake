@@ -1,0 +1,3 @@
+local specialProps = {}
+
+return specialProps
