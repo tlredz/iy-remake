@@ -6,24 +6,32 @@
 local ORIGINAL_REQUIRE = require
 
 local bundle = {}
+local moduleCache = {}
 
-local requiredModules = {}
-local modulesGarbage = {}
+local EXTENSIONS = { ".lua", ".luau", "/init.lua", "/init.luau" }
+
+local function normalizePath(path)
+	local parts = {}
+	for part in string.gmatch(path, "[^/]+") do
+		if part == ".." then
+			table.remove(parts)
+		elseif part ~= "." then
+			table.insert(parts, part)
+		end
+	end
+	return table.concat(parts, "/")
+end
+
+local function folderOf(path)
+	return path:match("^(.*)/[^/]*$") or ""
+end
 
 function bundle.new(currentPath)
 	currentPath = currentPath or ""
 	assert(type(currentPath) == "string", "#1 must be a string")
 	
-	if currentPath:sub(#currentPath) == "/" then
-		currentPath = currentPath:sub(1, -2)
-	end
-	
-	local thisRequiredModules = {}
-	
 	local bundler = {
-		currentPath = currentPath,
-		owner = owner,
-		repository = repository
+		currentPath = normalizePath(currentPath),
 	}
 	
 	function bundler.readFile(filePath)
@@ -37,101 +45,74 @@ function bundle.new(currentPath)
 	end
 	
 	function bundler.createChunk(sourceCode, folderPath, debugPath)
-		local chunk, err = loadstring(sourceCode, `={debugPath}`)
-		
+		local chunk, err = loadstring(sourceCode, "=" .. debugPath)
 		if not chunk then
 			return false, err
 		end
 		
 		if setfenv and getfenv then
-			local env = {}
-			
-			setmetatable(env, {
-				__index = getfenv(chunk)
-			})
-			
-			local subBundler = bundle.new(folderPath)
-			env.require = subBundler.require
-			
+			local env = setmetatable({}, { __index = getfenv(chunk) })
+			env.require = bundle.new(folderPath).require
 			setfenv(chunk, env)
 		end
 		
 		return pcall(chunk)
 	end
-	
-	function bundler.getPath(path)
-		if path:sub(1, 1) ~= "/" then
-			path = "/" .. path
-		end
-		
-		path = currentPath .. path
-		return bundler.normalizePath(path)
-	end
-	
-	function bundler.normalizePath(path)
-		local split = path:split("/")
-		local fileName = table.remove(split)
-		local parts = {}
-		
-		for _, part in split do
-			if part == ".." then
-				table.remove(parts)
-			elseif part ~= "." then
-				table.insert(parts, part)
-			end
-		end
-		
-		return table.concat(parts, "/"), fileName
-	end
-	
+
 	function bundler.require(path)
 		if type(path) ~= "string" then
 			return ORIGINAL_REQUIRE(path)
 		end
 		
-		local fullPath = path:lower()
+		local names = { path }
+		if path:lower() ~= path then
+			table.insert(names, path:lower())
+		end
 		
-		if thisRequiredModules[path] then
-			return modulesGarbage[filePath]
-		end	
-		
-		local attemps = {
-			fullPath .. ".lua",
-			fullPath .. ".luau",
-			fullPath .. "/init.lua",
-			fullPath .. "/init.luau"
-		}
-		
-		local source, folderPath, filePath = nil, nil, nil
-		
-		for _, attempt in attemps do
-			local folder, name = bundler.getPath(attempt)
-			folderPath, filePath = folder, (folder .. "/" .. name)
-			
-			if requiredModules[filePath] then
-				return modulesGarbage[filePath]
+		local filePath, source
+		for _, name in ipairs(names) do
+			for _, ext in ipairs(EXTENSIONS) do
+				local candidate = normalizePath(bundler.currentPath .. "/" .. name .. ext)
+				
+				local entry = moduleCache[candidate]
+				if entry then
+					if entry.loading then
+						error("circular require: '" .. candidate .. "'", 2)
+					end
+					return entry.value
+				end
+				
+				local content = bundler.readFile(candidate)
+				if content then
+					filePath, source = candidate, content
+					break
+				end
 			end
-			
-			source = bundler.readFile(filePath)
-			if source then break end
+			if filePath then
+				break
+			end
 		end
 		
-		if not source then
-			error(`could not soulve module path: '{fullPath}'`)
+		if not filePath then
+			error("could not resolve module path: '" .. path .. "'", 2)
 		end
 		
-		local success, result = bundler.createChunk(source, folderPath, path)
-		if not success then
-			error(`\n={filePath}:{result}`, 2)
+		moduleCache[filePath] = { loading = true }
+		
+		local ok, result = bundler.createChunk(source, folderOf(filePath), filePath)
+		if not ok then
+			moduleCache[filePath] = nil
+			error(result, 0)
 		end
 		
-		requiredModules[filePath] = true
-		modulesGarbage[filePath] = result
-		thisRequiredModules[fullPath] = true
+		if result == nil then
+			result = true
+		end
 		
+		moduleCache[filePath] = { value = result }
 		return result
 	end
-	
+
 	return bundler
 end
 

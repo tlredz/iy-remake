@@ -14,6 +14,8 @@ local themeService = require("./services/themeService")
 local dragService = require("./services/dragService")
 local themes = require("./themes")
 local coreGui = require("./coreGui")
+local notifier = require("./notifier")
+local notificationsConfig = require("../framework/config/notifier")
 
 local titleFormatter = require("./utils/titleFormatter")
 local scaleObject = require("./utils/scaleObject")
@@ -69,7 +71,34 @@ function interface:setScale(newScale)
 	self:updateMainFramePosition()
 end
 
+local function clampAxis(udim, sizeOffset, screenPx, scale)
+	local current = (udim.Scale * screenPx) / scale + udim.Offset
+	local maxInt = math.floor(screenPx / scale - sizeOffset)
+
+	if math.floor(current) >= maxInt then
+		return 1, -sizeOffset
+	end
+
+	return 0, math.clamp(math.floor(current), 0, math.max(maxInt, 0))
+end
+
 function interface:calculateMainFramePosition()
+	local mainFrame = self.mainFrame
+	local screenGui = self.screenGui
+	local scale = uiScale.Scale
+	local pos = mainFrame.Position
+	local size = mainFrame.Size
+
+	local xScale, xOffset = clampAxis(pos.X, size.X.Offset, screenGui.AbsoluteSize.X, scale)
+	local yScale, yOffset = clampAxis(pos.Y, size.Y.Offset, screenGui.AbsoluteSize.Y, scale)
+	
+	-- REPLACE THIS LINE IN THE FURUTE
+	task.defer(self.updateNotificationsPosition, self)
+
+	return UDim2.new(xScale, xOffset, yScale, yOffset)
+end
+
+--[[function interface:calculateMainFramePosition()
 	local mainFrame = self.mainFrame
 	local screenGui = self.screenGui
 	
@@ -80,11 +109,31 @@ function interface:calculateMainFramePosition()
 	local realWidth = math.ceil(screenGui.AbsoluteSize.X / scale)
 	local realHeight = math.ceil(screenGui.AbsoluteSize.Y / scale)
 	
+	-- REPLACE THIS LINE IN THE FURUTE
+	task.defer(self.updateNotificationsPosition, self)
+	
+	task.spawn(function()
+		local RunService = game:GetService("RunService")
+		
+		RunService.Heartbeat:Wait()
+		RunService.Heartbeat:Wait()
+		
+		local s = uiScale.Scale
+		local W = screenGui.AbsoluteSize.X
+		local abs = mainFrame.AbsolutePosition
+		local absSize = mainFrame.AbsoluteSize
+		
+		print("scale:", s)
+		print("tela X:", W, "| frame X:", abs.X, "| frame W:", absSize.X)
+		print("gap direita (px):", W - (abs.X + absSize.X))
+		print("offset X atual:", mainFrame.Position.X.Offset, "| esperado:", W / s - mainFrame.Size.X.Offset)
+	end)
+	
 	return UDim2.fromOffset(
 		math.clamp(position.X.Offset, 0, math.max(realWidth - size.X.Offset, 0)),
 		math.clamp(position.Y.Offset, 0, math.max(realHeight - size.Y.Offset, 0))
 	)
-end
+end]]
 
 function interface:updateMainFramePosition()
 	if self.mainFrame then
@@ -218,6 +267,51 @@ function interface:createReference()
 	return reference
 end
 
+function interface:createNotifications()
+	local container = notifier:getContainer(self.screenGui)
+	self.notificationsContainer = container
+	return container
+end
+
+function interface:updateNotificationsPosition()
+	local container = self.notificationsContainer
+	local mainFrame = self.mainFrame
+	local screenGui = self.screenGui
+	if not (container and mainFrame and screenGui) then return end
+
+	local scale = scaleObject:getScale()
+	local screenWidth = math.ceil(screenGui.AbsoluteSize.X / scale)
+	local screenHeight = math.ceil(screenGui.AbsoluteSize.Y / scale)
+
+	local gap = notificationsConfig.gapToWindow
+	local width = container.Size.X.Offset
+	
+	local windowLeft = mainFrame.AbsolutePosition.X / scale
+	local windowRight = windowLeft + mainFrame.Size.X.Offset
+	local windowTop = mainFrame.AbsolutePosition.Y / scale
+	local windowBottom = windowTop + mainFrame.Size.Y.Offset
+
+	local roomRight = screenWidth - windowRight - gap
+	local roomLeft = windowLeft - gap
+
+	local onRight
+	if roomRight >= width then
+		onRight = true
+	elseif roomLeft >= width then
+		onRight = false
+	else
+		onRight = roomRight >= roomLeft
+	end
+
+	local growsUp = (windowTop + mainFrame.Size.Y.Offset / 2) > screenHeight / 2
+
+	local x = onRight and (windowRight + gap) or (windowLeft - gap)
+	local y = growsUp and windowBottom or windowTop
+
+	container.AnchorPoint = Vector2.new(onRight and 0 or 1, growsUp and 1 or 0)
+	container.Position = UDim2.fromOffset(x, y)
+end
+
 function interface:destroy()
 	if self.screenGui then
 		self.screenGui:Destroy()
@@ -247,6 +341,7 @@ function interface:init()
 	
 	mainFrame.Parent = screenGui
 	self:createReference()
+	self:createNotifications()
 	
 	return screenGui
 end

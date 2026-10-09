@@ -42,6 +42,6 @@ return function(commandsController)
 	end
 	
 	local report = table.concat(lines, "\n")
-	print(`infinite yield: {#stubs} command(s) without run:\n{report}`)
+	-- print(`infinite yield: {#stubs} command(s) without run:\n{report}`)
 	commandsController:notify("Commands without run", `{#stubs} command(s) still need a run function, see console`)
 end

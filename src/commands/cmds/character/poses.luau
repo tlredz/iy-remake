@@ -95,7 +95,7 @@ return {
 		description = "Spins your character (default speed is 20)",
 		args = { kind = "number", name = "spin speed", optional = true },
 		run = function(self, args)
-			local root = self.playerService:getRootPart()
+			local root = self:getRoot()
 			if not root then return end
 			
 			removeSpinners(root)

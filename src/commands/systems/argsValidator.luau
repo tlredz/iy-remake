@@ -146,7 +146,7 @@ local function validateNumber(text, arg)
 	return {
 		success = true,
 		value = number,
-		display = `<b>{number}</b>`,
+		display = `<b>{text}</b>`,
 		color = "number",
 	}
 end

@@ -158,6 +158,13 @@ function commandsController:init(config)
 		self:notify("Incompatible Exploit", `Your exploit does not support this command (missing {name})`)
 	end
 	
+	function self:getRoot()
+		local root = self.playerService:getRootPart()
+		if root then return root end
+		
+		self:notify(TITLE, "your character is not loaded")
+	end
+	
 	-- variables
 	self.localPlayer = require("../../framework/services/localPlayer")
 	self.executorEnv = executorEnv
@@ -189,7 +196,7 @@ function commandsController:init(config)
 	self.loopService = require("../services/loopService")
 	
 	-- storage
-	self.datas = require("../../storage")
+	self.storage = require("../../storage")
 	
 	-- roblox services
 	self.robloxServices = robloxServices

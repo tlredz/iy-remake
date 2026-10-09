@@ -21,11 +21,6 @@ return {
 		}
 	},
 	
-	notifications = {
-		defaultTime = 10,
-		defaultTitle = "Notification"
-	},
-	
 	ui = {
 		defaultTheme = "Dark",
 		scale = {
