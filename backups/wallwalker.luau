@@ -10729,6 +10729,30 @@ function _AnimationHandler()
 	return AnimationHandler
 end
 
+local function isVisibleSurface(part)
+	if not part or not part:IsA("BasePart") then
+		return false
+	end
+	if not part.CanQuery then
+		return false
+	end
+	return part.Transparency < INVISIBLE_TRANSPARENCY
+end
+
+local function castVisible(ray, ignoreList)
+	local blacklist = table.clone(ignoreList)
+	while true do
+		local part, pos, normal = workspace:FindPartOnRayWithIgnoreList(ray, blacklist)
+		if not part then
+			return nil
+		end
+		if isVisibleSurface(part) then
+			return part, pos, normal
+		end
+		table.insert(blacklist, part)
+	end
+end
+
 function _GravityController()
 
 	local ZERO = Vector3.new(0, 0, 0)
@@ -10886,7 +10910,7 @@ function _GravityController()
 		if (not isJumpCheck) then
 			local parts = self.Floor:GetTouchingParts()
 			for _, part in next, parts do
-				if (not part:IsDescendantOf(self.Character)) then
+				if (not part:IsDescendantOf(self.Character)) and isVisibleSurface(part) then
 					return true
 				end
 			end
@@ -10894,23 +10918,20 @@ function _GravityController()
 			if (self.StateTracker.Jumped) then
 				return false
 			end
-
-			-- 1. check we are touching something with the collider
+	
 			local valid = {}
 			local parts = self.Collider:GetTouchingParts()
 			for _, part in next, parts do
-				if (not part:IsDescendantOf(self.Character)) then
+				if (not part:IsDescendantOf(self.Character)) and isVisibleSurface(part) then
 					table.insert(valid, part)
 				end
 			end
-
+	
 			if (#valid > 0) then
-				-- 2. do a decently long downwards raycast
 				local max = math.cos(self.Humanoid.MaxSlopeAngle)
 				local ray = Ray.new(self.Collider.Position, -10 * self.GravityUp)
 				local hit, pos, normal = workspace:FindPartOnRayWithWhitelist(ray, valid, true)
-
-				-- 3. use slope to decide on jump
+	
 				if (hit and max <= self.GravityUp:Dot(normal)) then
 					return true
 				end
@@ -10933,7 +10954,7 @@ function _GravityController()
 
 	function GravityController:OnHeartbeatStep(dt)
 		local ray = Ray.new(self.Collider.Position, -1.1*self.GravityUp)
-		local hit, pos, normal = workspace:FindPartOnRayWithIgnoreList(ray, self.Ignores)
+		local hit, pos, normal = castVisible(ray, self.Ignores)
 		local lastPart = self.LastPart
 
 		if (hit and lastPart and lastPart == hit) then
@@ -11451,7 +11472,8 @@ function GetGravityUp(self, oldGravityUp)
 
 	local centerRayLength = 25
 	local centerRay = Ray.new(origin, -centerRayLength * oldGravityUp)
-	local centerHit, centerHitPoint, centerHitNormal = workspace:FindPartOnRayWithIgnoreList(centerRay, ignoreList)
+	local centerHit, centerHitPoint, centerHitNormal = castVisible(centerRay, ignoreList)
+	-- local centerHit, centerHitPoint, centerHitNormal = workspace:FindPartOnRayWithIgnoreList(centerRay, ignoreList)
 
         --[[disable
         DrawClass:Clear()
@@ -11482,7 +11504,7 @@ function GetGravityUp(self, oldGravityUp)
 		local offset = CFrame.fromAxisAngle(oldGravityUp, dtheta) * radialVector
 		local dir = (LOWER_RADIUS_OFFSET * -oldGravityUp + (endRadius - startRadius) * offset)
 		local ray = Ray.new(origin + startRadius * offset, downRayLength * dir.unit)
-		local hit, hitPoint, hitNormal = workspace:FindPartOnRayWithIgnoreList(ray, ignoreList)
+		local hit, hitPoint, hitNormal = castVisible(ray, ignoreList)
             --[[disable
             DrawClass.Draw3D.Ray(ray.Origin, ray.Direction)
             ]]
@@ -11507,7 +11529,7 @@ function GetGravityUp(self, oldGravityUp)
 		local dir = (FEELER_RADIUS * offset + LOWER_RADIUS_OFFSET * -oldGravityUp).unit
 		local feelerOrigin = origin - FEELER_APEX_OFFSET * -oldGravityUp + FEELER_START_OFFSET * dir
 		local ray = Ray.new(feelerOrigin, FEELER_LENGTH * dir)
-		local hit, hitPoint, hitNormal = workspace:FindPartOnRayWithIgnoreList(ray, ignoreList)
+		local hit, hitPoint, hitNormal = castVisible(ray, ignoreList)
             --[[disable
             DrawClass.Draw3D.Ray(ray.Origin, ray.Direction)
             ]]
