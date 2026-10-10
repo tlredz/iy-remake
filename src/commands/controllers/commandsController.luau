@@ -10,6 +10,8 @@ local robloxServices = require("../../framework/services/rbxServices")
 local frameworkSettings = require("../../framework/settings")
 
 local searchController = require("./searchController")
+local customAliases = require("../systems/customAliases")
+local pluginsSystem = require("../systems/plugins")
 
 local rankConfig = frameworkSettings.commands.cmdsRank
 local MAX_TIMES_USED = rankConfig.maxTimesUsed
@@ -33,6 +35,11 @@ function commandsController:createGarbage(name: string): { [any]: any }?
 		self.garbages[name] = garbage
 		return garbage
 	end
+end
+
+-- Command data by any alias (case-insensitive), or nil when the command does not exist
+function commandsController:getCommandData(name: string)
+	return commandsList.lookup[name:lower()]
 end
 
 function commandsController:hasGarbage(name: string): boolean
@@ -74,21 +81,69 @@ function commandsController:commandUsed(targetFlag)
 	usedCmdsData:save()
 end
 
-function commandsController:run(cmdName: string, args: unknown): (nil)
+-- Keeps the values of the arguments, so 'lastcommand' can run the same command again
+local function snapshotArgs(args)
+	local values = {}
+	if args and args.args then
+		for index, arg in args.args do
+			values[index] = { value = arg.value }
+		end
+	end
+	return values
+end
+
+-- Threads that are running a command right now. A command that starts another one with self:run
+-- is nested: the inner run must not change lastCommand, the saved arguments or the usage rank.
+local runningThreads = setmetatable({}, { __mode = "k" })
+
+-- Runs a command by name. `asUser` is set by 'lastcommand', which replays a command the person chose.
+function commandsController:run(cmdName: string, args: unknown, asUser: boolean?): (nil)
 	logger:expect(cmdName, {"string"}, "'commandsController:run' #1")
 	logger:expect(args, {"table", "nil"}, "'commandsController:run' #2")
-	
+
 	local cmdData = commandsList.lookup[cmdName]
 	logger:assert(cmdData, "invalid command")
-	
-	self:commandUsed(cmdData.name)
-	
-	if cmdData.run ~= nil then
-		cmdData.run(self, args)
+
+	local thread = coroutine.running()
+	local wasNested = runningThreads[thread] ~= nil
+	local nested = wasNested and not asUser
+
+	if not nested then
+		self:commandUsed(cmdData.name)
+
+		-- the arguments are kept per command, so '!command' can run it again with the same ones
+		local snapshot = snapshotArgs(args)
+		self.privateEnv.lastArgs = self.privateEnv.lastArgs or {}
+		self.privateEnv.lastArgs[cmdData.name] = snapshot
+
+		if cmdData.name ~= "lastcommand" then
+			self.privateEnv.lastCommand = {
+				name = cmdData.name,
+				args = snapshot
+			}
+		end
+	end
+
+	if cmdData.run == nil then
+		logger:warn(`missing command run func: {cmdData.name}`)
 		return
 	end
-	
-	logger:warn(`missing command run func: {cmdData.name}`)
+
+	runningThreads[thread] = true
+	local ok, err = pcall(cmdData.run, self, args)
+	if not wasNested then
+		runningThreads[thread] = nil
+	end
+
+	if not ok then
+		error(err, 0)
+	end
+end
+
+-- The arguments a command last ran with, or nil when it has not run yet
+function commandsController:getLastArgs(name: string)
+	local stored = self.privateEnv.lastArgs
+	return stored and stored[name]
 end
 
 local function getUsage(alias: string): number
@@ -162,7 +217,7 @@ function commandsController:init(config)
 		local root = self.playerService:getRootPart()
 		if root then return root end
 		
-		self:notify(TITLE, "your character is not loaded")
+		self:notify("Character", "your character is not loaded")
 	end
 	
 	-- variables
@@ -211,6 +266,15 @@ function commandsController:init(config)
 	self.guiService = robloxServices.GuiService
 	self.networkClient = robloxServices.NetworkClient
 	self.proximityPromptService = robloxServices.ProximityPromptService
+	self.commandsList = commandsList
+	
+	-- custom aliases from 'addalias' (the alias commands reach the list through self.commandsList)
+	customAliases.restore(commandsList)
+	
+	-- installed plugins; a plugin that fails stays installed and is logged
+	for name, reason in pluginsSystem.restore(commandsList) do
+		logger:warn(`plugin '{name}' could not be loaded: {reason}`)
+	end
 end
 
 return commandsController

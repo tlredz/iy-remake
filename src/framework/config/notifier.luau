@@ -10,10 +10,10 @@ return {
 	size = UDim2.fromOffset(250, 100),
 	cornerRadius = 6,
 	titleHeight = 20,
-	iconSize = 15,
+	iconSize = 11,
 
 	-- text sizes, and the space between the popup edge and the message
-	titleTextSize = 16,
+	titleTextSize = 14,
 	textSize = 14,
 	padding = 8,
 

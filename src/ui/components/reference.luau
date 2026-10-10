@@ -1,7 +1,7 @@
 -- src/ui/components/reference.luau
 
 local createService = require("../services/createService")
-local dragService = require("../services/dragService")
+local dragInstance = require("../utils/dragInstance")
 local scrollBarComponent = require("./scrollBar")
 
 local scaleObject = require("../utils/scaleObject")
@@ -315,7 +315,6 @@ function reference:create()
 		self:close()
 	end)
 
-	local dragInstance = dragService.new(scaleObject.uiScale)
 	dragInstance:addGuiObject(frame)
 
 	dragInstance.dragStarted:Connect(function(object)
@@ -333,7 +332,6 @@ function reference:create()
 	self.frame = frame
 	self.closeIcon = closeIcon
 	self.scrollBar = scrollBar
-	self.dragInstance = dragInstance
 
 	return frame
 end

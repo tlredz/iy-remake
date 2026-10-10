@@ -4,12 +4,11 @@ local copyArg = {
 	optional = true
 }
 
--- copies the value to your clipboard, or notifies it when copy is false
 local function sendValue(self, value: string, copy: boolean?)
 	if copy == false then
-		self:notify(value)
-	else
 		self.executorEnv.setclipboard(value)
+	else
+		self:notify(value)
 	end
 end
 

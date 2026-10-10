@@ -7,6 +7,7 @@ local othersColor      = Color3.fromRGB(97,  181, 195)
 local warnColor        = Color3.fromRGB(254, 193, 7)
 local errorColor       = Color3.fromRGB(244, 66,  54)
 local validColor       = Color3.fromRGB(166, 227, 45)
+local tagColor         = Color3.fromRGB(255, 149, 75)
 
 return {
 	args = {
@@ -19,7 +20,8 @@ return {
 		["others"] = othersColor,
 		["warn"] = warnColor,
 		["error"] = errorColor,
-		["valid"] = validColor
+		["valid"] = validColor,
+		["tag"] = tagColor
 	},
 	commands = {
 		["undefined"] = errorColor,

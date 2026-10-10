@@ -1,9 +1,10 @@
 -- src/ui/components/info.luau
 
 local createService = require("../services/createService")
-local dragService = require("../services/dragService")
 local assetsService = require("../services/assetsService")
 local themeService = require("../services/themeService")
+
+local dragInstance = require("../utils/dragInstance")
 local notifier = require("../notifier")
 
 local tools = require("../../utils/tools")
@@ -16,62 +17,15 @@ local robloxServices = require("../../framework/services/rbxServices")
 local privateEnv = require("../../framework/environment/private")
 
 local config = require("../../framework/config/serverinfo")
-local argColors = require("../../framework/config/colors").args
+local textHighlight = require("../../utils/textHighlight")
 
 local SHOWN_POSITION = UDim2.new(0.5, -config.window.width / 2, 0, config.window.shownY)
 local HIDDEN_POSITION = UDim2.new(0.5, -config.window.width / 2, 0, config.window.hiddenY)
 
-local dragInstance = nil
-
-local symbolChars = tools.charset(":#()[]-")
-local numberChars = tools.charset("0123456789")
-
 local info = {}
 
-local function getCharColor(char)
-	if numberChars[char] then
-		return argColors.number
-	elseif symbolChars[char] then
-		return argColors.symbol
-	end
-
-	return nil
-end
-
-local function highlight(value)
-	local text = tostring(value)
-	local parts = {}
-	local run = ""
-	local runColor = nil
-
-	local function flushRun()
-		if run == "" then return end
-
-		local escaped = tools.escapeRichText(run)
-
-		if runColor then
-			table.insert(parts, tools.colorFromRGB(escaped, runColor))
-		else
-			table.insert(parts, escaped)
-		end
-
-		run = ""
-	end
-
-	for char in text:gmatch(".") do
-		local color = getCharColor(char)
-
-		if color ~= runColor then
-			flushRun()
-			runColor = color
-		end
-
-		run = run .. char
-	end
-
-	flushRun()
-
-	return table.concat(parts)
+local function highlight(text)
+	return textHighlight:apply(text)
 end
 
 local function line(prefix, value)
@@ -326,12 +280,15 @@ local function createWindow()
 	labels.placeId = createValueLine(body, nextOrder(), line(labelsConfig.placeId, game.PlaceId), function()
 		return game.PlaceId
 	end)
+	
+	labels.gameId = createValueLine(body, nextOrder(), line(labelsConfig.gameId, game.GameId), function()
+		return game.GameId
+	end)
 
 	labels.placeName = createValueLine(body, nextOrder(), line(labelsConfig.placeName, loading), function()
 		return window.placeName
 	end)
 
-	dragInstance = dragInstance or dragService.new(scaleObject.uiScale)
 	dragInstance:addGuiObject(frame)
 
 	window.frame = frame

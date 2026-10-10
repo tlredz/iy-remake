@@ -1,5 +1,6 @@
 # old method
 # lua unfinished_lumarge/cli.lua --bundle --version luau --preset minify iy-remake/main.lua
+# loadstring(readfile("iy-remake/compiled.luau"))()
 
 # project
 cd /sdcard/delta/workspace/iy-remake

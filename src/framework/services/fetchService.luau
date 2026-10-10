@@ -10,6 +10,11 @@ local function request(url)
 	return game:HttpGet(url)
 end
 
+function fetchService.load(url: string, chunkName: string): () -> ()
+	local source = fetchService.fetch(url)
+	return if source ~= nil then loadstring(source) else nil
+end
+
 function fetchService.fetch(url)
 	if url:sub(1, 1) == "/" then
 		url = url:sub(2)

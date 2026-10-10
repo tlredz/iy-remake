@@ -126,6 +126,22 @@ return {
 		args = {
 			kind = "object",
 			optional = true
-		}
+		},
+		run = function(self, args)
+			local firetouchinterest = self:expectExploit("firetouchinterest")
+			if not firetouchinterest then return end
+
+			local root = self.playerService:getRootPart()
+			if not root then return end
+
+			local name = (args:nextValue() or ""):lower()
+
+			for _, descendant in workspace:GetDescendants() do
+				if descendant:IsA("TouchTransmitter") and descendant.Parent:IsA("BasePart") and matchName(descendant.Parent, name) then
+					firetouchinterest(descendant.Parent, root, 0)
+					firetouchinterest(descendant.Parent, root, 1)
+				end
+			end
+		end
 	}
 }

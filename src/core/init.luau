@@ -1,17 +1,19 @@
 -- src/core/init.luau
 
+require("./cleanup"):init()
+
 local commandsController = require("../commands/controllers/commandsController")
 local playerService = require("../framework/services/playerService")
 local fetchService = require("../framework/services/fetchService")
 
-local checkStubs = require("./checkStubs")
+-- local checkStubs = require("./checkStubs")
 
 local interface = require("../ui")
 
 local infiniteYield = {}
 
 function infiniteYield:boot()
-	require("./cleanup"):init()
+	self.boot = nil
 	
 	commandsController:init({
 		infiniteYield = interface,
@@ -19,9 +21,8 @@ function infiniteYield:boot()
 		fetchService = fetchService
 	})
 	
-	checkStubs(commandsController)
-	
-	interface:init()
+	-- checkStubs(commandsController)
+	interface:awake() -- interface:init()
 end
 
 return infiniteYield

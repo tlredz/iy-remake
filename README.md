@@ -1,7 +1,7 @@
 # 🪄 Infinite Yield RV (Remake Version)
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/tlredz/iy-remake/refs/heads/main/images/infiniteYieldUI.jpg" width="500" height="440">
+  <img src="https://raw.githubusercontent.com/tlredz/iy-remake/refs/heads/main/images/interfaceComparasion.jpg" width="1000" height="440">
 </div>
 
 > [!IMPORTANT]

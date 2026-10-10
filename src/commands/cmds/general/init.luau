@@ -41,7 +41,7 @@ return {
 	require("./ctrllock"),            -- done
 	require("./exit"),                -- done
 	-- require("./removecommand"),
-	-- require("./breakloops")
+	require("./breakloops"),
 	require("./notifyjobid"),
 	require("./copyids"),
 	require("./enable"),
@@ -55,5 +55,6 @@ return {
 	require("./autoclick"),
 	require("./watch"),
 	require("./keybinds"),
-	require("./promptrig")
+	require("./promptrig"),
+	require("./testedcmds")
 }

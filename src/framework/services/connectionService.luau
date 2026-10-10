@@ -3,10 +3,12 @@ local connectionService = {
 }
 
 local privateEnv = require("../environment/private")
+
+if privateEnv.connectionService then privateEnv.connectionService:cleanup() end
 privateEnv.connectionService = connectionService
 
 function connectionService:cleanup()
-	for _, connection in ipairs(self.connections) do
+	for _, connection in self.connections do
 		connection:Disconnect()
 	end
 end

@@ -28,6 +28,6 @@ return {
 			end
 		end
 		
-		self:notify("anti AFK now is enabled enabled")
+		self:notify("anti AFK is now enabled")
 	end
 }

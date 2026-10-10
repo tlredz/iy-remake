@@ -11,7 +11,7 @@ return {
 			local garbage = self:createGarbage("alignmentkeys")
 			if not garbage then return end
 			
-			garbage.akConn = self:connect(self.userInputService.InputBegan, function(inp, processed)
+			garbage.akConn = self:connect(self.robloxServices.UserInputService.InputBegan, function(inp, processed)
 				if processed then return end
 				
 				local direction = MOVE_KEYS[inp.KeyCode]

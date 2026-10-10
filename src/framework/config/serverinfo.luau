@@ -46,6 +46,7 @@ return {
 		appearance = "appearance: ",
 		players    = "players:     ",
 		maxPlayers = "max-players: ",
+		gameId     = "game-id:     ",
 		placeId    = "place-id:    ",
 		placeName  = "place-name:  ",
 	},

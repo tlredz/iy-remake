@@ -1,5 +1,5 @@
 local robloxServices = require("../../framework/services/rbxServices")
-local playerService  = require("../../framework/services/playerService")
+local resolvePlayers = require("./resolvePlayers")
 local commandsList   = require("../list")
 local waypointsData  = require("../../storage/data/waypoints")
 local aliasesData    = require("../../storage/data/aliases")
@@ -233,35 +233,38 @@ local function validateColor3(text)
 	}
 end
 
-local PLAYER_KEYWORDS = {
-	me = true,
-	all = true,
-	others = true,
-	random = true,
-}
-
 local function validatePlayer(text)
 	if text == "" then
 		return fail(" - player missing")
 	end
-	
-	local lowered = text:lower()
-	
-	-- selectors: me, all, others, random, #amount, %team
-	if PLAYER_KEYWORDS[lowered] or lowered:match("^#%d+$") or lowered:match("^%%.+$") then
-		return { success = true, value = text, color = "valid" }
+
+	local parts = resolvePlayers.parts(text)
+
+	if #parts == 0 then
+		return fail(" - player missing")
 	end
-	
-	if #playerService:getPlayersByName(text) > 0 then
-		return { success = true, value = text, color = "valid" }
+
+	-- every comma-separated part has to match somebody, the same rule a single name or selector has
+	for _, part in parts do
+		if #resolvePlayers(part) == 0 then
+			if resolvePlayers.hasOperators(part) then
+				return fail(" - no players match this")
+			end
+
+			if resolvePlayers.isSelector(part) then
+				return fail(" - no players match this selector")
+			end
+
+			local names = {}
+			for _, player in robloxServices.Players:GetPlayers() do
+				table.insert(names, player.Name)
+			end
+
+			return fail(" - player not found", names)
+		end
 	end
-	
-	local names = {}
-	for _, player in robloxServices.Players:GetPlayers() do
-		table.insert(names, player.Name)
-	end
-	
-	return fail(" - player not found", names)
+
+	return { success = true, value = text, color = "valid" }
 end
 
 local COMMON_CLASSES = {

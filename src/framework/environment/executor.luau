@@ -28,10 +28,8 @@ return setmetatable({
 			local timer = os_clock() + (1 / cap)
 			
 			while true do
-				if os_clock() >= timer then
-					timer = os_clock() + (1 / cap)
-					task_wait()
-				end
+				task_wait(math.max(timer - os_clock(), 0))
+				timer = os_clock() + (1 / cap)
 			end
 		end)
 	end),
@@ -98,6 +96,8 @@ return setmetatable({
 	),
 	writefile = register("function", writefile),
 	readfile = register("function", readfile),
+	listfiles = register("function", listfiles),
+	loadstring = register("function", loadstring),
 	isfile = register("function", isfile, readfile and function(path)
 		local success, result = pcall(readfile, path)
 		return success and result ~= nil and result ~= ""

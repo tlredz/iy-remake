@@ -29,7 +29,7 @@ local function validateBoolean(text)
 	
 	return {
 		success = found ~= nil,
-		value = found and (found % 2) == 0,
+		value = found and (found % 2) == 1,
 		display = text,
 		options = {"false", "true"},
 		message = " - invalid boolean",

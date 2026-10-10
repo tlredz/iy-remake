@@ -7,6 +7,7 @@ local commandData       = require("../../commands/systems/commandData")
 local commandsController = require("../../commands/controllers/commandsController")
 local commandParser      = require("../../commands/systems/commandParser")
 local argsManager        = require("../../commands/systems/argsManager")
+local loopService        = require("../../commands/services/loopService")
 
 local inputConfig  = require("../../framework/config/input")
 local commandsList = require("../../commands/list")
@@ -17,6 +18,7 @@ local tools       = require("../../utils/tools")
 local scaleObject = require("../utils/scaleObject")
 
 local settingsData = require("../../storage/data/settings")
+local testedCmds = require("../../storage/data/testedCmds")
 local cmdsColors = require("../../framework/config/colors").commands
 
 local userInputService = robloxServices.UserInputService
@@ -47,8 +49,8 @@ local function cleanInput(text)
 end
 
 function commands:refresh(text)
-	local parsed = self.parser:parse(text)
-	self.parser:highlight(parsed)
+	local statements = self.parser:parse(text)
+	self.parser:highlight(statements)
 	
 	self:updateSearchBoxHighlight()
 	self:updateSearchedCommand()
@@ -97,7 +99,6 @@ function commands:awake()
 		searchBox:CaptureFocus()
 	end
 	
-	-- Returns true when a suggestion was applied and the input should keep focus.
 	local function onEnterPressed()
 		if cmdInput.correction then
 			self:applyCorrection()
@@ -144,6 +145,18 @@ function commands:awake()
 	
 	connectionService:Connect(textChangedSignal, function()
 		local text = searchBox.Text
+
+		-- a tab character is never part of a command (Tab accepts the suggestion instead)
+		if text:find("\t") then
+			searchBox.Text = (text:gsub("\t", ""))
+			return
+		end
+
+		-- typing leaves the position in the history
+		if self.historyIndex and text ~= self.historyText then
+			self.historyIndex = nil
+		end
+
 		local isEnter = text:sub(-1) == "\n" or text:sub(-1) == "\r"
 		
 		if text:find("[\r\n]") then
@@ -163,34 +176,157 @@ function commands:awake()
 		updatePlaceholder()
 		self:refresh(text)
 	end)
+
+	-- while the bar is focused: Up and Down browse the history, Tab takes the suggestion
+	connectionService:Connect(userInputService.InputBegan, function(input)
+		if not searchBox:IsFocused() then return end
+
+		if input.KeyCode == Enum.KeyCode.Up then
+			self:browseHistory(-1)
+		elseif input.KeyCode == Enum.KeyCode.Down then
+			self:browseHistory(1)
+		elseif input.KeyCode == Enum.KeyCode.Tab and self.commandInput.correction then
+			self:applyCorrection()
+			task.defer(captureFocus)
+		end
+	end)
 end
 
+local HISTORY_LIMIT = 50
+
+-- Runs the statements of the input in order (they are separated by "\"). The first one that fails stops the rest.
 function commands:sendInputCommand()
 	local cmdInput = self.commandInput
-	
+
 	if cmdInput.runError then
 		self:setComment(cmdInput.runError, "error")
 		return
 	end
-	
-	local cmdData = cmdInput.commandData
-	if not cmdData then return end
-	
-	local name = cmdData.name
-	
-	local success, failure = pcall(function()
-		local args = argsManager.new(cmdInput.args)
-		return commandsController:run(name, args)
-	end)
-	
+
+	local statements = cmdInput.statements
+
+	for _, info in statements do
+		if not info.commandData then return end
+	end
+
+	local rawText = cmdInput.rawText
+	local failure, failedName = nil, nil
+
+	for _, info in statements do
+		local success, reason = pcall(function()
+			self:runStatement(info)
+		end)
+
+		if not success then
+			failure = reason
+			failedName = info.commandData.name
+			break
+		end
+	end
+
 	if settingsData:getValue("clearOnEnter") then
 		self.searchBox.Text = ""
 	end
-	
-	if not success then
+
+	self.historyIndex = nil
+
+	if failure then
 		self:setComment(`failed - {failure}`, "error")
-		logger:error(`failed to run command '{name}': {failure}`)
+		logger:error(`failed to run command '{failedName}': {failure}`)
+	else
+		self:addToHistory(rawText)
 	end
+end
+
+-- Runs one statement: a plain command, a loop ("count^delay^command") or a repeat ("!command")
+function commands:runStatement(info)
+	local name = info.commandData.name
+	local argValues = info.args
+
+	if info.repeatLast then
+		argValues = commandsController:getLastArgs(name) or {}
+	end
+
+	if info.loop then
+		self:startLoop(name, argValues, info.loop)
+		return
+	end
+
+	commandsController:run(name, argsManager.new(argValues))
+end
+
+-- Runs a command `count` times, `delay` seconds apart. "inf" keeps going until 'breakloops'.
+function commands:startLoop(name: string, argValues: { any }, loop)
+	local runs = 0
+	local id
+
+	id = loopService:add(function()
+		runs += 1
+
+		local success, failure = pcall(function()
+			commandsController:run(name, argsManager.new(argValues))
+		end)
+
+		if not success then
+			loopService:remove(id)
+			logger:error(`loop of '{name}' stopped: {failure}`)
+			return
+		end
+
+		if runs >= loop.count then
+			loopService:remove(id)
+		end
+	end, loop.delay)
+end
+
+function commands:addToHistory(text: string)
+	local line = (text or ""):match("^(.-)%s*$")
+
+	if line == "" then return end
+
+	local history = self.history
+
+	if history[#history] == line then return end
+
+	table.insert(history, line)
+
+	if #history > HISTORY_LIMIT then
+		table.remove(history, 1)
+	end
+end
+
+-- Up (-1) goes to older commands, Down (1) to newer ones. Going past the newest one clears the bar.
+function commands:browseHistory(direction: number)
+	local history = self.history
+
+	if #history == 0 then return end
+
+	local index
+
+	if self.historyIndex == nil then
+		if direction > 0 then return end
+		index = #history
+	else
+		index = self.historyIndex + direction
+	end
+
+	if index < 1 then
+		index = 1
+	end
+
+	if index > #history then
+		self.historyIndex = nil
+		self:setSearchText("")
+		return
+	end
+
+	self.historyIndex = index
+	self:setSearchText(history[index])
+end
+
+function commands:setSearchText(text: string)
+	self.historyText = text
+	self.searchBox.Text = text
 end
 
 function commands:create()
@@ -498,6 +634,7 @@ function commands:getCommandColor(cmdName, cmdData)
 	
 	local colorName =
 		if type(command.run) ~= "function" then "undefined"
+		elseif testedCmds:getValue(command.name) == true then "deprecated"
 		elseif cmdData.isClient then "client"
 		elseif cmdData.isDeprecated then "deprecated"
 		else nil
@@ -725,7 +862,10 @@ function commands.new(config)
 		},
 		
 		visibleCommands = {},
-		commandsData    = {}
+		commandsData    = {},
+		history         = {},
+		historyIndex    = nil,
+		historyText     = ""
 	}, commands)
 	
 	self.parser = commandParser.new(self.commandInput, function(text, color)
