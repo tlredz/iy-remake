@@ -1,5 +1,20 @@
 local INVISIBLE_TRANSPARENCY = 0.9
 
+local R15_ANIMS = {
+	idle = {
+		{ id = "http://www.roblox.com/asset/?id=507766666", weight = 1 },
+		{ id = "http://www.roblox.com/asset/?id=507766951", weight = 1 },
+		{ id = "http://www.roblox.com/asset/?id=507766388", weight = 9 },
+	},
+	walk = { { id = "http://www.roblox.com/asset/?id=507777826", weight = 10 } },
+	run = { { id = "http://www.roblox.com/asset/?id=507767714", weight = 10 } },
+	jump = { { id = "http://www.roblox.com/asset/?id=507765000", weight = 10 } },
+	fall = { { id = "http://www.roblox.com/asset/?id=507767968", weight = 10 } },
+}
+
+local LOOPING = { idle = true, walk = true, run = true, fall = true, jump = false }
+local SMALL = 0.0001
+
 script = Instance.new("LocalScript")
 
 repeat wait()
@@ -10755,6 +10770,173 @@ local function castVisible(ray, ignoreList)
 	end
 end
 
+local function buildList(animateScript, name)
+	local list = {}
+	local folder = animateScript:FindFirstChild(name)
+	if folder then
+		for _, child in ipairs(folder:GetChildren()) do
+			if child:IsA("Animation") then
+				local w = child:FindFirstChild("Weight")
+				table.insert(list, { anim = child, weight = w and w.Value or 1 })
+			end
+		end
+	end
+	if #list == 0 then
+		for _, def in ipairs(R15_ANIMS[name]) do
+			local anim = Instance.new("Animation")
+			anim.Name = name
+			anim.AnimationId = def.id
+			table.insert(list, { anim = anim, weight = def.weight })
+		end
+	end
+	return list
+end
+
+local function rollAnim(list)
+	local total = 0
+	for _, entry in ipairs(list) do
+		total += entry.weight
+	end
+	local r = math.random() * total
+	for _, entry in ipairs(list) do
+		r -= entry.weight
+		if r <= 0 then
+			return entry.anim
+		end
+	end
+	return list[#list].anim
+end
+
+local WallAnimator = {}
+WallAnimator.__index = WallAnimator
+
+function WallAnimator.new(humanoid, animateScript)
+	local self = setmetatable({}, WallAnimator)
+	self.humanoid = humanoid
+	self.animator = humanoid:FindFirstChildOfClass("Animator") or humanoid
+	self.lists = {}
+	for name in pairs(R15_ANIMS) do
+		self.lists[name] = buildList(animateScript, name)
+	end
+	self.cache = {}
+	self.active = {}
+	self.currentName = nil
+	self.walkTrack = nil
+	self.runTrack = nil
+	return self
+end
+
+function WallAnimator:pickTrack(name)
+	local anim = rollAnim(self.lists[name])
+	local track = self.cache[anim]
+	if not track then
+		track = self.animator:LoadAnimation(anim)
+		track.Priority = Enum.AnimationPriority.Core
+		track.Looped = LOOPING[name]
+		track.KeyframeReached:Connect(function(frame)
+			if frame == "End" and self.currentName == "walk" and self.walkTrack then
+				self.walkTrack.TimePosition = 0
+				self.runTrack.TimePosition = 0
+			end
+		end)
+		self.cache[anim] = track
+	end
+	return track
+end
+
+function WallAnimator:switch(name, fade)
+	if self.currentName == name then
+		return
+	end
+	for _, track in ipairs(self.active) do
+		track:Stop(fade)
+	end
+	self.active = {}
+	self.currentName = name
+	self.walkTrack = nil
+	self.runTrack = nil
+
+	if name == "walk" then
+		self.walkTrack = self:pickTrack("walk")
+		self.runTrack = self:pickTrack("run")
+		self.walkTrack:Play(fade)
+		self.runTrack:Play(fade)
+		self.active = { self.walkTrack, self.runTrack }
+	else
+		local track = self:pickTrack(name)
+		track:Play(fade)
+		self.active = { track }
+	end
+end
+
+function WallAnimator:heightScale()
+	if not self.humanoid.AutomaticScalingEnabled then
+		return 1
+	end
+	return self.humanoid.HipHeight / 2
+end
+
+function WallAnimator:setRunSpeed(speed)
+	if not self.walkTrack then
+		return
+	end
+	local runSpeed = speed * 1.25 / self:heightScale()
+	local walkWeight, runWeight
+	if runSpeed < 0.33 then
+		walkWeight, runWeight = 1, SMALL
+	elseif runSpeed < 0.66 then
+		local w = (runSpeed - 0.33) / 0.33
+		walkWeight, runWeight = 1 - w + SMALL, w + SMALL
+	else
+		walkWeight, runWeight = SMALL, 1
+	end
+	self.walkTrack:AdjustWeight(walkWeight)
+	self.runTrack:AdjustWeight(runWeight)
+	self.walkTrack:AdjustSpeed(runSpeed)
+	self.runTrack:AdjustSpeed(runSpeed)
+end
+
+function WallAnimator:onState(stateName, speed)
+	if stateName == "onRunning" then
+		if speed > 0.75 then
+			self:switch("walk", 0.2)
+			self:setRunSpeed(speed / 16)
+		else
+			self:switch("idle", 0.2)
+		end
+	elseif stateName == "onJumping" then
+		self:switch("jump", 0.1)
+	elseif stateName == "onFreeFall" then
+		self:switch("fall", 0.2)
+	end
+end
+
+function WallAnimator:stopAll()
+	for _, track in pairs(self.cache) do
+		track:Stop(0.1)
+		track:Destroy()
+	end
+	self.cache = {}
+	self.active = {}
+	self.currentName = nil
+	self.walkTrack = nil
+	self.runTrack = nil
+end
+
+local function castVisible(ray, ignoreList)
+	local blacklist = table.clone(ignoreList)
+	while true do
+		local part, pos, normal = workspace:FindPartOnRayWithIgnoreList(ray, blacklist)
+		if not part then
+			return nil
+		end
+		if isVisibleSurface(part) then
+			return part, pos, normal
+		end
+		table.insert(blacklist, part)
+	end
+end
+
 function _GravityController()
 
 	local ZERO = Vector3.new(0, 0, 0)
@@ -10828,16 +11010,25 @@ function _GravityController()
 		self.HRP = player.Character:WaitForChild("HumanoidRootPart")
 
 		-- Animation
-		self.AnimationHandler = AnimationHandler.new(self.Humanoid, self.Character:WaitForChild("Animate"))
-		self.AnimationHandler:EnableDefault(false)
+		local animate = self.Character:WaitForChild("Animate")
+		self.Animate = animate
+		animate.Disabled = true
+		for _, track in ipairs(self.Humanoid:GetPlayingAnimationTracks()) do
+			if track.Priority == Enum.AnimationPriority.Core then
+				track:Stop(0.1)
+			end
+		end
+		self.Animator = WallAnimator.new(self.Humanoid, animate)
+
 		local ssss = game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("SetState") or Instance.new("BindableEvent",game:GetService("Players").LocalPlayer.PlayerScripts)
 		local soundState = ExecutedSounds
 		ssss.Name = "SetState"
 
 		self.StateTracker = StateTracker.new(self.Humanoid, soundState)
 		self.StateTracker.Changed:Connect(function(name, speed)
-			self.AnimationHandler:Run(name, speed)
+			self.Animator:onState(name, speed)
 		end)
+		self.Animator:onState("onRunning", 0)
 
 		-- Collider and forces
 		local collider, gyro, vForce, floor = InitObjects(self)
@@ -10890,17 +11081,21 @@ function _GravityController()
 		self.DeathCon:Disconnect()
 		self.SeatCon:Disconnect()
 		self.HeartCon:Disconnect()
-
+	
 		RUNSERVICE:UnbindFromRenderStep("GravityStep")
-
+	
 		self.Collider:Destroy()
 		self.VForce:Destroy()
 		self.Gyro:Destroy()
+		self.Floor:Destroy()
 		self.StateTracker:Destroy()
-
+	
+		self.Animator:stopAll()
+		if self.Animate and self.Animate.Parent then
+			self.Animate.Disabled = false
+		end
+	
 		self.Humanoid.PlatformStand = false
-		self.AnimationHandler:EnableDefault(true)
-
 		self.GravityUp = UNIT_Y
 	end
 
