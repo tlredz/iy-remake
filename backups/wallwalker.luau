@@ -221,7 +221,7 @@ function _CameraToggleStateController()
 	local Players = game:GetService("Players")
 	local UserInputService = game:GetService("UserInputService")
 	local GameSettings = UserSettings():GetService("UserGameSettings")
-	
+
 	local LocalPlayer = Players.LocalPlayer
 	if not LocalPlayer then
 		Players:GetPropertyChangedSignal("LocalPlayer"):Wait()
@@ -11413,8 +11413,8 @@ end
 
 local PLAYERS = game:GetService("Players")
 
-local GravityController = _GravityController()
-local Controller = GravityController.new(PLAYERS.LocalPlayer)
+-- Created on the first enable: creating it takes over the camera and the controls
+local GravityController = nil
 
 local DrawClass = _DrawClass()
 
@@ -11527,4 +11527,37 @@ function GetGravityUp(self, oldGravityUp)
 	return oldGravityUp
 end
 
-Controller.GetGravityUp = GetGravityUp
+-- Turns the wall walking on (true) or off (false). This is the only thing this script returns.
+local active = nil
+
+local function setEnabled(enabled: boolean)
+	local localPlayer = PLAYERS.LocalPlayer
+
+	if enabled then
+		-- a controller that died or was destroyed does not count as running
+		if active and active.HeartCon.Connected then
+			return
+		end
+
+		GravityController = GravityController or _GravityController()
+
+		active = GravityController.new(localPlayer)
+		active.GetGravityUp = GetGravityUp
+	elseif active then
+		local controller = active
+		active = nil
+
+		if controller.HeartCon.Connected then
+			controller:Destroy()
+		end
+
+		-- the gyro turned the root, so stand the character upright again
+		local character = localPlayer.Character
+		local root = character and character:FindFirstChild("HumanoidRootPart")
+		if root then
+			root.CFrame = CFrame.new(root.Position)
+		end
+	end
+end
+
+return setEnabled
