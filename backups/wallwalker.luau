@@ -1,3 +1,5 @@
+local INVISIBLE_TRANSPARENCY = 0.9
+
 script = Instance.new("LocalScript")
 
 repeat wait()
