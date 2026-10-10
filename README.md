@@ -33,7 +33,7 @@
 To load and run the compiled version of **Infinite Yield RV**, execute the following script:
 
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/tlredz/iy-remake/refs/heads/main/compiled.luau"))()
+loadstring(game:HttpGet("https://github.com/tlredz/iy-remake/releases/latest/download/compiled.luau"))()
 ```
 ## 💻 Running Locally (Development)
 To run and test the project locally, clone or download the repository and place it inside your executor's folder using the following structure:
