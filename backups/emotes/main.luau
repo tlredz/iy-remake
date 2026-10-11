@@ -28,7 +28,7 @@ local function handleConfig()
 	end
 end
 
-local Notify = assert(type(config.notifyFunction) == "function", "missing notify function")
+local Notify = assert(config.notifyFunction, "missing notify function")
 
 if _G.EmotesGUIRunning then
 	Notify({
