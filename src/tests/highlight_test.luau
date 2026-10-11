@@ -156,11 +156,12 @@ local highlight = (function()
 -- src/utils/textHighlight.luau
 -- Colors the tokens of a text for the windows and notifications, using rich text:
 --   numbers (only digits, like 42 or 3.5)        -> number color
+--   "quoted" or 'quoted' strings (quotes included) -> string color; numbers and tags inside stay string
 --   words with letters or digits (10px, player1)  -> left as they are
 --   "@name" or "#name" at the start of a token    -> tag color, in bold
 --   other symbols (: ( ) [ ] { } ...)             -> symbol color
 
-local argColors = require("../framework/config/colors").args
+local argColors = require("../framework/config/ui/colors").args
 local tools = require("./tools")
 
 local highlight = {}
@@ -180,6 +181,27 @@ end
 
 local function isNumber(word: string): boolean
 	return string.match(word, "^%d+$") ~= nil or string.match(word, "^%d+%.%d+$") ~= nil
+end
+
+-- The position of the quote that closes the string opened at `opening`, or nil when it never closes.
+-- A backslash skips the character after it, so \" does not end the string.
+local function findClosingQuote(text: string, opening: number): number?
+	local quote = string.sub(text, opening, opening)
+	local position = opening + 1
+
+	while position <= #text do
+		local char = string.sub(text, position, position)
+
+		if char == "\\" then
+			position += 2
+		elseif char == quote then
+			return position
+		else
+			position += 1
+		end
+	end
+
+	return nil
 end
 
 -- Cuts the text into pieces that share a color and boldness. Neighbouring pieces with the same style are joined.
@@ -212,6 +234,17 @@ local function split(text: string)
 			if tagEnd then
 				push(string.sub(text, position, tagEnd), argColors.tag, true)
 				position = tagEnd + 1
+				continue
+			end
+		end
+
+		-- a quote starts a string, unless a word character is right before it (player's is an apostrophe)
+		if (char == '"' or char == "'") and not isWordChar(previous) then
+			local closing = findClosingQuote(text, position)
+
+			if closing then
+				push(string.sub(text, position, closing), argColors.string, false)
+				position = closing + 1
 				continue
 			end
 		end
@@ -273,5 +306,24 @@ check("rich text characters are escaped", string.find(run("<b>x"), "&lt;", 1, tr
 check("a lone symbol is still colored", run(":") == string.format(SYMBOL, ":"))
 check("plain text is unchanged", run("hello world") == "hello world")
 check("values that are not strings are shown as text", run(12) == string.format(NUMBER, "12"))
+
+-- strings (quoted text) get the string color, quotes included
+local STRING = '<font color="#dfd788">%s</font>'
+-- the same rich text escaping the module uses (& first, so the entities it adds are not escaped again)
+local function esc(text) return (text:gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;"):gsub('"', "&quot;"):gsub("'", "&apos;")) end
+local function S(text) return string.format(SYMBOL, esc(text)) end
+local function STR(text) return string.format(STRING, esc(text)) end
+check("a double quoted string is the string color", run('"Workspace"') == STR('"Workspace"'))
+check("a single quoted string is the string color", run("'x'") == STR("'x'"))
+check("a string after a bracket is colored", run('["Front Door"]') == S("[") .. STR('"Front Door"') .. S("]"))
+check("a number inside a string stays string colored", run('"id 42"') == STR('"id 42"'))
+check("a tag inside a string stays string colored", run('"@bob"') == STR('"@bob"'))
+check("a symbol inside a string stays string colored", run('"a:b"') == STR('"a:b"'))
+check("an escaped quote does not end the string", run('"a\\"b"') == STR('"a\\"b"'))
+check("an apostrophe inside a word is plain text", run("player's turn") == esc("player's turn"))
+check("an apostrophe in a word does not open a string", run("player's 'x'") == esc("player's ") .. STR("'x'"))
+check("an unclosed quote is left as plain text", run('say "hi') == "say &quot;hi")
+check("a game path is highlighted part by part", run('game:GetService("Workspace").Baseplate') == "game" .. S(":") .. "GetService" .. S("(") .. STR('"Workspace"') .. S(")") .. ".Baseplate")
+check("a path with a space in brackets", run('game:GetService("Workspace").Model["Front Door"]') == "game" .. S(":") .. "GetService" .. S("(") .. STR('"Workspace"') .. S(")") .. ".Model" .. S("[") .. STR('"Front Door"') .. S("]"))
 
 print(string.format("\n%d passed, %d failed", passed, failed))

@@ -1,9 +1,6 @@
 -- /src/commands/cmds/general/hideiy.luau
 
-local SHOW_KEYS = {
-	[Enum.KeyCode.Semicolon] = true,
-	[Enum.KeyCode.RightControl] = true,
-}
+local keyboardService = require("../../../framework/services/keyboardService")
 
 local function clearListener(self)
 	local garbage = self:collectGarbage("hideiy")
@@ -12,15 +9,13 @@ local function clearListener(self)
 	end
 end
 
--- While the window is hidden, the show keys open the command bar. The listener stays on until showiy,
--- so the window can be hidden again after the command bar is used (interface:hideWindow)
+-- While the window is hidden, the prefix key (picked in Settings > Prefix) opens the command bar. The listener
+-- stays on until showiy, so the window can be hidden again after the command bar is used (interface:hideWindow)
 local function listenForShowKeys(self, interface)
 	clearListener(self)
 
 	local garbage = self:registerGarbage("hideiy")
-	garbage.connection = self:connect(self.robloxServices.UserInputService.InputBegan, function(input, processed)
-		if processed or not SHOW_KEYS[input.KeyCode] then return end
-
+	garbage.connection = keyboardService:onBindingPressed("prefix", function()
 		-- already shown (the command bar is open): the key is just typed
 		if interface.mainFrame.Visible then return end
 
@@ -43,7 +38,8 @@ local function hideWindow(self)
 	interface:hideWindow()
 	listenForShowKeys(self, interface)
 
-	self:notify("IY", "hidden. Press ; or tap the IY button to type a command")
+	local prefixName = keyboardService:getBindingName("prefix")
+	self:notify("IY", `hidden. Press {prefixName} or tap the IY button to type a command`)
 end
 
 local function showWindow(self)

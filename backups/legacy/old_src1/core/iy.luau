@@ -15,7 +15,6 @@ end
 -- debug loading
 logger:log("loading IY Remake...")
 logger:log("is mobile:", require("../config/isMobile"))
-logger:log("is testing:", require("../config/isTesting"))
 logger:log("current version:", require("../config/iy").version)
 logger:log("is remake version:", require("../config/iy").isRemakeVersion)
 

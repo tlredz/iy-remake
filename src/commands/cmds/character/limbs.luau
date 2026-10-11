@@ -14,7 +14,7 @@ end
 
 return {
 	{
-		action = "noarms",
+		action = "noarms|rarms",
 		description = "Removes your arms",
 		run = function(self)
 			local character = self.localPlayer.Character
@@ -24,7 +24,7 @@ return {
 		end
 	},
 	{
-		action = "nolegs",
+		action = "nolegs|rlegs",
 		description = "Removes your legs",
 		run = function(self)
 			local character = self.localPlayer.Character
@@ -34,7 +34,7 @@ return {
 		end
 	},
 	{
-		action = "nolimbs",
+		action = "nolimbs|rlimbs",
 		description = "Removes your limbs",
 		run = function(self)
 			local character = self.localPlayer.Character

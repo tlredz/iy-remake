@@ -2,7 +2,7 @@ local commandsController = require("../controllers/commandsController")
 local searchController   = require("../controllers/searchController")
 
 local commandsList  = require("../list")
-local colors        = require("../../framework/config/colors")
+local colors        = require("../../framework/config/ui/colors")
 
 local tools         = require("../../utils/tools")
 local argsValidator = require("./argsValidator")

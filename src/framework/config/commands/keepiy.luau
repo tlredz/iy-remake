@@ -1,4 +1,4 @@
--- /src/framework/config/keepiy.luau
+-- /src/framework/config/commands/keepiy.luau
 
 return {
 	-- settings key of the flag. The keepiy command and the UI's "keep interface" option share it

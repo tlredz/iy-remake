@@ -16,7 +16,7 @@ local localPlayer = require("../../framework/services/localPlayer")
 local robloxServices = require("../../framework/services/rbxServices")
 local privateEnv = require("../../framework/environment/private")
 
-local config = require("../../framework/config/serverinfo")
+local config = require("../../framework/config/ui/serverinfo")
 local textHighlight = require("../../utils/textHighlight")
 
 local SHOWN_POSITION = UDim2.new(0.5, -config.window.width / 2, 0, config.window.shownY)

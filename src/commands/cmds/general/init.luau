@@ -44,6 +44,7 @@ return {
 	require("./breakloops"),
 	require("./notifyjobid"),
 	require("./copyids"),
+	require("./inviteprompt"),
 	require("./enable"),
 	require("./nilinstances"),
 	require("./mousesens"),

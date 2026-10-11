@@ -1,4 +1,4 @@
-local colorFromRGB = require("../../utils/tools").colorFromRGB
+local colorFromRGB = require("../../../utils/tools").colorFromRGB
 local cmdsColors = require("./colors").commands
 
 return {

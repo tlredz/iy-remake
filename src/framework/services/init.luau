@@ -4,6 +4,7 @@ return {
 	
 	connectionService = require("./connectionService"),
 	fetchService      = require("./fetchService"),
+	keyboardService   = require("./keyboardService"),
 	localPlayer       = require("./localPlayer"),
 	messageService    = require("./messageService"),
 	playerService     = require("./playerService"),

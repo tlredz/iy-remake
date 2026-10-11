@@ -7,7 +7,7 @@ return {
 		end
 	},
 	{
-		action = "explorer|dex",
+		action = "explorer|dex|moondex",
 		description = "Opens DEX by Moon",
 		run = function(self)
 			self.fetchService.load("backups/explorer.luau", "iy/explorer")()
@@ -21,7 +21,7 @@ return {
 		end
 	},
 	{
-		action = "remotespy|rspy",
+		action = "remotespy|rspy|simplespy",
 		description = "Opens Simple Spy V3 to intercept remote calls from the client to the server",
 		run = function(self)
 			self.fetchService.load("backups/remotespy.luau", "iy/remotespy")()

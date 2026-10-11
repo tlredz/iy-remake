@@ -1,4 +1,4 @@
-local loggerConfigs = require("../framework/config/logger")
+local loggerConfigs = require("../framework/config/utils/logger")
 local logText = loggerConfigs.logText
 
 local logger = {}
@@ -50,6 +50,7 @@ function logger:expect(value, expected, message)
 	if not table.find(expected, typeof(value)) then
 		self:error((message or "") .. ` expected '{table.concat(expected, ", ")}'. got '{typeof(value)}'.`)
 	end
+	return value
 end
 
 return logger

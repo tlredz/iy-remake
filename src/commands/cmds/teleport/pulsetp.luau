@@ -9,33 +9,24 @@ return {
 		},
 		{
 			kind = "number",
-			name = "time amount"
+			name = "time amount",
+			optional = true
 		}
 	},
 	run = function(self, args)
 		local target = resolvePlayers(args:nextValue())[1]
-		local seconds = args:nextValue() or 1
+		local seconds = args:nextValue() or 1 -- the time argument is optional, default 1
 
 		local targetRoot = target and target.Character and target.Character:FindFirstChild("HumanoidRootPart")
 		if not targetRoot then return end
 
-		local humanoid = self.playerService:getHumanoid()
-		if humanoid and humanoid.SeatPart then
-			humanoid.Sit = false
-			task.wait(0.1)
-		end
+		local startRoot = self.playerService:getRootPart()
+		if not startRoot then return end
+		local startCFrame = startRoot.CFrame
 
-		local root = self.playerService:getRootPart()
-		if not root then return end
-
-		local startCFrame = root.CFrame
-		root.CFrame = targetRoot.CFrame + Vector3.new(3, 1, 0)
+		self.playerService:teleportTo(targetRoot.CFrame + Vector3.new(3, 1, 0))
 		task.wait(seconds)
 
-		local currentRoot = self.playerService:getRootPart()
-		if currentRoot then
-			currentRoot.CFrame = startCFrame
-			currentRoot.AssemblyLinearVelocity = Vector3.zero
-		end
+		self.playerService:setRootCFrame(startCFrame)
 	end
 }

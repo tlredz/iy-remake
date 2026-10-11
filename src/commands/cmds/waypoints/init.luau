@@ -167,18 +167,9 @@ local function getWaypoint(self, name)
 	return waypoint
 end
 
--- Takes the character off a seat first, the same way the goto commands do.
-local function unseat(self)
-	local humanoid = self.playerService:getHumanoid()
-	if humanoid and humanoid.SeatPart then
-		humanoid.Sit = false
-		task.wait(0.1)
-	end
-end
-
 return {
 	{
-		action = "setwaypoint|swp",
+		action = "setwaypoint|swp|setwp|spos|savepos|setpos",
 		description = "Sets a waypoint at your position",
 		args = { kind = "string", name = "waypoint name" },
 		run = function(self, args)
@@ -209,7 +200,7 @@ return {
 		end
 	},
 	{
-		action = "waypoints",
+		action = "waypoints|positions",
 		description = "Shows a list of currently active waypoints",
 		run = function(self)
 			local waypoints = listWaypoints(self)
@@ -228,7 +219,7 @@ return {
 		end
 	},
 	{
-		action = "showwaypoints|showwp",
+		action = "showwaypoints|showwp|showwps",
 		description = "Shows all currently set waypoints",
 		run = function(self)
 			if #listWaypoints(self) == 0 then
@@ -240,53 +231,46 @@ return {
 		end
 	},
 	{
-		action = "hidewaypoints|hidewp",
+		action = "hidewaypoints|hidewp|hidewps",
 		description = "Hides shown waypoints",
 		run = function(self)
 			hideWaypoints(self)
 		end
 	},
 	{
-		action = "waypoint|wp",
+		action = "waypoint|wp|gotowaypoint|gotowp|gwp|loadpos|lpos|loadposition",
 		description = "Teleports player to a waypoint",
 		args = { kind = "waypoint", name = "waypoint" },
 		run = function(self, args)
 			local waypoint = getWaypoint(self, args:nextValue())
 			if not waypoint then return end
 
-			local root = self:getRoot()
-			if not root then return end
-
-			root.CFrame = CFrame.new(waypoint.position)
-			root.AssemblyLinearVelocity = Vector3.zero
+			self.playerService:teleportTo(CFrame.new(waypoint.position))
 		end
 	},
 	{
-		action = "tweenwaypoint|twp",
+		action = "tweenwaypoint|twp|tweengotowaypoint|tgotowp",
 		description = "Tweens player to a waypoint",
 		args = { kind = "waypoint", name = "waypoint" },
 		run = function(self, args)
 			local waypoint = getWaypoint(self, args:nextValue())
 			if not waypoint then return end
 			
-			unseat(self)
-			
-			local root = self:getRoot(self)
-			if not root then return end
-			
-			local info = TweenInfo.new(self.privateEnv.tweenSpeed or 1, Enum.EasingStyle.Linear)
-			self.robloxServices.TweenService:Create(root, info, { CFrame = CFrame.new(waypoint.position) }):Play()
+			self.playerService:tweenTeleportTo({
+				target = CFrame.new(waypoint.position),
+				speed = self.privateEnv.tweenSpeed
+			})
 		end
 	},
 	{
-		action = "walktowaypoint|wtwp",
+		action = "walktowaypoint|wtwp|walktowp",
 		description = "Walks player to a waypoint",
 		args = { kind = "waypoint", name = "waypoint" },
 		run = function(self, args)
 			local waypoint = getWaypoint(self, args:nextValue())
 			if not waypoint then return end
 
-			unseat(self)
+			self.playerService:unseat()
 
 			local humanoid = self.playerService:getHumanoid()
 			if humanoid then
@@ -295,7 +279,7 @@ return {
 		end
 	},
 	{
-		action = "deletewaypoint|dwp",
+		action = "deletewaypoint|dwp|deletepos|dpos",
 		description = "Deletes a waypoint",
 		args = { kind = "waypoint", name = "waypoint" },
 		run = function(self, args)
@@ -308,7 +292,7 @@ return {
 		end
 	},
 	{
-		action = "clearwaypoints|cwp",
+		action = "clearwaypoints|cwp|clearpositions|clearpos|cpos",
 		description = "Clears all waypoints from every game",
 		args = { kind = "boolean", name = "confirm", optional = true },
 		run = function(self, args)

@@ -51,7 +51,7 @@ return {
 		end
 	},
 	{
-		action = "animsunanchored|freezeua",
+		action = "freezeunanchored|freezeua|animsunanchored",
 		description = "Freezes unanchored parts",
 		run = function(self)
 			if self:hasGarbage("freezeua") then

@@ -37,5 +37,27 @@ return {
 		run = function(self, args)
 			sendValue(self, tostring(game.GameId), args:nextValue())
 		end
+	},
+	{
+		action = "copyplaceid",
+		description = "Copies the current place id to your clipboard",
+		run = function(self)
+			local setclipboard = self:expectExploit("setclipboard")
+			if not setclipboard then return end
+
+			setclipboard(tostring(game.PlaceId))
+			self:notify("Copied", "place id copied to your clipboard")
+		end
+	},
+	{
+		action = "copygameid",
+		description = "Copies the current game id to your clipboard",
+		run = function(self)
+			local setclipboard = self:expectExploit("setclipboard")
+			if not setclipboard then return end
+
+			setclipboard(tostring(game.GameId))
+			self:notify("Copied", "game id copied to your clipboard")
+		end
 	}
 }

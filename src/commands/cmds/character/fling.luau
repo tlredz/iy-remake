@@ -28,7 +28,8 @@ local function flingRun(self)
 	local character = humanoid.Parent
 
 	self:notify("fling now is activated")
-	self:run("noclip")
+	-- fling has its own notification, so noclip stays quiet
+	self:run("noclip", argsManager.new({ { value = "nonotify" } }))
 
 	local garbage = self:createGarbage("fling")
 	garbage.originalStates = {}
@@ -121,7 +122,7 @@ local function walkflingRun(self)
 
 	-- Only turn noclip on here if it was not already on, so unwalkfling leaves a manual noclip alone
 	if not self:hasGarbage("noclip") then
-		self:run("noclip")
+		self:run("noclip", argsManager.new({ { value = "nonotify" } }))
 		garbage.enabledNoclip = true
 	end
 
@@ -178,7 +179,7 @@ local function unwalkflingRun(self)
 	end
 
 	if garbage.enabledNoclip then
-		self:run("unnoclip")
+		self:run("unnoclip", argsManager.new({ { value = "nonotify" } }))
 	end
 end
 
@@ -194,6 +195,11 @@ local function flyflingRun(self, args)
 	-- vehiclefly with no argument uses the speed we just stored
 	self:run("vehiclefly", argsManager.new({}))
 	walkflingRun(self)
+
+	local walkGarbage = self:getGarbage("walkfling")
+	if walkGarbage then
+		walkGarbage.flyfling = true
+	end
 end
 
 local function unflyflingRun(self)
@@ -209,7 +215,7 @@ return {
 		run = flingRun
 	},
 	{
-		action = "unfling",
+		action = "unfling|nofling",
 		description = "Disables the fling command",
 		run = unflingRun
 	},
@@ -237,6 +243,44 @@ return {
 		action = "unwalkfling|nowalkfling",
 		description = "Disables walkfling",
 		run = unwalkflingRun
+	},
+	{
+		action = "togglefling",
+		description = "Toggles fling",
+		run = function(self)
+			self:run(if self:hasGarbage("fling") then "unfling" else "fling")
+		end
+	},
+	{
+		action = "toggleflyfling",
+		description = "Toggles flyfling",
+		args = {
+			kind = "number",
+			name = "speed",
+			optional = true
+		},
+		run = function(self, args)
+			local garbage = self:getGarbage("walkfling")
+			if garbage and garbage.flyfling then
+				self:run("unflyfling")
+			else
+				self:run("flyfling", args)
+			end
+		end
+	},
+	{
+		action = "togglewalkfling",
+		description = "Toggles walkfling",
+		run = function(self)
+			self:run(if self:hasGarbage("walkfling") then "unwalkfling" else "walkfling")
+		end
+	},
+	{
+		action = "toggleantifling",
+		description = "Toggles antifling",
+		run = function(self)
+			self:run(if self:hasGarbage("antifling") then "unantifling" else "antifling")
+		end
 	},
 	{
 		action = "invisfling",

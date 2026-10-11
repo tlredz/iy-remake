@@ -1,14 +1,5 @@
 local resolvePlayers = require("../../systems/resolvePlayers")
 
--- Gets the character out of a seat first, or the game would drag it along (same as IY)
-local function unseat(self)
-	local humanoid = self.playerService:getHumanoid()
-	if humanoid and humanoid.SeatPart then
-		humanoid.Sit = false
-		task.wait(0.1)
-	end
-end
-
 -- Stops the loopgoto loop
 local function stopLoopGoto(self)
 	local garbage = self:collectGarbage("loopgoto")
@@ -17,27 +8,38 @@ local function stopLoopGoto(self)
 	end
 end
 
+-- The first player in the list that has a character
+local function findCharacter(players: { Player }): Model?
+	for _, player in players do
+		if player.Character then
+			return player.Character
+		end
+	end
+	return nil
+end
+
+-- A spot 3 studs in front of the character, facing it (where goto and tweengoto put you)
+local function getSpotNear(character: Model): CFrame
+	local pivot = character:GetPivot()
+	local position = pivot.Position
+	return CFrame.new(position + pivot.LookVector * 3, position)
+end
+
 return {
 	{
-		action = "goto",
+		action = "goto|to",
 		description = "Go to a player",
 		args = { kind = "player" },
 		run = function(self, args)
-			local target = resolvePlayers(args:nextValue())[1]
-			local character = target and target.Character
+			local character = findCharacter(resolvePlayers(args:nextValue()))
 			if not character then return end
 
-			unseat(self)
-
-			local root = self.playerService:getRootPart()
-			if root then
-				root.CFrame = character:GetPivot() + Vector3.new(3, 1, 0)
-				root.AssemblyLinearVelocity = Vector3.zero
-			end
+			self.playerService:waitForStreamPlayerCharacter(character)
+			self.playerService:teleportTo(getSpotNear(character))
 		end
 	},
 	{
-		action = "tweengoto|tgoto",
+		action = "tweengoto|tgoto|tweento|tto",
 		description = "Tween to a player (bypasses some anti cheats)",
 		args = {
 			{ kind = "player" },
@@ -48,21 +50,14 @@ return {
 			}
 		},
 		run = function(self, args)
-			local target = resolvePlayers(args:nextValue())[1]
-			local character = target and target.Character
+			local character = findCharacter(resolvePlayers(args:nextValue()))
 			if not character then return end
 
-			local duration = args:nextValue() or self.privateEnv.tweenSpeed or 1
-
-			unseat(self)
-
-			local root = self.playerService:getRootPart()
-			if not root then return end
-
-			local info = TweenInfo.new(duration, Enum.EasingStyle.Linear)
-			self.robloxServices.TweenService:Create(root, info, {
-				CFrame = character:GetPivot() + Vector3.new(3, 1, 0)
-			}):Play()
+			local speed = args:nextValue() or self.privateEnv.tweenSpeed
+			self.playerService:tweenTeleportTo({
+				target = getSpotNear(character),
+				speed = speed
+			})
 		end
 	},
 	{
@@ -89,7 +84,7 @@ return {
 			local delay = args:nextValue() or 0
 			if not target then return end
 
-			unseat(self)
+			self.playerService:unseat()
 
 			local garbage = self:createGarbage("loopgoto")
 			garbage.id = self.loopService:add(function()
@@ -98,16 +93,15 @@ return {
 					return
 				end
 
-				local root = self.playerService:getRootPart()
 				local character = target.Character
-				if root and character then
-					root.CFrame = character:GetPivot() + Vector3.new(distance, 1, 0)
+				if character then
+					self.playerService:setRootCFrame(character:GetPivot() + Vector3.new(distance, 1, 0))
 				end
 			end, delay)
 		end
 	},
 	{
-		action = "unloopgoto",
+		action = "unloopgoto|noloopgoto",
 		description = "Stops teleporting you to a player",
 		run = function(self)
 			stopLoopGoto(self)

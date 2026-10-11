@@ -9,7 +9,7 @@ return {
 	},
 	{
 		client = true,
-		action = "noglobalshadows|nogshadows",
+		action = "noglobalshadows|nogshadows|unglobalshadows",
 		description = "Disables global shadows",
 		run = function(self)
 			self.robloxServices.Lighting.GlobalShadows = false

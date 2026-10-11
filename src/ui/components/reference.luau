@@ -9,7 +9,7 @@ local connectionService = require("../../framework/services/connectionService")
 local executorEnv = require("../../framework/environment/executor")
 local frameworkSettings = require("../../framework/settings")
 
-local referenceConfig = require("../../framework/config/reference")
+local referenceConfig = require("../../framework/config/ui/reference")
 
 local WINDOW_WIDTH = 500
 local TOP_BAR_HEIGHT = 20

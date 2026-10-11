@@ -54,7 +54,7 @@ end
 
 return {
 	{
-		action = "fireclickdetectors|firecd",
+		action = "fireclickdetectors|firecd|firecds",
 		description = "Uses all click detectors in a game or uses the optional name",
 		args = {
 			kind = "object",

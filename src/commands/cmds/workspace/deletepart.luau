@@ -10,7 +10,7 @@ end
 return {
 	{
 		client = true,
-		action = "delete",
+		action = "delete|remove",
 		description = "Removes any part with a certain name from the workspace (DOES NOT REPLICATE)",
 		args = {
 			{

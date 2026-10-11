@@ -33,6 +33,19 @@ return {
 		end
 	},
 	{
+		action = "getposition|getpos",
+		description = "Notifies you the coordinates of a player",
+		args = {
+			kind = "player"
+		},
+		run = function(self, args)
+			for _, player in resolvePlayers(args:nextValue()) do
+				local text = getPositionText(self, player.Name)
+				self:notify(`{player.Name} Position`, text or "character is not loaded")
+			end
+		end
+	},
+	{
 		action = "copyposition|copypos",
 		description = "Copies the coordinates of a character to your clipboard",
 		args = {

@@ -1,22 +1,16 @@
 -- Moves the character to a CFrame, either instantly or with a tween.
--- Waits a little first (and un-seats the character) like the original IY.
+-- Un-seats the character and waits a little first, like the original IY.
 local function travelTo(self, targetCFrame: CFrame, tween: boolean)
-	local humanoid = self.playerService:getHumanoid()
-	if humanoid and humanoid.SeatPart then
-		humanoid.Sit = false
-		task.wait(0.1)
-	end
-	
+	self.playerService:unseat()
 	task.wait(self.privateEnv.gotopartDelay or 0.1)
-	
-	local root = self.playerService:getRootPart()
-	if not root then return end
-	
+
 	if tween then
-		local info = TweenInfo.new(self.privateEnv.tweenSpeed or 1, Enum.EasingStyle.Linear)
-		self.robloxServices.TweenService:Create(root, info, { CFrame = targetCFrame }):Play()
+		self.playerService:tweenTeleportTo({
+			target = targetCFrame,
+			speed = self.privateEnv.tweenSpeed
+		})
 	else
-		root.CFrame = targetCFrame
+		self.playerService:setRootCFrame(targetCFrame)
 	end
 end
 

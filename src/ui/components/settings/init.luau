@@ -1,14 +1,15 @@
 -- src/ui/components/settings.luau
 -- The settings panel, opened by the settings button in the top bar (like the original IY).
--- It slides up over the command list. Its layout, text and options come from framework/config/settings.
+-- It slides up over the command list. Its layout, text and options come from framework/config/ui/settings.
 
 local createService = require("../../services/createService")
 local assetsService = require("../../services/assetsService")
 local themeService = require("../../services/themeService")
 
 local connectionService = require("../../../framework/services/connectionService")
+local keyboardService = require("../../../framework/services/keyboardService")
 local settingsData = require("../../../storage/data/settings")
-local config = require("../../../framework/config/settings")
+local config = require("../../../framework/config/ui/settings")
 
 local PANEL = config.panel
 local ROW = config.row
@@ -171,12 +172,13 @@ local function createBox(row: GuiObject): (Frame, Frame)
 	return box, fill
 end
 
-local function createValue(row: GuiObject, text: string)
+-- a box that shows some text. Returns the box and its text label
+local function createValue(row: GuiObject, text: string, width: number): (Frame, TextLabel)
 	local value = createService.new("Frame", "Value", row, {
 		AnchorPoint = Vector2.new(1, 0.5),
 		BorderSizePixel = 0,
 		Position = UDim2.new(1, -PANEL.padding, 0.5, 0),
-		Size = UDim2.fromOffset(VALUE.width, VALUE.height),
+		Size = UDim2.fromOffset(width, VALUE.height),
 		ThemeTag = {
 			BackgroundColor3 = "Colors.Buttons.Default",
 		},
@@ -186,24 +188,77 @@ local function createValue(row: GuiObject, text: string)
 		}),
 	})
 
-	createService.new("TextLabel", "Text", value, {
+	local label = createService.new("TextLabel", "Text", value, {
 		BackgroundTransparency = 1,
 		Size = UDim2.fromScale(1, 1),
 		Text = text,
 		TextSize = TEXT.value,
+		TextTruncate = Enum.TextTruncate.AtEnd,
 		ThemeTag = {
 			Font = "Font.MonoSpace",
 			TextColor3 = "Colors.Text.Default",
 		},
 	})
 
-	return value
+	return value, label
+end
+
+-- a row that shows the key of a binding. Tapping it waits for the next key press to become the new key;
+-- tapping again, or Escape, cancels. Returns the function that redraws it
+local function createKeybind(self, row: GuiObject, option): () -> ()
+	createLabel(row, option.label, VALUE.keybindWidth + 2 * PANEL.padding)
+
+	local value, text = createValue(row, "", VALUE.keybindWidth)
+	local cancelWait = nil -- set while the box waits for a key
+
+	local function refresh()
+		local waiting = cancelWait ~= nil
+
+		text.Text = if waiting then "press a key" else keyboardService:getBindingName(option.binding)
+		themeService:updateObjectProperties(value, {
+			BackgroundColor3 = if waiting then "Colors.Primary" else "Colors.Buttons.Default",
+		})
+	end
+
+	local function stopWaiting()
+		if cancelWait then
+			local cancel = cancelWait
+			cancelWait = nil
+			cancel()
+		end
+
+		refresh()
+	end
+
+	table.insert(self.stoppers, stopWaiting)
+
+	connectionService:Connect(row.Activated, function()
+		if cancelWait then
+			stopWaiting()
+			return
+		end
+
+		cancelWait = keyboardService:capture(function(keyCode)
+			cancelWait = nil
+			keyboardService:setBinding(option.binding, keyCode)
+			refresh()
+		end, function()
+			-- Escape
+			cancelWait = nil
+			refresh()
+		end)
+
+		refresh()
+	end)
+
+	refresh()
+	return refresh
 end
 
 -- builds one option row. Returns a function that redraws it, when the option has a state to show
 local function createOption(self, panel: Frame, order: number, index: number, option): (() -> ())?
 	local row = createRow(panel, order, index)
-	
+
 	if option.icon then
 		createIcon(row, option)
 	end
@@ -232,10 +287,8 @@ local function createOption(self, panel: Frame, order: number, index: number, op
 		return refresh
 	end
 
-	if option.kind == "prefix" then
-		createLabel(row, option.label, VALUE.width + 2 * PANEL.padding)
-		createValue(row, option.value)
-		return nil
+	if option.kind == "keybind" then
+		return createKeybind(self, row, option)
 	end
 
 	createLabel(row, option.label, 0)
@@ -258,6 +311,7 @@ function settings.new(options)
 		holder = nil,
 		panel = nil,
 		refreshers = {},
+		stoppers = {},
 	}, settings)
 end
 
@@ -327,6 +381,13 @@ function settings:refresh()
 	end
 end
 
+-- stops every box that waits for a key (the panel closed, or the command bar took focus)
+function settings:stopWaiting()
+	for _, stop in self.stoppers do
+		stop()
+	end
+end
+
 function settings:toggle()
 	self.isOpen = not self.isOpen
 	self:setShown(self.isOpen)
@@ -343,6 +404,8 @@ function settings:setShown(shown: boolean)
 		holder.Visible = true
 		panel:TweenPosition(SHOWN_POSITION, Enum.EasingDirection.InOut, Enum.EasingStyle.Quart, PANEL.tweenTime, true)
 	else
+		self:stopWaiting()
+
 		panel:TweenPosition(HIDDEN_POSITION, Enum.EasingDirection.InOut, Enum.EasingStyle.Quart, PANEL.tweenTime, true, function(completed)
 			if completed and not self.isShown then
 				holder.Visible = false

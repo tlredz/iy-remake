@@ -261,7 +261,7 @@ local MODS = {
 }
 local function require(path)
 	local key
-	if path:find("config/chatlogs") then key = "chatlogsConfig"
+	if path:find("config/ui/chatlogs") then key = "chatlogsConfig"
 	elseif path:find("config/storage") then key = "storageConfig"
 	elseif path:find("connectionService") then key = "connectionService"
 	elseif path:find("environment/private") then key = "privateEnv"
@@ -543,7 +543,7 @@ return chatLogs
 end
 MODS.chatLogs = buildChatLogs()
 MODS.chatlogsConfig = (function()
--- src/framework/config/chatlogs.luau
+-- src/framework/config/ui/chatlogs.luau
 
 return {
 	title = "Chat Logs",
@@ -603,7 +603,7 @@ local dragInstance = require("../utils/dragInstance")
 local notifier = require("../notifier")
 
 local privateEnv = require("../../framework/environment/private")
-local config = require("../../framework/config/chatlogs")
+local config = require("../../framework/config/ui/chatlogs")
 local chatLogs = require("../../commands/systems/chatLogs")
 
 local windowConfig = config.window

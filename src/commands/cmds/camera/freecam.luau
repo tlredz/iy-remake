@@ -64,7 +64,7 @@ return {
 		end
 	},
 	{
-		action = "freecamgoto|fcgoto|fctp",
+		action = "freecamgoto|fcgoto|freecamtp|fctp",
 		description = "Moves / opens freecam to a player",
 		args = { kind = "player" },
 		run = function(self, args)
@@ -79,7 +79,7 @@ return {
 		end
 	},
 	{
-		action = "unfreecam|unfc",
+		action = "unfreecam|unfc|nofreecam|nofc",
 		description = "Disables freecam",
 		run = function(self)
 			freecam.stop(self)

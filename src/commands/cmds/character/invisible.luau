@@ -71,12 +71,19 @@ return {
 		end
 	},
 	{
-		action = "visible|vis",
+		action = "visible|vis|uninvisible",
 		description = "Makes you visible to other players",
 		run = function(self)
 			if not stopInvisible(self) then
 				self:notify("Visible", "you are already visible")
 			end
+		end
+	},
+	{
+		action = "toggleinvis",
+		description = "Toggles invisibility",
+		run = function(self)
+			self:run(if self:hasGarbage("invisible") then "visible" else "invisible")
 		end
 	},
 	{

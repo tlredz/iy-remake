@@ -5,9 +5,9 @@ return {
 		local root = self.playerService:getRootPart()
 		local mouse = self.playerService:getMouse()
 		if not (root and mouse.Hit) then return end
-		
+
+		-- Stands above the spot you point at and keeps your facing
 		local target = mouse.Hit.Position + Vector3.new(0, 3, 0)
-		root.CFrame = CFrame.new(target) * (root.CFrame - root.CFrame.Position)
-		root.AssemblyLinearVelocity = Vector3.zero
+		self.playerService:teleportTo(CFrame.new(target) * (root.CFrame - root.CFrame.Position))
 	end
 }

@@ -1,4 +1,4 @@
--- src/framework/config/notifier.luau
+-- src/framework/config/ui/notifier.luau
 -- Settings of the notification popups (src/ui/notifier.luau).
 
 return {
@@ -6,8 +6,10 @@ return {
 	defaultTime = 5,
 	defaultTitle = "Notification",
 
-	-- popup size, rounded corners, top bar height and icon size
+	-- popup size (the height is the smallest a popup gets: it grows to fit its message, up to maxHeight,
+	-- and never past the room beside the main window), rounded corners, top bar height and icon size
 	size = UDim2.fromOffset(250, 100),
+	maxHeight = 240,
 	cornerRadius = 6,
 	titleHeight = 20,
 	iconSize = 11,

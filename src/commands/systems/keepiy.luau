@@ -4,7 +4,7 @@ local executorEnv = require("../../framework/environment/executor")
 local connectionService = require("../../framework/services/connectionService")
 local robloxServices = require("../../framework/services/rbxServices")
 local fetchService = require("../../framework/services/fetchService")
-local keepiyConfig = require("../../framework/config/keepiy")
+local keepiyConfig = require("../../framework/config/commands/keepiy")
 local settingsData = require("../../storage/data/settings")
 local logger = require("../../utils/logger")
 

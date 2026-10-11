@@ -9,7 +9,7 @@
 -- button is hidden, since jumping does nothing then.
 
 local robloxServices = require("../../framework/services/rbxServices")
-local isMobile = require("../../framework/config/isMobile")
+local isMobile = require("../../framework/environment/isMobile")
 local coreGui = require("../../ui/coreGui")
 
 local ContextActionService = robloxServices.ContextActionService
@@ -44,6 +44,9 @@ local REFERENCE_FOV = 70 -- the default field of view, used to scale the turn sp
 local STUDS_PER_SECOND = 64 -- movement at speed 1
 local SPRING_FREQUENCY = 5
 local PAN_PER_PIXEL = math.pi / 64
+-- Short of straight up and down. Exactly vertical, the horizontal part of the view is zero, and in 32-bit floats
+-- (what Roblox uses) it flips sign, which turns the camera-relative controls around. 89 degrees looks the same.
+local MAX_PITCH = math.rad(89)
 local SPEED_CHANGE_PER_SECOND = 0.75 -- how fast Up and Down change the speed multiplier
 local MIN_MULTIPLIER = 0.01
 local MAX_MULTIPLIER = 4
@@ -119,24 +122,17 @@ local function getFocusDistance(camera: Camera, cframe: CFrame, fieldOfView: num
 	return cframe.LookVector:Dot(minDirection) * minDistance
 end
 
--- The horizontal part of a vector as a unit vector, or zero when there is none
-local function flatten(vector: Vector3): Vector3
-	local flat = Vector3.new(vector.X, 0, vector.Z)
-	if flat.Magnitude == 0 then
-		return Vector3.zero
-	end
-	return flat.Unit
-end
-
 -- The Roblox thumbstick, read from the humanoid's MoveDirection (camera-relative, the same as fly).
 -- Returned in camera space like the keys: x to the right, z backward (-1 is forward), each -1 to 1.
+-- The camera's horizontal directions come from its yaw, which stays exact at any pitch.
 -- It keeps working while the character is anchored, because the thumbstick only sets MoveDirection.
-local function readThumbstick(humanoid: Humanoid?): Vector3
+local function readThumbstick(humanoid: Humanoid?, yaw: number): Vector3
 	if not humanoid then return Vector3.zero end
 
-	local cframe = workspace.CurrentCamera.CFrame
+	local forward = Vector3.new(-math.sin(yaw), 0, -math.cos(yaw))
+	local right = Vector3.new(math.cos(yaw), 0, -math.sin(yaw))
 	local move = humanoid.MoveDirection
-	return Vector3.new(move:Dot(flatten(cframe.RightVector)), 0, -move:Dot(flatten(cframe.LookVector)))
+	return Vector3.new(move:Dot(right), 0, -move:Dot(forward))
 end
 
 local function isTouch(input): boolean
@@ -279,7 +275,7 @@ local function stepFreecam(self, garbage, dt: number)
 
 	-- Keyboard, thumbstick and buttons all add up, so they can be used together
 	local humanoid = self.playerService:getHumanoid()
-	local thumbstick = if isMobile then readThumbstick(humanoid) else Vector3.zero
+	local thumbstick = if isMobile then readThumbstick(humanoid, garbage.rotation.Y) else Vector3.zero
 	if isMobile and humanoid then
 		humanoid.Jump = false -- jumping does nothing while the character is anchored
 	end
@@ -304,7 +300,7 @@ local function stepFreecam(self, garbage, dt: number)
 	local zoomFactor = math.sqrt(math.tan(math.rad(REFERENCE_FOV / 2)) / math.tan(math.rad(garbage.fieldOfView / 2)))
 	local rotation = garbage.rotation + pan * Vector2.new(0.75, 1) * 8 * (dt / zoomFactor)
 	garbage.rotation = Vector2.new(
-		math.clamp(rotation.X, -math.rad(90), math.rad(90)),
+		math.clamp(rotation.X, -MAX_PITCH, MAX_PITCH),
 		rotation.Y % (2 * math.pi)
 	)
 

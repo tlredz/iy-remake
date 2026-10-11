@@ -9,11 +9,11 @@ local scrollBarComponent = require("./scrollBar")
 local notifier = require("../notifier")
 
 local privateEnv = require("../../framework/environment/private")
-local config = require("../../framework/config/chatlogs")
+local config = require("../../framework/config/ui/chatlogs")
 local robloxServices = require("../../framework/services/rbxServices")
 local tweenService = require("../../framework/services/tweenService")
 local chatLogs = require("../../commands/systems/chatLogs")
-local argColors = require("../../framework/config/colors").args
+local argColors = require("../../framework/config/ui/colors").args
 local highlight = require("../../utils/textHighlight")
 local tools = require("../../utils/tools")
 

@@ -10,6 +10,7 @@ local robloxServices = require("../../framework/services/rbxServices")
 local frameworkSettings = require("../../framework/settings")
 
 local searchController = require("./searchController")
+local argsManager = require("../systems/argsManager")
 local customAliases = require("../systems/customAliases")
 local pluginsSystem = require("../systems/plugins")
 
@@ -29,12 +30,16 @@ function commandsController:registerGarbage(name: string): { [any]: any }
 	return self:getGarbage(name) or self:createGarbage(name)
 end
 
-function commandsController:createGarbage(name: string): { [any]: any }?
-	if self.garbages[name] == nil then
-		local garbage = {}
+-- Never returns nil: when the garbage already exists, that one is returned, so a command that
+-- forgets its "already enabled" guard reuses the old state instead of breaking.
+function commandsController:createGarbage(name: string): { [any]: any }
+	local garbage = self.garbages[name]
+	if garbage == nil then
+		garbage = {}
 		self.garbages[name] = garbage
-		return garbage
 	end
+
+	return garbage
 end
 
 -- Command data by any alias (case-insensitive), or nil when the command does not exist
@@ -103,6 +108,9 @@ function commandsController:run(cmdName: string, args: unknown, asUser: boolean?
 
 	local cmdData = commandsList.lookup[cmdName]
 	logger:assert(cmdData, "invalid command")
+
+	-- commands call args:nextValue(), so a run without arguments gets an empty set
+	args = args or argsManager.new({})
 
 	local thread = coroutine.running()
 	local wasNested = runningThreads[thread] ~= nil
@@ -219,6 +227,9 @@ function commandsController:init(config)
 		
 		self:notify("Character", "your character is not loaded")
 	end
+	
+	self.getRootPart = self.getRoot
+	self.Connect = self.connect
 	
 	-- variables
 	self.localPlayer = require("../../framework/services/localPlayer")

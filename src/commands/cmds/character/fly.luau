@@ -19,6 +19,7 @@ return {
 
 			flight.start(self, {
 				garbageName = "fly",
+				kind = "fly",
 				platformStand = true,
 				getSpeed = function()
 					return self.privateEnv.flySpeed or DEFAULT_SPEED
@@ -27,7 +28,7 @@ return {
 		end
 	},
 	{
-		action = "flyspeed",
+		action = "flyspeed|flysp",
 		description = "Set fly speed (default is 20)",
 		args = {
 			kind = "number",
@@ -38,7 +39,24 @@ return {
 		end
 	},
 	{
-		action = "unfly",
+		action = "togglefly",
+		description = "Toggles fly",
+		args = {
+			kind = "number",
+			name = "fly speed",
+			optional = true
+		},
+		run = function(self, args)
+			local garbage = self:getGarbage("fly")
+			if garbage and garbage.kind == "fly" then
+				self:run("unfly")
+			else
+				self:run("fly", args)
+			end
+		end
+	},
+	{
+		action = "unfly|nofly",
 		description = "Disables fly",
 		run = function(self)
 			flight.stop(self, "fly")

@@ -18,7 +18,7 @@ local tools       = require("../../utils/tools")
 local scaleObject = require("../utils/scaleObject")
 
 local settingsData = require("../../storage/data/settings")
-local cmdsColors = require("../../framework/config/colors").commands
+local cmdsColors = require("../../framework/config/ui/colors").commands
 
 local userInputService = robloxServices.UserInputService
 local runService       = robloxServices.RunService

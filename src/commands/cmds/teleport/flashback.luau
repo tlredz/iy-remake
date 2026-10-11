@@ -29,15 +29,6 @@ return {
 			return
 		end
 
-		local humanoid = self.playerService:getHumanoid()
-		if humanoid and humanoid.SeatPart then
-			humanoid.Sit = false
-			task.wait(0.1)
-		end
-
-		local root = self.playerService:getRootPart()
-		if root then
-			root.CFrame = lastDeath
-		end
+		self.playerService:teleportTo(lastDeath)
 	end
 }

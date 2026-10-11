@@ -27,9 +27,9 @@ return {
 				local look = root.CFrame.LookVector
 				local hitRoot = hit.Parent:FindFirstChild("HumanoidRootPart")
 				if hitRoot then
-					root.CFrame = hit.CFrame * CFrame.new(look.X, hitRoot.Size.Z / 2 + humanoid.HipHeight, look.Z)
+					self.playerService:setRootCFrame(hit.CFrame * CFrame.new(look.X, hitRoot.Size.Z / 2 + humanoid.HipHeight, look.Z))
 				else
-					root.CFrame = hit.CFrame * CFrame.new(look.X, hit.Size.Y / 2 + humanoid.HipHeight, look.Z)
+					self.playerService:setRootCFrame(hit.CFrame * CFrame.new(look.X, hit.Size.Y / 2 + humanoid.HipHeight, look.Z))
 				end
 			end)
 		end

@@ -1,8 +1,8 @@
 -- src/ui/components/partpath.luau
--- The "Teleport to Part" window that the partpath command opens. Click a part to highlight it and see
--- its full path. "Select Part" hands the chosen part to the command (which saves it as a waypoint),
--- "Copy Path" copies the path, and "Exit" closes the window and turns the selection off.
--- The window stays hidden until it is opened (the original kept it on screen all the time).
+-- The part path window (partpath command). Click a part to highlight it and see its full path, colored
+-- with textHighlight. "select part" hands the chosen part to the command (which saves it as a waypoint),
+-- "copy path" copies the path, and the X closes the window and turns the selection off.
+-- It is styled like the server info window, and it stays hidden until it is opened.
 
 local createService = require("../services/createService")
 local assetsService = require("../services/assetsService")
@@ -14,39 +14,21 @@ local coreGui = require("../coreGui")
 local connectionService = require("../../framework/services/connectionService")
 local playerService = require("../../framework/services/playerService")
 local executorEnv = require("../../framework/environment/executor")
+local config = require("../../framework/config/ui/partpath")
 
 local getHierarchy = require("../../utils/getHierarchy")
+local highlight = require("../../utils/textHighlight")
+local tools = require("../../utils/tools")
 
-local WINDOW_WIDTH = 360
-local TOP_BAR_HEIGHT = 20
-local BODY_HEIGHT = 146
-local WINDOW_HEIGHT = TOP_BAR_HEIGHT + BODY_HEIGHT
+local windowConfig = config.window
+local textSizes = config.textSizes
+local buttonsConfig = config.buttons
 
-local BUTTON_WIDTH = 95
-local BUTTON_HEIGHT = 26
-local BUTTON_Y = 64
-local PATH_Y = 98
-local PATH_HEIGHT = 40
-
-local TWEEN_TIME = 0.5
-local COPY_FEEDBACK_TIME = 1.5
+local SHOWN_POSITION = UDim2.new(0.5, -windowConfig.width / 2, 0, windowConfig.shownY)
+local HIDDEN_POSITION = UDim2.new(0.5, -windowConfig.width / 2, 0, windowConfig.hiddenY)
 
 local HOVER_COLOR = Color3.fromRGB(255, 255, 255)
 local SELECTED_COLOR = Color3.fromRGB(0, 166, 0)
-
-local SHOWN_POSITION = UDim2.new(0.5, -WINDOW_WIDTH / 2, 0.5, -WINDOW_HEIGHT / 2)
-local HIDDEN_POSITION = UDim2.new(0.5, -WINDOW_WIDTH / 2, 0, -500)
-
-local TEXT = {
-	title = "Teleport to Part",
-	directions = 'Click on a part and then click the "Select Part" button below to set it as a teleport location',
-	selectPart = "Select Part",
-	copyPath = "Copy Path",
-	copied = "Copied",
-	noPart = "Select a part first",
-	noPath = "Select a part to copy its path",
-	noClipboard = "Your exploit does not support copying",
-}
 
 local partPath = {}
 partPath.__index = partPath
@@ -60,28 +42,139 @@ function partPath.new()
 		copyButton = nil,
 
 		isOpen = false,
+		path = nil,
 		selectedPart = nil,
 		onSelectPart = nil,
 		connections = {},
 	}, partPath)
 end
 
-local function createButton(name: string, text: string, x: number, parent: Instance)
+-- a row like the server info window: every odd row has a light stripe, and the text is inset from the left
+local function createRow(body, layoutOrder: number, height: number, name: string)
+	return createService.new("Frame", name, body, {
+		BackgroundColor3 = Color3.new(1, 1, 1),
+		BackgroundTransparency = if layoutOrder % 2 == 1 then windowConfig.stripeTransparency else 1,
+		BorderSizePixel = 0,
+		LayoutOrder = layoutOrder,
+		Size = UDim2.new(1, 0, 0, height),
+	})
+end
+
+-- a row whose text wraps. The row grows with its text, so no line is ever cut off
+local function createTextRow(body, layoutOrder: number, name: string, look)
+	local row = createService.new("Frame", name, body, {
+		AutomaticSize = Enum.AutomaticSize.Y,
+		BackgroundColor3 = Color3.new(1, 1, 1),
+		BackgroundTransparency = if layoutOrder % 2 == 1 then windowConfig.stripeTransparency else 1,
+		BorderSizePixel = 0,
+		LayoutOrder = layoutOrder,
+		Size = UDim2.new(1, 0, 0, 0),
+
+		createService.new("UIPadding", {
+			PaddingBottom = UDim.new(0, windowConfig.rowPadding),
+			PaddingLeft = UDim.new(0, windowConfig.textInset),
+			PaddingRight = UDim.new(0, windowConfig.textInset),
+			PaddingTop = UDim.new(0, windowConfig.rowPadding),
+		}),
+		createService.new("UIListLayout", {
+			SortOrder = Enum.SortOrder.LayoutOrder,
+		}),
+	})
+
+	local label = createService.new("TextLabel", look.labelName, row, {
+		AutomaticSize = Enum.AutomaticSize.Y,
+		BackgroundTransparency = 1,
+		Size = UDim2.new(1, 0, 0, 0),
+		TextSize = look.textSize,
+		TextWrapped = true,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		TextYAlignment = Enum.TextYAlignment.Top,
+		ThemeTag = {
+			Font = "Font.MonoSpace",
+			TextColor3 = look.color,
+		},
+	})
+
+	return row, label
+end
+
+-- Breaks a path before a name (before a dot or a bracket) when the next name would not fit on the line,
+-- so a name is never cut in the middle. Only the shown text is broken; copy still uses the plain path.
+local function breakPath(path: string): string
+	local segments = {}
+	local current = ""
+
+	for index = 1, #path do
+		local char = string.sub(path, index, index)
+
+		if (char == "." or char == "[") and current ~= "" then
+			table.insert(segments, current)
+			current = ""
+		end
+
+		current = current .. char
+	end
+
+	if current ~= "" then
+		table.insert(segments, current)
+	end
+
+	local lines = {}
+	local line = ""
+
+	for _, segment in segments do
+		if line ~= "" and #line + #segment > config.window.pathCharsPerLine then
+			table.insert(lines, line)
+			line = ""
+		end
+
+		line = line .. segment
+	end
+
+	if line ~= "" then
+		table.insert(lines, line)
+	end
+
+	return table.concat(lines, "\n")
+end
+
+local function createSection(body, layoutOrder: number, title: string)
+	local row = createRow(body, layoutOrder, windowConfig.rowHeight, "Section")
+
+	createService.new("TextLabel", "Title", row, {
+		BackgroundTransparency = 1,
+		Position = UDim2.fromOffset(windowConfig.textInset, 0),
+		Size = UDim2.new(1, -windowConfig.textInset * 2, 1, 0),
+		RichText = true,
+		Text = `<b>{tools.escapeRichText(title)}</b>`,
+		TextSize = textSizes.section,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		TextYAlignment = Enum.TextYAlignment.Center,
+		ThemeTag = {
+			Font = "Font.MonoSpace",
+			TextColor3 = "Colors.Text.Darker",
+		},
+	})
+
+	return row
+end
+
+local function createButton(parent: Instance, name: string, text: string, position: UDim2, size: UDim2)
 	local button = createService.new("TextButton", name, parent, {
 		AutoButtonColor = false,
 		BorderSizePixel = 0,
-		Position = UDim2.fromOffset(x, BUTTON_Y),
-		Size = UDim2.fromOffset(BUTTON_WIDTH, BUTTON_HEIGHT),
+		Position = position,
+		Size = size,
 		Text = text,
-		TextSize = 14,
+		TextSize = textSizes.button,
 		ThemeTag = {
 			BackgroundColor3 = "Colors.Buttons.Default",
-			Font = "Font.Normal",
+			Font = "Font.MonoSpace",
 			TextColor3 = "Colors.Text.Default",
 		},
 
 		createService.new("UICorner", {
-			CornerRadius = UDim.new(0, 4),
+			CornerRadius = UDim.new(0, buttonsConfig.cornerRadius),
 		}),
 	})
 
@@ -108,18 +201,21 @@ function partPath:create()
 
 	local frame = createService.new("Frame", "PartPath", {
 		Active = true,
-		BorderSizePixel = 0,
+		AutomaticSize = Enum.AutomaticSize.Y,
+		BackgroundTransparency = 1,
 		Position = HIDDEN_POSITION,
-		Size = UDim2.fromOffset(WINDOW_WIDTH, WINDOW_HEIGHT),
+		Size = UDim2.fromOffset(windowConfig.width, 0),
 		Visible = false,
-		ThemeTag = {
-			BackgroundColor3 = "Colors.Background",
-		},
+
+		createService.new("UIListLayout", {
+			SortOrder = Enum.SortOrder.LayoutOrder,
+		}),
 	})
 
 	local topBar = createService.new("Frame", "TopBar", frame, {
 		BorderSizePixel = 0,
-		Size = UDim2.new(1, 0, 0, TOP_BAR_HEIGHT),
+		LayoutOrder = 1,
+		Size = UDim2.new(1, 0, 0, windowConfig.topBarHeight),
 		ThemeTag = {
 			BackgroundColor3 = "Colors.Background",
 		},
@@ -128,75 +224,75 @@ function partPath:create()
 	createService.new("TextLabel", "Title", topBar, {
 		BackgroundTransparency = 1,
 		Size = UDim2.fromScale(1, 1),
-		Text = TEXT.title,
-		TextSize = 16,
+		Text = windowConfig.title,
+		TextSize = textSizes.title,
 		ThemeTag = {
 			Font = "Font.Normal",
 			TextColor3 = "Colors.Text.Default",
 		},
 	})
 
-	local exitButton = createService.new("TextButton", "Exit", topBar, {
+	local exitButton = createService.new("ImageButton", "Exit", topBar, {
+		AnchorPoint = Vector2.new(1, 0.5),
 		BackgroundTransparency = 1,
-		Position = UDim2.new(1, -TOP_BAR_HEIGHT, 0, 0),
-		Size = UDim2.fromOffset(TOP_BAR_HEIGHT, TOP_BAR_HEIGHT),
-		Text = "",
-	})
-
-	local exitIcon = createService.new("ImageLabel", "Icon", exitButton, {
-		BackgroundTransparency = 1,
-		Position = UDim2.fromOffset(5, 5),
-		Size = UDim2.fromOffset(10, 10),
+		Position = UDim2.new(1, -windowConfig.closeInset, 0.5, 0),
+		Size = UDim2.fromOffset(windowConfig.closeIconSize, windowConfig.closeIconSize),
 		ThemeTag = {
 			ImageColor3 = "Colors.Icons",
 		},
 	})
 
-	assetsService:loadImage(exitIcon, "close")
+	assetsService:loadImage(exitButton, "close")
 
 	local body = createService.new("Frame", "Body", frame, {
-		BackgroundTransparency = 1,
-		Position = UDim2.fromOffset(0, TOP_BAR_HEIGHT),
-		Size = UDim2.new(1, 0, 0, BODY_HEIGHT),
-	})
-
-	createService.new("TextLabel", "Directions", body, {
-		BackgroundTransparency = 1,
-		Position = UDim2.fromOffset(20, 8),
-		Size = UDim2.new(1, -40, 0, 48),
-		Text = TEXT.directions,
-		TextSize = 14,
-		TextWrapped = true,
-		TextYAlignment = Enum.TextYAlignment.Top,
+		Active = true,
+		AutomaticSize = Enum.AutomaticSize.Y,
+		BorderSizePixel = 0,
+		LayoutOrder = 2,
+		Size = UDim2.new(1, 0, 0, 0),
 		ThemeTag = {
-			Font = "Font.Normal",
-			TextColor3 = "Colors.Text.Default",
-		},
-	})
-
-	-- the two buttons sit side by side, centred in the window
-	local selectButton = createButton("SelectPart", TEXT.selectPart, WINDOW_WIDTH / 2 - BUTTON_WIDTH - 5, body)
-	local copyButton = createButton("CopyPath", TEXT.copyPath, WINDOW_WIDTH / 2 + 5, body)
-
-	-- scales down to fit long paths (down to 9) instead of shrinking to an unreadable size
-	local pathLabel = createService.new("TextLabel", "Path", body, {
-		BackgroundTransparency = 1,
-		Position = UDim2.fromOffset(10, PATH_Y),
-		Size = UDim2.new(1, -20, 0, PATH_HEIGHT),
-		Text = "",
-		TextScaled = true,
-		TextWrapped = true,
-		TextYAlignment = Enum.TextYAlignment.Top,
-		ThemeTag = {
-			Font = "Font.MonoSpace",
-			TextColor3 = "Colors.Text.Default",
+			BackgroundColor3 = "Colors.Background",
 		},
 
-		createService.new("UITextSizeConstraint", {
-			MaxTextSize = 14,
-			MinTextSize = 9,
+		createService.new("UIPadding", {
+			PaddingBottom = UDim.new(0, windowConfig.verticalPadding),
+			PaddingTop = UDim.new(0, windowConfig.verticalPadding),
+		}),
+		createService.new("UIListLayout", {
+			SortOrder = Enum.SortOrder.LayoutOrder,
 		}),
 	})
+
+	createSection(body, 1, config.headers.path)
+
+	-- the path row: the highlighted path, or the hint when no part is chosen
+	local _, pathLabel = createTextRow(body, 2, "PathRow", {
+		labelName = "Path",
+		textSize = textSizes.value,
+		color = "Colors.Text.Default",
+	})
+	pathLabel.RichText = true
+
+	createSection(body, 3, config.headers.actions)
+
+	-- the buttons sit side by side, each taking half the row minus the gap
+	local buttonRow = createRow(body, 4, windowConfig.buttonRowHeight, "ButtonRow")
+	local half = windowConfig.buttonGap / 2
+	local inset = windowConfig.textInset
+	local buttonY = (windowConfig.buttonRowHeight - windowConfig.buttonHeight) / 2
+	local buttonSize = UDim2.new(0.5, -(inset + half), 0, windowConfig.buttonHeight)
+
+	local selectButton = createButton(buttonRow, "SelectPart", buttonsConfig.selectPart,
+		UDim2.new(0, inset, 0, buttonY), buttonSize)
+	local copyButton = createButton(buttonRow, "CopyPath", buttonsConfig.copyPath,
+		UDim2.new(0.5, half, 0, buttonY), buttonSize)
+
+	local _, helpLabel = createTextRow(body, 5, "Help", {
+		labelName = "HelpText",
+		textSize = textSizes.help,
+		color = "Colors.Text.Darker",
+	})
+	helpLabel.Text = config.labels.help
 
 	-- selection boxes live in coreGui, like the original, so they draw over the world
 	local hoverBox = createService.new("SelectionBox", "Hover", coreGui, {
@@ -227,6 +323,8 @@ function partPath:create()
 	self.pathLabel = pathLabel
 	self.copyButton = copyButton
 
+	self:setPath(nil)
+
 	return frame
 end
 
@@ -241,12 +339,12 @@ function partPath:open(onSelectPart)
 
 	self.isOpen = true
 	self.frame.Visible = true
-	self.frame:TweenPosition(SHOWN_POSITION, Enum.EasingDirection.InOut, Enum.EasingStyle.Quart, TWEEN_TIME, true)
+	self.frame:TweenPosition(SHOWN_POSITION, Enum.EasingDirection.InOut, Enum.EasingStyle.Quart, windowConfig.tweenTime, true)
 
 	self:startSelecting()
 end
 
--- hides the window and turns the selection off (Exit button)
+-- hides the window and turns the selection off (the X button)
 function partPath:close()
 	if not self.isOpen then
 		return
@@ -256,9 +354,9 @@ function partPath:close()
 	self:disconnectMouse()
 	self:clearSelection()
 
-	self.frame:TweenPosition(HIDDEN_POSITION, Enum.EasingDirection.InOut, Enum.EasingStyle.Quart, TWEEN_TIME, true)
+	self.frame:TweenPosition(HIDDEN_POSITION, Enum.EasingDirection.InOut, Enum.EasingStyle.Quart, windowConfig.tweenTime, true)
 
-	task.delay(TWEEN_TIME, function()
+	task.delay(windowConfig.tweenTime, function()
 		-- the window may have been opened again while it was sliding out
 		if not self.isOpen and self.frame then
 			self.frame.Visible = false
@@ -310,23 +408,39 @@ function partPath:selectPart(part: BasePart)
 	self.selectedPart = part
 	self.selectedBox.Adornee = part
 	self.hoverBox.Adornee = nil
-	self.pathLabel.Text = getHierarchy(part)
+	self:setPath(getHierarchy(part))
+end
+
+-- shows the path of the chosen part (rich text from textHighlight), or the hint when no part is chosen
+function partPath:setPath(path: string?)
+	local label = self.pathLabel
+	self.path = path
+
+	if path then
+		themeService:addObject(label, { TextColor3 = "Colors.Text.Default", Font = "Font.MonoSpace" })
+		label.RichText = true
+		label.Text = highlight:apply(breakPath(path))
+	else
+		themeService:addObject(label, { TextColor3 = "Colors.Text.Darker", Font = "Font.MonoSpace" })
+		label.RichText = false
+		label.Text = config.labels.hint
+	end
 end
 
 function partPath:clearSelection()
 	self.selectedPart = nil
 	self.hoverBox.Adornee = nil
 	self.selectedBox.Adornee = nil
-	self.pathLabel.Text = ""
+	self:setPath(nil)
 end
 
--- "Select Part": the command gets the part and decides what to do with it (a waypoint)
+-- "select part": the command gets the part and decides what to do with it (a waypoint)
 function partPath:confirmSelection()
 	local part = self.selectedPart
 
 	if not part or not part.Parent then
 		self:clearSelection()
-		notifier:notify("Part Selection", TEXT.noPart)
+		notifier:notify(windowConfig.title, config.messages.noPart)
 		return
 	end
 
@@ -335,26 +449,27 @@ function partPath:confirmSelection()
 	end
 end
 
+-- copies the plain path (the label shows rich text, so its Text is not the path itself)
 function partPath:copyPath()
-	local path = self.pathLabel.Text
+	local path = self.path
 
-	if path == "" then
-		notifier:notify(TEXT.copyPath, TEXT.noPath)
+	if not path then
+		notifier:notify(windowConfig.title, config.messages.noPath)
 		return
 	end
 
 	if not executorEnv.setclipboard then
-		notifier:notify(TEXT.copyPath, TEXT.noClipboard)
+		notifier:notify(windowConfig.title, config.messages.noClipboard)
 		return
 	end
 
 	executorEnv.setclipboard(path)
 
 	local button = self.copyButton
-	button.Text = TEXT.copied
+	button.Text = buttonsConfig.copied
 
-	task.delay(COPY_FEEDBACK_TIME, function()
-		button.Text = TEXT.copyPath
+	task.delay(buttonsConfig.feedbackTime, function()
+		button.Text = config.buttons.copyPath
 	end)
 end
 

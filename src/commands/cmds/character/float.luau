@@ -77,7 +77,14 @@ return {
 		end
 	},
 	{
-		action = "unfloat|noplatform",
+		action = "togglefloat",
+		description = "Toggles float",
+		run = function(self)
+			self:run(if self:hasGarbage("float") then "unfloat" else "float")
+		end
+	},
+	{
+		action = "unfloat|noplatform|nofloat|unplatform",
 		description = "Removes the platform",
 		run = function(self)
 			if not self:hasGarbage("float") then return end

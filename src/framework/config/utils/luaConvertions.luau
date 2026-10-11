@@ -1,4 +1,4 @@
-local tools = require("../../utils/tools")
+local tools = require("../../../utils/tools")
 
 local defaultEscapeSequences = {
 	["a"] = "\a", ["b"] = "\b", ["f"] = "\f", ["n"] = "\n",

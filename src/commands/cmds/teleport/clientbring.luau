@@ -101,7 +101,7 @@ return {
 		end
 	},
 	{
-		action = "unloopbring",
+		action = "unloopbring|noloopbring",
 		description = "Undoes loopbring",
 		args = {
 			kind = "player",

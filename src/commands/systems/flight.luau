@@ -65,6 +65,7 @@ end
 
 -- options.garbageName: name used to stop this flight later.
 -- options.getSpeed: returns the speed every frame, so flyspeed changes apply while flying.
+-- options.kind: "fly" or "vehiclefly", so the toggle commands know which one is on.
 -- options.platformStand: keeps the humanoid stiff while flying.
 function flight.start(self, options)
 	flight.stop(self, options.garbageName)
@@ -95,6 +96,7 @@ function flight.start(self, options)
 	garbage.velocity = velocity
 	garbage.gyro = gyro
 	garbage.humanoid = humanoid
+	garbage.kind = options.kind
 
 	garbage.connection = self:connect(self.runService.Heartbeat, function()
 		if not root:IsDescendantOf(workspace) or humanoid.Health <= 0 then

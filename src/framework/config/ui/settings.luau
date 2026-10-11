@@ -1,13 +1,14 @@
--- src/framework/config/settings.luau
+-- src/framework/config/ui/settings.luau
 -- The settings panel (src/ui/components/settings.luau): its layout, its text, and the options it shows.
 --
 -- Each option is one row, with a kind:
---   "switch"  an on/off box. `setting` names a key in `keys` below, and the value is saved there
---   "button"  opens an editor. `icon` is a name from ui/themes/icons/interface.luau, and `action` is
---             the name the component reports when it is pressed (nothing is wired to it yet)
---   "prefix"  a read-only box that shows `value`
+--   "switch"   an on/off box. `setting` names a key in `keys` below, and the value is saved there
+--   "keybind"  a box that shows the key of `binding` (framework/config/services/keybinds). Tapping it waits for the
+--              next key press, which becomes the new key. Tapping again, or Escape, cancels
+--   "button"   opens an editor. `icon` is a name from ui/themes/icons/interface.luau, and `action` is
+--              the name the component reports when it is pressed (nothing is wired to it yet)
 
-local keepiy = require("./keepiy")
+local keepiy = require("../commands/keepiy")
 
 return {
 	-- settings keys of the switches (saved in storage/data/settings)
@@ -46,6 +47,7 @@ return {
 		width = 20,
 		height = 16,
 		cornerRadius = 4,
+		keybindWidth = 88, -- wide enough for "press a key" and key names like "Right Control"
 	},
 
 	textSizes = {
@@ -58,7 +60,7 @@ return {
 		{
 			title = "#general",
 			options = {
-				{ kind = "prefix", label = "Prefix", icon = "lucide-terminal", value = ";" },
+				{ kind = "keybind", label = "Prefix", icon = "lucide-terminal", binding = "prefix" },
 				{ kind = "switch", label = "Keep Menu Open", icon = "lucide-pin", setting = "keepMenuOpen" },
 				{ kind = "switch", label = "Keep Interface", icon = "lucide-refresh-cw", setting = "keepIY" },
 			},

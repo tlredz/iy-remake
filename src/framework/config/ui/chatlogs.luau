@@ -1,4 +1,4 @@
--- src/framework/config/chatlogs.luau
+-- src/framework/config/ui/chatlogs.luau
 
 return {
 	title = "Chat Logs",

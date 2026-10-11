@@ -1,5 +1,6 @@
 return {
 	require("./esp"),
 	require("./xray"),
-	require("./hovername")
+	require("./hovername"),
+	require("./hitboxes")
 }

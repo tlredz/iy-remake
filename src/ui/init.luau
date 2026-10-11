@@ -1,11 +1,11 @@
 -- src/ui/init.luau
 
 local frameworkSettings = require("../framework/settings")
-local notificationsConfig = require("../framework/config/notifier")
+local notificationsConfig = require("../framework/config/ui/notifier")
 local privateEnv = require("../framework/environment/private")
 local connectionService = require("../framework/services/connectionService")
 local robloxServices = require("../framework/services/rbxServices")
-local isMobile = require("../framework/config/isMobile")
+local isMobile = require("../framework/environment/isMobile")
 
 local settingsData = require("../storage/data/settings")
 local logger = require("../utils/logger")
@@ -512,26 +512,29 @@ function interface:updateNotificationsPosition()
 	local screenGui = self.screenGui
 	if not (container and mainFrame and screenGui) then return end
 
+	-- The window is placed with UDim2, so the stack is placed with the same UDim2 values: it lines up with the
+	-- window's edges whatever the UI scale is. The screen size (in logical units) is only used for the side and the room.
 	local scale = scaleObject:getScale()
-	local windowPos = mainFrame.AbsolutePosition / scale
-	local windowSize = mainFrame.AbsoluteSize / scale
 	local screenSize = screenGui.AbsoluteSize / scale
 
+	local position = mainFrame.Position
 	local spot = notificationPlacement.compute({
-		left = windowPos.X,
-		top = windowPos.Y,
-		right = windowPos.X + windowSize.X,
-		bottom = windowPos.Y + windowSize.Y,
+		x = { scale = position.X.Scale, offset = position.X.Offset },
+		y = { scale = position.Y.Scale, offset = position.Y.Offset },
+		width = mainFrame.Size.X.Offset,
+		height = mainFrame.Size.Y.Offset,
 	}, {
 		width = screenSize.X,
 		height = screenSize.Y,
 	}, {
 		width = container.Size.X.Offset,
-		height = notifier:getStackHeight(),
 	}, notificationsConfig.gapToWindow)
 
-	container.AnchorPoint = Vector2.new(spot.anchorX, 0)
-	container.Position = UDim2.fromOffset(spot.x, spot.y)
+	-- the popups are fitted to the room the stack has from where it is anchored
+	notifier:setRoom(spot.room)
+
+	container.AnchorPoint = Vector2.new(spot.anchorX, spot.anchorY)
+	container.Position = UDim2.new(spot.x.scale, spot.x.offset, spot.y.scale, spot.y.offset)
 end
 
 function interface:destroy()

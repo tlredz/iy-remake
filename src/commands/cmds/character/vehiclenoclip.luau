@@ -43,6 +43,13 @@ return {
 		end
 	},
 	{
+		action = "togglevnoclip",
+		description = "Toggles vehicle collision",
+		run = function(self)
+			self:run(if self:hasGarbage("vehiclenoclip") then "vehicleclip" else "vehiclenoclip")
+		end
+	},
+	{
 		action = "vehicleclip|vclip|unvnoclip",
 		description = "Enables vehicle collision",
 		run = function(self)

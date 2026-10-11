@@ -1,4 +1,4 @@
-local luaConvertions = require("../framework/config/luaConvertions")
+local luaConvertions = require("../framework/config/utils/luaConvertions")
 local logger = require("./logger")
 local tools = require("./tools")
 

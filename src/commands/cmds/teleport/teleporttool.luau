@@ -20,8 +20,7 @@ return {
 			if not (root and mouse.Hit) then return end
 
 			local target = mouse.Hit.Position + Vector3.new(0, 3, 0)
-			root.CFrame = CFrame.new(target) * (root.CFrame - root.CFrame.Position)
-			root.AssemblyLinearVelocity = Vector3.zero
+			self.playerService:teleportTo(CFrame.new(target) * (root.CFrame - root.CFrame.Position))
 		end)
 	end
 }

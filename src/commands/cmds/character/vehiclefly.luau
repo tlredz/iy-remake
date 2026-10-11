@@ -20,6 +20,7 @@ return {
 			-- Same as IY: no PlatformStand, so the seat is not disturbed
 			flight.start(self, {
 				garbageName = "fly",
+				kind = "vehiclefly",
 				platformStand = false,
 				getSpeed = function()
 					return self.privateEnv.vehicleFlySpeed or DEFAULT_SPEED
@@ -28,7 +29,7 @@ return {
 		end
 	},
 	{
-		action = "vehicleflyspeed|vflyspeed",
+		action = "vehicleflyspeed|vflyspeed|vflysp",
 		description = "Set vehicle fly speed",
 		args = {
 			kind = "number",
@@ -39,7 +40,24 @@ return {
 		end
 	},
 	{
-		action = "unvehiclefly|unvfly",
+		action = "togglevfly",
+		description = "Toggles vehicle fly",
+		args = {
+			kind = "number",
+			name = "vehicle fly speed",
+			optional = true
+		},
+		run = function(self, args)
+			local garbage = self:getGarbage("fly")
+			if garbage and garbage.kind == "vehiclefly" then
+				self:run("unvehiclefly")
+			else
+				self:run("vehiclefly", args)
+			end
+		end
+	},
+	{
+		action = "unvehiclefly|unvfly|novehiclefly|novfly",
 		description = "Disables vehicle fly",
 		run = function(self)
 			flight.stop(self, "fly")

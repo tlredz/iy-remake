@@ -1,4 +1,4 @@
--- src/framework/config/serverinfo.luau
+-- src/framework/config/ui/serverinfo.luau
 
 return {
 	window = {

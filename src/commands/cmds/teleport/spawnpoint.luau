@@ -31,10 +31,7 @@ return {
 				character:WaitForChild("HumanoidRootPart", 10)
 				task.wait(garbage.delay)
 
-				local currentRoot = self.playerService:getRootPart()
-				if currentRoot then
-					currentRoot.CFrame = garbage.cframe
-				end
+				self.playerService:setRootCFrame(garbage.cframe)
 			end)
 
 			self:notify("Spawn Point", "Spawn point created")

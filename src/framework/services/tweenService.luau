@@ -1,4 +1,4 @@
-local tweenConfig = require("../config/tween")
+local tweenConfig = require("../config/services/tween")
 
 local tweenService = {}
 
