@@ -1,3 +1,3 @@
-return require("../fileSystem").new(".userData", {
+return require("../fileSystem").new("storage/.userData", {
 	encrypt = true
 })

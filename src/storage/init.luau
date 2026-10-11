@@ -4,6 +4,5 @@ return {
 	settings = require("./data/settings"),
 	user = require("./data/user"),
 	aliases = require("./data/aliases"),
-	usedCmds = require("./data/usedCmds"),
-	testedCmds = require("./data/testedCmds")
+	usedCmds = require("./data/usedCmds")
 }

@@ -1,14 +1,27 @@
 return {
-	["bindsandplugins"] =         "rbxassetid://5147695474",
-	["close"] =                   "rbxassetid://5054663650",
-	["editaliases"] =             "rbxassetid://5147488658",
-	["editkeybinds"] =            "rbxassetid://129697930",
-	["edittheme"] =               "rbxassetid://4911962991",
-	["editwaypoints"] =           "rbxassetid://5147488592",
-	["imgstudiopluginlogo"] =     "rbxassetid://4113050383",
-	["logo"] =                    "rbxassetid://1352543873",
-	["minimize"] =                "rbxassetid://2406617031",
-	["pin"] =                     "rbxassetid://6234691350",
-	["reference"] =               "rbxassetid://3523243755",
-	["settings"] =                "rbxassetid://1204397029",
+	-- infinite yield
+	["logo"]     = 104371861083126,
+	
+	["close"]    = 83276213460768, -- lucide-close
+	["minimize"] = 76683704146139, -- lucide-chevron-down
+	
+	-- settings
+	["prefix"]            = 138735373900955, -- lucide-terminal
+	["keep-menu-open"]    = 85638424763987,  -- lucide-pin
+	["keep-interface"]    = 127184558868486, -- lucide-refresh-cw
+	
+	-- edit icons
+	["edit-aliases"]     = 95367077436662,  -- lucide-tag
+	["edit-keybinds"]    = 102097005397654, -- lucide-keyboard
+	["edit-theme"]       = 105784737972091, -- lucide-palette
+	["edit-waypoints"]   = 132787420207871, -- lucide-map-pin
+	["manage-plugins"]   = 139412930697283, -- lucide-puzzle,
+	["edit-event-binds"] = 124181719324437, -- lucide-zap
+	
+	["imgstudiopluginlogo"] = 4113050383,
+	["pin"]                 = 6234691350,
+	
+	-- top bar
+	["reference"] = 116342494079103, -- lucide-book-open
+	["settings"]  = 102340652201372, -- lucide-settings
 }

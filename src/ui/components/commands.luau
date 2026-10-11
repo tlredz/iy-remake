@@ -9,7 +9,7 @@ local commandParser      = require("../../commands/systems/commandParser")
 local argsManager        = require("../../commands/systems/argsManager")
 local loopService        = require("../../commands/services/loopService")
 
-local inputConfig  = require("../../framework/config/input")
+local inputUtils   = require("../utils/inputUtils")
 local commandsList = require("../../commands/list")
 
 local signal      = require("../../utils/signal")
@@ -18,7 +18,6 @@ local tools       = require("../../utils/tools")
 local scaleObject = require("../utils/scaleObject")
 
 local settingsData = require("../../storage/data/settings")
-local testedCmds = require("../../storage/data/testedCmds")
 local cmdsColors = require("../../framework/config/colors").commands
 
 local userInputService = robloxServices.UserInputService
@@ -29,10 +28,6 @@ local colorFromRGB     = tools.colorFromRGB
 
 local commands = {}
 commands.__index = commands
-
-local function isValidInputType(input)
-	return inputConfig.pressingInputs[input.UserInputType] ~= nil
-end
 
 local function getCommand(commandName)
 	return commandsList.lookup[commandName]
@@ -634,7 +629,6 @@ function commands:getCommandColor(cmdName, cmdData)
 	
 	local colorName =
 		if type(command.run) ~= "function" then "undefined"
-		elseif testedCmds:getValue(command.name) == true then "deprecated"
 		elseif cmdData.isClient then "client"
 		elseif cmdData.isDeprecated then "deprecated"
 		else nil
@@ -710,7 +704,7 @@ function commands:horizontalScroll(xOffset)
 end
 
 function commands:startedHoldingContainer(input)
-	if not isValidInputType(input) then return end
+	if not inputUtils.isPressingInput(input) then return end
 	if self.scrollBar:isScrollBarDisabled() then return end
 
 	self.scrollAxis = nil
@@ -733,7 +727,7 @@ function commands:startedHoldingContainer(input)
 	local lastMouseY = playerMouse.Y
 	local lastMouseX = playerMouse.X
 
-	local mouseEvent, releaseEvent
+	local mouseEvent
 
 	local function disconnect()
 		self.scrollBar:enableScroll()
@@ -751,17 +745,12 @@ function commands:startedHoldingContainer(input)
 			end
 		end
 		
-		if releaseEvent then releaseEvent:Disconnect() end
 		if mouseEvent   then mouseEvent:Disconnect()   end
 	end
 
-	releaseEvent = connectionService:Connect(userInputService.InputEnded, function(inp)
-		if not isValidInputType(inp) then return end
-		disconnect()
-	end)
+	inputUtils.onReleaseEvent(disconnect)
 	
-	mouseEvent = connectionService:Connect(userInputService.InputChanged, function(inp)
-		if not isValidInputType(inp) then return end
+	mouseEvent = inputUtils.onMouseEvent(function(inp)
 		
 		local deltaX = playerMouse.X - lastMouseX
 		local deltaY = playerMouse.Y - lastMouseY

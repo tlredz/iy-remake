@@ -1,10 +1,4 @@
 -- src/ui/components/chatlogs.luau
--- The chat logs window, opened with infiniteYield:chatLogs(tab). It is styled like the other windows
--- (Reference and server info). Every button is on one row:
---   left half:  Clear and Save share the first quarter, Enabled takes the second quarter
---   right half: the Chat and Joins tabs. The selected tab takes 3/4 of the half, the other one 1/4.
--- It is built when opened, slides in, and is destroyed when closed. The entries are kept by the chat
--- logs system, so closing the window does not lose them.
 
 local createService = require("../services/createService")
 local assetsService = require("../services/assetsService")

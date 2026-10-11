@@ -2,84 +2,104 @@ local argsManager = require("../../systems/argsManager")
 
 local FLING_PHYSICAL_PROPERTY = PhysicalProperties.new(100, 0.3, 0.5)
 
+-- Spins on the Y axis only, same as the original IY fling
+local FLING_SPIN = Vector3.yAxis * 99999
+
 local function createFlingTemplate()
 	local bodyVelocity = Instance.new("BodyAngularVelocity")
-	bodyVelocity.MaxTorque = Vector3.yAxis * math.huge
+	-- Not Vector3.yAxis * math.huge: 0 * math.huge is NaN, which would give X and Z a NaN torque limit
+	bodyVelocity.MaxTorque = Vector3.new(0, math.huge, 0)
 	bodyVelocity.P = math.huge
 	return bodyVelocity
 end
 
-local function flingRun(self, args)
+local function flingRun(self)
 	if self:hasGarbage("fling") then
 		self:notify("fling is already enabled\ndisable using 'unfling'")
 		return
 	end
-	
+
 	local humanoid = self.playerService:getHumanoid()
 	if not (humanoid and humanoid.Health ~= 0) then return end
-	
+
+	local root = self:getRoot()
+	if not root then return end
+
 	local character = humanoid.Parent
-	
+
 	self:notify("fling now is activated")
 	self:run("noclip")
-	
+
 	local garbage = self:createGarbage("fling")
 	garbage.originalStates = {}
-	
+
 	for _, part in character:GetDescendants() do
 		if not part:IsA("BasePart") then continue end
-		
+
 		garbage.originalStates[part] = {
 			CustomPhysicalProperties = part.CustomPhysicalProperties,
-			CanCollide = part.CanCollide,
 			Massless = part.Massless
 		}
-		
+
 		part.CustomPhysicalProperties = FLING_PHYSICAL_PROPERTY
-		
-		if part.Parent == character then
-			part.CanCollide = false
-			part.Massless = true
-			part.Velocity = Vector3.zero
-		end
 	end
-	
+
 	local bodyVelocity = createFlingTemplate()
-	
 	garbage.flingVelocity = bodyVelocity
-	garbage.flingConnection = humanoid.Died:Once(function()
+
+	garbage.flingConnection = self:connect(humanoid.Died, function()
 		self:notify("player died: disabling fling...")
 		self:run("unfling")
 	end)
-	
-	bodyVelocity.Parent = character:WaitForChild("HumanoidRootPart")
-	
-	while bodyVelocity and character and character.Parent do
-		bodyVelocity.AngularVelocity = Vector3.yAxis * 99999
-		task.wait(0.2)
-		bodyVelocity.AngularVelocity = Vector3.one
+
+	-- The spin loop runs in its own thread, so the command returns right away (like walkfling)
+	garbage.flingThread = task.spawn(function()
+		-- Same short wait as the original, so noclip is in place before the spin starts
 		task.wait(0.1)
-	end
+		if self:getGarbage("fling") ~= garbage then return end
+
+		for _, part in character:GetChildren() do
+			if part:IsA("BasePart") then
+				part.Massless = true
+				part.Velocity = Vector3.zero
+			end
+		end
+
+		bodyVelocity.Parent = root
+
+		-- Stops when unfling replaces the garbage, or when the root is gone (death or respawn)
+		while self:getGarbage("fling") == garbage and root.Parent do
+			bodyVelocity.AngularVelocity = FLING_SPIN
+			task.wait(0.2)
+			bodyVelocity.AngularVelocity = Vector3.zero
+			task.wait(0.1)
+		end
+	end)
 end
 
 local function unflingRun(self)
 	local garbage = self:collectGarbage("fling")
 	if not garbage then return end
-	
+
+	-- Stop the loop first, so it cannot touch the velocity object after it is destroyed
+	if garbage.flingThread then
+		task.cancel(garbage.flingThread)
+	end
+
 	if garbage.flingVelocity then
 		garbage.flingVelocity:Destroy()
 	end
-	
+
 	if garbage.flingConnection then
 		garbage.flingConnection:Disconnect()
 	end
-	
+
 	for object, properties in garbage.originalStates do
 		for property, value in properties do
 			object[property] = value
 		end
 	end
-	
+
 	self:notify("fling disabled")
 end
 

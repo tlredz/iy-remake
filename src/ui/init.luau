@@ -29,12 +29,12 @@ local commandsComponent = require("./components/commands")
 local referenceComponent = require("./components/reference")
 local serverInfoComponent = require("./components/serverinfo")
 local chatLogsComponent = require("./components/chatlogs")
+local settingsComponent = require("./components/settings")
 
 local dragInstance = require("./utils/dragInstance")
 local mainFrameDock = require("./utils/mainFrameDock")
 
 local REFERENCE_SCREEN_HEIGHT = 450
-local KEEP_IY_SETTING = "interface.keepIY"
 local uiScale = scaleObject.uiScale
 
 local interface = {
@@ -73,7 +73,6 @@ function interface:awake()
 	self:setupScreenGui()
 	self:setupScale()
 	self:setupMainFrame()
-	self:setupKeepIY()
 	self:createQuickCapture()
 	self:createReference()
 	self:createNotifications()
@@ -230,11 +229,21 @@ function interface:createMainFrame()
 	assetsService:loadImage(self.buttons.settings, "settings")
 	assetsService:loadImage(self.buttons.reference, "reference")
 
-	connectionService:Connect(self.buttons.settings.Activated, function()
-		print("clicked settings")
-	end)
-
 	self:createMainScroll(mainFrame)
+
+	self.settings = settingsComponent.new({
+		-- a switch changed. The dock only needs to know about keep menu open
+		onSwitch = function(setting, enabled)
+			if setting == "keepMenuOpen" and self.dock then
+				self.dock:setKeepOpen(enabled)
+			end
+		end,
+	})
+	self.settings:create(mainFrame, self.scrollHolder)
+
+	connectionService:Connect(self.buttons.settings.Activated, function()
+		self.settings:toggle()
+	end)
 
 	return mainFrame
 end
@@ -266,6 +275,19 @@ function interface:createCommands()
 	commands:awake()
 
 	self.commands = commands
+
+	self.settings:watchCommandBar(commands.searchBox)
+	
+	if isMobile then
+		connectionService:Connect(commands.searchBox.Focused, function()
+			self.commandBarUsedAt = os.clock()
+		end)
+		
+		connectionService:Connect(commands.searchBox.FocusLost, function()
+			self.commandBarUsedAt = os.clock()
+		end)
+	end
+
 	return commands
 end
 
@@ -287,14 +309,23 @@ function interface:dragMainFrame(mainFrame)
 		frame = mainFrame,
 		screenGui = self.screenGui,
 		topBarHeight = self.topBar.Size.Y.Offset,
+		keepOpen = settingsComponent.isKeepMenuOpen(),
 		clampPosition = function(pos)
 			return self:calculateMainFramePosition(pos)
 		end,
 		getScale = function()
 			return scaleObject:getScale()
 		end,
+		commandBarInUse = function()
+			return self:isCommandBarInUse()
+		end,
 		onMinimize = function()
 			self:releaseCommandFocus()
+
+			-- a hidden window (hideiy) goes back to hidden instead of just minimizing
+			if self.hidden then
+				self:hideWindow()
+			end
 		end,
 	})
 
@@ -319,27 +350,16 @@ function interface:dragMainFrame(mainFrame)
 	end)
 end
 
-function interface:setKeepIY(enabled: boolean): boolean
-	enabled = enabled == true
-	
-	if self.dock then
-		self.dock:setKeepOpen(enabled)
-	end
-	
-	if (settingsData:getValue(KEEP_IY_SETTING) == true) ~= enabled then
-		settingsData:setValue(KEEP_IY_SETTING, enabled)
-		settingsData:save()
-	end
-	
-	return enabled
-end
+-- how long after the command bar loses focus a press outside still counts as using it (seconds)
+local COMMAND_BAR_GRACE = 0.3
 
-function interface:getKeepIY(): boolean
-	return self.dock ~= nil and self.dock.keepOpen == true
-end
+function interface:isCommandBarInUse(): boolean
+	local searchBox = self.commands and self.commands.searchBox
+	if searchBox and searchBox:IsFocused() then
+		return true
+	end
 
-function interface:setupKeepIY()
-	self.dock:setKeepOpen(settingsData:getValue(KEEP_IY_SETTING) == true)
+	return os.clock() - (self.commandBarUsedAt or 0) < COMMAND_BAR_GRACE
 end
 
 function interface:releaseCommandFocus()
@@ -350,18 +370,42 @@ function interface:releaseCommandFocus()
 	end
 end
 
+-- shows the window for good (showiy): it leaves the hidden state and stays up
 function interface:showWindow()
+	self.hidden = false
+	self:revealWindow()
+end
+
+-- shows the window without leaving the hidden state: the command bar (IY button, prefix key) uses this.
+-- A hidden window goes back to hidden on the next press outside (the dock's onMinimize)
+function interface:revealWindow()
 	if not self.mainFrame then return end
 
 	self.mainFrame.Visible = true
-	self.dock:reveal()
+	if self.dock then
+		self.dock:reveal()
+	end
+end
+
+-- hides the window (hideiy). It stays hidden until showWindow, like the original IY
+function interface:hideWindow()
+	if not self.mainFrame then return end
+
+	self.hidden = true
+	self.mainFrame.Visible = false
+
+	if self.dock then
+		self.dock:sleep()
+	end
+
+	self:releaseCommandFocus()
 end
 
 function interface:showCommandBar()
 	local searchBox = self.commands and self.commands.searchBox
 	if not searchBox then return end
 
-	self:showWindow()
+	self:revealWindow()
 
 	self.dock:onSettled(function()
 		if self.dock.state == "minimized" then return end
@@ -371,6 +415,15 @@ function interface:showCommandBar()
 		end
 		searchBox:CaptureFocus()
 	end)
+end
+
+-- the keepiy command calls this (keepiy.enable / keepiy.disable): saves the flag and redraws the panel's switch
+function interface:setKeepIY(enabled: boolean)
+	settingsComponent.setKeepIY(enabled)
+
+	if self.settings then
+		self.settings:refresh()
+	end
 end
 
 function interface:createQuickCapture()

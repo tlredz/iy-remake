@@ -35,6 +35,7 @@ function assetsService:newCustomAsset(assetName: string, assetPath: string): str
 end
 
 function assetsService:get(assetName: string): string
+	-- if true then print("ICON FOR TEST:", assetName) return "rbxassetid://" ..assets[assetName] end
 	if LOADED_ASSETS[assetName] then
 		return LOADED_ASSETS[assetName]
 	end
@@ -54,6 +55,8 @@ function assetsService:get(assetName: string): string
 	
 	if imageRaw == nil then
 		local assetid = assets[assetName]
+		assetid = if type(assetid) == "number" then `rbxassetid://{assetid}` else assetid
+		
 		LOADED_ASSETS[assetName] = assetid
 		return assetid
 	end

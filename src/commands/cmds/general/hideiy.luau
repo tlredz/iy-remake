@@ -12,6 +12,22 @@ local function clearListener(self)
 	end
 end
 
+-- While the window is hidden, the show keys open the command bar. The listener stays on until showiy,
+-- so the window can be hidden again after the command bar is used (interface:hideWindow)
+local function listenForShowKeys(self, interface)
+	clearListener(self)
+
+	local garbage = self:registerGarbage("hideiy")
+	garbage.connection = self:connect(self.robloxServices.UserInputService.InputBegan, function(input, processed)
+		if processed or not SHOW_KEYS[input.KeyCode] then return end
+
+		-- already shown (the command bar is open): the key is just typed
+		if interface.mainFrame.Visible then return end
+
+		interface:showCommandBar()
+	end)
+end
+
 local function hideWindow(self)
 	local interface = self.infiniteYield
 	if not interface or not interface.mainFrame then
@@ -24,18 +40,8 @@ local function hideWindow(self)
 		return
 	end
 
-	clearListener(self)
-	interface:releaseCommandFocus()
-
-	local garbage = self:registerGarbage("hideiy")
-	interface.mainFrame.Visible = false
-
-	garbage.connection = self:connect(self.robloxServices.UserInputService.InputBegan, function(input, processed)
-		if processed or not SHOW_KEYS[input.KeyCode] then return end
-		
-		clearListener(self)
-		interface:showCommandBar()
-	end)
+	interface:hideWindow()
+	listenForShowKeys(self, interface)
 
 	self:notify("IY", "hidden. Press ; or tap the IY button to type a command")
 end

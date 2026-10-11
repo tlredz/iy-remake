@@ -1,3 +1,1 @@
-local specialProps = {}
-
-return specialProps
+return {}

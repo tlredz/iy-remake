@@ -1,5 +1,4 @@
 local connectionService = require("../../framework/services/connectionService")
-local robloxServices = require("../../framework/services/rbxServices")
 local createService = require("../services/createService")
 local playerService = require("../../framework/services/playerService")
 local themeService = require("../services/themeService")
@@ -9,16 +8,10 @@ local scaleObject = require("../utils/scaleObject")
 
 local signal = require("../../utils/signal")
 
-local inputConfig = require("../../framework/config/input")
-
-local userInputService = robloxServices.UserInputService
+local inputUtils = require("../utils/inputUtils")
 
 local scrollBar = {}
 scrollBar.__index = scrollBar
-
-local function isValidInputType(input)
-	return inputConfig.pressingInputs[input.UserInputType] ~= nil
-end
 
 function scrollBar:awake()
 	local playerMouse = playerService:getMouse()
@@ -40,11 +33,7 @@ function scrollBar:awake()
 			
 			self:scrollToDirection(direction)
 			
-			local releaseEvent
-			releaseEvent = connectionService:Connect(userInputService.InputEnded, function(input)
-				if not isValidInputType(input) then return end
-				
-				releaseEvent:Disconnect()
+			inputUtils.onReleaseEvent(function()
 				isPressingButton = false
 			end)
 			
@@ -73,7 +62,7 @@ function scrollBar:awake()
 	end)
 	
 	connectionService:Connect(scrollBar.InputBegan, function(input)
-		if not isValidInputType(input) then return end
+		if not inputUtils.isPressingInput(input) then return end
 		if self:isScrollBarDisabled() then return end
 		
 		local isHoldingFrame = not playerService:isMouseInGuiObject(scrollThumb)
@@ -87,17 +76,13 @@ function scrollBar:awake()
 		})
 		
 		local mouseOffset = playerMouse[direction] - scrollThumb.AbsolutePosition[direction]
-		local releaseEvent
 		local mouseEvent
 		
 		local function disconnect()
-			if releaseEvent then releaseEvent:Disconnect() end
 			if mouseEvent then mouseEvent:Disconnect() end
 		end
 		
-		releaseEvent = connectionService:Connect(userInputService.InputEnded, function(input)
-			if not isValidInputType(input) then return end
-			
+		inputUtils.onReleaseEvent(function()
 			disconnect()
 			isPressingThumb = false
 			
@@ -129,9 +114,8 @@ function scrollBar:awake()
 			return
 		end
 		
-		mouseEvent = connectionService:Connect(userInputService.InputChanged, function(input)
+		mouseEvent = inputUtils.onMouseEvent(function(input)
 			if not isPressingThumb then return end
-			if not isValidInputType(input) then return end
 			
 			local thumbFrameSize = scrollThumbFrame.AbsoluteSize[direction] - scrollThumb.AbsoluteSize[direction]
 			local pos = playerMouse[direction] - scrollThumbFrame.AbsolutePosition[direction] - mouseOffset

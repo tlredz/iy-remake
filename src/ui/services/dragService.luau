@@ -3,19 +3,10 @@
 local connectionService = require("../../framework/services/connectionService")
 local rbxServices = require("../../framework/services/rbxServices")
 
+local inputUtils = require("../utils/inputUtils")
 local signal = require("../../utils/signal")
 
 local userInputService = rbxServices.UserInputService
-
-local inputBeganWhitelist = {
-	[Enum.UserInputType.MouseButton1] = true,
-	[Enum.UserInputType.Touch] = true
-}
-
-local inputChangedWhitelist = {
-	[Enum.UserInputType.MouseMovement] = true,
-	[Enum.UserInputType.Touch] = true
-}
 
 local LERP_VALUE = 0.28
 
@@ -55,7 +46,7 @@ end
 
 function dragService:addGuiObject(object: GuiObject): RBXScriptConnection
 	return connectionService:Connect(object.InputBegan, function(input)
-		if not inputBeganWhitelist[input.UserInputType] then return end
+		if not inputUtils.isPressingInput(input) then return end
 		if self.isDragging then return end
 
 		self.isDragging = true
@@ -138,7 +129,7 @@ function dragService.new(uiScale: UIScale?)
 	}, dragService)
 
 	connectionService:Connect(userInputService.InputChanged, function(input)
-		if self.isDragging and inputChangedWhitelist[input.UserInputType] then
+		if self.isDragging and inputUtils.isMovingInput(input) then
 			self:update(self.draggingObject, input)
 		end
 	end)
@@ -147,138 +138,3 @@ function dragService.new(uiScale: UIScale?)
 end
 
 return dragService
-
-
--- src/ui/services/dragService.luau
-
---[[local connectionService = require("../../framework/services/connectionService")
-local rbxServices = require("../../framework/services/rbxServices")
-
-local signal = require("../../utils/signal")
-
-local userInputService = rbxServices.UserInputService
-local runService = rbxServices.RunService
-
-local inputBeganWhitelist = {
-	[Enum.UserInputType.MouseButton1] = true,
-	[Enum.UserInputType.Touch] = true,
-}
-
-local inputChangedWhitelist = {
-	[Enum.UserInputType.MouseMovement] = true,
-	[Enum.UserInputType.Touch] = true,
-}
-
-local SMOOTHING = 0.28
-
-local dragService = {}
-dragService.__index = dragService
-
-function dragService:addGuiObject(object: GuiObject)
-	return connectionService:Connect(object.InputBegan, function(input)
-		if not inputBeganWhitelist[input.UserInputType] then return end
-		if self.isDragging then return end
-
-		self.isDragging = true
-		self.draggingObject = object
-		self.dragStart = input.Position
-		self.startPos = object.Position
-		self.targetPos = object.Position
-
-		self.dragStarted:Fire(object)
-	end)
-end
-
-function dragService:endDrag()
-	local object = self.draggingObject
-	if not object then return end
-
-	if object.Parent and self.targetPos then
-		object.Position = self.targetPos
-	end
-
-	self.isDragging = false
-	self.draggingObject = nil
-	self.dragStart = nil
-	self.startPos = nil
-	self.targetPos = nil
-
-	self.dragEnded:Fire(object)
-end
-
-function dragService:update(object: GuiObject, input: InputObject)
-	local scale = (self._uiScale and self._uiScale.Scale) or 1
-	local delta = input.Position - self.dragStart
-
-	local target = UDim2.new(
-		self.startPos.X.Scale,
-		self.startPos.X.Offset + (delta.X / scale),
-		self.startPos.Y.Scale,
-		self.startPos.Y.Offset + (delta.Y / scale)
-	)
-
-	local filter = self.filters[object]
-	if filter then
-		target = filter(target, scale) or target
-	end
-
-	self.targetPos = target
-end
-
-function dragService:step(dt: number)
-	local object = self.draggingObject
-	if not object then return end
-	
-	if not object.Parent then
-		self:endDrag()
-		return
-	end
-
-	local alpha = 1 - (1 - SMOOTHING) ^ (dt * 60)
-	object.Position = object.Position:Lerp(self.targetPos, alpha)
-	self.onDragged:Fire(object)
-end
-
-function dragService:canDragObject(object: GuiObject): boolean
-	return (not self.isDragging) or (self.draggingObject == object)
-end
-
-function dragService:setFilter(object: GuiObject, callback: (pos: UDim2, scaleSize: number) -> UDim2?)
-	self.filters[object] = callback
-end
-
-function dragService.new(uiScale: UIScale?)
-	local self = setmetatable({
-		isDragging = false,
-		draggingObject = nil,
-		_uiScale = uiScale,
-		dragStart = nil,
-		startPos = nil,
-		targetPos = nil,
-		filters = {},
-
-		onDragged = signal.new(),
-		dragStarted = signal.new(),
-		dragEnded = signal.new(),
-	}, dragService)
-
-	connectionService:Connect(userInputService.InputChanged, function(input)
-		if self.isDragging and inputChangedWhitelist[input.UserInputType] then
-			self:update(self.draggingObject, input)
-		end
-	end)
-
-	connectionService:Connect(userInputService.InputEnded, function(input)
-		if self.isDragging and inputBeganWhitelist[input.UserInputType] then
-			self:endDrag()
-		end
-	end)
-
-	connectionService:Connect(runService.RenderStepped, function(dt)
-		self:step(dt)
-	end)
-
-	return self
-end
-
-return dragService]]

@@ -1,1 +1,1 @@
-return require("../fileSystem").new("totalUsedCommands")
+return require("../fileSystem").new("storage/totalUsedCommands")

@@ -1,1 +1,1 @@
-return require("../fileSystem").new("settings")
+return require("../fileSystem").new("storage/settings")

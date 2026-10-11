@@ -3,9 +3,6 @@ local waypointsData = require("../../storage/data/waypoints")
 local logger = require("../../utils/logger")
 local tools = require("../../utils/tools")
 
---[[local commandProperties = require("../../framework/config/commandProperties")
-local PROPERTIES_KEY = "$"]]
-
 local argsController = {}
 
 local function newWarn(message)

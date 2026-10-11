@@ -11,21 +11,21 @@ local tagColor         = Color3.fromRGB(255, 149, 75)
 
 return {
 	args = {
-		["number"] = numberColor,
+		["number"]  = numberColor,
 		["boolean"] = numberColor,
-		["text"] = stringColor,
-		["string"] = stringColor,
-		["symbol"] = symbolColor,
+		["text"]    = stringColor,
+		["string"]  = stringColor,
+		["symbol"]  = symbolColor,
 		["comment"] = commentColor,
-		["others"] = othersColor,
-		["warn"] = warnColor,
-		["error"] = errorColor,
-		["valid"] = validColor,
-		["tag"] = tagColor
+		["others"]  = othersColor,
+		["warn"]    = warnColor,
+		["error"]   = errorColor,
+		["valid"]   = validColor,
+		["tag"]     = tagColor,
 	},
 	commands = {
-		["undefined"] = errorColor,
-		["client"] = stringColor,
+		["undefined"]  = errorColor,
+		["client"]     = stringColor,
 		["deprecated"] = commentColor
 	}
 }

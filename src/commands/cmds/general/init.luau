@@ -3,8 +3,8 @@ return {
 	require("./guiscale"),       -- done
 	require("./console"),        -- done
 	require("./scripts"),        -- done
-	require("./serverinfo"),
-	require("./gameinfo"),
+	require("./serverinfo"),     -- done
+	require("./gameinfo"),       -- done
 	require("./creatorid"),      -- done
 	require("./rejoin"),         -- done
 	require("./autorejoin"),     -- done
@@ -20,7 +20,7 @@ return {
 	require("./showguis"),       -- done
 	-- require("./guidelete"),   -- maybe later
 	require("./hideiy"),
-	require("./keepiy"),
+	-- require("./keepiy"),
 	require("./removeads"),      -- done
 	require("./saveinstance"),   -- maybe later
 	require("./clearerror"),
@@ -55,6 +55,5 @@ return {
 	require("./autoclick"),
 	require("./watch"),
 	require("./keybinds"),
-	require("./promptrig"),
-	require("./testedcmds")
+	require("./promptrig")
 }

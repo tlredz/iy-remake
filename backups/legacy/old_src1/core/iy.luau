@@ -1,7 +1,7 @@
 -- testing in terminal
-if require("../config/isTerminal") then
-	return require("../tests/commands")
-end
+-- if require("../config/isTerminal") then
+-- 	return require("../tests/commands")
+-- end
 
 -- import logger
 local logger = require("../utils/logger")

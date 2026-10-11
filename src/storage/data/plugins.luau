@@ -1,1 +1,1 @@
-return require("../fileSystem").new("installedPlugins")
+return require("../fileSystem").new("storage/installedPlugins")

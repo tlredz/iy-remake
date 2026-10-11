@@ -3,6 +3,7 @@
 require("./cleanup"):init()
 
 local commandsController = require("../commands/controllers/commandsController")
+local keepiy = require("../commands/systems/keepiy")
 local playerService = require("../framework/services/playerService")
 local fetchService = require("../framework/services/fetchService")
 
@@ -20,6 +21,8 @@ function infiniteYield:boot()
 		playerService = playerService,
 		fetchService = fetchService
 	})
+	
+	keepiy.start()
 	
 	-- checkStubs(commandsController)
 	interface:awake() -- interface:init()

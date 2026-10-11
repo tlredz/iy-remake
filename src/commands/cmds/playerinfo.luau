@@ -1,13 +1,9 @@
--- Player info commands. The join date is asked from the Roblox users API.
--- Without an http request function, the date is estimated from the account age.
-
 local resolvePlayers = require("../systems/resolvePlayers")
 local chatSender = require("../systems/chatSender")
 
 local DAY = 86400
 local USERS_API = "https://users.roblox.com/v1/users/"
 
--- "2011-07-04" for the player's join date, with "~" when it is only an estimate
 local function joinDate(self, player: Player): string
 	local request = self.executorEnv.httprequest
 
@@ -25,7 +21,6 @@ local function joinDate(self, player: Player): string
 	return "~" .. os.date("!%Y-%m-%d", os.time() - player.AccountAge * DAY)
 end
 
--- Sends a chat message, or notifies the reason it could not be sent
 local function chat(self, message: string)
 	local sent, reason = chatSender.send(message)
 	if not sent then

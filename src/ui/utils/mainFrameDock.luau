@@ -5,7 +5,8 @@
 --   "top"       = the whole window flush with the top edge (only when it is dragged there)
 -- Rules:
 --   - a tap on the window while it is minimized expands it, just enough to be fully visible
---   - a click outside the window minimizes it, but only while it is expanded and not kept open
+--   - a click outside the window minimizes it, but only while it is expanded, not kept open, and the command bar is not in use
+--   - while the command bar is in use, a drag down does not minimize it either (it only snaps)
 --   - anything added with addWindowPart (the mobile IY button) counts as part of the window
 --   - a drag that ends DRAG_DOWN_MIN px lower than it started minimizes it
 --   - a drag that ends snaps to the top if that edge is nearer, otherwise to the bottom (keeping expanded / minimized)
@@ -38,6 +39,7 @@ dock.__index = dock
 --   clampPosition    fn(UDim2) -> UDim2, the window's normal screen clamp (used for X)
 --   getScale         fn() -> number, current UI scale
 --   onMinimize       fn(), called right before the window starts going away
+--   commandBarInUse  fn() -> boolean, true while the command bar is in use (nothing minimizes the window then)
 function dock.new(options)
 	local self = setmetatable({
 		frame = options.frame,
@@ -46,9 +48,10 @@ function dock.new(options)
 		clampPosition = options.clampPosition,
 		getScale = options.getScale,
 		onMinimize = options.onMinimize,
+		commandBarInUse = options.commandBarInUse,
 
 		state = "minimized",
-		keepOpen = false,
+		keepOpen = options.keepOpen == true, -- the saved "Keep Menu Open" flag; starting with it on does not expand the window
 		windowParts = {},
 		tween = nil,
 		press = nil,
@@ -221,6 +224,14 @@ function dock:reflow()
 	self.frame.Position = self:targetFor(self.state)
 end
 
+-- puts the window in the minimized state at once (no animation). Used when it is hidden, so the next
+-- reveal slides up from the bottom edge like a fresh one
+function dock:sleep()
+	self:cancel()
+	self.state = "minimized"
+	self.frame.Position = self:targetFor("minimized")
+end
+
 -- a drag of the window ended (gesture comes from dragService)
 function dock:onDragEnded(gesture)
 	if gesture.travel <= TAP_MAX_TRAVEL then
@@ -229,12 +240,17 @@ function dock:onDragEnded(gesture)
 		return
 	end
 
-	if gesture.dy >= DRAG_DOWN_MIN then
+	if gesture.dy >= DRAG_DOWN_MIN and not self:commandBarBusy() then
 		self:minimize()
 		return
 	end
 
 	self:moveTo(self:nearestSnap())
+end
+
+-- true while the command bar is in use: outside presses and drags down do not minimize the window then
+function dock:commandBarBusy(): boolean
+	return self.commandBarInUse ~= nil and self.commandBarInUse() == true
 end
 
 function dock:onInputBegan(input)
@@ -250,7 +266,7 @@ function dock:onInputBegan(input)
 	}
 
 	-- a click outside minimizes an expanded window, unless it is kept open; a window at the top stays where it is
-	if not inside and self.state == "expanded" and not self.keepOpen then
+	if not inside and self.state == "expanded" and not self.keepOpen and not self:commandBarBusy() then
 		self:minimize()
 	end
 end

@@ -1,1 +1,1 @@
-return require("../fileSystem").new("createdWaypoints")
+return require("../fileSystem").new("storage/createdWaypoints")

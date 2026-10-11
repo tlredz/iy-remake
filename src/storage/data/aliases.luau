@@ -1,1 +1,1 @@
-return require("../fileSystem").new("aliases")
+return require("../fileSystem").new("storage/aliases")
