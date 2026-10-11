@@ -5,7 +5,7 @@ local function registerSettings()
 	local settingsData = datas.settings
 	settingsData:register("clearOnEnter", true)
 	settingsData:register("spaceAfterCorrection", true)
-	settingsData:register("uiScale", 1)
+	settingsData:register("uiScale", 1.4)
 	settingsData:save()
 end
 
