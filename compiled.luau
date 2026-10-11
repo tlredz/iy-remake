@@ -576,7 +576,7 @@ return s end
 
 return i end a.k=function()local c=a.cache.k if not c then c={c=b()}a.cache.k=c end return c.c end end do local b=function()
 return a.k().new"storage/settings"end a.l=function()local c=a.cache.l if not c then c={c=b()}a.cache.l=c end return c.c end end do local b=function()
-return"v0.3.0"end a.m=function()local c=a.cache.m if not c then c={c=b()}a.cache.m=c end return c.c end end do local b=function()
+return"v0.3.1"end a.m=function()local c=a.cache.m if not c then c={c=b()}a.cache.m=c end return c.c end end do local b=function()
 return{
 owner="tlredz",
 repository="iy-remake"
@@ -666,6 +666,33 @@ action="explorer|dex|moondex",
 description="Opens DEX by Moon",
 run=function(b)
 b.fetchService.load("backups/explorer.luau","iy/explorer")()
+end
+},
+{
+action="emotemenu|7yd7",
+description="Opens animations/emotes menu By 7yd7",
+args={
+{
+kind="keycode",
+optional=true
+},
+{
+kind="boolean",
+name="notify",
+optional=true
+}
+},
+run=function(b,c)
+local d=b.fetchService.load("backups/emotes/notify.luau","iy/7yd7/notify.luau")()
+
+local e=c:nextValue()
+local f=c:nextValue()
+
+b.fetchService.load("backups/emotes/main.luau","iy/7yd7/emotes.luau"){
+notifyFunction=if f~=false then d else function()end,
+isMobile=b.isMobile,
+keycode=e,
+}
 end
 },
 {
@@ -982,7 +1009,6 @@ action="setfpscap|fpscap|maxfps",
 description="limits your FPS",
 args={
 kind="number",
-options={"30","60","120","240"},
 min=1,
 max=10000
 },
@@ -12080,33 +12106,41 @@ end
 }
 }end a.cl=function()local ab=a.cache.cl if not ab then ab={c=aa()}a.cache.cl=ab end return ab.c end end do local aa=function()
 
-local aa=a.aj()
+local aa=a.b()
+local ab=a.aj()
 
 
-local ab=a.h().Lighting
-local ac={
-ambient=ab.Ambient,
-outdoorAmbient=ab.OutdoorAmbient,
-brightness=ab.Brightness,
-clockTime=ab.ClockTime,
-fogEnd=ab.FogEnd,
-fogStart=ab.FogStart,
-globalShadows=ab.GlobalShadows
-}
+local ac=a.h().Lighting
+
+local ad={"Ambient","OutdoorAmbient","Brightness","ClockTime","FogEnd","FogStart","GlobalShadows"}
+local ae={}local af=function()
+
+
+for af,ag in ae do
+ac[af]=ag
+end end local ag=function()
+
+
+
+if aa.originalLighting then
+ae=aa.originalLighting
+return
+end
+
+for ag,b in ad do
+ae[b]=ac[b]
+end
+
+aa.originalLighting=ae end
+
+
+ag()
 
 return{
 {
 action="restorelighting|rlighting",
 description="Restores Lighting properties",
-run=function()
-ab.Ambient=ac.ambient
-ab.OutdoorAmbient=ac.outdoorAmbient
-ab.Brightness=ac.brightness
-ab.ClockTime=ac.clockTime
-ab.FogEnd=ac.fogEnd
-ab.FogStart=ac.fogStart
-ab.GlobalShadows=ac.globalShadows
-end
+run=af
 },
 {
 action="light",
@@ -12121,37 +12155,36 @@ name="radius",
 optional=true
 }
 },
-run=function(ad,ae)
-local af=aa(ae:nextValue())[1]
-local ag=ae:nextValue()or 30
+run=function(b,c)
+local d=ab(c:nextValue())
+local e=c:nextValue()or 10
 
-local b=af and af.Character and af.Character:FindFirstChild"HumanoidRootPart"
-if not b then return end
+for f,g in d do
+local h=g.Character and g.Character:FindFirstChild"HumanoidRootPart"
+if not h then return end
 
-local c=Instance.new"PointLight"
-c.Range=ag
-c.Brightness=5
-c.Parent=b
+local i=Instance.new"PointLight"
+i.Range=e
+i.Brightness=5
+i.Parent=h
 
-local d=ad.privateEnv.dynamicLights or{}
-ad.privateEnv.dynamicLights=d
-table.insert(d,c)
+table.insert(b:registerGarbage"dynamicLights",i)
+end
 end
 },
 {
 action="nolight|unlight",
 description="Removes dynamic light from your player",
-run=function(ad)
-for ae,af in ad.privateEnv.dynamicLights or{}do
-af:Destroy()
+run=function(b)
+for c,d in b:collectGarbage"dynamicLights"or{}do
+d:Destroy()
 end
-ad.privateEnv.dynamicLights={}
 
-local ae=ad.playerService:getCharacter()
-if ae then
-for af,ag in ae:GetDescendants()do
-if ag:IsA"PointLight"then
-ag:Destroy()
+local c=b.playerService:getCharacter()
+if c then
+for d,e in c:GetDescendants()do
+if e:IsA"PointLight"then
+e:Destroy()
 end
 end
 end
@@ -15345,8 +15378,6 @@ l.registerGarbage=function(m, n)
 return m:getGarbage(n)or m:createGarbage(n)end
 
 
-
-
 l.createGarbage=function(m, n)
 local o=m.garbages[n]
 if o==nil then
@@ -15355,7 +15386,6 @@ m.garbages[n]=o
 end
 
 return o end
-
 
 
 l.getCommandData=function(m, n)
@@ -15547,6 +15577,11 @@ p.getRootPart=p.getRoot
 p.Connect=p.connect
 
 
+local u=a.bR()
+p.isMobile=u
+p.isPC=not u
+
+
 p.localPlayer=a.ah()
 p.executorEnv=ab
 p.privateEnv=aa
@@ -15598,8 +15633,8 @@ p.commandsList=ac
 e.restore(ac)
 
 
-for u,v in f.restore(ac)do
-ae:warn(`plugin '{u}' could not be loaded: {v}`)
+for v,w in f.restore(ac)do
+ae:warn(`plugin '{v}' could not be loaded: {w}`)
 end end
 
 
@@ -21881,7 +21916,7 @@ if not af then return end
 
 local w=aj.new("TextButton",ai.randomString(math.random(30,50)),v.screenGui,{
 BackgroundTransparency=0.14,
-Position=UDim2.fromScale(0.5,0.05),
+Position=UDim2.fromScale(0.5,0.15),
 AnchorPoint=Vector2.new(0.5,0.5),
 Size=UDim2.new(0,25,0,25),
 Font=Enum.Font.SourceSansBold,
