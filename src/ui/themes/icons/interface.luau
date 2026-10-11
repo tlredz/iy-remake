@@ -6,17 +6,17 @@ return {
 	["minimize"] = 76683704146139, -- lucide-chevron-down
 	
 	-- settings
-	["prefix"]            = 138735373900955, -- lucide-terminal
-	["keep-menu-open"]    = 85638424763987,  -- lucide-pin
-	["keep-interface"]    = 127184558868486, -- lucide-refresh-cw
+	["lucide-terminal"]   = 138735373900955, -- prefix
+	["lucide-pin"]        = 85638424763987,  -- keep-menu-open
+	["lucide-refresh-cw"] = 127184558868486, -- keep-interface
 	
 	-- edit icons
-	["edit-aliases"]     = 95367077436662,  -- lucide-tag
-	["edit-keybinds"]    = 102097005397654, -- lucide-keyboard
-	["edit-theme"]       = 105784737972091, -- lucide-palette
-	["edit-waypoints"]   = 132787420207871, -- lucide-map-pin
-	["manage-plugins"]   = 139412930697283, -- lucide-puzzle,
-	["edit-event-binds"] = 124181719324437, -- lucide-zap
+	["lucide-tag"]      = 95367077436662,  -- edit-aliases
+	["lucide-keyboard"] = 102097005397654, -- edit-keybinds
+	["lucide-palette"]  = 105784737972091, -- edit-theme
+	["lucide-map-pin"]  = 132787420207871, -- edit-waypoints
+	["lucide-puzzle"]   = 139412930697283, -- manage-plugins
+	["lucide-zap"]      = 124181719324437, -- edit-event-binds
 	
 	["imgstudiopluginlogo"] = 4113050383,
 	["pin"]                 = 6234691350,

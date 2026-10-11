@@ -575,7 +575,7 @@ return s end
 
 return i end a.k=function()local c=a.cache.k if not c then c={c=b()}a.cache.k=c end return c.c end end do local b=function()
 return a.k().new"storage/settings"end a.l=function()local c=a.cache.l if not c then c={c=b()}a.cache.l=c end return c.c end end do local b=function()
-return"v0.2.0"end a.m=function()local c=a.cache.m if not c then c={c=b()}a.cache.m=c end return c.c end end do local b=function()
+return"v0.2.1"end a.m=function()local c=a.cache.m if not c then c={c=b()}a.cache.m=c end return c.c end end do local b=function()
 return{
 owner="tlredz",
 repository="iy-remake"
@@ -10936,39 +10936,53 @@ ab:notify("F3X",`failed to load: {tostring(ae)}`)
 end
 end
 }
-}end a.b1=function()local ab=a.cache.b1 if not ab then ab={c=aa()}a.cache.b1=ab end return ab.c end end do local aa=function()
+}end a.b1=function()local ab=a.cache.b1 if not ab then ab={c=aa()}a.cache.b1=ab end return ab.c end end do local aa=function()local aa=function(
 
 
+
+
+
+
+aa, ab)
+local ac={}
+
+for ad in aa do
+ac[ad:lower()]=true
+end
+
+if not ac[ab:lower()]then
+return ab
+end
+
+local ad=1
+while ac[ab:lower()..ad]do
+ad=ad+1
+end
+
+return ab..ad end local ab=function(
+
+
+
+ab, ac)
+local ad=ab.storage.waypoints
+local ae=ad:register(tostring(game.PlaceId),{})
+
+local af=aa(ae,ac.Name)
+ae[af]=ab:stringify(ac.Position)
+ad:save()
+
+return af end
 
 
 return{
 {
 action="partname|partpath",
-description="Allows you to click a part to see its path & name",
-run=function(aa)
-local ab=aa:collectGarbage"partname"
-local ac=ab~=nil and ab.connection~=nil and ab.connection.Connected
-
-if ab and ab.connection then
-ab.connection:Disconnect()
-end
-
-if ac then
-aa:notify("Partname","disabled")
-return
-end
-
-local ad=aa.playerService:getMouse()
-local ae=aa:createGarbage"partname"
-
-ae.connection=aa:connect(ad.Button1Down,function()
-local af=ad.Target
-if not af then return end
-
-aa:notify(af.Name,af:GetFullName())
+description="Opens a window: click a part to see its path & name, then Select Part saves it as a waypoint",
+run=function(ac)
+ac.infiniteYield:openPartPath(function(ad)
+local ae=ab(ac,ad)
+ac:notify("Modified Waypoints","Created waypoint: "..ae)
 end)
-
-aa:notify("Partname","click a part to see its path")
 end
 }
 }end a.b2=function()local ab=a.cache.b2 if not ab then ab={c=aa()}a.cache.b2=ab end return ab.c end end do local aa=function()local aa=function(
@@ -14024,8 +14038,8 @@ end
 ad:addObject(ae,af)end
 
 
-return a.ct()end a.cF=function()local ab=a.cache.cF if not ab then ab={c=aa()}a.cache.cF=ab end return ab.c end end do local aa=function()return{logo=104371861083126,close=83276213460768,minimize=76683704146139,prefix=138735373900955,["keep-menu-open"]=85638424763987,["keep-interface"]=127184558868486,["edit-aliases"]=95367077436662,["edit-keybinds"]=102097005397654,["edit-theme"]=105784737972091,["edit-waypoints"]=132787420207871,["manage-plugins"]=139412930697283,
-["edit-event-binds"]=124181719324437,imgstudiopluginlogo=
+return a.ct()end a.cF=function()local ab=a.cache.cF if not ab then ab={c=aa()}a.cache.cF=ab end return ab.c end end do local aa=function()return{logo=104371861083126,close=83276213460768,minimize=76683704146139,["lucide-terminal"]=138735373900955,["lucide-pin"]=85638424763987,["lucide-refresh-cw"]=127184558868486,["lucide-tag"]=95367077436662,["lucide-keyboard"]=102097005397654,["lucide-palette"]=105784737972091,["lucide-map-pin"]=132787420207871,["lucide-puzzle"]=139412930697283,
+["lucide-zap"]=124181719324437,imgstudiopluginlogo=
 
 4113050383,pin=
 6234691350,reference=
@@ -19404,20 +19418,20 @@ sections={
 {
 title="#general",
 options={
-{kind="prefix",label="Prefix",icon="prefix",value=";"},
-{kind="switch",label="Keep Menu Open",icon="keep-menu-open",setting="keepMenuOpen"},
-{kind="switch",label="Keep Interface",icon="keep-interface",setting="keepIY"},
+{kind="prefix",label="Prefix",icon="lucide-terminal",value=";"},
+{kind="switch",label="Keep Menu Open",icon="lucide-pin",setting="keepMenuOpen"},
+{kind="switch",label="Keep Interface",icon="lucide-refresh-cw",setting="keepIY"},
 },
 },
 {
 title="#editors",
 options={
-{kind="button",label="Edit Theme",icon="edit-theme",action="theme"},
-{kind="button",label="Edit Keybinds",icon="edit-keybinds",action="keybinds"},
-{kind="button",label="Edit Aliases",icon="edit-aliases",action="aliases"},
-{kind="button",label="Edit/Goto Waypoints",icon="edit-waypoints",action="waypoints"},
-{kind="button",label="Manage Plugins",icon="manage-plugins",action="plugins"},
-{kind="button",label="Edit Event Binds",icon="edit-event-binds",action="eventBinds"},
+{kind="button",label="Edit Theme",icon="lucide-palette",action="theme"},
+{kind="button",label="Edit Keybinds",icon="lucide-keyboard",action="keybinds"},
+{kind="button",label="Edit Aliases",icon="lucide-tag",action="aliases"},
+{kind="button",label="Edit/Goto Waypoints",icon="lucide-map-pin",action="waypoints"},
+{kind="button",label="Manage Plugins",icon="lucide-puzzle",action="plugins"},
+{kind="button",label="Edit Event Binds",icon="lucide-zap",action="eventBinds"},
 },
 },
 },
@@ -19794,6 +19808,463 @@ return an end a.da=function()local ab=a.cache.da if not ab then ab={c=aa()}a.cac
 
 
 
+local aa={
+["and"]=true,["break"]=true,["do"]=true,["else"]=true,["elseif"]=true,
+["end"]=true,["false"]=true,["for"]=true,["function"]=true,["if"]=true,
+["in"]=true,["local"]=true,["nil"]=true,["not"]=true,["or"]=true,
+["repeat"]=true,["return"]=true,["then"]=true,["true"]=true,
+["until"]=true,["while"]=true,
+}local ab=function(
+
+ab)
+local ac=ab:gsub("\\","\\\\"):gsub('"','\\"'):gsub("\n","\\n")
+return ac end local ac=function(
+
+
+ac)
+if string.match(ac,"^[%a_][%w_]*$")and not aa[ac]then
+return"."..ac
+end
+
+return'["'..ab(ac)..'"]'end local ad=function(
+
+
+
+ad)
+local ae=pcall(game.GetService,game,ad.ClassName)
+
+if ae then
+return`game:GetService("{ad.ClassName}")`
+end
+
+return"game"..ac(ad.Name)end local ae=function(
+
+
+ae)
+if not ae then
+return""
+end
+
+
+local af={}
+local ag=ae
+
+while ag and ag~=game do
+table.insert(af,1,ag)
+ag=ag.Parent
+end
+
+
+if ag~=game then
+return ae:GetFullName()
+end
+
+if#af==0 then
+return"game"
+end
+
+local ah=ad(af[1])
+
+for ai=2,#af do
+ah=ah..ac(af[ai].Name)
+end
+
+return ah end
+
+
+return ae end a.db=function()local ab=a.cache.db if not ab then ab={c=aa()}a.cache.db=ab end return ab.c end end do local aa=function()
+
+
+
+
+
+
+
+local aa=a.cF()
+local ab=a.cH()
+local ac=a.cE()
+local ad=a.cL()
+local ae=a.c2()
+local af=a.bO()
+
+local ag=a.bi()
+local ah=a.af()
+local ai=a.a()
+
+local aj=a.db()
+
+local ak=360
+local al=20
+local am=146
+local an=al+am
+
+local ao=95
+local b=26
+local c=64
+local d=98
+local e=40
+
+local f=0.5
+local g=1.5
+
+local h=Color3.fromRGB(255,255,255)
+local i=Color3.fromRGB(0,166,0)
+
+local j=UDim2.new(0.5,-ak/2,0.5,-an/2)
+local k=UDim2.new(0.5,-ak/2,0,-500)
+
+local l={
+title="Teleport to Part",
+directions='Click on a part and then click the "Select Part" button below to set it as a teleport location',
+selectPart="Select Part",
+copyPath="Copy Path",
+copied="Copied",
+noPart="Select a part first",
+noPath="Select a part to copy its path",
+noClipboard="Your exploit does not support copying",
+}
+
+local m={}
+m.__index=m
+
+m.new=function()
+return setmetatable({
+frame=nil,
+hoverBox=nil,
+selectedBox=nil,
+pathLabel=nil,
+copyButton=nil,
+
+isOpen=false,
+selectedPart=nil,
+onSelectPart=nil,
+connections={},
+},m)end local n=function(
+
+
+n, o, p, q)
+local r=aa.new("TextButton",n,q,{
+AutoButtonColor=false,
+BorderSizePixel=0,
+Position=UDim2.fromOffset(p,c),
+Size=UDim2.fromOffset(ao,b),
+Text=o,
+TextSize=14,
+ThemeTag={
+BackgroundColor3="Colors.Buttons.Default",
+Font="Font.Normal",
+TextColor3="Colors.Text.Default",
+},
+
+aa.new("UICorner",{
+CornerRadius=UDim.new(0,4),
+}),
+})
+
+ag:Connect(r.MouseEnter,function()
+ac:updateObjectProperties(r,{
+BackgroundColor3="Colors.Buttons.Holding",
+})
+end)
+
+ag:Connect(r.MouseLeave,function()
+ac:updateObjectProperties(r,{
+BackgroundColor3="Colors.Buttons.Default",
+})
+end)
+
+return r end
+
+
+
+m.create=function(o)
+if o.frame then
+return o.frame
+end
+
+local p=aa.new("Frame","PartPath",{
+Active=true,
+BorderSizePixel=0,
+Position=k,
+Size=UDim2.fromOffset(ak,an),
+Visible=false,
+ThemeTag={
+BackgroundColor3="Colors.Background",
+},
+})
+
+local q=aa.new("Frame","TopBar",p,{
+BorderSizePixel=0,
+Size=UDim2.new(1,0,0,al),
+ThemeTag={
+BackgroundColor3="Colors.Background",
+},
+})
+
+aa.new("TextLabel","Title",q,{
+BackgroundTransparency=1,
+Size=UDim2.fromScale(1,1),
+Text=l.title,
+TextSize=16,
+ThemeTag={
+Font="Font.Normal",
+TextColor3="Colors.Text.Default",
+},
+})
+
+local r=aa.new("TextButton","Exit",q,{
+BackgroundTransparency=1,
+Position=UDim2.new(1,-al,0,0),
+Size=UDim2.fromOffset(al,al),
+Text="",
+})
+
+local s=aa.new("ImageLabel","Icon",r,{
+BackgroundTransparency=1,
+Position=UDim2.fromOffset(5,5),
+Size=UDim2.fromOffset(10,10),
+ThemeTag={
+ImageColor3="Colors.Icons",
+},
+})
+
+ab:loadImage(s,"close")
+
+local t=aa.new("Frame","Body",p,{
+BackgroundTransparency=1,
+Position=UDim2.fromOffset(0,al),
+Size=UDim2.new(1,0,0,am),
+})
+
+aa.new("TextLabel","Directions",t,{
+BackgroundTransparency=1,
+Position=UDim2.fromOffset(20,8),
+Size=UDim2.new(1,-40,0,48),
+Text=l.directions,
+TextSize=14,
+TextWrapped=true,
+TextYAlignment=Enum.TextYAlignment.Top,
+ThemeTag={
+Font="Font.Normal",
+TextColor3="Colors.Text.Default",
+},
+})
+
+
+local u=n("SelectPart",l.selectPart,ak/2-ao-5,t)
+local v=n("CopyPath",l.copyPath,ak/2+5,t)
+
+
+local w=aa.new("TextLabel","Path",t,{
+BackgroundTransparency=1,
+Position=UDim2.fromOffset(10,d),
+Size=UDim2.new(1,-20,0,e),
+Text="",
+TextScaled=true,
+TextWrapped=true,
+TextYAlignment=Enum.TextYAlignment.Top,
+ThemeTag={
+Font="Font.MonoSpace",
+TextColor3="Colors.Text.Default",
+},
+
+aa.new("UITextSizeConstraint",{
+MaxTextSize=14,
+MinTextSize=9,
+}),
+})
+
+
+local x=aa.new("SelectionBox","Hover",af,{
+Color3=h,
+})
+
+local y=aa.new("SelectionBox","Selected",af,{
+Color3=i,
+})
+
+ag:Connect(r.Activated,function()
+o:close()
+end)
+
+ag:Connect(u.Activated,function()
+o:confirmSelection()
+end)
+
+ag:Connect(v.Activated,function()
+o:copyPath()
+end)
+
+ae:addGuiObject(p)
+
+o.frame=p
+o.hoverBox=x
+o.selectedBox=y
+o.pathLabel=w
+o.copyButton=v
+
+return p end
+
+
+
+m.open=function(o, p)
+o:create()
+o.onSelectPart=p
+
+if o.isOpen then
+return
+end
+
+o.isOpen=true
+o.frame.Visible=true
+o.frame:TweenPosition(j,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,f,true)
+
+o:startSelecting()end
+
+
+
+m.close=function(o)
+if not o.isOpen then
+return
+end
+
+o.isOpen=false
+o:disconnectMouse()
+o:clearSelection()
+
+o.frame:TweenPosition(k,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,f,true)
+
+task.delay(f,function()
+
+if not o.isOpen and o.frame then
+o.frame.Visible=false
+end
+end)end
+
+
+m.isPointerOverWindow=function(o)
+return o.frame~=nil and ah:isMouseInGuiObject(o.frame)end
+
+
+m.startSelecting=function(o)
+o:disconnectMouse()
+
+local p=ah:getMouse()
+
+table.insert(o.connections,p.Move:Connect(function()
+local q=p.Target
+
+
+if o:isPointerOverWindow()or q==o.selectedPart then
+q=nil
+end
+
+o.hoverBox.Adornee=q
+end))
+
+table.insert(o.connections,p.Button1Down:Connect(function()
+if o:isPointerOverWindow()then
+return
+end
+
+local q=p.Target
+if q then
+o:selectPart(q)
+end
+end))end
+
+
+m.disconnectMouse=function(o)
+for p,q in o.connections do
+q:Disconnect()
+end
+
+o.connections={}end
+
+
+m.selectPart=function(o, p)
+o.selectedPart=p
+o.selectedBox.Adornee=p
+o.hoverBox.Adornee=nil
+o.pathLabel.Text=aj(p)end
+
+
+m.clearSelection=function(o)
+o.selectedPart=nil
+o.hoverBox.Adornee=nil
+o.selectedBox.Adornee=nil
+o.pathLabel.Text=""end
+
+
+
+m.confirmSelection=function(o)
+local p=o.selectedPart
+
+if not p or not p.Parent then
+o:clearSelection()
+ad:notify("Part Selection",l.noPart)
+return
+end
+
+if o.onSelectPart then
+o.onSelectPart(p)
+end end
+
+
+m.copyPath=function(o)
+local p=o.pathLabel.Text
+
+if p==""then
+ad:notify(l.copyPath,l.noPath)
+return
+end
+
+if not ai.setclipboard then
+ad:notify(l.copyPath,l.noClipboard)
+return
+end
+
+ai.setclipboard(p)
+
+local q=o.copyButton
+q.Text=l.copied
+
+task.delay(g,function()
+q.Text=l.copyPath
+end)end
+
+
+m.destroy=function(o)
+o.isOpen=false
+o:disconnectMouse()
+
+if o.hoverBox then
+o.hoverBox:Destroy()
+end
+
+if o.selectedBox then
+o.selectedBox:Destroy()
+end
+
+if o.frame then
+o.frame:Destroy()
+end
+
+o.frame=nil
+o.hoverBox=nil
+o.selectedBox=nil
+o.pathLabel=nil
+o.copyButton=nil end
+
+
+return m end a.dc=function()local ab=a.cache.dc if not ab then ab={c=aa()}a.cache.dc=ab end return ab.c end end do local aa=function()
+
+
+
+
+
+
+
 
 
 
@@ -20086,7 +20557,7 @@ end
 table.clear(am.connections)end
 
 
-return ak end a.db=function()local ab=a.cache.db if not ab then ab={c=aa()}a.cache.db=ab end return ab.c end end do local aa=function()
+return ak end a.dd=function()local ab=a.cache.dd if not ab then ab={c=aa()}a.cache.dd=ab end return ab.c end end do local aa=function()
 
 
 
@@ -20120,232 +20591,234 @@ local h=a.c4()
 local i=a.c6()
 local j=a.c8()
 local k=a.da()
+local l=a.dc()
 
-local l=a.c2()
-local m=a.db()
+local m=a.c2()
+local n=a.dd()
 
-local n=450
-local o=c.uiScale
+local o=450
+local p=c.uiScale
 
-local p={
+local q={
 awoken=false,
-}local q=function(
+}local r=function(
 
-q)
-local r=type(q)=="string"and am[q:lower()]
+r)
+local s=type(r)=="string"and am[r:lower()]
 
-if r and r.Colors and r.Font then
-return q
+if s and s.Colors and s.Font then
+return r
 end
 
-return aa.theme.defaultTheme end local r=function(
+return aa.theme.defaultTheme end local s=function(
 
 
-r, s, t, u)
-local v=(r.Scale*t)/u+r.Offset
-local w=math.floor(t/u-s)
+s, t, u, v)
+local w=(s.Scale*u)/v+s.Offset
+local x=math.floor(u/v-t)
 
-if math.floor(v)>=w then
-return 1,-s
+if math.floor(w)>=x then
+return 1,-t
 end
 
-return 0,math.clamp(math.floor(v),0,math.max(w,0))end
+return 0,math.clamp(math.floor(w),0,math.max(x,0))end
 
 
-p.awake=function(s)
-if s.awoken then
-return s.screenGui
+q.awake=function(t)
+if t.awoken then
+return t.screenGui
 end
 
-s.awoken=true
+t.awoken=true
 
-s:setupTheme()
-s:setupScreenGui()
-s:setupScale()
-s:setupMainFrame()
-s:createQuickCapture()
-s:createReference()
-s:createNotifications()
-s:setupListeners()
-s:updateNotificationsPosition()
+t:setupTheme()
+t:setupScreenGui()
+t:setupScale()
+t:setupMainFrame()
+t:createQuickCapture()
+t:createReference()
+t:createPartPath()
+t:createNotifications()
+t:setupListeners()
+t:updateNotificationsPosition()
 
 ah:log"interface started"
-return s.screenGui end
+return t.screenGui end
 
 
-p.setupTheme=function(s)
+q.setupTheme=function(t)
 ah:debug"interface: initializing theme service"
 
 al:init{
-theme=q(aa.theme.selectedTheme),
+theme=r(aa.theme.selectedTheme),
 }end
 
 
-p.setupScreenGui=function(s)
-local t=s:createScreenGui()
+q.setupScreenGui=function(t)
+local u=t:createScreenGui()
 
-t.Parent=an
-ac.screenGui=t
+u.Parent=an
+ac.screenGui=u
 
-o.Parent=t end
-
-
-p.setupScale=function(s)
-s:setScale(ag:getValue"interface.uiScale"or 1)end
+p.Parent=u end
 
 
-p.setupMainFrame=function(s)
-local t=s:createMainFrame()
-
-s:createCommands()
-s:dragMainFrame(t)
-s.commands:enable()
-
-t.Parent=s.screenGui end
+q.setupScale=function(t)
+t:setScale(ag:getValue"interface.uiScale"or 1)end
 
 
-p.setupListeners=function(s)
-ad:Connect(s.screenGui:GetPropertyChangedSignal"AbsoluteSize",function()
-s:updateMainFramePosition()
+q.setupMainFrame=function(t)
+local u=t:createMainFrame()
+
+t:createCommands()
+t:dragMainFrame(u)
+t.commands:enable()
+
+u.Parent=t.screenGui end
+
+
+q.setupListeners=function(t)
+ad:Connect(t.screenGui:GetPropertyChangedSignal"AbsoluteSize",function()
+t:updateMainFramePosition()
 end)
 
-ad:Connect(s.mainFrame:GetPropertyChangedSignal"AbsolutePosition",function()
-s:updateNotificationsPosition()
+ad:Connect(t.mainFrame:GetPropertyChangedSignal"AbsolutePosition",function()
+t:updateNotificationsPosition()
 end)
 
-ad:Connect(s.mainFrame:GetPropertyChangedSignal"AbsoluteSize",function()
-s:updateNotificationsPosition()
+ad:Connect(t.mainFrame:GetPropertyChangedSignal"AbsoluteSize",function()
+t:updateNotificationsPosition()
 end)
 
 ad:Connect(ae.RunService.RenderStepped,function()
-s:updateNotificationsPosition()
+t:updateNotificationsPosition()
 end)end
 
 
-p.createScreenGui=function(s)
-local t=aj.new("ScreenGui",{
+q.createScreenGui=function(t)
+local u=aj.new("ScreenGui",{
 IgnoreGuiInset=true,
 Name=ai.randomString(math.random(30,50)),
 DisplayOrder=2147483647,
 })
 
-s.screenGui=t
-return t end
+t.screenGui=u
+return u end
 
 
-p.calculateScale=function(s, t)
-return(s.screenGui.AbsoluteSize.Y/n)*t end
+q.calculateScale=function(t, u)
+return(t.screenGui.AbsoluteSize.Y/o)*u end
 
 
-p.setScale=function(s, t)
-t=math.abs(t)
+q.setScale=function(t, u)
+u=math.abs(u)
 
-if t>=3 then
-t=s:calculateScale(t)
+if u>=3 then
+u=t:calculateScale(u)
 end
 
-if ag:getValue"interface.uiScale"~=t then
-ag:setValue("interface.uiScale",t)
+if ag:getValue"interface.uiScale"~=u then
+ag:setValue("interface.uiScale",u)
 ag:save()
 end
 
-c:setScale(t)
-s:updateMainFramePosition()end
+c:setScale(u)
+t:updateMainFramePosition()end
 
 
-p.calculateMainFramePosition=function(s, t)
-local u=s.mainFrame
-local v=s.screenGui
-local w=c:getScale()
-local x=u.Size
+q.calculateMainFramePosition=function(t, u)
+local v=t.mainFrame
+local w=t.screenGui
+local x=c:getScale()
+local y=v.Size
 
-t=t or u.Position
+u=u or v.Position
 
-local y,z=r(t.X,x.X.Offset,v.AbsoluteSize.X,w)
-local A,B=r(t.Y,x.Y.Offset,v.AbsoluteSize.Y,w)
+local z,A=s(u.X,y.X.Offset,w.AbsoluteSize.X,x)
+local B,C=s(u.Y,y.Y.Offset,w.AbsoluteSize.Y,x)
 
-return UDim2.new(y,z,A,B)end
+return UDim2.new(z,A,B,C)end
 
 
-p.updateMainFramePosition=function(s)
-if not s.mainFrame then return end
+q.updateMainFramePosition=function(t)
+if not t.mainFrame then return end
 
-if s.dock then
-s.dock:reflow()
+if t.dock then
+t.dock:reflow()
 else
-s.mainFrame.Position=s:calculateMainFramePosition()
+t.mainFrame.Position=t:calculateMainFramePosition()
 end
 
-s:updateNotificationsPosition()end
+t:updateNotificationsPosition()end
 
 
-p.createMainScroll=function(s, t)
-local u=f.new{
+q.createMainScroll=function(t, u)
+local v=f.new{
 isHorizontal=false,
 barThickness=12,
 }
 
-local v=u:create()
-local w=u.container
+local w=v:create()
+local x=v.container
 
-local x=aj.new("Frame","ScrollHolder",t,{
+local y=aj.new("Frame","ScrollHolder",u,{
 Size=UDim2.new(1,0,0,180),
 Position=UDim2.fromScale(0.5,1),
 AnchorPoint=Vector2.new(0.5,1),
 BackgroundTransparency=1,
 Active=true,
 
-v,
 w,
+x,
 })
 
-s.scrollHolder=x
-s.scrollBar=u
-s.scrollContainer=w
+t.scrollHolder=y
+t.scrollBar=v
+t.scrollContainer=x
 
-return u end
+return v end
 
 
-p.createMainFrame=function(s)
-local t=e:create()
-local u=t.mainFrame
+q.createMainFrame=function(t)
+local u=e:create()
+local v=u.mainFrame
 
-t.titleLabel.Text=b.getDisplayName()
+u.titleLabel.Text=b.getDisplayName()
 
-s.mainFrame=u
-s.topBar=t.topBar
-s.buttons=t.buttons
+t.mainFrame=v
+t.topBar=u.topBar
+t.buttons=u.buttons
 
-ak:loadImage(s.buttons.settings,"settings")
-ak:loadImage(s.buttons.reference,"reference")
+ak:loadImage(t.buttons.settings,"settings")
+ak:loadImage(t.buttons.reference,"reference")
 
-s:createMainScroll(u)
+t:createMainScroll(v)
 
-s.settings=k.new{
+t.settings=k.new{
 
-onSwitch=function(v,w)
-if v=="keepMenuOpen"and s.dock then
-s.dock:setKeepOpen(w)
+onSwitch=function(w,x)
+if w=="keepMenuOpen"and t.dock then
+t.dock:setKeepOpen(x)
 end
 end,
 }
-s.settings:create(u,s.scrollHolder)
+t.settings:create(v,t.scrollHolder)
 
-ad:Connect(s.buttons.settings.Activated,function()
-s.settings:toggle()
+ad:Connect(t.buttons.settings.Activated,function()
+t.settings:toggle()
 end)
 
-return u end
+return v end
 
 
-p.createCommands=function(s)
-local t=s.scrollBar
+q.createCommands=function(t)
+local u=t.scrollBar
 
-local u=g.new{
-scrolledSignal=t.scrolledSignal,
-scrollContainer=s.scrollContainer,
-scrollHolder=s.scrollHolder,
-scrollBar=t,
+local v=g.new{
+scrolledSignal=u.scrolledSignal,
+scrollContainer=t.scrollContainer,
+scrollHolder=t.scrollHolder,
+scrollBar=u,
 
 configs={
 placeholderText=aa.ui.commands.placeholderText,
@@ -20356,170 +20829,170 @@ textSize=aa.ui.commands.textSize,
 }
 
 ah:log"created commands interface"
-u:create()
+v:create()
 
 ah:log"initialized commands"
-u:createCommandsData()
+v:createCommandsData()
 
 ah:log"awaked commands module"
-u:awake()
+v:awake()
 
-s.commands=u
+t.commands=v
 
-s.settings:watchCommandBar(u.searchBox)
+t.settings:watchCommandBar(v.searchBox)
 
 if af then
-ad:Connect(u.searchBox.Focused,function()
-s.commandBarUsedAt=os.clock()
+ad:Connect(v.searchBox.Focused,function()
+t.commandBarUsedAt=os.clock()
 end)
 
-ad:Connect(u.searchBox.FocusLost,function()
-s.commandBarUsedAt=os.clock()
+ad:Connect(v.searchBox.FocusLost,function()
+t.commandBarUsedAt=os.clock()
 end)
 end
 
-return u end
+return v end
 
 
-p.createInfoMenu=function(s)
+q.createInfoMenu=function(t)
 return i:create()end
 
 
-p.chatLogs=function(s, t)
-return j:open(t or"chat")end
+q.chatLogs=function(t, u)
+return j:open(u or"chat")end
 
 
-p.dragMainFrame=function(s, t)
-t.Size=aa.ui.window.windowSize
+q.dragMainFrame=function(t, u)
+u.Size=aa.ui.window.windowSize
 
-t.Position=UDim2.fromOffset(1e5,1e5)
-t.Position=s:calculateMainFramePosition()
+u.Position=UDim2.fromOffset(1e5,1e5)
+u.Position=t:calculateMainFramePosition()
 
-s.dock=m.new{
-frame=t,
-screenGui=s.screenGui,
-topBarHeight=s.topBar.Size.Y.Offset,
+t.dock=n.new{
+frame=u,
+screenGui=t.screenGui,
+topBarHeight=t.topBar.Size.Y.Offset,
 keepOpen=k.isKeepMenuOpen(),
-clampPosition=function(u)
-return s:calculateMainFramePosition(u)
+clampPosition=function(v)
+return t:calculateMainFramePosition(v)
 end,
 getScale=function()
 return c:getScale()
 end,
 commandBarInUse=function()
-return s:isCommandBarInUse()
+return t:isCommandBarInUse()
 end,
 onMinimize=function()
-s:releaseCommandFocus()
+t:releaseCommandFocus()
 
 
-if s.hidden then
-s:hideWindow()
+if t.hidden then
+t:hideWindow()
 end
 end,
 }
 
-l:addGuiObject(t)
+m:addGuiObject(u)
 
-l:setFilter(t,function(u)
-return s.dock:clampDrag(u)
+m:setFilter(u,function(v)
+return t.dock:clampDrag(v)
 end)
 
-l.dragStarted:Connect(function(u)
-if u~=t then return end
+m.dragStarted:Connect(function(v)
+if v~=u then return end
 
-s.dock:cancel()
-s.scrollBar:disableScroll()
+t.dock:cancel()
+t.scrollBar:disableScroll()
 end)
 
-l.dragEnded:Connect(function(u,v)
-if u~=t then return end
+m.dragEnded:Connect(function(v,w)
+if v~=u then return end
 
-s.scrollBar:enableScroll()
-s.dock:onDragEnded(v)
+t.scrollBar:enableScroll()
+t.dock:onDragEnded(w)
 end)end
 
 
 
-local s=0.3
+local t=0.3
 
-p.isCommandBarInUse=function(t)
-local u=t.commands and t.commands.searchBox
-if u and u:IsFocused()then
+q.isCommandBarInUse=function(u)
+local v=u.commands and u.commands.searchBox
+if v and v:IsFocused()then
 return true
 end
 
-return os.clock()-(t.commandBarUsedAt or 0)<s end
+return os.clock()-(u.commandBarUsedAt or 0)<t end
 
 
-p.releaseCommandFocus=function(t)
-local u=t.commands and t.commands.searchBox
+q.releaseCommandFocus=function(u)
+local v=u.commands and u.commands.searchBox
 
-if u and u:IsFocused()then
-u:ReleaseFocus()
+if v and v:IsFocused()then
+v:ReleaseFocus()
 end end
 
 
 
-p.showWindow=function(t)
-t.hidden=false
-t:revealWindow()end
+q.showWindow=function(u)
+u.hidden=false
+u:revealWindow()end
 
 
 
 
-p.revealWindow=function(t)
-if not t.mainFrame then return end
+q.revealWindow=function(u)
+if not u.mainFrame then return end
 
-t.mainFrame.Visible=true
-if t.dock then
-t.dock:reveal()
+u.mainFrame.Visible=true
+if u.dock then
+u.dock:reveal()
 end end
 
 
 
-p.hideWindow=function(t)
-if not t.mainFrame then return end
+q.hideWindow=function(u)
+if not u.mainFrame then return end
 
-t.hidden=true
-t.mainFrame.Visible=false
+u.hidden=true
+u.mainFrame.Visible=false
 
-if t.dock then
-t.dock:sleep()
+if u.dock then
+u.dock:sleep()
 end
 
-t:releaseCommandFocus()end
+u:releaseCommandFocus()end
 
 
-p.showCommandBar=function(t)
-local u=t.commands and t.commands.searchBox
-if not u then return end
+q.showCommandBar=function(u)
+local v=u.commands and u.commands.searchBox
+if not v then return end
 
-t:revealWindow()
+u:revealWindow()
 
-t.dock:onSettled(function()
-if t.dock.state=="minimized"then return end
+u.dock:onSettled(function()
+if u.dock.state=="minimized"then return end
 
-if u:IsFocused()then
-u:ReleaseFocus()
+if v:IsFocused()then
+v:ReleaseFocus()
 end
-u:CaptureFocus()
+v:CaptureFocus()
 end)end
 
 
 
-p.setKeepIY=function(t, u)
-k.setKeepIY(u)
+q.setKeepIY=function(u, v)
+k.setKeepIY(v)
 
-if t.settings then
-t.settings:refresh()
+if u.settings then
+u.settings:refresh()
 end end
 
 
-p.createQuickCapture=function(t)
+q.createQuickCapture=function(u)
 if not af then return end
 
-local u=aj.new("TextButton",ai.randomString(math.random(30,50)),t.screenGui,{
+local v=aj.new("TextButton",ai.randomString(math.random(30,50)),u.screenGui,{
 BackgroundTransparency=0.14,
 Position=UDim2.fromScale(0.5,0.05),
 AnchorPoint=Vector2.new(0.5,0.5),
@@ -20537,91 +21010,114 @@ CornerRadius=UDim.new(0.5,0)
 }),
 })
 
-t.dock:addWindowPart(u)
-l:addGuiObject(u)
+u.dock:addWindowPart(v)
+m:addGuiObject(v)
 
-ad:Connect(u.Activated,function()
-t:showCommandBar()
+ad:Connect(v.Activated,function()
+u:showCommandBar()
 end)
 
-t.quickCapture=u
-return u end
+u.quickCapture=v
+return v end
 
 
-p.createReference=function(t)
-local u=h.new()
-local v=u:create()
+q.createReference=function(u)
+local v=h.new()
+local w=v:create()
 
-ak:loadImage(u.closeIcon,"close")
+ak:loadImage(v.closeIcon,"close")
 
-v.Parent=t.screenGui
-t.reference=u
+w.Parent=u.screenGui
+u.reference=v
 
-ad:Connect(t.buttons.reference.Activated,function()
-u:open()
+ad:Connect(u.buttons.reference.Activated,function()
+v:open()
 end)
 
-return u end
+return v end
 
 
-p.createNotifications=function(t)
-local u=ao:getContainer(t.screenGui)
-t.notificationsContainer=u
+q.createPartPath=function(u)
+local v=l.new()
+local w=v:create()
+
+w.Parent=u.screenGui
+u.partPathWindow=v
+
+return v end
+
+
+
+
+q.openPartPath=function(u, v)
+if not u.partPathWindow then return end
+
+u.partPathWindow:open(v)end
+
+
+q.createNotifications=function(u)
+local v=ao:getContainer(u.screenGui)
+u.notificationsContainer=v
 
 ao.onLayoutChanged=function()
-t:updateNotificationsPosition()
+u:updateNotificationsPosition()
 end
 
-t:updateNotificationsPosition()
-return u end
+u:updateNotificationsPosition()
+return v end
 
 
-p.updateNotificationsPosition=function(t)
-local u=t.notificationsContainer
-local v=t.mainFrame
-local w=t.screenGui
-if not(u and v and w)then return end
+q.updateNotificationsPosition=function(u)
+local v=u.notificationsContainer
+local w=u.mainFrame
+local x=u.screenGui
+if not(v and w and x)then return end
 
-local x=c:getScale()
-local y=v.AbsolutePosition/x
-local z=v.AbsoluteSize/x
-local A=w.AbsoluteSize/x
+local y=c:getScale()
+local z=w.AbsolutePosition/y
+local A=w.AbsoluteSize/y
+local B=x.AbsoluteSize/y
 
-local B=d.compute({
-left=y.X,
-top=y.Y,
-right=y.X+z.X,
-bottom=y.Y+z.Y,
+local C=d.compute({
+left=z.X,
+top=z.Y,
+right=z.X+A.X,
+bottom=z.Y+A.Y,
 },{
-width=A.X,
-height=A.Y,
+width=B.X,
+height=B.Y,
 },{
-width=u.Size.X.Offset,
+width=v.Size.X.Offset,
 height=ao:getStackHeight(),
 },ab.gapToWindow)
 
-u.AnchorPoint=Vector2.new(B.anchorX,0)
-u.Position=UDim2.fromOffset(B.x,B.y)end
+v.AnchorPoint=Vector2.new(C.anchorX,0)
+v.Position=UDim2.fromOffset(C.x,C.y)end
 
 
-p.destroy=function(t)
+q.destroy=function(u)
 ao:destroy()
-if t.dock then
-t.dock:destroy()
-t.dock=nil
+if u.dock then
+u.dock:destroy()
+u.dock=nil
 end
 
 j:reset()
 
-if t.screenGui then
-t.screenGui:Destroy()
+if u.partPathWindow then
+u.partPathWindow:destroy()
+u.partPathWindow=nil
 end
 
-t.screenGui=nil
-t.awoken=false end
+if u.screenGui then
+u.screenGui:Destroy()
+end
+
+u.screenGui=nil
+u.awoken=false end
 
 
-return p end a.dc=function()local ab=a.cache.dc if not ab then ab={c=aa()}a.cache.dc=ab end return ab.c end end do local aa=function()a.e()
+return q end a.de=function()local ab=a.cache.de if not ab then ab={c=aa()}a.cache.de=ab end return ab.c end end do local aa=function()a.e()
 
 
 :init()
@@ -20633,7 +21129,7 @@ local ad=a.cu()
 
 
 
-local ae=a.dc()
+local ae=a.de()
 
 local af={}
 
@@ -20652,7 +21148,7 @@ ab.start()
 ae:awake()end
 
 
-return af end a.dd=function()local ab=a.cache.dd if not ab then ab={c=aa()}a.cache.dd=ab end return ab.c end end end
+return af end a.df=function()local ab=a.cache.df if not ab then ab={c=aa()}a.cache.df=ab end return ab.c end end end
 
 
 
@@ -20667,4 +21163,4 @@ return af end a.dd=function()local ab=a.cache.dd if not ab then ab={c=aa()}a.cac
 
 
 
-return a.dd():boot()
+return a.df():boot()

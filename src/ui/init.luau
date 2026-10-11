@@ -30,6 +30,7 @@ local referenceComponent = require("./components/reference")
 local serverInfoComponent = require("./components/serverinfo")
 local chatLogsComponent = require("./components/chatlogs")
 local settingsComponent = require("./components/settings")
+local partPathComponent = require("./components/partpath")
 
 local dragInstance = require("./utils/dragInstance")
 local mainFrameDock = require("./utils/mainFrameDock")
@@ -75,6 +76,7 @@ function interface:awake()
 	self:setupMainFrame()
 	self:createQuickCapture()
 	self:createReference()
+	self:createPartPath()
 	self:createNotifications()
 	self:setupListeners()
 	self:updateNotificationsPosition()
@@ -474,6 +476,24 @@ function interface:createReference()
 	return reference
 end
 
+function interface:createPartPath()
+	local partPathWindow = partPathComponent.new()
+	local frame = partPathWindow:create()
+
+	frame.Parent = self.screenGui
+	self.partPathWindow = partPathWindow
+
+	return partPathWindow
+end
+
+-- the partpath command calls this: shows the part window and starts selecting parts.
+-- onSelectPart(part) runs when "Select Part" is pressed with a part chosen
+function interface:openPartPath(onSelectPart)
+	if not self.partPathWindow then return end
+
+	self.partPathWindow:open(onSelectPart)
+end
+
 function interface:createNotifications()
 	local container = notifier:getContainer(self.screenGui)
 	self.notificationsContainer = container
@@ -522,6 +542,11 @@ function interface:destroy()
 	end
 
 	chatLogsComponent:reset()
+
+	if self.partPathWindow then
+		self.partPathWindow:destroy()
+		self.partPathWindow = nil
+	end
 
 	if self.screenGui then
 		self.screenGui:Destroy()
