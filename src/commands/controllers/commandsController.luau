@@ -30,8 +30,6 @@ function commandsController:registerGarbage(name: string): { [any]: any }
 	return self:getGarbage(name) or self:createGarbage(name)
 end
 
--- Never returns nil: when the garbage already exists, that one is returned, so a command that
--- forgets its "already enabled" guard reuses the old state instead of breaking.
 function commandsController:createGarbage(name: string): { [any]: any }
 	local garbage = self.garbages[name]
 	if garbage == nil then
@@ -42,7 +40,6 @@ function commandsController:createGarbage(name: string): { [any]: any }
 	return garbage
 end
 
--- Command data by any alias (case-insensitive), or nil when the command does not exist
 function commandsController:getCommandData(name: string)
 	return commandsList.lookup[name:lower()]
 end
@@ -230,6 +227,11 @@ function commandsController:init(config)
 	
 	self.getRootPart = self.getRoot
 	self.Connect = self.connect
+	
+	-- platform
+	local isMobile = require("../../framework/environment/isMobile")
+	self.isMobile = isMobile
+	self.isPC = not isMobile
 	
 	-- variables
 	self.localPlayer = require("../../framework/services/localPlayer")

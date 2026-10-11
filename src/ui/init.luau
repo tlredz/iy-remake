@@ -433,7 +433,7 @@ function interface:createQuickCapture()
 	
 	local quickCapture = createService.new("TextButton", tools.randomString(math.random(30, 50)), self.screenGui, {
 		BackgroundTransparency = 0.14,
-		Position = UDim2.fromScale(0.5, 0.05),
+		Position = UDim2.fromScale(0.5, 0.15),
 		AnchorPoint = Vector2.new(0.5, 0.5),
 		Size = UDim2.new(0, 25, 0, 25),
 		Font = Enum.Font.SourceSansBold,

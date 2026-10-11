@@ -14,6 +14,33 @@ return {
 		end
 	},
 	{
+		action = "emotemenu|7yd7",
+		description = "Opens animations/emotes menu By 7yd7",
+		args = {
+			{
+				kind = "keycode",
+				optional = true
+			},
+			{
+				kind = "boolean",
+				name = "notify",
+				optional = true
+			}
+		},
+		run = function(self, args)
+			local notify = self.fetchService.load("backups/emotes/notify.luau", "iy/7yd7/notify.luau")()
+			
+			local keycode = args:nextValue()
+			local notifyEnabled = args:nextValue()
+			
+			self.fetchService.load("backups/emotes/main.luau", "iy/7yd7/emotes.luau")({
+				notifyFunction = if notifyEnabled ~= false then notify else function()end,
+				isMobile = self.isMobile,
+				keycode = keycode,
+			})
+		end
+	},
+	{
 		action = "cobalt|cspy",
 		description = "Opens Cobalt to intercept incoming and outgoing network traffic",
 		run = function(self)
