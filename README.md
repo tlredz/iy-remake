@@ -22,8 +22,8 @@
 - **Infinite Yield** is a feature-rich admin command panel designed for Roblox games.
 - **Infinite Yield RV** is a completely rewritten remake focused on modern practices.
 
-- 🔹 **Original Project:** Created by **edges**
-- 🔹 **Remake Version:** Developed by **real_redz** (Redz Hub Team)
+- 🔹 **Original Project:** Created by [EdgeIY](https://github.com/EdgeIY)
+- 🔹 **Remake Version:** Developed by [tlredz](https://github.com/tlredz) (Redz Hub Team)
 - 🔹 **Key Features:** Open-Source, Lightweight, and Optimized  
 
 ---
