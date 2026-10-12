@@ -303,14 +303,6 @@ function reference:create()
 	connectionService:Connect(content:GetPropertyChangedSignal("AbsoluteSize"), refreshScroll)
 	connectionService:Connect(container:GetPropertyChangedSignal("AbsoluteSize"), refreshScroll)
 
-	connectionService:Connect(container.MouseWheelForward, function()
-		scrollBar:scrollTo(scrollBar.index - scrollBar.wheelIncrement)
-	end)
-
-	connectionService:Connect(container.MouseWheelBackward, function()
-		scrollBar:scrollTo(scrollBar.index + scrollBar.wheelIncrement)
-	end)
-
 	connectionService:Connect(closeButton.Activated, function()
 		self:close()
 	end)

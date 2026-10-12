@@ -4,7 +4,8 @@
 --
 -- On a computer the keyboard moves and the mouse turns. On a phone or tablet (isMobile)
 -- the Roblox thumbstick moves, the same way it flies the character. Buttons on screen go up and down,
--- BOOST (held) makes it faster, a close button turns it off, and dragging on the right half of the screen turns the
+-- BOOST (held) makes it faster, the X button turns it off, TP turns it off and moves the character to the camera, and
+-- dragging on the right half of the screen turns the
 -- camera. A finger on the left half only moves the thumbstick. The character is anchored meanwhile, so it does not walk away, and the Roblox jump
 -- button is hidden, since jumping does nothing then.
 
@@ -217,6 +218,26 @@ local function createControls(self, garbage)
 		freecam.stop(self)
 	end))
 
+	-- TP turns freecam off and puts the character where the camera is (freecam.teleport)
+	local teleport = make("TextButton", gui, {
+		Name = "Teleport",
+		AnchorPoint = Vector2.new(1, 0),
+		Position = UDim2.new(1, -EDGE_OFFSET - BUTTON_SIZE - 12, 0, EDGE_OFFSET),
+		Size = UDim2.fromOffset(BUTTON_SIZE, BUTTON_SIZE),
+		BackgroundColor3 = Color3.new(0, 0, 0),
+		BackgroundTransparency = 0.5,
+		AutoButtonColor = false,
+		Text = "TP",
+		TextColor3 = Color3.new(1, 1, 1),
+		TextScaled = true,
+		Active = true,
+	})
+
+	table.insert(garbage.controls, teleport)
+	table.insert(garbage.connections, self:connect(teleport.Activated, function()
+		freecam.teleport(self)
+	end))
+
 	-- Lifting a finger lets go of whatever it was holding
 	table.insert(garbage.connections, self:connect(UserInputService.InputEnded, function(input)
 		for name, touch in garbage.holds do
@@ -347,6 +368,23 @@ function freecam.stop(self): boolean
 
 	UserInputService.MouseBehavior = garbage.mouseBehavior
 	UserInputService.MouseIconEnabled = garbage.mouseIconEnabled
+
+	return true
+end
+
+-- Turns freecam off and puts the character where the camera is, facing the way the camera looks. Only the turn
+-- around the vertical axis is kept, so the character stands up straight. Does nothing when freecam is off.
+function freecam.teleport(self): boolean
+	local garbage = self:getGarbage(GARBAGE_NAME)
+	if not garbage then return false end
+
+	-- read before stop, which gives the garbage back
+	local cframe = CFrame.new(garbage.position) * CFrame.Angles(0, garbage.rotation.Y, 0)
+	freecam.stop(self)
+
+	if not self.playerService:teleportTo(cframe) then
+		self:notify("Freecam", "your character was not found")
+	end
 
 	return true
 end

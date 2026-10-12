@@ -16,12 +16,14 @@ local function getWaypoint(self, name)
 	return waypoint
 end
 
--- Goes to the waypoint the command names, the way `mode` says (see waypoints.go)
 local function goTo(self, args, mode)
 	local waypoint = getWaypoint(self, args:nextValue())
 	if not waypoint then return end
-
-	waypoints.go(waypoint, mode)
+	
+	local speed = args:nextValue()
+	speed = if typeof(speed) == "number" then speed else nil
+	
+	waypoints.go(waypoint, mode, speed)
 end
 
 return {
@@ -105,7 +107,10 @@ return {
 	{
 		action = "tweenwaypoint|twp|tweengotowaypoint|tgotowp",
 		description = "Tweens player to a waypoint",
-		args = { kind = "waypoint", name = "waypoint" },
+		args = {
+			{ kind = "waypoint", name = "waypoint" },
+			{ name = "tween_speed", kind = "number", optional = true },
+		},
 		run = function(self, args)
 			goTo(self, args, "tween")
 		end

@@ -1,3 +1,5 @@
+-- do print("FORCED IS PC FOR TESTS") return false end
+
 local robloxServices = require("../services/rbxServices")
 local userInputService = robloxServices.UserInputService
 

@@ -11,6 +11,8 @@ local connectionService = require("../../../framework/services/connectionService
 local settingsData = require("../../../storage/data/settings")
 local config = require("../../../framework/config/ui/settings")
 local frameworkSettings = require("../../../framework/settings")
+local robloxServices = require("../../../framework/services/rbxServices")
+local uiTweens = require("../../../framework/services/tweenService")
 
 local widgets = require("./widgets")
 local buildThemePicker = require("./themePicker")
@@ -25,8 +27,18 @@ local BOX = config.box
 local ROW = config.row
 local VALUE = config.value
 
+local TweenService = robloxServices.TweenService
+
 local SHOWN_Y = PANEL.shownY
 local HIDDEN_Y = PANEL.hiddenY
+
+-- the floating back button: where it rests, its square size, and where its animation starts. It starts flattened
+-- (narrow) and half above the corner, so the panel hides the rest: it comes out of the corner and grows back to a square
+local FLOAT_SIZE = PANEL.floatBackSize
+local FLOAT_REST = UDim2.new(1, -(PANEL.floatBackMargin + PANEL.scrollBarThickness), 0, PANEL.floatBackMargin)
+local FLOAT_SQUARE = UDim2.fromOffset(FLOAT_SIZE, FLOAT_SIZE)
+local FLOAT_FLAT = UDim2.fromOffset(FLOAT_SIZE * PANEL.floatBackFlat, FLOAT_SIZE)
+local FLOAT_START = UDim2.new(1, 0, 0, -FLOAT_SIZE * PANEL.floatBackOut)
 
 -- the editor pages, by the action of the button that opens them
 local PAGES = {
@@ -156,8 +168,13 @@ end
 
 function settings:createPages()
 	for name, build in PAGES do
+		local frame = widgets.page(self.holder, `{name}Page`, UDim2.fromScale(1, HIDDEN_Y))
+
+		-- a page is only drawn while it is on screen: see hideWhenGone
+		frame.Visible = false
+
 		self.pages[name] = {
-			frame = widgets.page(self.holder, `{name}Page`, UDim2.fromScale(1, HIDDEN_Y)),
+			frame = frame,
 			build = build,
 		}
 	end
@@ -180,6 +197,8 @@ function settings.new(options)
 		backRow = nil, -- the back row of the open page
 		floatingBack = nil, -- the back button in the corner
 		floatingIcon = nil, -- its icon
+		floatingShown = false, -- whether it is shown, or on its way in
+		floatingTween = nil, -- the tween that moves it in or out
 		backIcon = nil, -- the icon of the back row of the open page, which the floating icon copies
 	}, settings)
 end
@@ -212,8 +231,8 @@ function settings:createFloatingBack(holder: Frame)
 		AnchorPoint = Vector2.new(1, 0),
 		AutoButtonColor = false,
 		BorderSizePixel = 0,
-		Position = UDim2.new(1, -(PANEL.floatBackMargin + PANEL.scrollBarThickness), 0, PANEL.floatBackMargin),
-		Size = UDim2.fromOffset(PANEL.floatBackSize, PANEL.floatBackSize),
+		Position = FLOAT_REST,
+		Size = FLOAT_SQUARE,
 		Text = "",
 		Visible = false,
 		ZIndex = 2,
@@ -233,8 +252,11 @@ function settings:createFloatingBack(holder: Frame)
 		}),
 	})
 
-	-- above the button, whatever the ZIndexBehavior is
+	-- above the button, whatever the ZIndexBehavior is. Its size is a share of the button, so the arrow is squashed with it
 	local icon = widgets.icon(button, config.pages.backIcon)
+	icon.AnchorPoint = Vector2.new(0.5, 0.5)
+	icon.Position = UDim2.fromScale(0.5, 0.5)
+	icon.Size = UDim2.fromScale(ROW.iconSize / PANEL.floatBackSize, ROW.iconSize / PANEL.floatBackSize)
 	icon.ZIndex = button.ZIndex + 1
 
 	button.Activated:Connect(function()
@@ -254,7 +276,8 @@ function settings:syncFloatingIcon()
 	end
 end
 
--- shows the floating back button when the open page has scrolled its back row out of view, and hides it otherwise
+-- shows the floating back button when the open page has scrolled its back row out of view, and hides it otherwise.
+-- It animates when it comes or goes, not on every scroll
 function settings:updateFloatingBack()
 	local button = self.floatingBack
 	if not button then return end
@@ -267,11 +290,93 @@ function settings:updateFloatingBack()
 		show = row.AbsolutePosition.Y + row.AbsoluteSize.Y <= page.AbsolutePosition.Y
 	end
 
-	button.Visible = show
-
 	if show then
 		self:syncFloatingIcon()
 	end
+
+	if show == self.floatingShown then return end
+
+	self.floatingShown = show
+
+	if show then
+		self:showFloatingBack()
+	else
+		self:hideFloatingBack()
+	end
+end
+
+-- comes out of the top right corner, flattened, and grows back to a square while it moves to its place
+function settings:showFloatingBack()
+	local button = self.floatingBack
+
+	-- when it is already on its way out, it turns back from where it is
+	if not button.Visible then
+		button.Position = FLOAT_START
+		button.Size = FLOAT_FLAT
+		button.Visible = true
+	end
+
+	self:tweenFloatingBack(FLOAT_REST, FLOAT_SQUARE, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+end
+
+-- goes back into the corner, flattened, and is hidden once it is there
+function settings:hideFloatingBack()
+	local button = self.floatingBack
+	if not button.Visible then return end
+
+	self:tweenFloatingBack(FLOAT_START, FLOAT_FLAT, Enum.EasingStyle.Quart, Enum.EasingDirection.In, function()
+		button.Visible = false
+	end)
+end
+
+-- moves the floating back button to a position and a size. A new move stops the one that is playing. With the
+-- tween setting off (framework/services/tweenService) it jumps there at once
+function settings:tweenFloatingBack(position: UDim2, size: UDim2, style: Enum.EasingStyle, direction: Enum.EasingDirection, onDone: (() -> ())?)
+	local button = self.floatingBack
+	self:stopFloatingTween()
+
+	local duration = uiTweens:getScale(PANEL.floatBackTime)
+
+	if duration <= 0 then
+		button.Position = position
+		button.Size = size
+
+		if onDone then
+			onDone()
+		end
+
+		return
+	end
+
+	local tween = TweenService:Create(button, TweenInfo.new(duration, style, direction), {
+		Position = position,
+		Size = size,
+	})
+
+	self.floatingTween = tween
+
+	tween.Completed:Connect(function(playback: Enum.PlaybackState)
+		-- a tween that was stopped does not reach its end, so it does not finish the job
+		if playback ~= Enum.PlaybackState.Completed then return end
+
+		if self.floatingTween == tween then
+			self.floatingTween = nil
+		end
+
+		if onDone then
+			onDone()
+		end
+	end)
+
+	tween:Play()
+end
+
+function settings:stopFloatingTween()
+	local tween = self.floatingTween
+	if not tween then return end
+
+	self.floatingTween = nil
+	tween:Cancel()
 end
 
 function settings:refresh()
@@ -325,19 +430,33 @@ function settings:buildPage(page)
 	end))
 end
 
+-- A frame that is not the one on screen is hidden once it has slid out of view. A hidden frame is not drawn, laid out
+-- or hit-tested, so the list and the editor pages cost nothing while they are off to the side. Visible is turned back on
+-- before a frame slides in again (openPage, back)
+function settings:hideWhenGone(frame: GuiObject)
+	return function(completed: boolean)
+		if completed and frame ~= self.current then
+			frame.Visible = false
+		end
+	end
+end
+
 -- slides an editor page in from the right, and the list out to the left
 function settings:openPage(name: string)
 	local page = self.pages[name]
 	if not page or not self.isShown or self.current ~= self.panel then return end
 
 	self:stopWaiting()
+
+	-- shown before it is built, so it is built as it always was (a page is only hidden while it is off to the side)
+	page.frame.Visible = true
 	self:buildPage(page)
 
 	page.frame.CanvasPosition = Vector2.zero
 	page.frame.Position = UDim2.fromScale(1, SHOWN_Y)
 	self.current = page.frame
 
-	slide(self.panel, UDim2.fromScale(-1, SHOWN_Y))
+	slide(self.panel, UDim2.fromScale(-1, SHOWN_Y), self:hideWhenGone(self.panel))
 	slide(page.frame, UDim2.fromScale(0, SHOWN_Y))
 
 	self:updateFloatingBack()
@@ -349,7 +468,10 @@ function settings:back()
 	
 	self:stopWaiting()
 
-	slide(self.current, UDim2.fromScale(1, SHOWN_Y))
+	local leaving = self.current
+	self.panel.Visible = true
+
+	slide(leaving, UDim2.fromScale(1, SHOWN_Y), self:hideWhenGone(leaving))
 	slide(self.panel, UDim2.fromScale(0, SHOWN_Y))
 	self.current = self.panel
 
@@ -359,9 +481,11 @@ end
 -- puts every frame back where it rests: the list below the view, the editor pages to the right of it
 function settings:reset()
 	self.current = self.panel
+	self.panel.Visible = true
 	self.panel.Position = UDim2.fromScale(0, HIDDEN_Y)
 
 	for _, page in self.pages do
+		page.frame.Visible = false
 		page.frame.Position = UDim2.fromScale(1, HIDDEN_Y)
 	end
 end

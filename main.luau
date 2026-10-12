@@ -12,8 +12,7 @@
 		released at: 10/10/2026 (v0.1.0) (beta release)
 			I accomplished in 3 days what I can't accomplish in 4 months.
 			Yes, I used AI to help me.
-		
-		
  ]]	
 
+-- require("./src/utils/logger"):enable()
 return require("./src/core"):boot()

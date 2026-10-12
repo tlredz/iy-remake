@@ -199,6 +199,11 @@ function commandsController:init(config)
 		return notifier:notify(...)
 	end
 	
+	-- a dialog in the notification stack (see notifier:ask): the dialog command uses it
+	function self:ask(...)
+		return notifier:ask(...)
+	end
+	
 	function self:stringify(...)
 		return stringifier:stringify(...)
 	end

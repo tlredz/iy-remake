@@ -6,11 +6,23 @@
 -- Rules:
 --   - a tap on the window while it is minimized expands it, just enough to be fully visible
 --   - a click outside the window minimizes it, but only while it is expanded, not kept open, and the command bar is not in use
+--     (not on PC, see hoverToOpen)
 --   - while the command bar is in use, a drag down does not minimize it either (it only snaps)
 --   - anything added with addWindowPart (the mobile IY button) counts as part of the window
 --   - a drag that ends DRAG_DOWN_MIN px lower than it started minimizes it
 --   - a drag that ends snaps to the top if that edge is nearer, otherwise to the bottom (keeping expanded / minimized)
 --   - a window at the top never moves on taps or outside clicks
+--   - the window is interactive (onInteractive) only when it is not minimized AND has stopped moving: it turns off
+--     the moment it is minimized and turns back on when the animation to expanded / top is complete
+--   - on PC (hoverToOpen), exactly like the original IY (Holder.MouseEnter / Holder.MouseLeave):
+--       MouseEnter  -> a minimized window expands (0.2s); it also drops a minimize that was waiting for the delay
+--       MouseLeave  -> an expanded window minimizes (0.5s) once the pointer has stayed away for HOVER_MINIMIZE_DELAY (1s),
+--                      unless the command bar is focused (checked at the leave and again after the delay)
+--       command bar loses the focus (Enter, Escape, a click elsewhere) -> the window minimizes, like the original's
+--                      Cmdbar.FocusLost. A press on the window (a command in the list) that took the focus away
+--                      does not count: then the MouseLeave decides
+--     Nothing minimizes while kept open or during a drag; a leave during a drag counts when the drag ends.
+--     Outside clicks do not minimize on PC. Without a mouse (touch only) hoverToOpen is off and the mobile rules apply
 
 local robloxServices = require("../../framework/services/rbxServices")
 local connectionService = require("../../framework/services/connectionService")
@@ -23,6 +35,11 @@ local MOVE_TIME = 0.32 -- seconds for expand / minimize / snap
 local TAP_MAX_TIME = 0.1 -- a press this short (or shorter) can be a tap
 local TAP_MAX_TRAVEL = 10 -- ...if the pointer barely moved (px)
 local DRAG_DOWN_MIN = 50 -- a drag ending this many px lower minimizes the window (px)
+
+-- PC hover, the original IY timings
+local HOVER_EXPAND_TIME = 0.2 -- seconds for the window to open when the pointer enters it
+local HOVER_MINIMIZE_TIME = 0.5 -- seconds for the window to go back to minimized
+local HOVER_MINIMIZE_DELAY = 1 -- seconds the pointer must stay away before the window minimizes
 
 local PRESS_TYPES = {
 	[Enum.UserInputType.MouseButton1] = true,
@@ -39,6 +56,10 @@ dock.__index = dock
 --   clampPosition    fn(UDim2) -> UDim2, the window's normal screen clamp (used for X)
 --   getScale         fn() -> number, current UI scale
 --   onMinimize       fn(), called right before the window starts going away
+--   onInteractive    fn(enabled: boolean), called when the window stops / starts accepting interactions (see above).
+--                    Called once from dock.new, with false, since the window starts minimized
+--   hoverToOpen      true on PC: the pointer over the window expands it, leaving it minimizes it (see the rules above).
+--                    Only takes effect when a mouse is connected (UserInputService.MouseEnabled)
 --   commandBarInUse  fn() -> boolean, true while the command bar is in use (nothing minimizes the window then)
 function dock.new(options)
 	local self = setmetatable({
@@ -48,9 +69,16 @@ function dock.new(options)
 		clampPosition = options.clampPosition,
 		getScale = options.getScale,
 		onMinimize = options.onMinimize,
+		onInteractive = options.onInteractive,
+		-- hover needs a mouse: a touch screen never sends MouseMovement, so there would be no enter and no leave
+		hoverToOpen = options.hoverToOpen == true and UserInputService.MouseEnabled,
 		commandBarInUse = options.commandBarInUse,
 
 		state = "minimized",
+		interactive = nil, -- unknown until the first setInteractive below
+		hovering = false, -- the pointer is over the window (from the frame's MouseEnter / MouseLeave)
+		hoverRequest = 0, -- counts the pointer's changes of side; a minimize waiting for the delay is dropped by a newer one
+		dragging = false, -- a drag of the window is in progress (set by the interface)
 		keepOpen = options.keepOpen == true, -- the saved "Keep Menu Open" flag; starting with it on does not expand the window
 		windowParts = {},
 		tween = nil,
@@ -67,6 +95,19 @@ function dock.new(options)
 	table.insert(self.connections, connectionService:Connect(UserInputService.InputEnded, function(input)
 		self:onInputEnded(input)
 	end))
+
+	self:setInteractive(false)
+
+	if self.hoverToOpen then
+		-- the frame is Active, like the original Holder: Roblox reports the pointer coming in and going out
+		table.insert(self.connections, connectionService:Connect(self.frame.MouseEnter, function()
+			if self.frame.Visible then self:setHovering(true) end
+		end))
+
+		table.insert(self.connections, connectionService:Connect(self.frame.MouseLeave, function()
+			self:setHovering(false)
+		end))
+	end
 
 	return self
 end
@@ -176,6 +217,16 @@ function dock:clampDrag(pos: UDim2): UDim2
 	return UDim2.new(x.Scale, x.Offset, 0, y)
 end
 
+-- only calls onInteractive when the value changes
+function dock:setInteractive(enabled: boolean)
+	if self.interactive == enabled then return end
+	self.interactive = enabled
+
+	if self.onInteractive then
+		self.onInteractive(enabled)
+	end
+end
+
 function dock:cancel()
 	if self.tween then
 		self.tween:Cancel()
@@ -183,7 +234,7 @@ function dock:cancel()
 	end
 end
 
-function dock:moveTo(state: string)
+function dock:moveTo(state: string, time: number?, direction: Enum.EasingDirection?)
 	-- already heading there: let the current animation finish
 	if state == self.state and self.tween and self.tween.PlaybackState == Enum.PlaybackState.Playing then
 		return
@@ -192,36 +243,130 @@ function dock:moveTo(state: string)
 	self.state = state
 	self:cancel()
 
+	-- going away: no interactions from the very start of the animation
+	if state == "minimized" then
+		self:setInteractive(false)
+	end
+
 	local target = self:targetFor(state)
-	local duration = uiTweens:getScale(MOVE_TIME)
+	local duration = uiTweens:getScale(time or MOVE_TIME)
 
 	if duration <= 0 then
 		self.frame.Position = target
+		self:setInteractive(state ~= "minimized")
 		return
 	end
 
-	local info = TweenInfo.new(duration, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-	self.tween = TweenService:Create(self.frame, info, { Position = target })
-	self.tween:Play()
+	local info = TweenInfo.new(duration, Enum.EasingStyle.Quart, direction or Enum.EasingDirection.Out)
+	local tween = TweenService:Create(self.frame, info, { Position = target })
+	self.tween = tween
+
+	-- coming up: interactions only come back once the window has fully arrived. A cancelled tween (a drag took over,
+	-- or another moveTo) never gets here, the move that replaces it decides
+	tween.Completed:Connect(function(playback)
+		if playback ~= Enum.PlaybackState.Completed then return end
+		if self.tween ~= tween or self.state == "minimized" then return end
+
+		self:setInteractive(true)
+	end)
+
+	tween:Play()
 end
 
-function dock:expand()
-	self:moveTo("expanded")
+function dock:expand(time: number?, direction: Enum.EasingDirection?)
+	self:moveTo("expanded", time, direction)
 end
 
-function dock:minimize()
+-- PC hover: the one place that decides an enter or a leave. Only a change of side does anything,
+-- so a repeated event does nothing
+function dock:setHovering(over: boolean)
+	if over == self.hovering then return end
+	self.hovering = over
+
+	-- during a drag the drag decides where the window goes, so hover does not expand or minimize it
+	if self.dragging then return end
+
+	if over then
+		self:onHoverEnter()
+	else
+		self:onHoverLeave()
+	end
+end
+
+-- the pointer came into the window: a minimized window opens (0.2s, like the original). Coming in also drops a minimize
+-- that is waiting for the delay
+function dock:onHoverEnter()
+	self.hoverRequest = self.hoverRequest + 1
+
+	if self.state == "minimized" then
+		self:expand(HOVER_EXPAND_TIME, Enum.EasingDirection.InOut)
+	end
+end
+
+-- the pointer left the window: an expanded window minimizes (0.5s) once the pointer has stayed away for
+-- HOVER_MINIMIZE_DELAY. If it comes back before that, the request changes and the minimize does not happen
+function dock:onHoverLeave()
+	self.hoverRequest = self.hoverRequest + 1
+	local request = self.hoverRequest
+
+	if not self:canHoverMinimize() then return end
+
+	task.delay(HOVER_MINIMIZE_DELAY, function()
+		if request ~= self.hoverRequest or not self:canHoverMinimize() then return end
+
+		self:minimize(HOVER_MINIMIZE_TIME, Enum.EasingDirection.InOut)
+	end)
+end
+
+-- the hover minimize only happens to an expanded window that is not kept open and has no command bar in use
+function dock:canHoverMinimize(): boolean
+	return self.state == "expanded" and not self.keepOpen and not self:commandBarBusy()
+end
+
+-- PC: the command bar lost the focus (the interface calls this from its FocusLost). Like the original, the window
+-- minimizes, so a window opened with the prefix key (the pointer never entered it) does not stay open for good.
+-- It waits one frame first: Enter on a correction or a click on a command gives the focus back right away, and then
+-- nothing happens. With the pointer over the window, only Enter minimizes: any other loss of focus is most likely a
+-- press on the window itself, and there the MouseLeave decides.
+function dock:onCommandBarClosed(enteredCommand: boolean)
+	if not self.hoverToOpen then return end
+
+	local request = self.hoverRequest
+	task.wait()
+
+	-- a newer enter / leave (or destroy) took over while waiting
+	if request ~= self.hoverRequest or self.dragging or not self:canHoverMinimize() then return end
+	if self.hovering and not enteredCommand then return end
+
+	self:minimize(HOVER_MINIMIZE_TIME, Enum.EasingDirection.InOut)
+end
+
+-- the interface tells the dock when a drag of the window starts and ends. A pointer that left the window during the drag
+-- had no effect then, so the leave counts now (onDragEnded may still snap the window to the top, and then nothing happens).
+-- A pointer still over the window at the drop does not open or minimize it: the drop has decided that
+function dock:setDragging(dragging: boolean)
+	local wasDragging = self.dragging
+	self.dragging = dragging == true
+
+	if wasDragging and not self.dragging and not self.hovering then
+		self:onHoverLeave()
+	end
+end
+
+function dock:minimize(time: number?, direction: Enum.EasingDirection?)
 	-- the window is about to go below the screen: whatever is focused inside it has to let go first
 	if self.onMinimize then
 		self.onMinimize()
 	end
 
-	self:moveTo("minimized")
+	self:moveTo("minimized", time, direction)
 end
 
 -- the screen or the UI scale changed: put the window back in the state it is in
 function dock:reflow()
 	self:cancel()
 	self.frame.Position = self:targetFor(self.state)
+	self:setInteractive(self.state ~= "minimized") -- the window is where it should be now, no animation left to wait for
 end
 
 -- puts the window in the minimized state at once (no animation). Used when it is hidden, so the next
@@ -230,6 +375,7 @@ function dock:sleep()
 	self:cancel()
 	self.state = "minimized"
 	self.frame.Position = self:targetFor("minimized")
+	self:setInteractive(false)
 end
 
 -- a drag of the window ended (gesture comes from dragService)
@@ -265,8 +411,9 @@ function dock:onInputBegan(input)
 		inside = inside,
 	}
 
-	-- a click outside minimizes an expanded window, unless it is kept open; a window at the top stays where it is
-	if not inside and self.state == "expanded" and not self.keepOpen and not self:commandBarBusy() then
+	-- a click outside minimizes an expanded window, unless it is kept open; a window at the top stays where it is.
+	-- Not on PC: there the pointer leaving the window does it (onHoverLeave), like the original
+	if not inside and not self.hoverToOpen and self.state == "expanded" and not self.keepOpen and not self:commandBarBusy() then
 		self:minimize()
 	end
 end
@@ -289,6 +436,7 @@ end
 
 function dock:destroy()
 	self:cancel()
+	self.hoverRequest = self.hoverRequest + 1 -- a minimize waiting for the hover delay does not run after this
 
 	for _, connection in self.connections do
 		connectionService:disconnect(connection)

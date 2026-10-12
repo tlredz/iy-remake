@@ -53,13 +53,22 @@ function scrollBar:awake()
 	handleButtonPress(self.upButton, "up")
 	handleButtonPress(self.downButton, "down")
 	
-	connectionService:Connect(scrollBar.MouseWheelForward, function()
-		self:scrollTo(self.index - self.wheelIncrement)
-	end)
+	-- the wheel works over the thin bar and also over the content area (the container), so whoever uses this
+	-- component does not need to connect MouseWheelForward / Backward on the container by themselves
+	local function onWheel(sign)
+		if self.locked then return end
+		self:scrollTo(self.index + sign * self.wheelIncrement)
+	end
 	
-	connectionService:Connect(scrollBar.MouseWheelBackward, function()
-		self:scrollTo(self.index + self.wheelIncrement)
-	end)
+	for _, target in { scrollBar, self.container } do
+		connectionService:Connect(target.MouseWheelForward, function()
+			onWheel(-1)
+		end)
+		
+		connectionService:Connect(target.MouseWheelBackward, function()
+			onWheel(1)
+		end)
+	end
 	
 	connectionService:Connect(scrollBar.InputBegan, function(input)
 		if not inputUtils.isPressingInput(input) then return end
@@ -93,6 +102,8 @@ function scrollBar:awake()
 		
 		if isHoldingFrame then
 			local function updateDirection()
+				if self.locked then return end
+				
 				local scrollDir = (playerMouse[direction] >= scrollThumb.AbsolutePosition[direction] + scrollThumb.AbsoluteSize[direction]) and 1 or 0
 				local scrollSize = self.visibleSpace - 1
 				
@@ -116,6 +127,7 @@ function scrollBar:awake()
 		
 		mouseEvent = inputUtils.onMouseEvent(function(input)
 			if not isPressingThumb then return end
+			if self.locked then return end
 			
 			local thumbFrameSize = scrollThumbFrame.AbsoluteSize[direction] - scrollThumb.AbsoluteSize[direction]
 			local pos = playerMouse[direction] - scrollThumbFrame.AbsolutePosition[direction] - mouseOffset
@@ -220,6 +232,8 @@ function scrollBar:canScrollDown()
 end
 
 function scrollBar:canScroll(direction)
+	if self.locked then return false end
+	
 	if direction == "up" or direction == "left" then
 		return self:canScrollUp()
 	elseif direction == "down" or direction == "right" then
@@ -436,7 +450,19 @@ function scrollBar:isScrollBarEnabled()
 end
 
 function scrollBar:isScrollBarDisabled()
-	return not self.scrollBarEnabled
+	return not self.scrollBarEnabled or self.locked
+end
+
+-- Blocks every way for the user to scroll (wheel, thumb, track, arrow buttons). It is not the same as
+-- disableScroll: that one is a short lock taken while something is being dragged and always given back
+-- (enableScroll), so it can not also mean "the window is minimized". The thumb is still drawn while locked.
+-- scrollTo from code keeps working.
+function scrollBar:setLocked(locked: boolean)
+	self.locked = locked == true
+end
+
+function scrollBar:isLocked(): boolean
+	return self.locked
 end
 
 function scrollBar.new(config)
@@ -447,6 +473,7 @@ function scrollBar.new(config)
 		barThickness	  = config.barThickness or 16,
 		
 		scrollBarEnabled = true,
+		locked = false,
 		
 		index		= 0,
 		visibleSpace = config.visibleSpace or 0,

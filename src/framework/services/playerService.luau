@@ -9,10 +9,11 @@ local playerMouse = localPlayer:GetMouse()
 
 local playerService = {}
 
--- The tween that is moving the character right now, if any. Only one tween runs at a time.
 local activeTween: Tween? = nil
+local DEFAULT_TWEEN_SPEED: number = 100
+local seatedLock: { humanoid: Humanoid, wasEnabled: boolean }? = nil
 
-function playerService:getMouse()
+function playerService:getMouse(): PlayerMouse
 	return playerMouse
 end
 
@@ -87,8 +88,6 @@ function playerService:getCamera()
 	return workspace.CurrentCamera
 end
 
--- Takes the character off its seat and waits a moment, so the seat does not drag it along.
--- Returns the humanoid as it is after the wait (the character may have changed while waiting).
 function playerService:unseat(): Humanoid?
 	local humanoid = self:getHumanoid()
 	if not humanoid then return nil end
@@ -101,8 +100,6 @@ function playerService:unseat(): Humanoid?
 	return self:getHumanoid()
 end
 
--- Puts the root part at a CFrame right away: no un-seating and no waiting, so it is safe to call
--- every frame (loops). Returns false when there is no root part to move.
 function playerService:setRootCFrame(cframe: CFrame): boolean
 	local rootPart = self:getRootPart()
 	if not rootPart then return false end
@@ -112,8 +109,6 @@ function playerService:setRootCFrame(cframe: CFrame): boolean
 	return true
 end
 
--- Instant teleport to a CFrame, or to a Vector3 (which gets no rotation). Un-seats the character first.
--- Returns true when the character was moved.
 function playerService:teleportTo(target: CFrame | Vector3): boolean
 	logger:expect(target, { "CFrame", "Vector3" }, "'playerService:teleportTo' #1")
 
@@ -125,8 +120,6 @@ function playerService:teleportTo(target: CFrame | Vector3): boolean
 	return self:setRootCFrame(target)
 end
 
--- Zeroes the velocity of every part of the character for `duration` seconds (default 1).
--- The loop runs in its own thread, so it returns right away.
 function playerService:breakVelocity(duration: number?)
 	local character = self:getCharacter()
 	if not character then return end
@@ -145,10 +138,6 @@ function playerService:breakVelocity(duration: number?)
 	end)
 end
 
--- While a tween runs, the Seated state is turned off, so touching a seat does not sit the
--- character and stop the tween. The previous value is kept and put back when the tween ends.
-local seatedLock: { humanoid: Humanoid, wasEnabled: boolean }? = nil
-
 local function releaseSeated()
 	local lock = seatedLock
 	seatedLock = nil
@@ -159,7 +148,6 @@ local function releaseSeated()
 end
 
 local function lockSeated(humanoid: Humanoid)
-	-- a tween that replaces another one keeps the value saved by the first
 	if seatedLock and seatedLock.humanoid == humanoid then return end
 
 	releaseSeated()
@@ -170,7 +158,6 @@ local function lockSeated(humanoid: Humanoid)
 	humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
 end
 
--- Stops the tween that is running, if any. Returns true when a tween was stopped.
 function playerService:cancelTween(): boolean
 	local tween = activeTween
 	activeTween = nil
@@ -185,13 +172,6 @@ function playerService:cancelTween(): boolean
 	return false
 end
 
--- Studs per second, used when a tween does not give its own speed
-local DEFAULT_TWEEN_SPEED = 100
-
--- Tween teleport. config.target is a CFrame or Vector3, config.speed is in studs per second
--- (default 100). The time is the distance to the target divided by the speed.
--- The Seated state is off while it runs and the velocity is broken at the end.
--- A new tween replaces the one that is running. Returns the tween, or nil when the character has no root part.
 function playerService:tweenTeleportTo(config: { target: CFrame | Vector3, speed: number? }): Tween?
 	logger:expect(config, { "table" }, "'playerService:tweenTeleportTo' #1")
 
@@ -210,11 +190,9 @@ function playerService:tweenTeleportTo(config: { target: CFrame | Vector3, speed
 	local rootPart = self:getRootPart()
 	if not rootPart then return nil end
 
-	-- Speed is at least 1 stud per second, so a tiny or negative speed still ends
 	local distance = (target.Position - rootPart.Position).Magnitude
 	local duration = distance / math.max(speed, 1)
 
-	-- replaces the running tween without giving the Seated state back in between
 	local previous = activeTween
 	activeTween = nil
 	if previous then
@@ -233,9 +211,8 @@ function playerService:tweenTeleportTo(config: { target: CFrame | Vector3, speed
 
 	activeTween = tween
 	tween.Completed:Once(function()
-		-- a tween that was replaced or cancelled has already been taken care of
 		if activeTween ~= tween then return end
-
+		
 		activeTween = nil
 		releaseSeated()
 		self:breakVelocity()
@@ -245,8 +222,6 @@ function playerService:tweenTeleportTo(config: { target: CFrame | Vector3, speed
 	return tween
 end
 
--- Streams the area around a character before teleporting there, when the game uses streaming.
--- Waits up to waitTime seconds (default 5) for its root part. The caller decides whether to call it.
 function playerService:waitForStreamPlayerCharacter(character: Model, waitTime: number?): ()
 	if not (character and workspace.StreamingEnabled) then return end
 

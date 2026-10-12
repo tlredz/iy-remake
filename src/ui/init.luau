@@ -295,6 +295,13 @@ function interface:createCommands()
 		connectionService:Connect(commands.searchBox.FocusLost, function()
 			self.commandBarUsedAt = os.clock()
 		end)
+	else
+		-- PC: like the original IY (Cmdbar.FocusLost), the window minimizes when the command bar lets go of the focus
+		connectionService:Connect(commands.searchBox.FocusLost, function(enterPressed)
+			if self.dock then
+				self.dock:onCommandBarClosed(enterPressed)
+			end
+		end)
 	end
 
 	return commands
@@ -328,6 +335,12 @@ function interface:dragMainFrame(mainFrame)
 		commandBarInUse = function()
 			return self:isCommandBarInUse()
 		end,
+		onInteractive = function(enabled)
+			if self.commands then
+				self.commands:setInteractive(enabled)
+			end
+		end,
+		hoverToOpen = not isMobile, -- PC: the pointer over the window opens it; mobile keeps taps
 		onMinimize = function()
 			self:releaseCommandFocus()
 
@@ -348,6 +361,7 @@ function interface:dragMainFrame(mainFrame)
 		if object ~= mainFrame then return end
 
 		self.dock:cancel()
+		self.dock:setDragging(true)
 		self.scrollBar:disableScroll()
 	end)
 
@@ -355,6 +369,7 @@ function interface:dragMainFrame(mainFrame)
 		if object ~= mainFrame then return end
 
 		self.scrollBar:enableScroll()
+		self.dock:setDragging(false)
 		self.dock:onDragEnded(gesture)
 	end)
 end
@@ -419,10 +434,7 @@ function interface:showCommandBar()
 	self.dock:onSettled(function()
 		if self.dock.state == "minimized" then return end
 		
-		if searchBox:IsFocused() then
-			searchBox:ReleaseFocus()
-		end
-		searchBox:CaptureFocus()
+		self.commands:captureFocus()
 	end)
 end
 

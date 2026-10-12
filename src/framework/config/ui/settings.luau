@@ -33,6 +33,9 @@ return {
 		scrollBarThickness = 4,
 		floatBackSize = 25, -- the back button that shows in the corner when the back row has scrolled away
 		floatBackMargin = 6,
+		floatBackFlat = 0.3, -- the width of the button as it comes out of the corner, as a share of its size
+		floatBackOut = 0.5, -- how far above the corner it starts, as a share of its size (the panel hides the rest)
+		floatBackTime = 0.35, -- seconds for it to come out of the corner, or to go back in
 	},
 
 	row = {
@@ -64,11 +67,18 @@ return {
 		positionWidth = 92, -- the position box in the line that adds a waypoint
 	},
 
+	-- the count of binds on an event button (widgets.choices): a small pill at the top right corner, shown when it has binds
+	badge = {
+		height = 12,
+		overhang = 3, -- how far it sticks out past the corner of the button
+	},
+
 	textSizes = {
 		header = 12,
 		label = 14,
 		value = 12,
 		footer = 11, -- the version line at the bottom of the panel
+		badge = 10, -- the count on an event button
 	},
 
 	-- the line at the bottom of the panel. {name} and {version} are filled in from framework/settings

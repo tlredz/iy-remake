@@ -1,5 +1,6 @@
 -- src/ui/components/settings/eventBindsEditor.luau
--- The Edit Event Binds page. From the top: the events as buttons (tap the one you want), the form to add a bind to
+-- The Edit Event Binds page. From the top: the events as buttons (tap the one you want; a badge on an event shows how many
+-- binds it has), the form to add a bind to
 -- it (its conditions, then one line with the command, the delay and the add button), and the binds of the event.
 -- Tapping a bind removes it, and a notification (with an Undo button, see ui/notifier) says which bind was removed.
 -- The delay of a bind is a box: type a new delay in it and leave the box (or press enter) to change it. It is kept short, so the
@@ -67,15 +68,22 @@ local function build(page: ScrollingFrame, ctx)
 	local list = widgets.list(page)
 	widgets.pageTop(list, nil, ctx.back)
 
-	local selectEvent
+	local selectEvent, setEventCount
 	local renderEvent
 	local renderBinds
 
-	selectEvent = widgets.choices(list, names, function(index: number)
+	selectEvent, setEventCount = widgets.choices(list, names, function(index: number)
 		eventIndex = index
 		lastEventIndex = index
 		renderEvent()
 	end, TEXT.columns)
+
+	-- the badge of each event shows how many binds it has
+	local function refreshCounts()
+		for index, event in events do
+			setEventCount(index, #eventBinds.getBinds(event.name))
+		end
+	end
 
 	-- the event and what it is, in the place a title would go
 	local eventHeader = widgets.header(list, "")
@@ -129,6 +137,7 @@ local function build(page: ScrollingFrame, ctx)
 						-- the page may have been built again (or closed) meanwhile
 						if bindsGroup.Parent then
 							note.Text = string.format(TEXT.restored, bind.command)
+							refreshCounts()
 
 							if currentEvent() == event then
 								renderBinds()
@@ -160,6 +169,7 @@ local function build(page: ScrollingFrame, ctx)
 	end
 
 	function renderBinds()
+		refreshCounts()
 		widgets.clear(bindsGroup)
 
 		local event = currentEvent()

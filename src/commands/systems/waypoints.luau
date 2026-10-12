@@ -205,24 +205,26 @@ end
 
 -- Goes to a waypoint. mode is "teleport" (right away), "tween" (a smooth trip at the tween speed) or "walk"
 -- (the character walks there). Returns true when the character started to move, false when it has no body
-function waypoints.go(waypoint: Waypoint, mode: string?): boolean
+function waypoints.go(waypoint: Waypoint, mode: string?, speed: number?): boolean
 	if mode == "tween" then
+		speed = if typeof(speed) == "number" then speed else nil
+		
 		local tween = playerService:tweenTeleportTo({
 			target = CFrame.new(waypoint.position),
-			speed = privateEnv.tweenSpeed,
+			speed = speed or privateEnv.tweenSpeed,
 		})
-
+		
 		return tween ~= nil
 	end
-
+	
 	if mode == "walk" then
 		local humanoid = playerService:unseat()
 		if not humanoid then return false end
-
+		
 		humanoid:MoveTo(waypoint.position)
 		return true
 	end
-
+	
 	return playerService:teleportTo(CFrame.new(waypoint.position))
 end
 

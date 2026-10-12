@@ -63,6 +63,42 @@ function commands:applyCorrection()
 	self.searchBox.Text = newText
 end
 
+function commands:captureFocus()
+	local searchBox = self.searchBox
+	if not searchBox then return end
+	
+	-- if searchBox:IsFocused() then
+	-- 	searchBox:ReleaseFocus()
+	-- 	task.wait()
+	-- end
+	
+	searchBox:CaptureFocus()
+end
+
+-- Turns the user's interactions with the command list on or off: clicking a command or the search bar, holding /
+-- dragging the list and scrolling (wheel, scroll bar). The window itself is not affected, it can still be dragged
+-- and tapped. Called by the interface from the dock: off while the window is minimized, back on once it is fully up
+function commands:setInteractive(enabled: boolean)
+	enabled = enabled == true
+	if self.interactive == enabled then return end
+	self.interactive = enabled
+
+	self.scrollBar:setLocked(not enabled)
+
+	-- the search bar must not keep the keyboard while the list can not be used
+	if not enabled then
+		local searchBox = self.searchBox
+
+		if searchBox and searchBox:IsFocused() then
+			searchBox:ReleaseFocus()
+		end
+	end
+end
+
+function commands:isInteractive(): boolean
+	return self.interactive
+end
+
 function commands:awake()
 	local cmdInput     = self.commandInput
 	local searchBox    = self.searchBox
@@ -110,11 +146,17 @@ function commands:awake()
 	end
 	
 	self.commandClickedSignal:Connect(function(data)
+		if not self.interactive then return end
+		
 		searchBox.Text = data.aliases[1]
 		task.defer(captureFocus)
 	end)
 	
-	connectionService:Connect(searchHolder.Activated, captureFocus)
+	connectionService:Connect(searchHolder.Activated, function()
+		if not self.interactive then return end
+		
+		captureFocus()
+	end)
 	
 	connectionService:Connect(searchBox.Focused, function()
 		updatePlaceholder()
@@ -666,6 +708,7 @@ function commands:horizontalScroll(xOffset)
 end
 
 function commands:startedHoldingContainer(input)
+	if not self.interactive then return end
 	if not inputUtils.isPressingInput(input) then return end
 	if self.scrollBar:isScrollBarDisabled() then return end
 
@@ -713,6 +756,8 @@ function commands:startedHoldingContainer(input)
 	inputUtils.onReleaseEvent(disconnect)
 	
 	mouseEvent = inputUtils.onMouseEvent(function(inp)
+		-- the window was minimized in the middle of the hold
+		if not self.interactive then return end
 		
 		local deltaX = playerMouse.X - lastMouseX
 		local deltaY = playerMouse.Y - lastMouseY
@@ -800,6 +845,8 @@ function commands.new(config)
 		},
 		
 		commandClickedSignal = signal.new(),
+		
+		interactive = true, -- the dock turns it off right away (the window starts minimized)
 		
 		commandInput = {
 			bestMatch       = nil,

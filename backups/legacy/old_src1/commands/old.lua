@@ -500,7 +500,8 @@ return createCommands({
 		action = "tweenwaypoint|twp",
 		description = "Tweens player to a waypoint",
 		args = {
-			kind = "waypoint"
+			{ kind = "waypoint" },
+			{ name = "tween_speed", kind = "number", optional = true }
 		}
 	},
 	{

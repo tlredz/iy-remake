@@ -32,7 +32,6 @@ return {
 	require("./volume"),              -- done
 	require("./antilag"),             -- done
 	require("./screen"),              -- done
-	require("./notify"),              -- done
 	require("./lastcommand"),         -- done
 	require("./notifyping"),          -- done
 	require("./render"),              -- done

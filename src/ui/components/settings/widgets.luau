@@ -16,6 +16,7 @@ local ROW = config.row
 local BOX = config.box
 local VALUE = config.value
 local TEXT = config.textSizes
+local BADGE = config.badge
 
 local widgets = {}
 
@@ -425,9 +426,45 @@ function widgets.textBox(list, placeholder: string): TextBox
 	})
 end
 
+-- the count on a button of a grid: a small pill that sticks out of its top right corner. It stays hidden until it has a count
+local function countBadge(button: GuiObject): TextLabel
+	return createService.new("TextLabel", "Badge", button, {
+		AnchorPoint = Vector2.new(1, 0),
+		AutomaticSize = Enum.AutomaticSize.X,
+		BorderSizePixel = 0,
+		Position = UDim2.new(1, BADGE.overhang, 0, -BADGE.overhang),
+		Size = UDim2.fromOffset(0, BADGE.height),
+		Text = "",
+		TextSize = TEXT.badge,
+		Visible = false,
+		ZIndex = button.ZIndex + 1,
+		ThemeTag = {
+			BackgroundColor3 = "Colors.Primary",
+			Font = "Font.MonoSpace",
+			TextColor3 = "Colors.Text.Default",
+		},
+
+		createService.new("UICorner", {
+			CornerRadius = UDim.new(0, BADGE.height / 2),
+		}),
+		createService.new("UIPadding", {
+			PaddingLeft = UDim.new(0, 3),
+			PaddingRight = UDim.new(0, 3),
+		}),
+		createService.new("UIStroke", {
+			ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+			Thickness = 1,
+			ThemeTag = {
+				Color = "Colors.Background",
+			},
+		}),
+	})
+end
+
 -- a grid of buttons where you tap the one you want (the chosen one is coloured). `labels` are the texts, in order.
--- onSelect(index) runs when one is tapped. Returns select(index), which only moves the colour
-function widgets.choices(list, labels: { string }, onSelect: (number) -> (), columns: number): (number) -> ()
+-- onSelect(index) runs when one is tapped. Returns select(index), which only moves the colour, and setCount(index, count),
+-- which shows the count in a badge on that button (no badge when the count is 0)
+function widgets.choices(list, labels: { string }, onSelect: (number) -> (), columns: number): ((number) -> (), (number, number) -> ())
 	list.order += 1
 
 	local gap = PANEL.rowGap
@@ -446,6 +483,7 @@ function widgets.choices(list, labels: { string }, onSelect: (number) -> (), col
 	})
 
 	local buttons = {}
+	local badges = {}
 
 	local function select(index: number)
 		for position, button in buttons do
@@ -475,6 +513,7 @@ function widgets.choices(list, labels: { string }, onSelect: (number) -> (), col
 		})
 
 		buttons[index] = button
+		badges[index] = countBadge(button)
 
 		button.Activated:Connect(function()
 			select(index)
@@ -482,7 +521,16 @@ function widgets.choices(list, labels: { string }, onSelect: (number) -> (), col
 		end)
 	end
 
-	return select
+	-- shows how many binds a button has in its badge (none when it has none)
+	local function setCount(index: number, count: number)
+		local badge = badges[index]
+		if not badge then return end
+
+		badge.Text = tostring(count)
+		badge.Visible = count > 0
+	end
+
+	return select, setCount
 end
 
 -- a row with a label on the left and a box to type in on the right. Returns the row and the TextBox
