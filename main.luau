@@ -9,7 +9,11 @@
 		coding break from: 06/15/2026 at: 10/07/2026
 			During that period, I lost the most recent version of the source code, 'v0.0.5'.
 			So I decided to skip from version 'v0.0.4' to 'v0.0.6'.
-		release at: not released
-]]
+		released at: 10/10/2026 (v0.1.0) (beta release)
+			I accomplished in 3 days what I can't accomplish in 4 months.
+			Yes, I used AI to help me.
+		
+		
+ ]]	
 
 return require("./src/core"):boot()

@@ -28,8 +28,11 @@ local FOLDER = `{storageConfig.privateFolder}/plugins`
 
 plugins.FOLDER = FOLDER
 
--- name -> { keys = { every action name this plugin added to the lookup } }
+-- name -> { keys = { every action name this plugin added to the lookup }, commands = how many commands it has }
 local loaded = {}
+
+-- name -> why the last attempt to load it failed. A plugin that loads has no entry
+local lastErrors = {}
 
 local function removeFromArray(array: { string }, value: string)
 	local index = table.find(array, value)
@@ -160,7 +163,7 @@ local function prepare(result: { any }): ({ { entry: any, names: { string } } }?
 end
 
 -- Reads, runs and registers a plugin. Nothing is registered unless every name is free.
-local function loadInto(list, name: string): (boolean, string | number)
+local function loadFromFile(list, name: string): (boolean, string | number)
 	local source, readError = readSource(name)
 	if not source then
 		return false, readError
@@ -196,8 +199,16 @@ local function loadInto(list, name: string): (boolean, string | number)
 		end
 	end
 
-	loaded[name] = { keys = keys }
+	loaded[name] = { keys = keys, commands = #prepared }
 	return true, #prepared
+end
+
+-- loadFromFile, and the reason it failed is kept for plugins.getInstalled
+local function loadInto(list, name: string): (boolean, string | number)
+	local success, detail = loadFromFile(list, name)
+
+	lastErrors[name] = if success then nil else tostring(detail)
+	return success, detail
 end
 
 local function unloadFrom(list, name: string)
@@ -241,6 +252,7 @@ function plugins.remove(list, name: string): boolean
 	end
 
 	unloadFrom(list, name)
+	lastErrors[name] = nil
 
 	pluginsData.object[name] = nil
 	pluginsData:save()
@@ -302,6 +314,58 @@ function plugins.addAll(list): ({ added: { string }, failed: { string } }?, stri
 	end
 
 	return result
+end
+
+-- The installed plugins, sorted by name: { name, loaded, commands, error }. commands is how many commands a loaded
+-- plugin gave (0 when it is not loaded), and error is why the last attempt to load it failed
+function plugins.getInstalled(): { { name: string, loaded: boolean, commands: number, error: string? } }
+	local installed = {}
+
+	for name in pluginsData.object do
+		local record = loaded[name]
+
+		table.insert(installed, {
+			name = name,
+			loaded = record ~= nil,
+			commands = if record then record.commands else 0,
+			error = if record then nil else lastErrors[name],
+		})
+	end
+
+	table.sort(installed, function(a, b)
+		return a.name:lower() < b.name:lower()
+	end)
+
+	return installed
+end
+
+-- The .luau files in the plugins folder that are not installed yet, sorted. Only names that plugins.add accepts are
+-- listed. Returns nil and the reason when the folder can't be read
+function plugins.getAvailable(): ({ string }?, string?)
+	if executorEnv.listfiles == nil then
+		return nil, "your exploit does not support listfiles"
+	end
+
+	local success, paths = pcall(executorEnv.listfiles, FOLDER)
+	if not (success and type(paths) == "table") then
+		return nil, `could not read the folder {FOLDER} (create it and put your .luau plugins there)`
+	end
+
+	local names = {}
+
+	for _, path in paths do
+		local name = type(path) == "string" and path:match("([^/\\]+)%.luau$")
+
+		if name and normalizeName(name) and pluginsData.object[name] == nil then
+			table.insert(names, name)
+		end
+	end
+
+	table.sort(names, function(a, b)
+		return a:lower() < b:lower()
+	end)
+
+	return names
 end
 
 return plugins

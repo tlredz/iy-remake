@@ -19,6 +19,7 @@ return {
 		args = {
 			{
 				kind = "keycode",
+				name = "open menu",
 				optional = true
 			},
 			{

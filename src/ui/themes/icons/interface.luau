@@ -5,6 +5,9 @@ return {
 	["close"]    = 83276213460768, -- lucide-close
 	["minimize"] = 76683704146139, -- lucide-chevron-down
 	
+	["lucide-chevron-left"] = 116084397950605, -- back
+	["lucide-blocks"]       = 80329404661557,  -- plugins
+	
 	-- settings
 	["lucide-terminal"]   = 138735373900955, -- prefix
 	["lucide-pin"]        = 85638424763987,  -- keep-menu-open

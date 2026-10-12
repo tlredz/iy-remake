@@ -4,10 +4,8 @@ local playerService     = require("../../framework/services/playerService")
 local createService     = require("../services/createService")
 local commandData       = require("../../commands/systems/commandData")
 
-local commandsController = require("../../commands/controllers/commandsController")
 local commandParser      = require("../../commands/systems/commandParser")
-local argsManager        = require("../../commands/systems/argsManager")
-local loopService        = require("../../commands/services/loopService")
+local commandRunner      = require("../../commands/systems/commandRunner")
 
 local inputUtils   = require("../utils/inputUtils")
 local commandsList = require("../../commands/list")
@@ -233,45 +231,9 @@ function commands:sendInputCommand()
 	end
 end
 
--- Runs one statement: a plain command, a loop ("count^delay^command") or a repeat ("!command")
+-- Runs one statement: a plain command, a loop ("count^delay^command") or a repeat ("!command"). See commandRunner.
 function commands:runStatement(info)
-	local name = info.commandData.name
-	local argValues = info.args
-
-	if info.repeatLast then
-		argValues = commandsController:getLastArgs(name) or {}
-	end
-
-	if info.loop then
-		self:startLoop(name, argValues, info.loop)
-		return
-	end
-
-	commandsController:run(name, argsManager.new(argValues))
-end
-
--- Runs a command `count` times, `delay` seconds apart. "inf" keeps going until 'breakloops'.
-function commands:startLoop(name: string, argValues: { any }, loop)
-	local runs = 0
-	local id
-
-	id = loopService:add(function()
-		runs += 1
-
-		local success, failure = pcall(function()
-			commandsController:run(name, argsManager.new(argValues))
-		end)
-
-		if not success then
-			loopService:remove(id)
-			logger:error(`loop of '{name}' stopped: {failure}`)
-			return
-		end
-
-		if runs >= loop.count then
-			loopService:remove(id)
-		end
-	end, loop.delay)
+	commandRunner.runStatement(info)
 end
 
 function commands:addToHistory(text: string)

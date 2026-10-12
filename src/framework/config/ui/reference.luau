@@ -1,6 +1,12 @@
 local colorFromRGB = require("../../../utils/tools").colorFromRGB
 local cmdsColors = require("./colors").commands
 
+local textHighlight = require("../../../utils/textHighlight")
+
+local function h(text: string): string
+	return textHighlight:apply(text)
+end
+
 return {
 	cases = {
 		{ "all", "- includes everyone" },
@@ -35,6 +41,20 @@ return {
 			{ "title", "Special Player Cases" },
 			{ "text", "These keywords can be used to quickly select groups of players in commands:" },
 			{ "cases" },
+		},
+		{
+			{ "title", "Command Arguments" },
+			{ "text", "Some commands need extra information. Anything you type after the command name is an argument, and arguments are separated by spaces." },
+			{ "text", `The gray hint in the command bar shows what each argument expects. For example, {h("(fly_speed: number?)")} means you type a number.` },
+			{ "bold", "The ? means the argument is optional. You can leave it out and the command still runs." },
+			{ "text", `Arguments are read in order, so optional ones go last. If a value has spaces, put it in quotes, like {h('"John Doe"')}.` },
+			{ "text", "If something is wrong, the command bar tells you what to fix, and nothing runs." },
+			{ "bold", "Examples:" },
+			{ "text", ";fly 50 - fly at speed 50\n;fov 90 - set the field of view to 90\n;tppos 0,10,0 - teleport to X 0, Y 10, Z 0" },
+		},
+		{
+			{ "title", "What the Hint Words Mean" },
+			{ "text", `<b>number</b> - a number, like 10 or 2.5\n<b>string</b> - text, like a name or a word\n<b>boolean</b> - yes or no. You can also type true/false or enabled/disabled\n<b>player</b> - a player name, or one of the special words above\n<b>vector3</b> - a position written as three numbers with commas: X,Y,Z, like 0,10,0\n<b>color3</b> - a color, written as {h("#ff0000")} or as red,green,blue from 0 to 255\n<b>waypoint</b> - the name of a waypoint you saved\n<b>className</b> - a type of object in the game, like Part or Model\n<b>team</b> - the name of a team in the game\n<b>keycode</b> - a keyboard key, like E\n<b>command</b> - the name of a command\n<b>alias</b> - a shortcut name you made with addalias\n<b>plugin</b> - the name of a plugin you installed\n<b>object</b> - any text, nothing is checked` },
 		},
 		{
 			{ "title", "Various Operators" },

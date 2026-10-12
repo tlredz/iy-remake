@@ -11,28 +11,24 @@ local robloxServices = require("./rbxServices")
 local connectionService = require("./connectionService")
 local settingsData = require("../../storage/data/settings")
 local keybindsConfig = require("../config/services/keybinds")
+local keysToText = require("../config/utils/keysToText")
 
 local userInputService = robloxServices.UserInputService
 
 local keyboardService = {}
 
-local listeners = {} -- { getKeys = function() -> { KeyCode }, callback, connected }
-local capturing = nil -- { onKey, onCancel } while the next key press is waited for
+local listeners = {}
+local capturing = nil
 local isConnected = false
 
--- the KeyCode with this name (like "Semicolon"), or nil when there is no such key
 local function keyCodeFromName(name: any): EnumItem?
 	if type(name) ~= "string" then return nil end
-
+	
 	local ok, keyCode = pcall(function()
 		return Enum.KeyCode[name]
 	end)
-
-	if ok and typeof(keyCode) == "EnumItem" then
-		return keyCode
-	end
-
-	return nil
+	
+	return if ok then keyCode else nil
 end
 
 local function bindingConfig(name: string)
@@ -44,7 +40,7 @@ end
 -- the key the binding is set to, or its default until the player picks one
 local function bindingKey(name: string): EnumItem
 	local config = bindingConfig(name)
-
+	
 	return keyCodeFromName(settingsData:getValue(config.settingKey))
 		or keyCodeFromName(config.default)
 		or Enum.KeyCode.Unknown
@@ -172,17 +168,26 @@ function keyboardService:setBinding(name: string, keyCode: EnumItem)
 	settingsData:save()
 end
 
--- the text shown for a key: the character it types when it has one (";"), otherwise its name ("Right Control")
+-- puts the binding back to its default key
+function keyboardService:resetBinding(name: string)
+	local config = bindingConfig(name)
+
+	settingsData:setValue(config.settingKey, nil)
+	settingsData:save()
+end
+
 function keyboardService:getKeyName(keyCode: EnumItem): string
-	local ok, character = pcall(function()
-		return userInputService:GetStringForKeyCode(keyCode)
-	end)
-
-	if ok and type(character) == "string" and character:match("%S") then
-		return character:upper()
-	end
-
-	return (keyCode.Name:gsub("(%l)(%u)", "%1 %2"))
+	-- print(keyCode, keysToText[keyCode] or keyCode.Name)
+	return keysToText[keyCode] or keyCode.Name
+	-- local ok, character = pcall(function()
+	-- 	return userInputService:GetStringForKeyCode(keyCode)
+	-- end)
+	
+	-- if ok and type(character) == "string" and character:match("%S") then
+	-- 	return character:upper()
+	-- end
+	
+	-- return (keyCode.Name:gsub("(%l)(%u)", "%1 %2"))
 end
 
 function keyboardService:getBindingName(name: string): string

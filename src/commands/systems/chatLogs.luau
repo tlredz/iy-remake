@@ -221,8 +221,8 @@ function chatLogs.save(kind: string): (boolean, string)
 	if executorEnv.makefolder then
 		pcall(executorEnv.makefolder, folder)
 	end
-
-	local path = `{folder}/{kind}logs-{os.time()}.txt`
+	
+	local path = `{folder}/logs/{kind}/{os.time()}.txt`
 	local success, reason = pcall(writefile, path, table.concat(lines, "\n"))
 	if success then
 		return true, path

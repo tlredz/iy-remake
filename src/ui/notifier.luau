@@ -114,7 +114,82 @@ local function createPopup(parent, order)
 	assetsService:loadImage(pinButton, "pin")
 	assetsService:loadImage(closeButton, "close")
 
-	return popup, titleLabel, textLabel, pinButton, closeButton
+	return popup, titleLabel, textLabel, pinButton, closeButton, descHolder
+end
+
+-- The row of buttons of a dialog, at the bottom of the body box. Each choice is { text, primary?, onTap? }.
+-- Returns the buttons with their choices, so the popup can connect them
+local function createActions(descHolder: Frame, choices, connections)
+	local row = createService.new("Frame", "Actions", descHolder, {
+		AnchorPoint = Vector2.new(0.5, 1),
+		BackgroundTransparency = 1,
+		Position = UDim2.new(0.5, 0, 1, -TEXT_INSET),
+		Size = UDim2.new(1, -TEXT_INSET * 2, 0, config.actionHeight),
+		ZIndex = 2,
+
+		createService.new("UIListLayout", {
+			FillDirection = Enum.FillDirection.Horizontal,
+			HorizontalAlignment = Enum.HorizontalAlignment.Right,
+			Padding = UDim.new(0, config.actionGap),
+			SortOrder = Enum.SortOrder.LayoutOrder,
+			VerticalAlignment = Enum.VerticalAlignment.Center,
+		}),
+	})
+
+	local buttons = {}
+
+	for index, choice in choices do
+		local primary = choice.primary == true
+
+		local button = createService.new("TextButton", "Action", row, {
+			AutoButtonColor = false,
+			AutomaticSize = Enum.AutomaticSize.X,
+			BorderSizePixel = 0,
+			LayoutOrder = index,
+			Size = UDim2.fromOffset(0, config.actionHeight),
+			Text = choice.text,
+			TextSize = config.textSize,
+			ZIndex = 2,
+			ThemeTag = {
+				BackgroundColor3 = if choice.primary then "Colors.Primary" else "Colors.Background",
+				Font = "Font.Normal",
+				TextColor3 = "Colors.Text.Default",
+			},
+
+			createService.new("UICorner", {
+				CornerRadius = UDim.new(0, config.cornerRadius),
+			}),
+			createService.new("UIPadding", {
+				PaddingLeft = UDim.new(0, config.actionPadding),
+				PaddingRight = UDim.new(0, config.actionPadding),
+			}),
+			createService.new("UISizeConstraint", {
+				MinSize = Vector2.new(config.actionMinWidth, 0),
+			}),
+		})
+
+		-- the button lights up under the pointer: the main one gets a little see-through, the others take the holding colour
+		local function paint(hovered: boolean)
+			if primary then
+				button.BackgroundTransparency = if hovered then 0.2 else 0
+			else
+				themeService:updateObjectProperties(button, {
+					BackgroundColor3 = if hovered then "Colors.Buttons.Holding" else "Colors.Background",
+				})
+			end
+		end
+
+		table.insert(connections, connectionService:Connect(button.MouseEnter, function()
+			paint(true)
+		end))
+		table.insert(connections, connectionService:Connect(button.MouseLeave, function()
+			paint(false)
+		end))
+
+		buttons[index] = button
+	end
+
+	return buttons
 end
 
 local function disconnectItem(item)
@@ -156,7 +231,7 @@ function notifier:getContainer(screenGui)
 	self.queue = {}
 
 	for _, item in pending do
-		self:add(item.title, item.message, item.duration)
+		self:add(item.title, item.message, item.duration, item.choices)
 	end
 
 	return container
@@ -214,7 +289,9 @@ function notifier:wantedHeight(item)
 	local scale = math.max(scaleObject:getScale(), 0.01)
 	local textHeight = item.textLabel.AbsoluteSize.Y / scale -- px -> logical units
 
-	local height = math.max(textHeight + BODY_CHROME, config.size.Y.Offset)
+	-- a popup with buttons fits its message; the others are never shorter than the default size
+	local minHeight = if item.actionsHeight > 0 then 0 else config.size.Y.Offset
+	local height = math.max(textHeight + BODY_CHROME + item.actionsHeight, minHeight)
 	return math.min(height, config.maxHeight, self.room)
 end
 
@@ -332,7 +409,7 @@ function notifier:trim()
 	end
 end
 
-function notifier:add(title, message, duration)
+function notifier:add(title, message, duration, choices)
 	self.nextOrder += 1
 
 	local item = {
@@ -341,9 +418,11 @@ function notifier:add(title, message, duration)
 		removed = false,
 		connections = {},
 		height = config.size.Y.Offset,
+		actionsHeight = if choices then config.actionHeight + config.actionsTopGap + TEXT_INSET else 0,
 	}
 
-	item.frame, item.titleLabel, item.textLabel, item.pinButton, item.closeButton =
+	local descHolder
+	item.frame, item.titleLabel, item.textLabel, item.pinButton, item.closeButton, descHolder =
 		createPopup(self.container, self.nextOrder)
 
 	item.titleLabel.Text = title
@@ -352,6 +431,33 @@ function notifier:add(title, message, duration)
 	table.insert(item.connections, connectionService:Connect(item.pinButton.Activated, function()
 		self:pin(item)
 	end))
+
+	-- a dialog without a duration stays until one of its buttons (or the close button) is tapped, so it cannot be pinned
+	-- and is not timed. With a duration it is a notification like the others, with buttons
+	local sticky = choices ~= nil and type(duration) ~= "number"
+
+	if sticky then
+		item.pinned = true
+		item.pinButton.Visible = false
+	end
+
+	if choices then
+		local buttons = createActions(descHolder, choices, item.connections)
+
+		for index, button in buttons do
+			local choice = choices[index]
+
+			table.insert(item.connections, connectionService:Connect(button.Activated, function()
+				if item.removed then return end
+
+				self:remove(item)
+
+				if choice.onTap then
+					choice.onTap()
+				end
+			end))
+		end
+	end
 
 	table.insert(item.connections, connectionService:Connect(item.closeButton.Activated, function()
 		self:remove(item)
@@ -371,12 +477,14 @@ function notifier:add(title, message, duration)
 	end)
 	self:refreshLayout()
 
-	local waitTime = if type(duration) == "number" then duration else config.defaultTime
-	task.delay(waitTime, function()
-		if not item.pinned then
-			self:remove(item)
-		end
-	end)
+	if not sticky then
+		local waitTime = if type(duration) == "number" then duration else config.defaultTime
+		task.delay(waitTime, function()
+			if not item.pinned then
+				self:remove(item)
+			end
+		end)
+	end
 
 	self:trim()
 	self:trimToRoom()
@@ -396,6 +504,21 @@ function notifier:notify(title, message, duration)
 	end
 
 	self:add(title, message, duration)
+end
+
+-- A notification with buttons, to ask the player something (a confirmation, say). choices is a list of
+-- { text = "Remove", primary = true, onTap = function() ... end }, shown from left to right. The popup stays until a
+-- button is tapped, which closes it and then runs that button's onTap. Closing it with the X runs none of them.
+-- With a duration (seconds) it closes by itself after that time, and can be pinned, like any notification.
+function notifier:ask(title, message, choices, duration)
+	title = tostring(title)
+
+	if not self.container then
+		table.insert(self.queue, { title = title, message = message, choices = choices, duration = duration })
+		return
+	end
+
+	self:add(title, message, duration, choices)
 end
 
 function notifier:destroy()

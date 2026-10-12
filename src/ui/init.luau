@@ -3,6 +3,7 @@
 local frameworkSettings = require("../framework/settings")
 local notificationsConfig = require("../framework/config/ui/notifier")
 local privateEnv = require("../framework/environment/private")
+local executorEnv = require("../framework/environment/executor")
 local connectionService = require("../framework/services/connectionService")
 local robloxServices = require("../framework/services/rbxServices")
 local isMobile = require("../framework/environment/isMobile")
@@ -234,10 +235,16 @@ function interface:createMainFrame()
 	self:createMainScroll(mainFrame)
 
 	self.settings = settingsComponent.new({
-		-- a switch changed. The dock only needs to know about keep menu open
+		-- a switch changed. The dock needs to know about keep menu open, and keep interface needs queueteleport
 		onSwitch = function(setting, enabled)
 			if setting == "keepMenuOpen" and self.dock then
 				self.dock:setKeepOpen(enabled)
+			end
+
+			-- like the keepiy command: without queueteleport the switch can't do anything, so it goes back off
+			if setting == "keepIY" and enabled and executorEnv.queueteleport == nil then
+				self:setKeepIY(false)
+				notifier:notify("Keepiy", "your exploit does not support queueteleport")
 			end
 		end,
 	})

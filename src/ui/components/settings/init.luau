@@ -1,24 +1,42 @@
--- src/ui/components/settings.luau
+-- src/ui/components/settings/init.luau
 -- The settings panel, opened by the settings button in the top bar (like the original IY).
 -- It slides up over the command list. Its layout, text and options come from framework/config/ui/settings.
+--
+-- An option that has a page (Edit Theme, Edit Keybinds, Edit Aliases, Edit/Goto Waypoints, Manage Plugins, Edit Event Binds)
+-- opens it: the page slides in from the right, and its back row slides the list back in. Closing the panel always brings
+-- the list back. The options that open a page show an arrow at the right.
 
 local createService = require("../../services/createService")
-local assetsService = require("../../services/assetsService")
-local themeService = require("../../services/themeService")
-
 local connectionService = require("../../../framework/services/connectionService")
-local keyboardService = require("../../../framework/services/keyboardService")
 local settingsData = require("../../../storage/data/settings")
 local config = require("../../../framework/config/ui/settings")
+local frameworkSettings = require("../../../framework/settings")
+
+local widgets = require("./widgets")
+local buildThemePicker = require("./themePicker")
+local buildKeybindsEditor = require("./keybindsEditor")
+local buildAliasesEditor = require("./aliasesEditor")
+local buildWaypointsEditor = require("./waypointsEditor")
+local buildPluginsEditor = require("./pluginsEditor")
+local buildEventBindsEditor = require("./eventBindsEditor")
 
 local PANEL = config.panel
-local ROW = config.row
 local BOX = config.box
+local ROW = config.row
 local VALUE = config.value
-local TEXT = config.textSizes
 
-local SHOWN_POSITION = UDim2.fromScale(0, PANEL.shownY)
-local HIDDEN_POSITION = UDim2.fromScale(0, PANEL.hiddenY)
+local SHOWN_Y = PANEL.shownY
+local HIDDEN_Y = PANEL.hiddenY
+
+-- the editor pages, by the action of the button that opens them
+local PAGES = {
+	theme = buildThemePicker,
+	keybinds = buildKeybindsEditor,
+	aliases = buildAliasesEditor,
+	waypoints = buildWaypointsEditor,
+	plugins = buildPluginsEditor,
+	eventBinds = buildEventBindsEditor,
+}
 
 local settings = {}
 settings.__index = settings
@@ -30,6 +48,10 @@ end
 
 local function readFlag(key: string): boolean
 	return settingsData:getValue(key) == true
+end
+
+local function slide(frame: GuiObject, position: UDim2, onDone: ((boolean) -> ())?)
+	frame:TweenPosition(position, Enum.EasingDirection.InOut, Enum.EasingStyle.Quart, PANEL.tweenTime, true, onDone)
 end
 
 function settings.isKeepMenuOpen(): boolean
@@ -48,232 +70,25 @@ function settings.setKeepIY(enabled: boolean)
 	saveFlag(config.keys.keepIY, enabled)
 end
 
--- a row shows its stripe when idle, and the holding colour while the pointer is over it
-local function paintRow(row: GuiObject, stripe: number, hovered: boolean)
-	themeService:updateObjectProperties(row, {
-		BackgroundColor3 = if hovered then "Colors.Buttons.Holding" else "Colors.Buttons.Default",
-	})
-	row.BackgroundTransparency = if hovered then 0 else stripe
-end
-
-local function createRow(panel: Frame, order: number, index: number): GuiObject
-	local stripe = if index % 2 == 1 then PANEL.stripeTransparency else 1
-
-	local row = createService.new("TextButton", "Option", panel, {
-		AutoButtonColor = false,
-		BackgroundTransparency = stripe,
-		BorderSizePixel = 0,
-		LayoutOrder = order,
-		Size = UDim2.new(1, 0, 0, PANEL.rowHeight),
-		Text = "",
-		ThemeTag = {
-			BackgroundColor3 = "Colors.Buttons.Default",
-		},
-	})
-
-	connectionService:Connect(row.MouseEnter, function()
-		paintRow(row, stripe, true)
-	end)
-
-	connectionService:Connect(row.MouseLeave, function()
-		paintRow(row, stripe, false)
-	end)
-
-	return row
-end
-
-local function createHeader(panel: Frame, order: number, title: string)
-	createService.new("TextLabel", "Header", panel, {
-		BackgroundTransparency = 1,
-		LayoutOrder = order,
-		Size = UDim2.new(1, 0, 0, PANEL.headerHeight),
-		Text = title,
-		TextSize = TEXT.header,
-		TextXAlignment = Enum.TextXAlignment.Left,
-		ThemeTag = {
-			Font = "Font.MonoSpace",
-			TextColor3 = "Colors.Text.Darker",
-		},
-	})
-end
-
-local function createLabel(row: GuiObject, text: string, rightSpace: number)
-	return createService.new("TextLabel", "Label", row, {
-		BackgroundTransparency = 1,
-		Position = UDim2.fromOffset(ROW.labelInset, 0),
-		Size = UDim2.new(1, -(ROW.labelInset + rightSpace), 1, 0),
-		Text = text,
-		TextSize = TEXT.label,
-		TextTruncate = Enum.TextTruncate.AtEnd,
-		TextXAlignment = Enum.TextXAlignment.Left,
-		ThemeTag = {
-			Font = "Font.Normal",
-			TextColor3 = "Colors.Text.Default",
-		},
-	})
-end
-
-local function createIcon(row: GuiObject, option)
-	local icon = createService.new("ImageLabel", "Icon", row, {
-		AnchorPoint = Vector2.new(0, 0.5),
-		BackgroundTransparency = 1,
-		Position = UDim2.new(0, ROW.iconInset, 0.5, 0),
-		Size = UDim2.fromOffset(ROW.iconSize, ROW.iconSize),
-		ThemeTag = {
-			ImageColor3 = "Colors.Icons",
-		},
-	})
-
-	--[[if option.spriteX then
-		icon.ScaleType = Enum.ScaleType.Crop
-		icon.ImageRectSize = Vector2.new(ROW.iconSize, ROW.iconSize)
-		icon.ImageRectOffset = Vector2.new(option.spriteX, 0)
-	end]]
-
-	assetsService:loadImage(icon, option.icon)
-	return icon
-end
-
-local function createBox(row: GuiObject): (Frame, Frame)
-	local box = createService.new("Frame", "Box", row, {
-		AnchorPoint = Vector2.new(1, 0.5),
-		BorderSizePixel = 0,
-		Position = UDim2.new(1, -PANEL.padding, 0.5, 0),
-		Size = UDim2.fromOffset(BOX.size, BOX.size),
-		ThemeTag = {
-			BackgroundColor3 = "Colors.Buttons.Default",
-		},
-
-		createService.new("UICorner", {
-			CornerRadius = UDim.new(0, BOX.cornerRadius),
-		}),
-		createService.new("UIStroke", {
-			ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-			Thickness = 1,
-			ThemeTag = {
-				Color = "Colors.Border.Default",
-			},
-		}),
-	})
-
-	local fill = createService.new("Frame", "Fill", box, {
-		BorderSizePixel = 0,
-		Position = UDim2.fromOffset(BOX.inset, BOX.inset),
-		Size = UDim2.new(1, -2 * BOX.inset, 1, -2 * BOX.inset),
-		ThemeTag = {
-			BackgroundColor3 = "Colors.Primary",
-		},
-
-		createService.new("UICorner", {
-			CornerRadius = UDim.new(0, BOX.fillCornerRadius),
-		}),
-	})
-
-	return box, fill
-end
-
--- a box that shows some text. Returns the box and its text label
-local function createValue(row: GuiObject, text: string, width: number): (Frame, TextLabel)
-	local value = createService.new("Frame", "Value", row, {
-		AnchorPoint = Vector2.new(1, 0.5),
-		BorderSizePixel = 0,
-		Position = UDim2.new(1, -PANEL.padding, 0.5, 0),
-		Size = UDim2.fromOffset(width, VALUE.height),
-		ThemeTag = {
-			BackgroundColor3 = "Colors.Buttons.Default",
-		},
-
-		createService.new("UICorner", {
-			CornerRadius = UDim.new(0, VALUE.cornerRadius),
-		}),
-	})
-
-	local label = createService.new("TextLabel", "Text", value, {
-		BackgroundTransparency = 1,
-		Size = UDim2.fromScale(1, 1),
-		Text = text,
-		TextSize = TEXT.value,
-		TextTruncate = Enum.TextTruncate.AtEnd,
-		ThemeTag = {
-			Font = "Font.MonoSpace",
-			TextColor3 = "Colors.Text.Default",
-		},
-	})
-
-	return value, label
-end
-
--- a row that shows the key of a binding. Tapping it waits for the next key press to become the new key;
--- tapping again, or Escape, cancels. Returns the function that redraws it
-local function createKeybind(self, row: GuiObject, option): () -> ()
-	createLabel(row, option.label, VALUE.keybindWidth + 2 * PANEL.padding)
-
-	local value, text = createValue(row, "", VALUE.keybindWidth)
-	local cancelWait = nil -- set while the box waits for a key
-
-	local function refresh()
-		local waiting = cancelWait ~= nil
-
-		text.Text = if waiting then "press a key" else keyboardService:getBindingName(option.binding)
-		themeService:updateObjectProperties(value, {
-			BackgroundColor3 = if waiting then "Colors.Primary" else "Colors.Buttons.Default",
-		})
-	end
-
-	local function stopWaiting()
-		if cancelWait then
-			local cancel = cancelWait
-			cancelWait = nil
-			cancel()
-		end
-
-		refresh()
-	end
-
-	table.insert(self.stoppers, stopWaiting)
-
-	connectionService:Connect(row.Activated, function()
-		if cancelWait then
-			stopWaiting()
-			return
-		end
-
-		cancelWait = keyboardService:capture(function(keyCode)
-			cancelWait = nil
-			keyboardService:setBinding(option.binding, keyCode)
-			refresh()
-		end, function()
-			-- Escape
-			cancelWait = nil
-			refresh()
-		end)
-
-		refresh()
-	end)
-
-	refresh()
-	return refresh
-end
-
 -- builds one option row. Returns a function that redraws it, when the option has a state to show
-local function createOption(self, panel: Frame, order: number, index: number, option): (() -> ())?
-	local row = createRow(panel, order, index)
+function settings:createOption(list, option): (() -> ())?
+	local row = widgets.row(list)
 
 	if option.icon then
-		createIcon(row, option)
+		widgets.icon(row, option.icon)
 	end
 
 	if option.kind == "switch" then
 		local key = config.keys[option.setting]
-		createLabel(row, option.label, BOX.size + 2 * PANEL.padding)
+		widgets.label(row, option.label, BOX.size + 2 * PANEL.padding)
 
-		local _, fill = createBox(row)
+		local _, fill = widgets.box(row)
 
 		local function refresh()
 			fill.Visible = readFlag(key)
 		end
 
-		connectionService:Connect(row.Activated, function()
+		row.Activated:Connect(function()
 			local enabled = not readFlag(key)
 			saveFlag(key, enabled)
 			refresh()
@@ -288,18 +103,64 @@ local function createOption(self, panel: Frame, order: number, index: number, op
 	end
 
 	if option.kind == "keybind" then
-		return createKeybind(self, row, option)
+		widgets.label(row, option.label, VALUE.keybindWidth + 2 * PANEL.padding)
+		
+		local refresh, stop = widgets.keybind(row, option.binding)
+		table.insert(self.stoppers, stop)
+		
+		return refresh
 	end
 
-	createLabel(row, option.label, 0)
+	-- a button: opens its page when it has one (and shows an arrow for it), and reports its action otherwise
+	local hasPage = PAGES[option.action] ~= nil
 
-	connectionService:Connect(row.Activated, function()
-		if self.onButton then
+	if hasPage then
+		widgets.chevron(row)
+	end
+
+	widgets.label(row, option.label, if hasPage then ROW.chevronSize + 2 * PANEL.padding else 0)
+
+	row.Activated:Connect(function()
+		if PAGES[option.action] then
+			self:openPage(option.action)
+		elseif self.onButton then
 			self.onButton(option.action)
 		end
 	end)
 
 	return nil
+end
+
+function settings:createOptions()
+	local list = widgets.list(self.panel)
+
+	for _, section in config.sections do
+		widgets.header(list, section.title)
+
+		for _, option in section.options do
+			local refresh = self:createOption(list, option)
+
+			if refresh then
+				table.insert(self.refreshers, refresh)
+			end
+		end
+	end
+
+	-- the version, at the very end of the list
+	local footer = config.footer
+		:gsub("{name}", frameworkSettings.applicationName)
+		:gsub("{version}", frameworkSettings.version)
+
+	widgets.footer(list, footer)
+end
+
+function settings:createPages()
+	for name, build in PAGES do
+		self.pages[name] = {
+			frame = widgets.page(self.holder, `{name}Page`, UDim2.fromScale(1, HIDDEN_Y)),
+			build = build,
+		}
+	end
 end
 
 function settings.new(options)
@@ -309,9 +170,17 @@ function settings.new(options)
 		isOpen = false,
 		isShown = false,
 		holder = nil,
-		panel = nil,
+		panel = nil, -- the list of options
+		current = nil, -- the frame on screen: the list, or an editor page
+		pages = {},
 		refreshers = {},
-		stoppers = {},
+		stoppers = {}, -- end the waits of the list's keybind boxes
+		pageStoppers = {}, -- end the waits of the open page's keybind boxes
+		pageConnections = {}, -- the scroll of the open page, followed to place the floating back button
+		backRow = nil, -- the back row of the open page
+		floatingBack = nil, -- the back button in the corner
+		floatingIcon = nil, -- its icon
+		backIcon = nil, -- the icon of the back row of the open page, which the floating icon copies
 	}, settings)
 end
 
@@ -325,54 +194,84 @@ function settings:create(parent: Instance, listArea: GuiObject): Frame
 		Visible = false,
 	})
 
-	-- a scrolling panel: the list is longer than the area it is shown in
-	local panel = createService.new("ScrollingFrame", "Settings", holder, {
-		Active = true,
-		AutomaticCanvasSize = Enum.AutomaticSize.Y,
-		BorderSizePixel = 0,
-		CanvasSize = UDim2.new(),
-		ElasticBehavior = Enum.ElasticBehavior.Never,
-		Position = HIDDEN_POSITION,
-		ScrollBarThickness = PANEL.scrollBarThickness,
-		ScrollingDirection = Enum.ScrollingDirection.Y,
-		Size = UDim2.fromScale(1, 1),
-		ThemeTag = {
-			BackgroundColor3 = "Colors.Background",
-			ScrollBarImageColor3 = "Colors.ScrollBar.Thumb",
-		},
+	self.holder = holder
+	self.panel = widgets.page(holder, "Settings", UDim2.fromScale(0, HIDDEN_Y))
+	self.current = self.panel
 
-		createService.new("UIPadding", {
-			PaddingLeft = UDim.new(0, PANEL.padding),
-			PaddingRight = UDim.new(0, PANEL.padding),
-			PaddingTop = UDim.new(0, PANEL.padding),
-			PaddingBottom = UDim.new(0, PANEL.padding),
+	self:createOptions()
+	self:createPages()
+	self:createFloatingBack(holder)
+
+	return holder
+end
+
+-- A back button in the top right corner of the panel. It shows while an editor page has scrolled its back row out of
+-- view, and does what that row does.
+function settings:createFloatingBack(holder: Frame)
+	local button = createService.new("TextButton", "FloatingBack", holder, {
+		AnchorPoint = Vector2.new(1, 0),
+		AutoButtonColor = false,
+		BorderSizePixel = 0,
+		Position = UDim2.new(1, -(PANEL.floatBackMargin + PANEL.scrollBarThickness), 0, PANEL.floatBackMargin),
+		Size = UDim2.fromOffset(PANEL.floatBackSize, PANEL.floatBackSize),
+		Text = "",
+		Visible = false,
+		ZIndex = 2,
+		ThemeTag = {
+			BackgroundColor3 = "Colors.Buttons.Holding",
+		},
+		
+		createService.new("UICorner", {
+			CornerRadius = UDim.new(0, VALUE.cornerRadius),
 		}),
-		createService.new("UIListLayout", {
-			Padding = UDim.new(0, PANEL.rowGap),
-			SortOrder = Enum.SortOrder.LayoutOrder,
+		createService.new("UIStroke", {
+			ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+			Thickness = 1,
+			ThemeTag = {
+				Color = "Colors.Border.Default",
+			},
 		}),
 	})
 
-	self.holder = holder
-	self.panel = panel
+	-- above the button, whatever the ZIndexBehavior is
+	local icon = widgets.icon(button, config.pages.backIcon)
+	icon.ZIndex = button.ZIndex + 1
 
-	local order = 0
+	button.Activated:Connect(function()
+		self:back()
+	end)
 
-	for _, section in config.sections do
-		order += 1
-		createHeader(panel, order, section.title)
+	self.floatingBack = button
+	self.floatingIcon = icon
+end
 
-		for index, option in section.options do
-			order += 1
+-- the floating icon shows the same image as the icon of the back row, once that has loaded
+function settings:syncFloatingIcon()
+	local icon, source = self.floatingIcon, self.backIcon
 
-			local refresh = createOption(self, panel, order, index, option)
-			if refresh then
-				table.insert(self.refreshers, refresh)
-			end
-		end
+	if icon and source and source.Image ~= "" and icon.Image ~= source.Image then
+		icon.Image = source.Image
+	end
+end
+
+-- shows the floating back button when the open page has scrolled its back row out of view, and hides it otherwise
+function settings:updateFloatingBack()
+	local button = self.floatingBack
+	if not button then return end
+
+	local page = self.current
+	local row = self.backRow
+	local show = false
+
+	if self.isShown and page ~= self.panel and row and row.Parent then
+		show = row.AbsolutePosition.Y + row.AbsoluteSize.Y <= page.AbsolutePosition.Y
 	end
 
-	return holder
+	button.Visible = show
+
+	if show then
+		self:syncFloatingIcon()
+	end
 end
 
 function settings:refresh()
@@ -381,10 +280,89 @@ function settings:refresh()
 	end
 end
 
--- stops every box that waits for a key (the panel closed, or the command bar took focus)
+-- stops every box that waits for a key (the panel closed, a page changed, or the command bar took focus)
 function settings:stopWaiting()
 	for _, stop in self.stoppers do
 		stop()
+	end
+
+	for _, stop in self.pageStoppers do
+		stop()
+	end
+end
+
+-- builds a page again, so it shows what is current when it opens (its keys, its aliases, its theme)
+function settings:buildPage(page)
+	widgets.clear(page.frame)
+	self.pageStoppers = {}
+
+	for _, connection in self.pageConnections do
+		connection:Disconnect()
+	end
+	table.clear(self.pageConnections)
+
+	page.build(page.frame, {
+		back = function()
+			self:back()
+		end,
+		stoppers = self.pageStoppers,
+	})
+
+	self.backRow = page.frame:FindFirstChild("BackRow")
+	self.backIcon = if self.backRow then self.backRow:FindFirstChild("Icon") else nil
+
+	if self.backIcon then
+		-- the image of the back row can arrive after the page is built
+		table.insert(self.pageConnections, self.backIcon:GetPropertyChangedSignal("Image"):Connect(function()
+			self:syncFloatingIcon()
+		end))
+
+		self:syncFloatingIcon()
+	end
+
+	table.insert(self.pageConnections, page.frame:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
+		self:updateFloatingBack()
+	end))
+end
+
+-- slides an editor page in from the right, and the list out to the left
+function settings:openPage(name: string)
+	local page = self.pages[name]
+	if not page or not self.isShown or self.current ~= self.panel then return end
+
+	self:stopWaiting()
+	self:buildPage(page)
+
+	page.frame.CanvasPosition = Vector2.zero
+	page.frame.Position = UDim2.fromScale(1, SHOWN_Y)
+	self.current = page.frame
+
+	slide(self.panel, UDim2.fromScale(-1, SHOWN_Y))
+	slide(page.frame, UDim2.fromScale(0, SHOWN_Y))
+
+	self:updateFloatingBack()
+end
+
+-- slides the editor page out to the right, and the list back in
+function settings:back()
+	if self.current == self.panel then return end
+	
+	self:stopWaiting()
+
+	slide(self.current, UDim2.fromScale(1, SHOWN_Y))
+	slide(self.panel, UDim2.fromScale(0, SHOWN_Y))
+	self.current = self.panel
+
+	self:updateFloatingBack()
+end
+
+-- puts every frame back where it rests: the list below the view, the editor pages to the right of it
+function settings:reset()
+	self.current = self.panel
+	self.panel.Position = UDim2.fromScale(0, HIDDEN_Y)
+
+	for _, page in self.pages do
+		page.frame.Position = UDim2.fromScale(1, HIDDEN_Y)
 	end
 end
 
@@ -397,21 +375,28 @@ function settings:setShown(shown: boolean)
 	if not self.panel or self.isShown == shown then return end
 
 	self.isShown = shown
-	local holder = self.holder
-	local panel = self.panel
+	local current = self.current
+
+	self:updateFloatingBack()
 
 	if shown then
-		holder.Visible = true
-		panel:TweenPosition(SHOWN_POSITION, Enum.EasingDirection.InOut, Enum.EasingStyle.Quart, PANEL.tweenTime, true)
-	else
-		self:stopWaiting()
-
-		panel:TweenPosition(HIDDEN_POSITION, Enum.EasingDirection.InOut, Enum.EasingStyle.Quart, PANEL.tweenTime, true, function(completed)
-			if completed and not self.isShown then
-				holder.Visible = false
-			end
-		end)
+		self.holder.Visible = true
+		slide(current, UDim2.fromScale(0, SHOWN_Y))
+		return
 	end
+
+	self:stopWaiting()
+
+	slide(current, UDim2.fromScale(0, HIDDEN_Y), function(completed)
+		if completed and not self.isShown then
+			self.holder.Visible = false
+
+			-- closed with the button: the next time it opens, it shows the list. A command bar focus keeps the page
+			if not self.isOpen then
+				self:reset()
+			end
+		end
+	end)
 end
 
 function settings:watchCommandBar(searchBox: TextBox)

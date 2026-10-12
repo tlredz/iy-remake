@@ -24,6 +24,13 @@ return {
 	gapToWindow = 0,
 	maxVisible = 5,
 
+	-- the buttons of a dialog (notifier:ask): their size and the space between them
+	actionHeight = 22,
+	actionMinWidth = 56,
+	actionPadding = 12, -- space at each side of a button's text
+	actionGap = 4, -- between buttons
+	actionsTopGap = 4, -- between the message and the buttons
+
 	-- time (seconds) to grow a popup in and collapse it out, and the title blink when pinned
 	tweenTime = 0.5,
 	flashTime = 0.5,
