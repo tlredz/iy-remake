@@ -24,7 +24,7 @@ local function cobaltSpy(self)
 end
 
 local function remoteSpy(self)
-	self.fetchService.load("backups/remotespy.luau", "iy/remotespy")()
+	self.fetchService.load("backups/remotespy/main.luau", "iy/remotespy")()
 end
 
 local function audioLogger(self)

@@ -27,6 +27,9 @@ local colorFromRGB     = tools.colorFromRGB
 local commands = {}
 commands.__index = commands
 
+local DELETE_DEBOUNCE = 0.15
+local SEARCH_BOX_ROWS = 2.50
+
 local function getCommand(commandName)
 	return commandsList.lookup[commandName]
 end
@@ -41,12 +44,30 @@ local function cleanInput(text)
 	return text
 end
 
-function commands:refresh(text)
+function commands:refresh(text: string, debounce: boolean?)
 	local statements = self.parser:parse(text)
 	self.parser:highlight(statements)
-	
+
 	self:updateSearchBoxHighlight()
-	self:updateSearchedCommand()
+
+	if debounce then
+		self:scheduleSearchedCommand()
+	else
+		self.scrollToken += 1 -- a scroll that was waiting for the debounce is dropped, this one is the current one
+		self:updateSearchedCommand()
+	end
+end
+
+-- scrolls to the matching command once the user has stopped deleting for DELETE_DEBOUNCE seconds. Every deletion
+-- restarts the wait, and a refresh that is not debounced replaces it (the token changes)
+function commands:scheduleSearchedCommand()
+	self.scrollToken += 1
+	local token = self.scrollToken
+
+	task.delay(DELETE_DEBOUNCE, function()
+		if token ~= self.scrollToken then return end
+		self:updateSearchedCommand()
+	end)
 end
 
 function commands:applyCorrection()
@@ -60,7 +81,7 @@ function commands:applyCorrection()
 		newText ..= " "
 	end
 	
-	self.searchBox.Text = newText
+	self:writeText(newText)
 end
 
 function commands:captureFocus()
@@ -72,7 +93,9 @@ function commands:captureFocus()
 	-- 	task.wait()
 	-- end
 	
-	searchBox:CaptureFocus()
+	if searchBox.Parent ~= nil then
+		searchBox:CaptureFocus()
+	end
 end
 
 -- Turns the user's interactions with the command list on or off: clicking a command or the search bar, holding /
@@ -148,7 +171,7 @@ function commands:awake()
 	self.commandClickedSignal:Connect(function(data)
 		if not self.interactive then return end
 		
-		searchBox.Text = data.aliases[1]
+		self:writeText(data.aliases[1])
 		task.defer(captureFocus)
 	end)
 	
@@ -208,8 +231,12 @@ function commands:awake()
 			end
 		end
 		
+		-- deleting: the scroll waits for the user to stop (DELETE_DEBOUNCE); typing follows at once
+		local deleting = #text < #self.lastText
+		self.lastText = text
+
 		updatePlaceholder()
-		self:refresh(text)
+		self:refresh(text, deleting)
 	end)
 
 	-- while the bar is focused: Up and Down browse the history, Tab takes the suggestion
@@ -260,7 +287,7 @@ function commands:sendInputCommand()
 	end
 
 	if settingsData:getValue("clearOnEnter") then
-		self.searchBox.Text = ""
+		self:writeText("")
 	end
 
 	self.historyIndex = nil
@@ -325,7 +352,15 @@ end
 
 function commands:setSearchText(text: string)
 	self.historyText = text
+	self:writeText(text)
+end
+
+-- sets the text from code (history, a correction, a clicked command, clear on enter). The list follows it at once,
+-- it is not debounced like a deletion typed by the user
+function commands:writeText(text: string)
 	self.searchBox.Text = text
+	self.lastText = text
+	self:refresh(text)
 end
 
 function commands:create()
@@ -424,6 +459,7 @@ function commands:create()
 	
 	self.searchBox = createService.new("TextBox", "SearchBox", {
 		BackgroundTransparency = 1,
+		BorderSizePixel        = 0,
 		TextTransparency       = 1,
 		Size                   = UDim2.fromScale(1, 0),
 		Position               = UDim2.fromScale(0, 0.4),
@@ -433,6 +469,13 @@ function commands:create()
 		Text                   = "",
 		MultiLine              = true
 	})
+
+	-- the box is never clicked: the command bar button gives it the focus (captureFocus). The window is drawn above
+	-- it and absorbs the clicks, and when the window is hidden the input is turned off too (if the client has it)
+	self.searchBox.ZIndex = 0
+	pcall(function()
+		self.searchBox.Interactable = false
+	end)
 	
 	self.commandsFolder = createService.new("Folder", "Commands")
 end
@@ -465,6 +508,51 @@ function commands:updateSearchBoxHighlight()
 	else
 		input.AnchorPoint = Vector2.new(1, 0.5)
 		input.Position    = UDim2.new(0.5, 0, 0.5, 0)
+	end
+end
+
+-- places the search box a few command rows under the command bar, in screen pixels, and keeps it inside the ScreenGui:
+-- a box that is off the screen can not take the focus. It runs every frame while the bar is enabled (see enable)
+function commands:updateSearchBoxPosition()
+	local searchBox    = self.searchBox
+	local searchHolder = self.searchBoxHolder
+	local screenGui    = self.screenGui
+	local mainFrame    = self.scrollHolder and self.scrollHolder.Parent -- the window, the scroll holder is its child
+
+	if not self.isEnabled or not (searchBox and searchHolder and screenGui and mainFrame) then return end
+
+	local screenSize = screenGui.AbsoluteSize
+	local scale      = math.max(scaleObject:getScale(), 0.01)
+
+	-- where the window is, from its Position (the same numbers the dock uses to place it). The offsets are multiplied
+	-- by the UIScale, the scale fractions are shares of the screen
+	local framePos = mainFrame.Position
+	local frameX   = framePos.X.Scale * screenSize.X + framePos.X.Offset * scale
+	local frameY   = framePos.Y.Scale * screenSize.Y + framePos.Y.Offset * scale
+
+	-- where the bar is inside the window: a difference of two AbsolutePositions, so whatever they both have in common
+	-- (like the top bar inset) cancels out
+	local barX = frameX + (searchHolder.AbsolutePosition.X - mainFrame.AbsolutePosition.X)
+	local barY = frameY + (searchHolder.AbsolutePosition.Y - mainFrame.AbsolutePosition.Y)
+
+	-- the bar's size, but never bigger than the screen and never 0 px (a 0 px box can not take the focus)
+	local holderSize = searchHolder.AbsoluteSize
+	local width  = math.max(math.min(holderSize.X, screenSize.X), 1)
+	local height = math.max(math.min(holderSize.Y, screenSize.Y), 1)
+
+	local rowsGap = self:calculateLabelSize() * SEARCH_BOX_ROWS * scale
+	
+	local x = math.clamp(barX, 0, math.max(screenSize.X - width, 0))
+	local y = math.clamp(barY + height + rowsGap, 0, math.max(screenSize.Y - height, 0))
+
+	-- the ScreenGui's UIScale multiplies the offsets of its children, so the pixels are divided by the scale
+	local position = UDim2.fromOffset(x / scale, y / scale)
+	local size     = UDim2.fromOffset(width / scale, height / scale)
+
+	-- written only when it changes, so the TextBox is not re-laid out every frame
+	if searchBox.Position ~= position or searchBox.Size ~= size then
+		searchBox.Position = position
+		searchBox.Size     = size
 	end
 end
 
@@ -797,7 +885,7 @@ function commands:enable()
 	self.isEnabled = true
 
 	self.commandsFolder.Parent  = container
-	self.searchBox.Parent       = self.scrollHolder
+	self.searchBox.Parent       = self.screenGui
 	self.searchBoxHolder.Parent = self.scrollHolder
 	self.commandInfo.Parent     = self.scrollHolder
 
@@ -810,6 +898,12 @@ function commands:enable()
 	end)
 
 	self:update()
+	self:updateSearchBoxPosition()
+
+	-- the bar moves with the window (drag, dock), so the search box follows it every frame
+	self.searchBoxConnection = connectionService:Connect(runService.RenderStepped, function()
+		self:updateSearchBoxPosition()
+	end)
 end
 
 function commands:disable()
@@ -824,6 +918,7 @@ function commands:disable()
 	connectionService:disconnect(self.containerConnection)
 	connectionService:disconnect(self.markerConnection)
 	connectionService:disconnect(self.scrollConnection)
+	connectionService:disconnect(self.searchBoxConnection)
 end
 
 function commands.new(config)
@@ -836,6 +931,7 @@ function commands.new(config)
 		scrolledSignal  = config.scrolledSignal,
 		scrollHolder    = config.scrollHolder,
 		scrollBar       = config.scrollBar,
+		screenGui       = config.screenGui,
 		
 		configs = {
 			placeholderText = cfg("placeholderText"),
@@ -863,7 +959,9 @@ function commands.new(config)
 		commandsData    = {},
 		history         = {},
 		historyIndex    = nil,
-		historyText     = ""
+		historyText     = "",
+		lastText        = "", -- the text the bar had at the last change, to tell a deletion from typing
+		scrollToken     = 0,  -- counts the scrolls of the debounce; a scroll that is not the latest does nothing
 	}, commands)
 	
 	self.parser = commandParser.new(self.commandInput, function(text, color)

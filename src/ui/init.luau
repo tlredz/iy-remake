@@ -264,8 +264,9 @@ function interface:createCommands()
 		scrolledSignal = scrollBar.scrolledSignal,
 		scrollContainer = self.scrollContainer,
 		scrollHolder = self.scrollHolder,
+		screenGui = self.screenGui,
 		scrollBar = scrollBar,
-
+		
 		configs = {
 			placeholderText = frameworkSettings.ui.commands.placeholderText,
 			padding = frameworkSettings.ui.commands.padding,

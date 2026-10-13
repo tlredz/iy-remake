@@ -72,6 +72,10 @@ return createCommands({
 		commands = require("./cmds/general")
 	},
 	{
+		name = "interface",
+		commands = require("./cmds/interface")
+	},
+	{
 		name = "character",
 		commands = require("./cmds/character")
 	},

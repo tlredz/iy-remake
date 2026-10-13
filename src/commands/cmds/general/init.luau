@@ -1,6 +1,5 @@
 return {
 	require("./discord"),        -- done
-	require("./guiscale"),       -- done
 	require("./console"),        -- done
 	require("./scripts"),        -- done
 	require("./serverinfo"),     -- done
@@ -15,12 +14,6 @@ return {
 	require("./datalimit"),      -- done
 	require("./replicationlag"), -- done
 	require("./setfpscap"),      -- done
-	require("./showprompts"),    -- done
-	require("./togglegui"),      -- done
-	require("./showguis"),       -- done
-	-- require("./guidelete"),   -- maybe later
-	require("./hideiy"),
-	-- require("./keepiy"),
 	require("./removeads"),      -- done
 	require("./saveinstance"),   -- maybe later
 	require("./clearerror"),
