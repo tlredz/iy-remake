@@ -21,6 +21,7 @@ return {
 	require("./follow"),
 	require("./loops"),
 	require("./fling"),
+	-- require("./autofling"),
 	require("./invisible"),
 	require("./limbs"),
 	require("./hats"),

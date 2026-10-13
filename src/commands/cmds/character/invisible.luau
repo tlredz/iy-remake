@@ -1,12 +1,9 @@
--- invisible hides your character's parts and decals. The change is applied to the parts themselves,
--- so it replicates to other players, and the character stays in the workspace, so tools keep working.
--- visible puts the original transparency back.
--- toolinvisible does the same thing: the tools are part of the character and stay usable.
+-- /src/commands/cmds/character/invisible.luau
 
 local function applyInvisible(self, garbage)
 	local character = self.playerService:getCharacter()
 	if not character then return end
-
+	
 	for _, object in character:GetDescendants() do
 		if (object:IsA("BasePart") or object:IsA("Decal")) and garbage.originals[object] == nil then
 			garbage.originals[object] = object.Transparency
@@ -21,8 +18,7 @@ local function startInvisible(self)
 		self:notify("Invisible", "you are already invisible")
 		return
 	end
-
-	-- a leftover from an earlier run (re-executed script) keeps the real original values
+	
 	local originals = {}
 	if previous then
 		originals = previous.originals or {}
@@ -31,34 +27,33 @@ local function startInvisible(self)
 			previous.connection:Disconnect()
 		end
 	end
-
+	
 	local garbage = self:createGarbage("invisible")
 	garbage.originals = originals
-
+	
 	applyInvisible(self, garbage)
-
-	-- a new character after a respawn needs the same change
+	
 	garbage.connection = self:connect(self.localPlayer.CharacterAdded, function()
 		applyInvisible(self, garbage)
 	end)
-
+	
 	self:notify("Invisible", "other players can no longer see your character")
 end
 
 local function stopInvisible(self): boolean
 	local garbage = self:collectGarbage("invisible")
 	if not garbage then return false end
-
+	
 	if garbage.connection then
 		garbage.connection:Disconnect()
 	end
-
+	
 	for object, transparency in garbage.originals do
 		if object.Parent then
 			object.Transparency = transparency
 		end
 	end
-
+	
 	return true
 end
 

@@ -1,9 +1,10 @@
+-- /src/commands/cmds/camera/freecam.luau
+
 local resolvePlayers = require("../../systems/resolvePlayers")
 local freecam = require("../../systems/freecam")
 
 local TITLE = "Freecam"
 
--- Waypoints are saved per game: { [placeId] = { [name] = "x, y, z" } }
 local function getWaypointPosition(self, name: string): Vector3?
 	local places = self.storage.waypoints:getValue(tostring(game.PlaceId))
 	local coords = type(places) == "table" and places[name]
@@ -12,7 +13,6 @@ local function getWaypointPosition(self, name: string): Vector3?
 	return self:unstringify(coords, "Vector3")
 end
 
--- No spaces, so the text can be pasted straight into freecampos
 local function formatPosition(position: Vector3): string
 	return `{math.round(position.X)},{math.round(position.Y)},{math.round(position.Z)}`
 end
@@ -31,7 +31,7 @@ return {
 			if speed then
 				self.privateEnv.freecamSpeed = speed
 			end
-
+			
 			freecam.start(self)
 		end
 	},
@@ -59,7 +59,7 @@ return {
 				self:notify(TITLE, `there is no waypoint named '{name}'`)
 				return
 			end
-
+			
 			freecam.start(self, position)
 		end
 	},
@@ -74,7 +74,7 @@ return {
 				self:notify(TITLE, "that player's character is not loaded")
 				return
 			end
-
+			
 			freecam.start(self, root.Position)
 		end
 	},
@@ -102,7 +102,7 @@ return {
 				self:notify(TITLE, "freecam is not on")
 				return
 			end
-
+			
 			self:notify("Freecam Position", formatPosition(position))
 		end
 	},
@@ -115,10 +115,10 @@ return {
 				self:notify(TITLE, "freecam is not on")
 				return
 			end
-
+			
 			local setclipboard = self:expectExploit("setclipboard")
 			if not setclipboard then return end
-
+			
 			setclipboard(formatPosition(position))
 			self:notify(TITLE, "copied freecam position to clipboard")
 		end

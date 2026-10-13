@@ -1,3 +1,5 @@
+-- /src/commands/systems/freecam.luau
+
 -- Freecam: moves the camera on its own, so your character stays where it is.
 -- The freecam commands use it. The commands that take the camera back (view, fixcam)
 -- stop it first, otherwise it would keep overriding the camera every frame.
@@ -10,6 +12,10 @@
 -- button is hidden, since jumping does nothing then.
 
 local robloxServices = require("../../framework/services/rbxServices")
+local createService = require("../../framework/services/createService")
+local playerService = require("../../framework/services/playerService")
+local localPlayer = require("../../framework/services/localPlayer")
+
 local isMobile = require("../../framework/environment/isMobile")
 local coreGui = require("../../ui/coreGui")
 
@@ -19,10 +25,11 @@ local UserInputService = robloxServices.UserInputService
 local freecam = {}
 
 freecam.DEFAULT_SPEED = 1
-freecam.DEFAULT_BOOST = 2 -- speed multiplier while the BOOST button is held
+freecam.DEFAULT_BOOST = 2
 freecam.MIN_BOOST = 1
 freecam.MAX_BOOST = 50
-local BOOST_SETTING = "freecam.boost" -- saved in the settings, so it is kept next time
+
+local BOOST_SETTING = "freecam.boost"
 
 local GARBAGE_NAME = "freecam"
 local KEYS_ACTION = "freecamKeys"
@@ -140,15 +147,6 @@ local function isTouch(input): boolean
 	return input.UserInputType == Enum.UserInputType.Touch
 end
 
-local function make(className: string, parent: Instance?, properties: { [string]: any }): any
-	local object = Instance.new(className)
-	for key, value in properties do
-		object[key] = value
-	end
-	object.Parent = parent
-	return object
-end
-
 -- Whether a point on screen is over one of the touch controls
 local function isOverControls(garbage, position: Vector3): boolean
 	for _, control in garbage.controls do
@@ -164,7 +162,7 @@ end
 
 -- The up and down buttons and the close button. The Roblox thumbstick needs no control of its own.
 local function createControls(self, garbage)
-	local gui = make("ScreenGui", coreGui, {
+	local gui = createService.new("ScreenGui", coreGui, {
 		Name = GUI_NAME,
 		ResetOnSpawn = false,
 		DisplayOrder = 50,
@@ -173,7 +171,7 @@ local function createControls(self, garbage)
 
 	-- Up and down are held: they count while a finger stays on the button
 	local function holdButton(name: string, text: string, position: UDim2)
-		local button = make("TextButton", gui, {
+		local button = createService.new("TextButton", gui, {
 			Name = name,
 			AnchorPoint = Vector2.new(1, 1),
 			Position = position,
@@ -199,7 +197,7 @@ local function createControls(self, garbage)
 	holdButton("fall", "DOWN", UDim2.new(1, -EDGE_OFFSET, 1, -BOTTOM_OFFSET))
 	holdButton("boost", "BOOST", UDim2.new(1, -EDGE_OFFSET - BUTTON_SIZE - 12, 1, -BOTTOM_OFFSET))
 
-	local close = make("TextButton", gui, {
+	local close = createService.new("TextButton", gui, {
 		Name = "Close",
 		AnchorPoint = Vector2.new(1, 0),
 		Position = UDim2.new(1, -EDGE_OFFSET, 0, EDGE_OFFSET),
@@ -219,7 +217,7 @@ local function createControls(self, garbage)
 	end))
 
 	-- TP turns freecam off and puts the character where the camera is (freecam.teleport)
-	local teleport = make("TextButton", gui, {
+	local teleport = createService.new("TextButton", gui, {
 		Name = "Teleport",
 		AnchorPoint = Vector2.new(1, 0),
 		Position = UDim2.new(1, -EDGE_OFFSET - BUTTON_SIZE - 12, 0, EDGE_OFFSET),
@@ -337,7 +335,32 @@ local function stepFreecam(self, garbage, dt: number)
 	camera.FieldOfView = garbage.fieldOfView
 end
 
--- Turns freecam off and gives back the camera, mouse and character. Returns true if it was on.
+local function createAnchor(garbage)
+	return createService.new("Part", workspace, {
+		Name = "freecamAnchor",
+		Anchored = true,
+		CanCollide = false,
+		CanQuery = false,
+		CanTouch = false,
+		CastShadow = false,
+		Transparency = 1,
+		Size = Vector3.one * 0.2,
+		CFrame = CFrame.new(garbage.position),
+	})
+end
+
+local function waitNextCharacter(camera)
+	local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
+	local humanoid = character:WaitForChild("Humanoid", 100)
+	
+	if camera and (
+		camera.CameraSubject == nil
+		or not camera.CameraSubject:IsDescendantOf(workspace)
+	) and playerService:isAlive(character) then
+		camera.CameraSubject = humanoid
+	end
+end
+
 function freecam.stop(self): boolean
 	local garbage = self:collectGarbage(GARBAGE_NAME)
 	if not garbage then return false end
@@ -356,29 +379,35 @@ function freecam.stop(self): boolean
 		garbage.jumpButton.Visible = garbage.jumpVisible
 	end
 	releaseCharacter(garbage)
-
+	
+	local cameraSubject = garbage.cameraSubject
 	local camera = workspace.CurrentCamera
+	
+	camera.CameraSubject = cameraSubject
+	
+	if garbage.isLPHumanoid or (cameraSubject and not cameraSubject:IsDescendantOf(workspace)) then
+		task.spawn(waitNextCharacter, camera)
+	end
+	
 	camera.CameraType = garbage.cameraType
-	camera.CameraSubject = garbage.cameraSubject
+	
 	if garbage.anchor then
 		garbage.anchor:Destroy()
 	end
+	
 	camera.Focus = garbage.focus
 	camera.FieldOfView = garbage.fieldOfView
-
+	
 	UserInputService.MouseBehavior = garbage.mouseBehavior
 	UserInputService.MouseIconEnabled = garbage.mouseIconEnabled
-
+	
 	return true
 end
 
--- Turns freecam off and puts the character where the camera is, facing the way the camera looks. Only the turn
--- around the vertical axis is kept, so the character stands up straight. Does nothing when freecam is off.
 function freecam.teleport(self): boolean
 	local garbage = self:getGarbage(GARBAGE_NAME)
 	if not garbage then return false end
 
-	-- read before stop, which gives the garbage back
 	local cframe = CFrame.new(garbage.position) * CFrame.Angles(0, garbage.rotation.Y, 0)
 	freecam.stop(self)
 
@@ -389,8 +418,6 @@ function freecam.teleport(self): boolean
 	return true
 end
 
--- Runs an optional part of freecam (the buttons, the jump button). If it fails, freecam keeps
--- working without it and says what failed.
 local function guarded(self, what: string, fn, ...)
 	local ok, err = pcall(fn, ...)
 	if not ok then
@@ -398,8 +425,6 @@ local function guarded(self, what: string, fn, ...)
 	end
 end
 
--- Turns freecam on. With a position it starts there, otherwise at the current camera.
--- The camera keeps the direction it is already looking in.
 local function startFreecam(self, position: Vector3?)
 	freecam.stop(self)
 
@@ -413,59 +438,48 @@ local function startFreecam(self, position: Vector3?)
 	garbage.holds = {}
 	garbage.cameraType = camera.CameraType
 	garbage.cameraSubject = camera.CameraSubject
+	
+	local humanoid = localPlayer.Character and localPlayer.Character:FindFirstChildOfClass("Humanoid")
+	garbage.isLPHumanoid = 
+		(garbage.cameraSubject ~= nil and humanoid == garbage.cameraSubject) or
+		garbage.cameraSubject == nil
+	
 	garbage.focus = camera.Focus
 	garbage.fieldOfView = camera.FieldOfView
 	garbage.mouseBehavior = UserInputService.MouseBehavior
 	garbage.mouseIconEnabled = UserInputService.MouseIconEnabled
-
+	
 	garbage.position = position or startCFrame.Position
 	garbage.rotation = Vector2.new(pitch, yaw)
 	garbage.mouseDelta = Vector2.zero
 	garbage.navMultiplier = 1
 	garbage.velocitySpring = newSpring(Vector3.zero)
 	garbage.panSpring = newSpring(Vector2.zero)
+	
+	garbage.anchor = createAnchor(garbage)
 
 	camera.CameraType = Enum.CameraType.Custom
-
-	-- The camera subject becomes this invisible part, which moves with the freecam. Roblox may measure
-	-- some things it draws (chat bubble sizes, for example) from the camera subject. The character stays
-	-- behind when the camera flies away, so without this those measurements would use the wrong spot.
-	garbage.anchor = make("Part", workspace, {
-		Name = "freecamAnchor",
-		Anchored = true,
-		CanCollide = false,
-		CanQuery = false,
-		CanTouch = false,
-		CastShadow = false,
-		Transparency = 1,
-		Size = Vector3.one * 0.2,
-		CFrame = CFrame.new(garbage.position),
-	})
 	camera.CameraSubject = garbage.anchor
 	UserInputService.MouseBehavior = Enum.MouseBehavior.Default
 	UserInputService.MouseIconEnabled = true
-
-	-- Movement keys and the mouse are sunk, so the character does not walk or turn meanwhile
+	
 	ContextActionService:BindActionAtPriority(KEYS_ACTION, sinkInput, false, ACTION_PRIORITY, table.unpack(MOVE_KEYS))
 	ContextActionService:BindActionAtPriority(MOUSE_ACTION, function(_, _, input)
 		local delta = input.Delta
 		garbage.mouseDelta += Vector2.new(-delta.Y, -delta.X)
 		return Enum.ContextActionResult.Sink
 	end, false, ACTION_PRIORITY, Enum.UserInputType.MouseMovement)
-
+	
 	if isMobile then
 		freezeCharacter(self, garbage)
 		guarded(self, "buttons", createControls, self, garbage)
 		guarded(self, "jump button", hideJumpButton, self, garbage)
-
-		-- A touch that starts over the game's own GUI (gameProcessed), or over our controls, is not a camera drag
+		
 		table.insert(garbage.connections, self:connect(UserInputService.InputBegan, function(input, gameProcessed)
 			if gameProcessed or not isTouch(input) then return end
 			if garbage.lookTouch ~= nil or isOverControls(garbage, input.Position) then return end
-
-			-- the left half is the thumbstick's: the finger moving it must not turn the camera too
+			
 			if input.Position.X < workspace.CurrentCamera.ViewportSize.X / 2 then return end
-
 			garbage.lookTouch = input
 		end))
 		table.insert(garbage.connections, self:connect(UserInputService.InputChanged, function(input)
@@ -489,8 +503,6 @@ local function startFreecam(self, position: Vector3?)
 	end))
 end
 
--- Turns freecam on. If anything fails while it starts, freecam is turned off again, so the camera
--- is given back, and the error is shown.
 function freecam.start(self, position: Vector3?)
 	local ok, err = pcall(startFreecam, self, position)
 	if not ok then
@@ -499,7 +511,6 @@ function freecam.start(self, position: Vector3?)
 	end
 end
 
--- The boost multiplier, from the saved settings (DEFAULT_BOOST when there is none yet)
 function freecam.getBoost(self): number
 	local value = self.storage.settings:getValue(BOOST_SETTING)
 	if type(value) ~= "number" then
@@ -509,7 +520,6 @@ function freecam.getBoost(self): number
 	return math.clamp(value, freecam.MIN_BOOST, freecam.MAX_BOOST)
 end
 
--- Adds amount to the boost multiplier (a negative amount lowers it), keeps it in range, and saves it
 function freecam.addBoost(self, amount: number): number
 	local value = math.clamp(freecam.getBoost(self) + amount, freecam.MIN_BOOST, freecam.MAX_BOOST)
 
@@ -519,7 +529,6 @@ function freecam.addBoost(self, amount: number): number
 	return value
 end
 
--- Where the freecam camera is right now, or nil when freecam is off
 function freecam.getPosition(self): Vector3?
 	local garbage = self:getGarbage(GARBAGE_NAME)
 	return garbage and garbage.position
