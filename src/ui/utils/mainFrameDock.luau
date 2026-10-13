@@ -17,9 +17,11 @@
 --   - anything added with addWindowPart (the mobile IY button) counts as part of the window
 --   - a drag that ends DRAG_DOWN_MIN px lower than it started minimizes it
 --   - mobile: a swipe down on the command list, from the top of the list, minimizes it too (onListSwipeDown)
---   - mobile: opening the window (a tap on it, the command bar, the IY button, quickCapture) locks the swipes (lockSwipe):
---     the outside swipe, the swipe down on the list and a drag down do not minimize it until the command is sent (unlockSwipe)
---     or the window is minimized in any other way. Clicks still minimize it
+--   - mobile: opening the window (a tap on it, the command bar, the IY button, quickCapture) while a finger is on the screen
+--     outside it (the camera, the thumbstick) turns on an automatic keep open (lockSwipe): the outside swipe, the swipe down
+--     on the list and a drag down do not minimize it. It turns itself off
+--     when the command is sent (unlockSwipe), when the window is minimized in any way, or after LOCK_IDLE_TIME seconds
+--     without touching the interface (checkLockIdle). Clicks still minimize it. The manual Keep Menu Open is not affected
 --   - a drag that ends snaps to the top if that edge is nearer, otherwise to the bottom (keeping expanded / minimized)
 --   - a window at the top never moves on taps or outside clicks
 --   - the window is interactive (onInteractive) only when it is not minimized AND has stopped moving: it turns off
@@ -48,6 +50,7 @@ local TAP_MAX_TRAVEL = 10 -- ...if the pointer barely moved (px)
 local DRAG_DOWN_MIN = 50 -- a drag ending this many px lower minimizes the window (px)
 local CLICK_MAX_TIME = 0.3 -- an outside press this short (seconds) counts as a click; a held press does not
 local SWIPE_OUTSIDE_MIN = 20 -- px a finger that came down outside the window must slide before it minimizes the window
+local LOCK_IDLE_TIME = 3 -- seconds without touching the interface before the automatic keep open turns itself off
 local MOVING_GRACE = 0.5 -- seconds after the character stopped moving during which it still counts as moving
 
 -- PC hover, the original IY timings
@@ -102,7 +105,8 @@ function dock.new(options)
 		press = nil,
 		touches = {}, -- the fingers that are down right now: InputObject -> its last position
 		outsideTouches = {}, -- the fingers that came down outside the window: InputObject -> where they came down
-		swipeLocked = false, -- the window was opened by the user: swipes do not minimize it (see lockSwipe)
+		swipeLocked = false, -- the automatic keep open: swipes do not minimize the window (see lockSwipe)
+		lastInteractionAt = -math.huge, -- os.clock() of the last touch on the window or the last text typed (see noteInteraction)
 		connections = {},
 	}, dock)
 
@@ -125,6 +129,8 @@ function dock.new(options)
 		if self.isMoving and self.isMoving() then
 			self.lastMovingAt = os.clock()
 		end
+
+		self:checkLockIdle()
 	end))
 
 	self:setInteractive(false)
@@ -192,15 +198,44 @@ end
 
 -- the user opened the window: until the command is sent (unlockSwipe) or the window is minimized, a swipe does not
 -- minimize it. Mobile only: on PC the pointer decides, as before
+-- the window was opened while a finger was outside it (sliding the camera or the thumbstick, or resting on it): the
+-- automatic keep open is on. Opened with no finger outside, the swipes stay as they are
 function dock:lockSwipe()
 	if self.hoverToOpen then return end
+	if not self:fingerOutsideWindow() then return end
 
 	self.swipeLocked = true
+	self.lastInteractionAt = os.clock()
+end
+
+-- true while a finger is on the screen outside the window
+function dock:fingerOutsideWindow(): boolean
+	for _, position in self.touches do
+		if not self:isOverWindow(position) then
+			return true
+		end
+	end
+
+	return false
 end
 
 -- the command was sent (commands calls this through the interface): a swipe can minimize the window again
 function dock:unlockSwipe()
 	self.swipeLocked = false
+end
+
+-- the user is using the interface: a touch on the window (the command list, the search bar, quickCapture...) or text typed
+-- in the command bar. Restarts the idle time of the automatic keep open
+function dock:noteInteraction()
+	self.lastInteractionAt = os.clock()
+end
+
+-- the automatic keep open turns itself off once the interface has not been touched for LOCK_IDLE_TIME seconds. A camera
+-- swipe outside the window is not a use of the interface. The manual Keep Menu Open (keepOpen) is never changed here
+function dock:checkLockIdle()
+	if self.swipeLocked and os.clock() - self.lastInteractionAt >= LOCK_IDLE_TIME then
+		self.swipeLocked = false
+	end
 end
 
 -- runs fn once the window has stopped moving (right away if it is not moving)
@@ -512,6 +547,10 @@ function dock:onInputChanged(input)
 
 	self.touches[input] = input.Position
 
+	if self:isOverWindow(input.Position) then
+		self:noteInteraction()
+	end
+
 	local startPos = self.outsideTouches[input]
 	if startPos and (input.Position - startPos).Magnitude >= SWIPE_OUTSIDE_MIN then
 		self:onOutsideSwipe()
@@ -533,7 +572,9 @@ function dock:onInputBegan(input)
 	if input.UserInputType == Enum.UserInputType.Touch then
 		self.touches[input] = input.Position
 
-		if not self:isOverWindow(input.Position) then
+		if self:isOverWindow(input.Position) then
+			self:noteInteraction()
+		else
 			self.outsideTouches[input] = input.Position
 		end
 	end
@@ -545,6 +586,8 @@ function dock:onInputBegan(input)
 		time = os.clock(),
 		position = input.Position,
 		inside = self:isOverWindow(input.Position),
+		-- a press that was already on the screen when the window was still minimized is not a click that closes it
+		startedExpanded = self.state == "expanded",
 	}
 end
 
@@ -575,7 +618,7 @@ function dock:onInputEnded(input)
 	-- Not on PC: there the pointer leaving the window does it (onHoverLeave), like the original
 	local isClick = duration <= CLICK_MAX_TIME and travel <= TAP_MAX_TRAVEL
 
-	if isClick and not self.hoverToOpen and self.state == "expanded" and not self.keepOpen
+	if isClick and press.startedExpanded and not self.hoverToOpen and self.state == "expanded" and not self.keepOpen
 		and not self:commandBarBusy() and not self:wasMovingRecently() then
 		self:minimize()
 	end

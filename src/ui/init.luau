@@ -295,6 +295,13 @@ function interface:createCommands()
 		end
 	end
 
+	-- using the command bar (focusing it, typing) keeps the automatic keep open alive (see dock:noteInteraction)
+	commands.onInteraction = function()
+		if self.dock then
+			self.dock:noteInteraction()
+		end
+	end
+
 	self.settings:watchCommandBar(commands.searchBox)
 	
 	if isMobile then

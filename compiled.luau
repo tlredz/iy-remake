@@ -249,8 +249,12 @@ b)
 b.fetchService.load("backups/console.luau","iy/oldconsole")()end local c=function(
 
 
-c)
-c.fetchService.load("backups/explorer.luau","iy/explorer")()end local d=function(
+c, d)
+if d:nextValue()==true then
+c.fetchService.load("backups/explorer.luau","iy/explorer")()
+else
+c.fetchService.load("backups/dexPlusPlus.luau","iy/dexPlusPlus")()
+end end local d=function(
 
 
 d, e)
@@ -285,8 +289,9 @@ description="Loads an old-themed Roblox console",
 run=function(h)task.spawn(b,h)end
 },
 {
-action="explorer|dex|moondex",
-description="Opens DEX by Moon",
+action="explorer|dex",
+description="Opens the dex Explorer",
+args={name="load dex by moon",kind="boolean",optional=true},
 run=function(h)task.spawn(c,h)end
 },
 {
@@ -299,12 +304,12 @@ args={
 }
 },
 {
-action="cobalt|cspy",
+action="cobalt|remotespy|rspy|cspy",
 description="Opens Cobalt to intercept incoming and outgoing network traffic",
 run=function(h)task.spawn(e,h)end
 },
 {
-action="remotespy|rspy|simplespy",
+action="simplespy|simplespy|sspy",
 description="Opens Simple Spy V3 to intercept remote calls from the client to the server",
 run=function(h)task.spawn(f,h)end
 },
@@ -2886,7 +2891,7 @@ return s end
 
 return i end a.ak=function()local c=a.cache.ak if not c then c={c=b()}a.cache.ak=c end return c.c end end do local b=function()
 return a.ak().new"storage/settings"end a.al=function()local c=a.cache.al if not c then c={c=b()}a.cache.al=c end return c.c end end do local b=function()
-return"v0.6.0"end a.am=function()local c=a.cache.am if not c then c={c=b()}a.cache.am=c end return c.c end end do local b=function()
+return"v0.6.1"end a.am=function()local c=a.cache.am if not c then c={c=b()}a.cache.am=c end return c.c end end do local b=function()
 return{
 owner="tlredz",
 repository="iy-remake"
@@ -19138,6 +19143,8 @@ D()
 end)
 
 aa:Connect(v.Focused,function()
+if t.onInteraction then t.onInteraction()end
+
 F()
 t.markerConnection=aa:Connect(j.Stepped,B)
 
@@ -19158,6 +19165,8 @@ end
 end)
 
 aa:Connect(z,function()
+if t.onInteraction then t.onInteraction()end
+
 local G=v.Text
 
 
@@ -24879,6 +24888,8 @@ return g end a.dw=function()local ab=a.cache.dw if not ab then ab={c=aa()}a.cach
 
 
 
+
+
 local aa=a.P()
 local ab=a.au()
 local ac=a.cE()
@@ -24893,20 +24904,21 @@ local ai=10
 local aj=50
 local ak=0.3
 local al=20
-local am=0.5
+local am=3
+local an=0.5
 
 
-local an=0.2
-local ao=0.5
-local b=1
+local ao=0.2
+local b=0.5
+local c=1
 
-local c={
+local d={
 [Enum.UserInputType.MouseButton1]=true,
 [Enum.UserInputType.Touch]=true,
 }
 
-local d={}
-d.__index=d
+local e={}
+e.__index=e
 
 
 
@@ -24921,19 +24933,19 @@ d.__index=d
 
 
 
-d.new=function(e)
-local f=setmetatable({
-frame=e.frame,
-screenGui=e.screenGui,
-topBarHeight=e.topBarHeight,
-clampPosition=e.clampPosition,
-getScale=e.getScale,
-onMinimize=e.onMinimize,
-onInteractive=e.onInteractive,
+e.new=function(f)
+local g=setmetatable({
+frame=f.frame,
+screenGui=f.screenGui,
+topBarHeight=f.topBarHeight,
+clampPosition=f.clampPosition,
+getScale=f.getScale,
+onMinimize=f.onMinimize,
+onInteractive=f.onInteractive,
 
-hoverToOpen=e.hoverToOpen==true and ae.MouseEnabled,
-commandBarInUse=e.commandBarInUse,
-isMoving=e.isMoving,
+hoverToOpen=f.hoverToOpen==true and ae.MouseEnabled,
+commandBarInUse=f.commandBarInUse,
+isMoving=f.isMoving,
 lastMovingAt=-math.huge,
 
 state="minimized",
@@ -24941,69 +24953,72 @@ interactive=nil,
 hovering=false,
 hoverRequest=0,
 dragging=false,
-keepOpen=e.keepOpen==true,
+keepOpen=f.keepOpen==true,
 windowParts={},
 tween=nil,
 press=nil,
 touches={},
 outsideTouches={},
 swipeLocked=false,
+lastInteractionAt=-math.huge,
 connections={},
-},d)
+},e)
 
-f.frame.Position=f:targetFor"minimized"
+g.frame.Position=g:targetFor"minimized"
 
-table.insert(f.connections,ab:Connect(ae.InputBegan,function(g)
-f:onInputBegan(g)
+table.insert(g.connections,ab:Connect(ae.InputBegan,function(h)
+g:onInputBegan(h)
 end))
 
-table.insert(f.connections,ab:Connect(ae.InputEnded,function(g)
-f:onInputEnded(g)
+table.insert(g.connections,ab:Connect(ae.InputEnded,function(h)
+g:onInputEnded(h)
 end))
 
-table.insert(f.connections,ab:Connect(ae.InputChanged,function(g)
-f:onInputChanged(g)
+table.insert(g.connections,ab:Connect(ae.InputChanged,function(h)
+g:onInputChanged(h)
 end))
 
 
-table.insert(f.connections,ab:Connect(af.Heartbeat,function()
-if f.isMoving and f.isMoving()then
-f.lastMovingAt=os.clock()
-end
-end))
-
-f:setInteractive(false)
-
-if f.hoverToOpen then
-
-table.insert(f.connections,ab:Connect(f.frame.MouseEnter,function()
-if f.frame.Visible then f:setHovering(true)end
-end))
-
-table.insert(f.connections,ab:Connect(f.frame.MouseLeave,function()
-f:setHovering(false)
-end))
+table.insert(g.connections,ab:Connect(af.Heartbeat,function()
+if g.isMoving and g.isMoving()then
+g.lastMovingAt=os.clock()
 end
 
-return f end local e=function(
+g:checkLockIdle()
+end))
+
+g:setInteractive(false)
+
+if g.hoverToOpen then
+
+table.insert(g.connections,ab:Connect(g.frame.MouseEnter,function()
+if g.frame.Visible then g:setHovering(true)end
+end))
+
+table.insert(g.connections,ab:Connect(g.frame.MouseLeave,function()
+g:setHovering(false)
+end))
+end
+
+return g end local f=function(
 
 
-e, f)
-local g=e.AbsolutePosition
-local h=e.AbsoluteSize
+f, g)
+local h=f.AbsolutePosition
+local i=f.AbsoluteSize
 
-return f.X>=g.X and f.X<=g.X+h.X
-and f.Y>=g.Y and f.Y<=g.Y+h.Y end
+return g.X>=h.X and g.X<=h.X+i.X
+and g.Y>=h.Y and g.Y<=h.Y+i.Y end
 
 
 
-d.isOverWindow=function(f, g)
-if e(f.frame,g)then
+e.isOverWindow=function(g, h)
+if f(g.frame,h)then
 return true
 end
 
-for h,i in f.windowParts do
-if e(i,g)then
+for i,j in g.windowParts do
+if f(j,h)then
 return true
 end
 end
@@ -25012,66 +25027,95 @@ return false end
 
 
 
-d.addWindowPart=function(f, g)
-table.insert(f.windowParts,g)end
+e.addWindowPart=function(g, h)
+table.insert(g.windowParts,h)end
 
 
 
-d.setKeepOpen=function(f, g)
-f.keepOpen=g==true
+e.setKeepOpen=function(g, h)
+g.keepOpen=h==true
 
-if f.keepOpen and f.state=="minimized"then
-f:expand()
+if g.keepOpen and g.state=="minimized"then
+g:expand()
 end end
 
 
 
-d.reveal=function(f)
+e.reveal=function(g)
 
-f:lockSwipe()
+g:lockSwipe()
 
-if f.state=="minimized"then
-f:expand()
+if g.state=="minimized"then
+g:expand()
 end end
 
 
 
 
-d.lockSwipe=function(f)
-if f.hoverToOpen then return end
-
-f.swipeLocked=true end
 
 
+e.lockSwipe=function(g)
+if g.hoverToOpen then return end
+if not g:fingerOutsideWindow()then return end
 
-d.unlockSwipe=function(f)
-f.swipeLocked=false end
+g.swipeLocked=true
+g.lastInteractionAt=os.clock()end
 
 
 
-d.onSettled=function(f, g)
-local h=f.tween
+e.fingerOutsideWindow=function(g)
+for h,i in g.touches do
+if not g:isOverWindow(i)then
+return true
+end
+end
 
-if h and h.PlaybackState==Enum.PlaybackState.Playing then
-h.Completed:Once(g)
+return false end
+
+
+
+e.unlockSwipe=function(g)
+g.swipeLocked=false end
+
+
+
+
+e.noteInteraction=function(g)
+g.lastInteractionAt=os.clock()end
+
+
+
+
+e.checkLockIdle=function(g)
+if g.swipeLocked and os.clock()-g.lastInteractionAt>=am then
+g.swipeLocked=false
+end end
+
+
+
+e.onSettled=function(g, h)
+local i=g.tween
+
+if i and i.PlaybackState==Enum.PlaybackState.Playing then
+i.Completed:Once(h)
 else
-task.defer(g)
+task.defer(h)
 end end
 
 
 
 
 
-d.nearestSnap=function(f)
-local g=f.frame
-local h=g.AbsolutePosition.Y
-local i=f.screenGui.AbsoluteSize.Y-(g.AbsolutePosition.Y+g.AbsoluteSize.Y)
+e.nearestSnap=function(g)
+local h=g.frame
+local i=h.AbsolutePosition.Y
+local j=g.screenGui.AbsoluteSize.Y-(h.AbsolutePosition.Y+h.AbsoluteSize.Y)
 
-if h<=i then
+if i<=j then
 return"top"
 end
 
-if f.state=="expanded"then
+if g.state=="expanded"then
 return"expanded"
 end
 
@@ -25079,153 +25123,153 @@ return"minimized"end
 
 
 
-d.targetFor=function(f, g)
-local h=f.clampPosition(f.frame.Position).X
+e.targetFor=function(g, h)
+local i=g.clampPosition(g.frame.Position).X
 
-if g=="top"then
+if h=="top"then
 
-return UDim2.new(h.Scale,h.Offset,0,0)
+return UDim2.new(i.Scale,i.Offset,0,0)
 end
 
-if g=="expanded"then
+if h=="expanded"then
 
-return UDim2.new(h.Scale,h.Offset,1,-f.frame.Size.Y.Offset)
+return UDim2.new(i.Scale,i.Offset,1,-g.frame.Size.Y.Offset)
 end
 
 
-return UDim2.new(h.Scale,h.Offset,1,-f.topBarHeight)end
+return UDim2.new(i.Scale,i.Offset,1,-g.topBarHeight)end
 
 
 
 
-d.clampDrag=function(f, g)
-local h=f.clampPosition(g).X
+e.clampDrag=function(g, h)
+local i=g.clampPosition(h).X
 
-local i=math.max(f.getScale(),0.01)
-local j=f.screenGui.AbsoluteSize.Y/i
-local k=math.max(j-f.topBarHeight,0)
-local l=math.clamp(g.Y.Scale*j+g.Y.Offset,0,k)
+local j=math.max(g.getScale(),0.01)
+local k=g.screenGui.AbsoluteSize.Y/j
+local l=math.max(k-g.topBarHeight,0)
+local m=math.clamp(h.Y.Scale*k+h.Y.Offset,0,l)
 
-return UDim2.new(h.Scale,h.Offset,0,l)end
-
-
-
-d.wasMovingRecently=function(f)
-return os.clock()-f.lastMovingAt<am end
+return UDim2.new(i.Scale,i.Offset,0,m)end
 
 
 
-d.setInteractive=function(f, g)
-if f.interactive==g then return end
-f.interactive=g
+e.wasMovingRecently=function(g)
+return os.clock()-g.lastMovingAt<an end
 
-if f.onInteractive then
-f.onInteractive(g)
+
+
+e.setInteractive=function(g, h)
+if g.interactive==h then return end
+g.interactive=h
+
+if g.onInteractive then
+g.onInteractive(h)
 end end
 
 
-d.cancel=function(f)
-if f.tween then
-f.tween:Cancel()
-f.tween=nil
+e.cancel=function(g)
+if g.tween then
+g.tween:Cancel()
+g.tween=nil
 end end
 
 
-d.moveTo=function(f, g, h, i)
+e.moveTo=function(g, h, i, j)
 
-if g==f.state and f.tween and f.tween.PlaybackState==Enum.PlaybackState.Playing then
+if h==g.state and g.tween and g.tween.PlaybackState==Enum.PlaybackState.Playing then
 return
 end
 
-local j=f.state=="minimized"
-f.state=g
-f:cancel()
+local k=g.state=="minimized"
+g.state=h
+g:cancel()
 
 
-if g=="minimized"then
-f.swipeLocked=false
-elseif j then
-f:lockSwipe()
+if h=="minimized"then
+g.swipeLocked=false
+elseif k then
+g:lockSwipe()
 end
 
 
-if g=="minimized"then
-f:setInteractive(false)
+if h=="minimized"then
+g:setInteractive(false)
 end
 
-local k=f:targetFor(g)
-local l=ac:getScale(h or ag)
+local l=g:targetFor(h)
+local m=ac:getScale(i or ag)
 
-if l<=0 then
-f.frame.Position=k
-f:setInteractive(g~="minimized")
+if m<=0 then
+g.frame.Position=l
+g:setInteractive(h~="minimized")
 return
 end
 
-local m=TweenInfo.new(l,Enum.EasingStyle.Quart,i or Enum.EasingDirection.Out)
-local n=ad:Create(f.frame,m,{Position=k})
-f.tween=n
+local n=TweenInfo.new(m,Enum.EasingStyle.Quart,j or Enum.EasingDirection.Out)
+local o=ad:Create(g.frame,n,{Position=l})
+g.tween=o
 
 
 
-n.Completed:Connect(function(o)
-if o~=Enum.PlaybackState.Completed then return end
-if f.tween~=n or f.state=="minimized"then return end
+o.Completed:Connect(function(p)
+if p~=Enum.PlaybackState.Completed then return end
+if g.tween~=o or g.state=="minimized"then return end
 
-f:setInteractive(true)
+g:setInteractive(true)
 end)
 
-n:Play()end
+o:Play()end
 
 
-d.expand=function(f, g, h)
-f:moveTo("expanded",g,h)end
+e.expand=function(g, h, i)
+g:moveTo("expanded",h,i)end
 
 
 
 
-d.setHovering=function(f, g)
-if g==f.hovering then return end
-f.hovering=g
+e.setHovering=function(g, h)
+if h==g.hovering then return end
+g.hovering=h
 
 
-if f.dragging then return end
+if g.dragging then return end
 
-if g then
-f:onHoverEnter()
+if h then
+g:onHoverEnter()
 else
-f:onHoverLeave()
+g:onHoverLeave()
 end end
 
 
 
 
-d.onHoverEnter=function(f)
-f.hoverRequest=f.hoverRequest+1
+e.onHoverEnter=function(g)
+g.hoverRequest=g.hoverRequest+1
 
-if f.state=="minimized"then
-f:expand(an,Enum.EasingDirection.InOut)
+if g.state=="minimized"then
+g:expand(ao,Enum.EasingDirection.InOut)
 end end
 
 
 
 
-d.onHoverLeave=function(f)
-f.hoverRequest=f.hoverRequest+1
-local g=f.hoverRequest
+e.onHoverLeave=function(g)
+g.hoverRequest=g.hoverRequest+1
+local h=g.hoverRequest
 
-if not f:canHoverMinimize()then return end
+if not g:canHoverMinimize()then return end
 
-task.delay(b,function()
-if g~=f.hoverRequest or not f:canHoverMinimize()then return end
+task.delay(c,function()
+if h~=g.hoverRequest or not g:canHoverMinimize()then return end
 
-f:minimize(ao,Enum.EasingDirection.InOut)
+g:minimize(b,Enum.EasingDirection.InOut)
 end)end
 
 
 
-d.canHoverMinimize=function(f)
-return f.state=="expanded"and not f.keepOpen and not f:commandBarBusy()end
+e.canHoverMinimize=function(g)
+return g.state=="expanded"and not g.keepOpen and not g:commandBarBusy()end
 
 
 
@@ -25233,116 +25277,116 @@ return f.state=="expanded"and not f.keepOpen and not f:commandBarBusy()end
 
 
 
-d.onCommandBarClosed=function(f, g)
-if not f.hoverToOpen then return end
+e.onCommandBarClosed=function(g, h)
+if not g.hoverToOpen then return end
 
 
-if f:fingerOnWindow()then return end
+if g:fingerOnWindow()then return end
 
-local h=f.hoverRequest
+local i=g.hoverRequest
 task.wait()
 
 
-if h~=f.hoverRequest or f.dragging or not f:canHoverMinimize()then return end
-if f.hovering and not g then return end
-if f:fingerOnWindow()then return end
+if i~=g.hoverRequest or g.dragging or not g:canHoverMinimize()then return end
+if g.hovering and not h then return end
+if g:fingerOnWindow()then return end
 
-f:minimize(ao,Enum.EasingDirection.InOut)end
-
-
+g:minimize(b,Enum.EasingDirection.InOut)end
 
 
 
-d.onMobileEnter=function(f, g)
-if f.hoverToOpen then return end
+
+
+e.onMobileEnter=function(g, h)
+if g.hoverToOpen then return end
 
 
 
-if not f:wasMovingRecently()then return end
+if not g:wasMovingRecently()then return end
 
 task.wait()
 
-if f.dragging or g()then return end
-if f.state~="expanded"or f.keepOpen then return end
+if g.dragging or h()then return end
+if g.state~="expanded"or g.keepOpen then return end
 
-f:minimize()end
-
-
+g:minimize()end
 
 
 
-d.setDragging=function(f, g)
-local h=f.dragging
-f.dragging=g==true
+
+
+e.setDragging=function(g, h)
+local i=g.dragging
+g.dragging=h==true
 
 
 
-if h and not f.dragging and f.hoverToOpen and not f.hovering then
-f:onHoverLeave()
+if i and not g.dragging and g.hoverToOpen and not g.hovering then
+g:onHoverLeave()
 end end
 
 
-d.minimize=function(f, g, h)
+e.minimize=function(g, h, i)
 
-if f.onMinimize then
-f.onMinimize()
+if g.onMinimize then
+g.onMinimize()
 end
 
-f:moveTo("minimized",g,h)end
+g:moveTo("minimized",h,i)end
 
 
 
-d.reflow=function(f)
-f:cancel()
-f.frame.Position=f:targetFor(f.state)
-f:setInteractive(f.state~="minimized")end
+e.reflow=function(g)
+g:cancel()
+g.frame.Position=g:targetFor(g.state)
+g:setInteractive(g.state~="minimized")end
 
 
 
 
-d.sleep=function(f)
-f:cancel()
-f.state="minimized"
-f.swipeLocked=false
-f.frame.Position=f:targetFor"minimized"
-f:setInteractive(false)end
+e.sleep=function(g)
+g:cancel()
+g.state="minimized"
+g.swipeLocked=false
+g.frame.Position=g:targetFor"minimized"
+g:setInteractive(false)end
 
 
 
-d.onDragEnded=function(f, g)
-if g.travel<=ai then
+e.onDragEnded=function(g, h)
+if h.travel<=ai then
 
-f:moveTo(f.state)
+g:moveTo(g.state)
 return
 end
 
-if g.dy>=aj and not f:commandBarBusy()and not f.swipeLocked then
-f:minimize()
+if h.dy>=aj and not g:commandBarBusy()and not g.swipeLocked then
+g:minimize()
 return
 end
 
-f:moveTo(f:nearestSnap())end
+g:moveTo(g:nearestSnap())end
 
 
 
 
 
-d.onListSwipeDown=function(f)
-if f.hoverToOpen or f.swipeLocked then return end
-if f.state=="minimized"or f:commandBarBusy()then return end
+e.onListSwipeDown=function(g)
+if g.hoverToOpen or g.swipeLocked then return end
+if g.state=="minimized"or g:commandBarBusy()then return end
 
-f:minimize()end
-
-
-
-d.commandBarBusy=function(f)
-return f.commandBarInUse~=nil and f.commandBarInUse()==true end
+g:minimize()end
 
 
 
-d.fingerOnWindow=function(f)
-for g,h in f.touches do
-if f:isOverWindow(h)then
+e.commandBarBusy=function(g)
+return g.commandBarInUse~=nil and g.commandBarInUse()==true end
+
+
+
+e.fingerOnWindow=function(g)
+for h,i in g.touches do
+if g:isOverWindow(i)then
 return true
 end
 end
@@ -25351,66 +25395,74 @@ return false end
 
 
 
-d.onInputChanged=function(f, g)
-if g.UserInputType~=Enum.UserInputType.Touch then return end
-if f.touches[g]==nil then return end
+e.onInputChanged=function(g, h)
+if h.UserInputType~=Enum.UserInputType.Touch then return end
+if g.touches[h]==nil then return end
 
-f.touches[g]=g.Position
+g.touches[h]=h.Position
 
-local h=f.outsideTouches[g]
-if h and(g.Position-h).Magnitude>=al then
-f:onOutsideSwipe()
+if g:isOverWindow(h.Position)then
+g:noteInteraction()
+end
+
+local i=g.outsideTouches[h]
+if i and(h.Position-i).Magnitude>=al then
+g:onOutsideSwipe()
 end end
 
 
 
 
 
-d.onOutsideSwipe=function(f)
-if f.hoverToOpen or f.dragging or f.swipeLocked then return end
-if f.state~="expanded"or f.keepOpen or f:commandBarBusy()then return end
+e.onOutsideSwipe=function(g)
+if g.hoverToOpen or g.dragging or g.swipeLocked then return end
+if g.state~="expanded"or g.keepOpen or g:commandBarBusy()then return end
 
-table.clear(f.outsideTouches)
-f:minimize()end
+table.clear(g.outsideTouches)
+g:minimize()end
 
 
-d.onInputBegan=function(f, g)
-if g.UserInputType==Enum.UserInputType.Touch then
-f.touches[g]=g.Position
+e.onInputBegan=function(g, h)
+if h.UserInputType==Enum.UserInputType.Touch then
+g.touches[h]=h.Position
 
-if not f:isOverWindow(g.Position)then
-f.outsideTouches[g]=g.Position
+if g:isOverWindow(h.Position)then
+g:noteInteraction()
+else
+g.outsideTouches[h]=h.Position
 end
 end
 
-if not c[g.UserInputType]then return end
+if not d[h.UserInputType]then return end
 
-f.press={
-type=g.UserInputType,
+g.press={
+type=h.UserInputType,
 time=os.clock(),
-position=g.Position,
-inside=f:isOverWindow(g.Position),
+position=h.Position,
+inside=g:isOverWindow(h.Position),
+
+startedExpanded=g.state=="expanded",
 }end
 
 
 
-d.onInputEnded=function(f, g)
-if g.UserInputType==Enum.UserInputType.Touch then
-f.touches[g]=nil
-f.outsideTouches[g]=nil
+e.onInputEnded=function(g, h)
+if h.UserInputType==Enum.UserInputType.Touch then
+g.touches[h]=nil
+g.outsideTouches[h]=nil
 end
 
-local h=f.press
-if not h or g.UserInputType~=h.type then return end
-f.press=nil
+local i=g.press
+if not i or h.UserInputType~=i.type then return end
+g.press=nil
 
-local i=os.clock()-h.time
-local j=(g.Position-h.position).Magnitude
+local j=os.clock()-i.time
+local k=(h.Position-i.position).Magnitude
 
-if h.inside then
+if i.inside then
 
-if i<=ah and j<=ai and f.state=="minimized"then
-f:expand()
+if j<=ah and k<=ai and g.state=="minimized"then
+g:expand()
 end
 
 return
@@ -25418,27 +25470,27 @@ end
 
 
 
-local k=i<=ak and j<=ai
+local l=j<=ak and k<=ai
 
-if k and not f.hoverToOpen and f.state=="expanded"and not f.keepOpen
-and not f:commandBarBusy()and not f:wasMovingRecently()then
-f:minimize()
+if l and i.startedExpanded and not g.hoverToOpen and g.state=="expanded"and not g.keepOpen
+and not g:commandBarBusy()and not g:wasMovingRecently()then
+g:minimize()
 end end
 
 
-d.destroy=function(f)
-f:cancel()
-f.hoverRequest=f.hoverRequest+1
+e.destroy=function(g)
+g:cancel()
+g.hoverRequest=g.hoverRequest+1
 
-for g,h in f.connections do
-ab:disconnect(h)
+for h,i in g.connections do
+ab:disconnect(i)
 end
-table.clear(f.connections)
-table.clear(f.touches)
-table.clear(f.outsideTouches)end
+table.clear(g.connections)
+table.clear(g.touches)
+table.clear(g.outsideTouches)end
 
 
-return d end a.dx=function()local ab=a.cache.dx if not ab then ab={c=aa()}a.cache.dx=ab end return ab.c end end do local aa=function()
+return e end a.dx=function()local ab=a.cache.dx if not ab then ab={c=aa()}a.cache.dx=ab end return ab.c end end do local aa=function()
 
 
 
@@ -25734,6 +25786,13 @@ w.commands=y
 y.onCommandSent=function()
 if w.dock then
 w.dock:unlockSwipe()
+end
+end
+
+
+y.onInteraction=function()
+if w.dock then
+w.dock:noteInteraction()
 end
 end
 

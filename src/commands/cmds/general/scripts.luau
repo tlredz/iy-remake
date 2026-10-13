@@ -2,8 +2,12 @@ local function oldConsole(self)
 	self.fetchService.load("backups/console.luau", "iy/oldconsole")()
 end
 
-local function dexByMoon(self)
-	self.fetchService.load("backups/explorer.luau", "iy/explorer")()
+local function dexExplorer(self, args)
+	if args:nextValue() == true then
+		self.fetchService.load("backups/explorer.luau", "iy/explorer")()
+	else
+		self.fetchService.load("backups/dexPlusPlus.luau", "iy/dexPlusPlus")()
+	end
 end
 
 local function emoteMenu(self, args)
@@ -38,9 +42,10 @@ return {
 		run = function(self) task.spawn(oldConsole, self) end
 	},
 	{
-		action = "explorer|dex|moondex",
-		description = "Opens DEX by Moon",
-		run = function(self) task.spawn(dexByMoon, self) end
+		action = "explorer|dex",
+		description = "Opens the dex Explorer",
+		args = { name = "load dex by moon", kind = "boolean", optional = true },
+		run = function(self) task.spawn(dexExplorer, self) end
 	},
 	{
 		action = "emotemenu|7yd7",
@@ -52,12 +57,12 @@ return {
 		}
 	},
 	{
-		action = "cobalt|cspy",
+		action = "cobalt|remotespy|rspy|cspy",
 		description = "Opens Cobalt to intercept incoming and outgoing network traffic",
 		run = function(self) task.spawn(cobaltSpy, self) end
 	},
 	{
-		action = "remotespy|rspy|simplespy",
+		action = "simplespy|simplespy|sspy",
 		description = "Opens Simple Spy V3 to intercept remote calls from the client to the server",
 		run = function(self) task.spawn(remoteSpy, self) end
 	},

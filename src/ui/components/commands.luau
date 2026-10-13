@@ -184,6 +184,8 @@ function commands:awake()
 	end)
 	
 	connectionService:Connect(searchBox.Focused, function()
+		if self.onInteraction then self.onInteraction() end
+
 		updatePlaceholder()
 		self.markerConnection = connectionService:Connect(runService.Stepped, updateMarker)
 		
@@ -204,6 +206,8 @@ function commands:awake()
 	end)
 	
 	connectionService:Connect(textChangedSignal, function()
+		if self.onInteraction then self.onInteraction() end
+
 		local text = searchBox.Text
 
 		-- a tab character is never part of a command (Tab accepts the suggestion instead)
