@@ -12,6 +12,7 @@ return {
 	["lucide-terminal"]   = 138735373900955, -- prefix
 	["lucide-pin"]        = 85638424763987,  -- keep-menu-open
 	["lucide-refresh-cw"] = 127184558868486, -- keep-interface
+	["lucide-eraser"]     = 121383006814792, -- clear-on-enter
 	
 	-- edit icons
 	["lucide-tag"]      = 95367077436662,  -- edit-aliases

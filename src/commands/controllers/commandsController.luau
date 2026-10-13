@@ -6,6 +6,7 @@ local signal = require("../../utils/signal")
 local logger = require("../../utils/logger")
 
 local usedCmdsData = require("../../storage").usedCmds
+local storageConfig = require("../../framework/config/storage")
 local robloxServices = require("../../framework/services/rbxServices")
 local frameworkSettings = require("../../framework/settings")
 
@@ -96,7 +97,49 @@ end
 
 -- Threads that are running a command right now. A command that starts another one with self:run
 -- is nested: the inner run must not change lastCommand, the saved arguments or the usage rank.
+-- Each entry is a frame shared by the nested runs of one thread; `reported` is set once an error was shown to the user.
 local runningThreads = setmetatable({}, { __mode = "k" })
+
+local ERROR_FOLDER = `{storageConfig.privateFolder}/error-logs`
+
+-- Writes the error of a command to {privateFolder}/error-logs/{time}-{cmdName}.txt. Returns the path, or nil if it could not be written.
+local function saveErrorLog(cmdName: string, message: string, trace: string?): string?
+	local writefile = executorEnv.writefile
+	if not writefile then return nil end
+
+	if executorEnv.makefolder then
+		pcall(executorEnv.makefolder, storageConfig.privateFolder)
+		pcall(executorEnv.makefolder, ERROR_FOLDER)
+	end
+
+	local path = `{ERROR_FOLDER}/{os.time()}-{cmdName}.txt`
+	local content = table.concat({
+		`command: {cmdName}`,
+		`time: {os.date("%Y-%m-%d %H:%M:%S")}`,
+		`error: {message}`,
+		"",
+		"traceback:",
+		trace or "(not available)",
+	}, "\n")
+
+	local success = pcall(writefile, path, content)
+	if success then return path end
+
+	return nil
+end
+
+-- Tells the person that a command failed, and keeps the full error in an error-logs file
+function commandsController:reportError(cmdName: string, err: unknown, trace: string?)
+	local message = tostring(err)
+	local path = saveErrorLog(cmdName, message, trace)
+
+	local text = message
+	if path then
+		text ..= `\nsaved to {path}`
+	end
+
+	self:notify(`'{cmdName}' failed`, text)
+end
 
 -- Runs a command by name. `asUser` is set by 'lastcommand', which replays a command the person chose.
 function commandsController:run(cmdName: string, args: unknown, asUser: boolean?): (nil)
@@ -110,7 +153,8 @@ function commandsController:run(cmdName: string, args: unknown, asUser: boolean?
 	args = args or argsManager.new({})
 
 	local thread = coroutine.running()
-	local wasNested = runningThreads[thread] ~= nil
+	local frame = runningThreads[thread]
+	local wasNested = frame ~= nil
 	local nested = wasNested and not asUser
 
 	if not nested then
@@ -134,13 +178,32 @@ function commandsController:run(cmdName: string, args: unknown, asUser: boolean?
 		return
 	end
 
-	runningThreads[thread] = true
-	local ok, err = pcall(cmdData.run, self, args)
+	if not wasNested then
+		frame = { reported = false }
+		runningThreads[thread] = frame
+	end
+
+	local trace = nil
+	local ok, err = xpcall(function()
+		cmdData.run(self, args)
+	end, function(message)
+		-- the traceback is only for the error file; the message itself is what the person sees
+		trace = debug.traceback(tostring(message), 2)
+		return message
+	end)
+
 	if not wasNested then
 		runningThreads[thread] = nil
 	end
 
 	if not ok then
+		-- when a command runs another one and that one fails, the innermost command reports the error and the
+		-- commands above it only pass it on, so the person gets one notification and one file
+		if not frame.reported then
+			frame.reported = true
+			self:reportError(cmdData.name, err, trace)
+		end
+
 		error(err, 0)
 	end
 end

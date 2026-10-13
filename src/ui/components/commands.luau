@@ -17,6 +17,7 @@ local scaleObject = require("../utils/scaleObject")
 
 local settingsData = require("../../storage/data/settings")
 local cmdsColors = require("../../framework/config/ui/colors").commands
+local isMobile = require("../../framework/environment/isMobile")
 
 local userInputService = robloxServices.UserInputService
 local runService       = robloxServices.RunService
@@ -29,6 +30,7 @@ commands.__index = commands
 
 local DELETE_DEBOUNCE = 0.15
 local SEARCH_BOX_ROWS = 2.50
+local SWIPE_DOWN_MIN  = 50 -- px a finger must move down, from the top of the list, to minimize the window (the dock's DRAG_DOWN_MIN)
 
 local function getCommand(commandName)
 	return commandsList.lookup[commandName]
@@ -269,6 +271,11 @@ function commands:sendInputCommand()
 
 	for _, info in statements do
 		if not info.commandData then return end
+	end
+
+	-- the command is sent: a swipe can minimize the window again (see dock:unlockSwipe)
+	if self.onCommandSent then
+		self.onCommandSent()
 	end
 
 	local rawText = cmdInput.rawText
@@ -795,6 +802,66 @@ function commands:horizontalScroll(xOffset)
 	end
 end
 
+-- PC: the command under the pointer shows its description on the comment line (under the search bar), and the line
+-- goes back to what it was when the pointer leaves. The line is only taken when it is empty, so typing, errors and
+-- the reasons a command cannot run are never replaced.
+-- returns false when the line is in use by something else
+function commands:showHoverDescription(description: string): boolean
+	local comment = self.inputComment
+	local showing = self.hoverText ~= nil and comment.Text == self.hoverText
+
+	if not showing then
+		if comment.Text ~= "" then
+			self.hoverText = nil
+			return false
+		end
+
+		self.savedComment = comment.Text
+	end
+
+	self.hoverText = commandParser.colorFromName(description, "comment")
+	comment.Text = self.hoverText
+	comment.Visible = true
+	return true
+end
+
+function commands:clearHoverDescription()
+	if self.hoverText == nil then return end
+
+	local comment = self.inputComment
+
+	-- the line was changed since (the person typed, or a new message came): it is left as it is
+	if comment.Text == self.hoverText then
+		comment.Text = self.savedComment or ""
+		comment.Visible = #comment.Text > 0
+	end
+
+	self.hoverText = nil
+	self.savedComment = nil
+end
+
+function commands:updateHoverDescription()
+	local hovered = nil
+
+	if self.interactive and playerService:isMouseInGuiObject(self.scrollContainer) then
+		hovered = self:getElementMouseIn()
+	end
+
+	local description = hovered and hovered.description
+	if not description then
+		self.hoveredCommand = nil
+		self:clearHoverDescription()
+		return
+	end
+
+	if hovered == self.hoveredCommand then return end
+
+	-- when the line is in use, the command is tried again on the next frame, so the description shows once it is free
+	if self:showHoverDescription(description) then
+		self.hoveredCommand = hovered
+	end
+end
+
 function commands:startedHoldingContainer(input)
 	if not self.interactive then return end
 	if not inputUtils.isPressingInput(input) then return end
@@ -820,10 +887,23 @@ function commands:startedHoldingContainer(input)
 	local lastMouseY = playerMouse.Y
 	local lastMouseX = playerMouse.X
 
+	-- a swipe down from the top of the list minimizes the window (commands.onSwipeDown). It counts only when the list was
+	-- at its top when the finger came down, so scrolling the list is never a swipe
+	local startMouseY  = playerMouse.Y
+	local swipeFromTop = self.scrollBar.index <= 0
+	local downTravel   = 0 -- how far the finger is below where it came down (px), as of the last move
+	local swiped       = false
+
 	local mouseEvent
 
 	local function disconnect()
 		self.scrollBar:enableScroll()
+
+		-- let go after a swipe down: the window minimizes, and the press is not a click on a command
+		if swipeFromTop and self.scrollAxis == "y" and downTravel >= SWIPE_DOWN_MIN and self.onSwipeDown then
+			swiped = true
+			self.onSwipeDown()
+		end
 		
 		if cmdData then
 			cmdData.isHolding = nil
@@ -833,7 +913,7 @@ function commands:startedHoldingContainer(input)
 				cmdData.originalText = nil
 			end
 			
-			if (tick() - clickedAt) <= 0.15 then
+			if (tick() - clickedAt) <= 0.15 and not swiped then
 				self.commandClickedSignal:Fire(cmdData)
 			end
 		end
@@ -846,6 +926,7 @@ function commands:startedHoldingContainer(input)
 	mouseEvent = inputUtils.onMouseEvent(function(inp)
 		-- the window was minimized in the middle of the hold
 		if not self.interactive then return end
+		downTravel = playerMouse.Y - startMouseY
 		
 		local deltaX = playerMouse.X - lastMouseX
 		local deltaY = playerMouse.Y - lastMouseY
@@ -904,6 +985,13 @@ function commands:enable()
 	self.searchBoxConnection = connectionService:Connect(runService.RenderStepped, function()
 		self:updateSearchBoxPosition()
 	end)
+
+	-- PC: hovering a command shows its description (there is no pointer on a phone)
+	if not isMobile then
+		self.hoverConnection = connectionService:Connect(runService.RenderStepped, function()
+			self:updateHoverDescription()
+		end)
+	end
 end
 
 function commands:disable()
@@ -919,6 +1007,10 @@ function commands:disable()
 	connectionService:disconnect(self.markerConnection)
 	connectionService:disconnect(self.scrollConnection)
 	connectionService:disconnect(self.searchBoxConnection)
+	connectionService:disconnect(self.hoverConnection)
+
+	self.hoveredCommand = nil
+	self:clearHoverDescription()
 end
 
 function commands.new(config)

@@ -217,6 +217,11 @@ function chatLogs.save(kind: string): (boolean, string)
 		end
 	end
 
+	-- nothing was logged yet: an empty file is not saved
+	if #lines == 0 then
+		return false, "nothing to save yet"
+	end
+
 	local folder = storageConfig.privateFolder
 	if executorEnv.makefolder then
 		pcall(executorEnv.makefolder, folder)

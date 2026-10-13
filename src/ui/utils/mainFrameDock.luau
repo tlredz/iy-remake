@@ -5,11 +5,21 @@
 --   "top"       = the whole window flush with the top edge (only when it is dragged there)
 -- Rules:
 --   - a tap on the window while it is minimized expands it, just enough to be fully visible
---   - a click outside the window minimizes it, but only while it is expanded, not kept open, and the command bar is not in use
+--   - a click outside the window minimizes it, but only while it is expanded, not kept open, the command bar is not in use,
+--     and the character is not moving. A click is a short tap
+--   - a finger that came down outside the window and slides SWIPE_OUTSIDE_MIN px (the camera, the thumbstick) minimizes it
+--     at once, under the same conditions, except that the character moving does not matter. A press held still does not
 --     (not on PC, see hoverToOpen)
+--   - mobile: Enter on the command bar minimizes it only if the character was being moved with the analog stick when
+--     Enter was pressed (onMobileEnter). PC: Enter always minimizes it (onCommandBarClosed), unless a finger is
+--     on the window at that moment (fingerOnWindow): then the window stays as it is
 --   - while the command bar is in use, a drag down does not minimize it either (it only snaps)
 --   - anything added with addWindowPart (the mobile IY button) counts as part of the window
 --   - a drag that ends DRAG_DOWN_MIN px lower than it started minimizes it
+--   - mobile: a swipe down on the command list, from the top of the list, minimizes it too (onListSwipeDown)
+--   - mobile: opening the window (a tap on it, the command bar, the IY button, quickCapture) locks the swipes (lockSwipe):
+--     the outside swipe, the swipe down on the list and a drag down do not minimize it until the command is sent (unlockSwipe)
+--     or the window is minimized in any other way. Clicks still minimize it
 --   - a drag that ends snaps to the top if that edge is nearer, otherwise to the bottom (keeping expanded / minimized)
 --   - a window at the top never moves on taps or outside clicks
 --   - the window is interactive (onInteractive) only when it is not minimized AND has stopped moving: it turns off
@@ -30,11 +40,15 @@ local uiTweens = require("../../framework/services/tweenService")
 
 local TweenService = robloxServices.TweenService
 local UserInputService = robloxServices.UserInputService
+local RunService = robloxServices.RunService
 
 local MOVE_TIME = 0.32 -- seconds for expand / minimize / snap
 local TAP_MAX_TIME = 0.1 -- a press this short (or shorter) can be a tap
 local TAP_MAX_TRAVEL = 10 -- ...if the pointer barely moved (px)
 local DRAG_DOWN_MIN = 50 -- a drag ending this many px lower minimizes the window (px)
+local CLICK_MAX_TIME = 0.3 -- an outside press this short (seconds) counts as a click; a held press does not
+local SWIPE_OUTSIDE_MIN = 20 -- px a finger that came down outside the window must slide before it minimizes the window
+local MOVING_GRACE = 0.5 -- seconds after the character stopped moving during which it still counts as moving
 
 -- PC hover, the original IY timings
 local HOVER_EXPAND_TIME = 0.2 -- seconds for the window to open when the pointer enters it
@@ -61,6 +75,7 @@ dock.__index = dock
 --   hoverToOpen      true on PC: the pointer over the window expands it, leaving it minimizes it (see the rules above).
 --                    Only takes effect when a mouse is connected (UserInputService.MouseEnabled)
 --   commandBarInUse  fn() -> boolean, true while the command bar is in use (nothing minimizes the window then)
+--   isMoving         fn() -> boolean, true while the character is moving (checked every frame, see MOVING_GRACE)
 function dock.new(options)
 	local self = setmetatable({
 		frame = options.frame,
@@ -73,6 +88,8 @@ function dock.new(options)
 		-- hover needs a mouse: a touch screen never sends MouseMovement, so there would be no enter and no leave
 		hoverToOpen = options.hoverToOpen == true and UserInputService.MouseEnabled,
 		commandBarInUse = options.commandBarInUse,
+		isMoving = options.isMoving,
+		lastMovingAt = -math.huge, -- os.clock() of the last frame in which the character was moving
 
 		state = "minimized",
 		interactive = nil, -- unknown until the first setInteractive below
@@ -83,6 +100,9 @@ function dock.new(options)
 		windowParts = {},
 		tween = nil,
 		press = nil,
+		touches = {}, -- the fingers that are down right now: InputObject -> its last position
+		outsideTouches = {}, -- the fingers that came down outside the window: InputObject -> where they came down
+		swipeLocked = false, -- the window was opened by the user: swipes do not minimize it (see lockSwipe)
 		connections = {},
 	}, dock)
 
@@ -94,6 +114,17 @@ function dock.new(options)
 
 	table.insert(self.connections, connectionService:Connect(UserInputService.InputEnded, function(input)
 		self:onInputEnded(input)
+	end))
+
+	table.insert(self.connections, connectionService:Connect(UserInputService.InputChanged, function(input)
+		self:onInputChanged(input)
+	end))
+
+	-- remembers when the character last moved, so a press or a focus change just after moving still counts as moving
+	table.insert(self.connections, connectionService:Connect(RunService.Heartbeat, function()
+		if self.isMoving and self.isMoving() then
+			self.lastMovingAt = os.clock()
+		end
 	end))
 
 	self:setInteractive(false)
@@ -151,9 +182,25 @@ end
 
 -- shows the window if it is minimized; a window that is already up does not move
 function dock:reveal()
+	-- the IY button, the prefix key, quickCapture and showiy all come here, even when the window is already up
+	self:lockSwipe()
+
 	if self.state == "minimized" then
 		self:expand()
 	end
+end
+
+-- the user opened the window: until the command is sent (unlockSwipe) or the window is minimized, a swipe does not
+-- minimize it. Mobile only: on PC the pointer decides, as before
+function dock:lockSwipe()
+	if self.hoverToOpen then return end
+
+	self.swipeLocked = true
+end
+
+-- the command was sent (commands calls this through the interface): a swipe can minimize the window again
+function dock:unlockSwipe()
+	self.swipeLocked = false
 end
 
 -- runs fn once the window has stopped moving (right away if it is not moving)
@@ -217,6 +264,11 @@ function dock:clampDrag(pos: UDim2): UDim2
 	return UDim2.new(x.Scale, x.Offset, 0, y)
 end
 
+-- true while the character is moving, or stopped moving a moment ago
+function dock:wasMovingRecently(): boolean
+	return os.clock() - self.lastMovingAt < MOVING_GRACE
+end
+
 -- only calls onInteractive when the value changes
 function dock:setInteractive(enabled: boolean)
 	if self.interactive == enabled then return end
@@ -240,8 +292,16 @@ function dock:moveTo(state: string, time: number?, direction: Enum.EasingDirecti
 		return
 	end
 
+	local wasMinimized = self.state == "minimized"
 	self.state = state
 	self:cancel()
+
+	-- coming up from minimized is an opening (a tap, a drag up, a reveal); going down to minimized ends the lock
+	if state == "minimized" then
+		self.swipeLocked = false
+	elseif wasMinimized then
+		self:lockSwipe()
+	end
 
 	-- going away: no interactions from the very start of the animation
 	if state == "minimized" then
@@ -331,14 +391,36 @@ end
 function dock:onCommandBarClosed(enteredCommand: boolean)
 	if not self.hoverToOpen then return end
 
+	-- a finger on the window means the window is in use: Enter (or any loss of focus) does not minimize it
+	if self:fingerOnWindow() then return end
+
 	local request = self.hoverRequest
 	task.wait()
 
-	-- a newer enter / leave (or destroy) took over while waiting
+	-- a newer enter / leave (or destroy) took over while waiting, or a finger came down on the window meanwhile
 	if request ~= self.hoverRequest or self.dragging or not self:canHoverMinimize() then return end
 	if self.hovering and not enteredCommand then return end
+	if self:fingerOnWindow() then return end
 
 	self:minimize(HOVER_MINIMIZE_TIME, Enum.EasingDirection.InOut)
+end
+
+-- Mobile: Enter on the command bar minimizes an expanded window (on PC it is onCommandBarClosed), but only when the
+-- character was being moved with the analog stick when Enter was pressed. `isFocused` tells whether the command bar got the focus
+-- back after Enter (a correction does that): then nothing minimizes.
+function dock:onMobileEnter(isFocused: () -> boolean)
+	if self.hoverToOpen then return end
+
+	-- checked right at the press, before the wait, so it is the movement at Enter that counts.
+	-- Not walking at Enter: the window stays as it is
+	if not self:wasMovingRecently() then return end
+
+	task.wait()
+
+	if self.dragging or isFocused() then return end
+	if self.state ~= "expanded" or self.keepOpen then return end
+
+	self:minimize()
 end
 
 -- the interface tells the dock when a drag of the window starts and ends. A pointer that left the window during the drag
@@ -348,7 +430,9 @@ function dock:setDragging(dragging: boolean)
 	local wasDragging = self.dragging
 	self.dragging = dragging == true
 
-	if wasDragging and not self.dragging and not self.hovering then
+	-- hover only exists with a mouse. On a touch screen a tap or a drag on the window must not start the PC leave timer,
+	-- which minimized an expanded window about a second later
+	if wasDragging and not self.dragging and self.hoverToOpen and not self.hovering then
 		self:onHoverLeave()
 	end
 end
@@ -374,6 +458,7 @@ end
 function dock:sleep()
 	self:cancel()
 	self.state = "minimized"
+	self.swipeLocked = false
 	self.frame.Position = self:targetFor("minimized")
 	self:setInteractive(false)
 end
@@ -386,7 +471,7 @@ function dock:onDragEnded(gesture)
 		return
 	end
 
-	if gesture.dy >= DRAG_DOWN_MIN and not self:commandBarBusy() then
+	if gesture.dy >= DRAG_DOWN_MIN and not self:commandBarBusy() and not self.swipeLocked then
 		self:minimize()
 		return
 	end
@@ -394,43 +479,105 @@ function dock:onDragEnded(gesture)
 	self:moveTo(self:nearestSnap())
 end
 
+-- Mobile: a swipe down that started on the command list while the list was at its top. commands calls this when the
+-- finger is let go. Same rule as a drag that ends DRAG_DOWN_MIN px lower: the window minimizes, unless the command bar
+-- is in use
+function dock:onListSwipeDown()
+	if self.hoverToOpen or self.swipeLocked then return end
+	if self.state == "minimized" or self:commandBarBusy() then return end
+
+	self:minimize()
+end
+
 -- true while the command bar is in use: outside presses and drags down do not minimize the window then
 function dock:commandBarBusy(): boolean
 	return self.commandBarInUse ~= nil and self.commandBarInUse() == true
 end
 
-function dock:onInputBegan(input)
-	if not PRESS_TYPES[input.UserInputType] then return end
+-- true while a finger is on the window (or one of its parts), whether it came down there or slid onto it
+function dock:fingerOnWindow(): boolean
+	for _, position in self.touches do
+		if self:isOverWindow(position) then
+			return true
+		end
+	end
 
-	local inside = self:isOverWindow(input.Position)
+	return false
+end
+
+-- keeps the position of a finger that is down, so fingerOnWindow sees where it is now
+function dock:onInputChanged(input)
+	if input.UserInputType ~= Enum.UserInputType.Touch then return end
+	if self.touches[input] == nil then return end
+
+	self.touches[input] = input.Position
+
+	local startPos = self.outsideTouches[input]
+	if startPos and (input.Position - startPos).Magnitude >= SWIPE_OUTSIDE_MIN then
+		self:onOutsideSwipe()
+	end
+end
+
+-- a finger that came down outside the window slid far enough: an expanded window minimizes at once, while the finger is
+-- still down (the camera and the thumbstick count). Same conditions as a click outside, but the character moving does not
+-- matter. Once is enough, so the fingers that came down outside are forgotten
+function dock:onOutsideSwipe()
+	if self.hoverToOpen or self.dragging or self.swipeLocked then return end
+	if self.state ~= "expanded" or self.keepOpen or self:commandBarBusy() then return end
+
+	table.clear(self.outsideTouches)
+	self:minimize()
+end
+
+function dock:onInputBegan(input)
+	if input.UserInputType == Enum.UserInputType.Touch then
+		self.touches[input] = input.Position
+
+		if not self:isOverWindow(input.Position) then
+			self.outsideTouches[input] = input.Position
+		end
+	end
+
+	if not PRESS_TYPES[input.UserInputType] then return end
 
 	self.press = {
 		type = input.UserInputType,
 		time = os.clock(),
 		position = input.Position,
-		inside = inside,
+		inside = self:isOverWindow(input.Position),
 	}
-
-	-- a click outside minimizes an expanded window, unless it is kept open; a window at the top stays where it is.
-	-- Not on PC: there the pointer leaving the window does it (onHoverLeave), like the original
-	if not inside and not self.hoverToOpen and self.state == "expanded" and not self.keepOpen and not self:commandBarBusy() then
-		self:minimize()
-	end
 end
 
+-- A press is decided when it ends, so a held press can be told from a click
 function dock:onInputEnded(input)
+	if input.UserInputType == Enum.UserInputType.Touch then
+		self.touches[input] = nil
+		self.outsideTouches[input] = nil
+	end
+
 	local press = self.press
 	if not press or input.UserInputType ~= press.type then return end
 	self.press = nil
 
-	if not press.inside then return end
-
 	local duration = os.clock() - press.time
 	local travel = (input.Position - press.position).Magnitude
 
-	-- a tap expands a minimized window (and does nothing else)
-	if duration <= TAP_MAX_TIME and travel <= TAP_MAX_TRAVEL and self.state == "minimized" then
-		self:expand()
+	if press.inside then
+		-- a tap expands a minimized window (and does nothing else)
+		if duration <= TAP_MAX_TIME and travel <= TAP_MAX_TRAVEL and self.state == "minimized" then
+			self:expand()
+		end
+
+		return
+	end
+
+	-- a click outside minimizes an expanded window, unless it is kept open; a window at the top stays where it is.
+	-- Not on PC: there the pointer leaving the window does it (onHoverLeave), like the original
+	local isClick = duration <= CLICK_MAX_TIME and travel <= TAP_MAX_TRAVEL
+
+	if isClick and not self.hoverToOpen and self.state == "expanded" and not self.keepOpen
+		and not self:commandBarBusy() and not self:wasMovingRecently() then
+		self:minimize()
 	end
 end
 
@@ -442,6 +589,8 @@ function dock:destroy()
 		connectionService:disconnect(connection)
 	end
 	table.clear(self.connections)
+	table.clear(self.touches)
+	table.clear(self.outsideTouches)
 end
 
 return dock

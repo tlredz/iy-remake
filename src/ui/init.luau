@@ -8,6 +8,8 @@ local connectionService = require("../framework/services/connectionService")
 local robloxServices = require("../framework/services/rbxServices")
 local isMobile = require("../framework/environment/isMobile")
 
+local playerService = require("../framework/services/playerService")
+
 local settingsData = require("../storage/data/settings")
 local logger = require("../utils/logger")
 local tools = require("../utils/tools")
@@ -286,15 +288,36 @@ function interface:createCommands()
 
 	self.commands = commands
 
+	-- a command was sent: a swipe can minimize the window again (see dock:unlockSwipe)
+	commands.onCommandSent = function()
+		if self.dock then
+			self.dock:unlockSwipe()
+		end
+	end
+
 	self.settings:watchCommandBar(commands.searchBox)
 	
 	if isMobile then
+		-- a swipe down on the list, from its top, minimizes the window (the dock decides, see onListSwipeDown)
+		commands.onSwipeDown = function()
+			if self.dock then
+				self.dock:onListSwipeDown()
+			end
+		end
+
 		connectionService:Connect(commands.searchBox.Focused, function()
 			self.commandBarUsedAt = os.clock()
 		end)
 		
-		connectionService:Connect(commands.searchBox.FocusLost, function()
+		connectionService:Connect(commands.searchBox.FocusLost, function(enterPressed)
 			self.commandBarUsedAt = os.clock()
+
+			-- Enter minimizes the window when the character was being walked (see dock:onMobileEnter)
+			if enterPressed and self.dock then
+				self.dock:onMobileEnter(function()
+					return commands.searchBox:IsFocused()
+				end)
+			end
 		end)
 	else
 		-- PC: like the original IY (Cmdbar.FocusLost), the window minimizes when the command bar lets go of the focus
@@ -335,6 +358,9 @@ function interface:dragMainFrame(mainFrame)
 		end,
 		commandBarInUse = function()
 			return self:isCommandBarInUse()
+		end,
+		isMoving = function()
+			return self:isCharacterMoving()
 		end,
 		onInteractive = function(enabled)
 			if self.commands then
@@ -385,6 +411,23 @@ function interface:isCommandBarInUse(): boolean
 	end
 
 	return os.clock() - (self.commandBarUsedAt or 0) < COMMAND_BAR_GRACE
+end
+
+-- true while the character is moving: the movement keys or thumbstick, or a command (walkto, tween, fly...) moves it.
+-- Sideways speed only, so falling and jumping do not count
+function interface:isCharacterMoving(): boolean
+	local humanoid = playerService:getHumanoid()
+	if not humanoid then return false end
+
+	if humanoid.MoveDirection.Magnitude > 0.05 then
+		return true
+	end
+
+	local root = humanoid.RootPart
+	if not root then return false end
+
+	local velocity = root.AssemblyLinearVelocity
+	return Vector3.new(velocity.X, 0, velocity.Z).Magnitude > 1
 end
 
 function interface:releaseCommandFocus()

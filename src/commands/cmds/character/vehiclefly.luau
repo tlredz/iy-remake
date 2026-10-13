@@ -1,6 +1,6 @@
 local flight = require("../../systems/flight")
 
-local DEFAULT_SPEED = 20
+local DEFAULT_SPEED = 100
 
 return {
 	{

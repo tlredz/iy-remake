@@ -89,8 +89,18 @@ return {
 		run = function(self, args)
 			local humanoid = self.playerService:getHumanoid()
 			if not humanoid then return end
-			
-			local track = humanoid:PlayEmoteAndGetAnimTrackById(args:nextValue())
+
+			local emoteId = args:nextValue()
+			local played, track = pcall(function()
+				return humanoid:PlayEmoteAndGetAnimTrackById(emoteId)
+			end)
+
+			-- an ID that is not an emote gives no track (or an error), so the person is told instead of nothing happening
+			if not played or not track then
+				self:notify("Emote", `there is no emote with the ID {emoteId}`)
+				return
+			end
+
 			local speed = args:nextValue()
 			if track and speed then
 				track:AdjustSpeed(speed)

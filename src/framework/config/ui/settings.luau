@@ -17,6 +17,7 @@ return {
 	keys = {
 		keepMenuOpen = "interface.keepMenuOpen",
 		keepIY = keepiy.settingKey,
+		clearOnEnter = "clearOnEnter",
 		theme = "selectedTheme",
 	},
 
@@ -236,6 +237,7 @@ return {
 				{ kind = "keybind", label = "Prefix", icon = "lucide-terminal", binding = "prefix" },
 				{ kind = "switch", label = "Keep Menu Open", icon = "lucide-pin", setting = "keepMenuOpen" },
 				{ kind = "switch", label = "Keep Interface", icon = "lucide-refresh-cw", setting = "keepIY" },
+				{ kind = "switch", label = "Clear On Enter", icon = "lucide-eraser", setting = "clearOnEnter" },
 			},
 		},
 		{
