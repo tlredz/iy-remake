@@ -12,6 +12,8 @@
 		released at: 10/10/2026 (v0.1.0) (beta release)
 			I accomplished in 3 days what I can't accomplish in 4 months.
 			Yes, I used AI to help me.
+		almost done (10/12/2026) (v0.5.0)
+			Now all that's left is a few polishing touches and corrections. 
  ]]	
 
 -- require("./src/utils/logger"):enable()
