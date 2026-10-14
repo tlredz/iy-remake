@@ -250,7 +250,7 @@ b.fetchService.load("backups/console.luau","iy/oldconsole")()end local c=functio
 
 
 c, d)
-if d:nextValue()==true then
+if d==true then
 c.fetchService.load("backups/explorer.luau","iy/explorer")()
 else
 c.fetchService.load("backups/dexPlusPlus.luau","iy/dexPlusPlus")()
@@ -292,7 +292,7 @@ run=function(h)task.spawn(b,h)end
 action="explorer|dex",
 description="Opens the dex Explorer",
 args={name="load dex by moon",kind="boolean",optional=true},
-run=function(h)task.spawn(c,h)end
+run=function(h,i)task.spawn(c,h,i:nextValue())end
 },
 {
 action="emotemenu|7yd7",
@@ -2891,7 +2891,7 @@ return s end
 
 return i end a.ak=function()local c=a.cache.ak if not c then c={c=b()}a.cache.ak=c end return c.c end end do local b=function()
 return a.ak().new"storage/settings"end a.al=function()local c=a.cache.al if not c then c={c=b()}a.cache.al=c end return c.c end end do local b=function()
-return"v0.6.2"end a.am=function()local c=a.cache.am if not c then c={c=b()}a.cache.am=c end return c.c end end do local b=function()
+return"v0.6.3"end a.am=function()local c=a.cache.am if not c then c={c=b()}a.cache.am=c end return c.c end end do local b=function()
 return{
 owner="tlredz",
 repository="iy-remake"
