@@ -11,11 +11,13 @@ local notifier = require("../notifier")
 local privateEnv = require("../../framework/environment/private")
 local config = require("../../framework/config/ui/chatlogs")
 local robloxServices = require("../../framework/services/rbxServices")
+local executorEnv = require("../../framework/environment/executor")
 local tweenService = require("../../framework/services/tweenService")
 local chatLogs = require("../../commands/systems/chatLogs")
 local argColors = require("../../framework/config/ui/colors").args
 local highlight = require("../../utils/textHighlight")
 local tools = require("../../utils/tools")
+local settingsData = require("../../storage/data/settings")
 
 local windowConfig = config.window
 local TOP_BAR_HEIGHT = windowConfig.topBarHeight
@@ -28,14 +30,22 @@ local CLEAR_X, CLEAR_WIDTH = 0, 0.125
 local SAVE_X, SAVE_WIDTH = 0.125, 0.125
 local ENABLED_X, ENABLED_WIDTH = 0.25, 0.25
 local TABS_X, TABS_WIDTH = 0.5, 0.5
-local SELECTED_TAB_SHARE = 0.75 -- the selected tab takes this part of the tabs half
+
+-- The Chat/Join switch is a pill-shaped track holding two tabs; a lighter thumb slides under the selected one
+local SEGMENT_WIDTH = 0.5 -- each tab takes half of the track
+local TAB_X = { chat = 0, join = 0.5 } -- where each tab sits inside the track
+local SEGMENT_INSET = windowConfig.tabInset -- gap between the track and the thumb and tabs
+local PILL = UDim.new(0.5, 0)
+
+-- Clicking an entry copies it: the message in the chat tab, the user id in the joins tab
+local ENTRY_HOVER_TRANSPARENCY = windowConfig.entryHoverTransparency
 
 local chatLogsComponent = {
 	window = nil,
 	listening = false,
 }
 
--- Places a button in the row: x and width are fractions of the row, with a small inset on every side
+-- Places a button in its parent: x and width are fractions of the parent, with a small inset on every side
 local function placeButton(button, scaleX: number, scaleWidth: number)
 	local inset = windowConfig.buttonInset
 	button.Position = UDim2.new(scaleX, inset, 0, inset)
@@ -48,13 +58,18 @@ local function paint(button, token: string)
 end
 
 local function isEnabled(kind: string): boolean
-	if kind == "chat" then
-		return chatLogs.chatEnabled
-	end
-	return chatLogs.joinEnabled
+	return chatLogs[if kind == "chat" then "chatEnabled" else "joinEnabled"]
 end
 
--- The time is dimmed, the name is bold in its chat color, and the rest keeps the token colors of textHighlight
+local function saveEnabled(kind: string, enabled: boolean)
+	settingsData:setValue(`chatlogs.{kind}.enabled`, enabled == true)
+	settingsData:save()
+end
+
+local function loadEnabled(kind: string, setEnabled)
+	setEnabled(settingsData:getValue(`chatlogs.{kind}.enabled`) == true)
+end
+
 local function formatEntry(kind: string, entry): string
 	local time = tools.colorFromRGB(`[{entry.time}]`, argColors.comment)
 	local name = `<b>{tools.colorFromRGB(tools.escapeRichText(entry.name), entry.color or argColors.others)}</b>`
@@ -63,6 +78,30 @@ local function formatEntry(kind: string, entry): string
 		return `{time} {name}: {highlight:apply(entry.message)}`
 	end
 	return `{time} {name} {highlight:apply(`joined (id {entry.userId})`)}`
+end
+
+-- What an entry copies: the message (chat) or the user id (joins)
+local function copyValue(kind: string, entry): string
+	if kind == "chat" then
+		return tostring(entry.message)
+	end
+	return tostring(entry.userId)
+end
+
+local function copyEntry(kind: string, entry)
+	if not executorEnv.setclipboard then
+		notifier:notify(config.messages.copied, config.messages.noClipboard)
+		return
+	end
+
+	local value = copyValue(kind, entry)
+	executorEnv.setclipboard(value)
+
+	if kind == "chat" then
+		notifier:notify(config.messages.copied, config.messages.chatCopied)
+	else
+		notifier:notify(config.messages.copied, `{config.messages.joinCopied} {value}`)
+	end
 end
 
 local function isSelectedTab(window, button): boolean
@@ -76,59 +115,38 @@ local function cancelTabTweens(window)
 	table.clear(window.tweens)
 end
 
--- Moves a tab to its place. When animate is set (switching tabs), it slides there with a short tween.
-local function moveTab(window, button, scaleX: number, scaleWidth: number, animate: boolean)
-	local inset = windowConfig.buttonInset
-	local position = UDim2.new(scaleX, inset, 0, inset)
-	local size = UDim2.new(scaleWidth, -inset * 2, 1, -inset * 2)
+-- Moves the thumb under the selected tab. When animate is set (switching tabs), it slides there with a short tween.
+local function moveThumb(window, animate: boolean)
+	cancelTabTweens(window)
 
+	local position = UDim2.new(TAB_X[window.tab], SEGMENT_INSET, 0, SEGMENT_INSET)
 	local duration = tweenService:getScale(windowConfig.tabTweenTime)
 	if not animate or duration <= 0 then
-		button.Position = position
-		button.Size = size
+		window.thumb.Position = position
 		return
 	end
 
 	local info = TweenInfo.new(duration, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
-	local tween = robloxServices.TweenService:Create(button, info, {
+	local tween = robloxServices.TweenService:Create(window.thumb, info, {
 		Position = position,
-		Size = size,
 	})
 	table.insert(window.tweens, tween)
 	tween:Play()
-end
-
--- The selected tab takes most of the right half, the other one the rest
-local function layoutTabs(window, animate: boolean)
-	cancelTabTweens(window)
-
-	local chatShare = if window.tab == "chat" then SELECTED_TAB_SHARE else 1 - SELECTED_TAB_SHARE
-	local chatWidth = TABS_WIDTH * chatShare
-	local joinWidth = TABS_WIDTH - chatWidth
-
-	moveTab(window, window.tabButtons.chat, TABS_X, chatWidth, animate)
-	moveTab(window, window.tabButtons.join, TABS_X + chatWidth, joinWidth, animate)
 end
 
 local function refreshPaint(window)
 	local enabled = isEnabled(window.tab)
 	window.toggle.Text = if enabled then config.controls.enabled else config.controls.disabled
 	paint(window.toggle, if enabled then "Colors.OnPrimary" else "Colors.Buttons.Default")
-	
+
 	for _, button in window.actions do
 		paint(button, "Colors.Buttons.Default")
 	end
 
-	for kind, button in window.tabButtons do
-		local selected = kind == window.tab
-		paint(button, if selected then "Colors.Primary" else "Colors.Buttons.Default")
-		themeService:updateObjectProperties(button, { Font = if selected then "Font.Bold" else "Font.Normal" })
+	-- the thumb marks the selected tab, so the tabs stay see-through (hovering an unselected one tints it)
+	for _, button in window.tabButtons do
+		button.BackgroundTransparency = 1
 	end
-end
-
-local function refresh(window, animate: boolean?)
-	refreshPaint(window)
-	layoutTabs(window, animate == true)
 end
 
 local function disconnect(window)
@@ -146,6 +164,7 @@ local function hover(window, button)
 	connect(window, button.MouseEnter, function()
 		if not isSelectedTab(window, button) then
 			paint(button, "Colors.Buttons.Holding")
+			button.BackgroundTransparency = 0
 		end
 	end)
 
@@ -165,7 +184,7 @@ local function createButton(parent, name: string, text: string, scaleX: number, 
 			Font = "Font.Normal",
 			TextColor3 = "Colors.Text.Default",
 		},
-		
+
 		createService.new("UICorner", {
 			CornerRadius = UDim.new(0, windowConfig.buttonCorner),
 		}),
@@ -173,6 +192,35 @@ local function createButton(parent, name: string, text: string, scaleX: number, 
 
 	placeButton(button, scaleX, scaleWidth)
 	return button
+end
+
+-- The thumb and the tabs share this rectangle: their half of the track, minus the same gap on every side
+local function placeSegment(segment, scaleX: number)
+	segment.Position = UDim2.new(scaleX, SEGMENT_INSET, 0, SEGMENT_INSET)
+	segment.Size = UDim2.new(SEGMENT_WIDTH, -SEGMENT_INSET * 2, 1, -SEGMENT_INSET * 2)
+end
+
+-- A Chat/Join tab. It has no background of its own: the thumb shows the selected one.
+local function createTab(parent, name: string, text: string, scaleX: number)
+	local tab = createService.new("TextButton", name, parent, {
+		AutoButtonColor = false,
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		Text = text,
+		TextSize = config.textSizes.tab,
+		TextTruncate = Enum.TextTruncate.AtEnd,
+		ThemeTag = {
+			Font = "Font.Bold",
+			TextColor3 = "Colors.Text.Default",
+		},
+
+		createService.new("UICorner", {
+			CornerRadius = PILL,
+		}),
+	})
+
+	placeSegment(tab, scaleX)
+	return tab
 end
 
 local function applyScroll(window)
@@ -196,10 +244,13 @@ end
 local function addLabel(window, kind: string, entry)
 	window.order += 1
 
-	local label = createService.new("TextLabel", "Entry", window.content, {
+	local stripeTransparency = if window.order % 2 == 1 then windowConfig.stripeTransparency else 1
+
+	local label = createService.new("TextButton", "Entry", window.content, {
+		AutoButtonColor = false,
 		AutomaticSize = Enum.AutomaticSize.Y,
 		BackgroundColor3 = Color3.new(1, 1, 1),
-		BackgroundTransparency = if window.order % 2 == 1 then windowConfig.stripeTransparency else 1,
+		BackgroundTransparency = stripeTransparency,
 		BorderSizePixel = 0,
 		LayoutOrder = window.order,
 		Size = UDim2.new(1, 0, 0, 0),
@@ -214,6 +265,17 @@ local function addLabel(window, kind: string, entry)
 			TextColor3 = "Colors.Text.Default",
 		},
 	})
+
+	-- these connections end with the label, which is destroyed when it is trimmed, cleared or the window closes
+	label.MouseEnter:Connect(function()
+		label.BackgroundTransparency = ENTRY_HOVER_TRANSPARENCY
+	end)
+	label.MouseLeave:Connect(function()
+		label.BackgroundTransparency = stripeTransparency
+	end)
+	label.Activated:Connect(function()
+		copyEntry(kind, entry)
+	end)
 
 	table.insert(window.labels, label)
 	while #window.labels > config.maxLabels do
@@ -236,7 +298,8 @@ local function render(window, animate: boolean?)
 		addLabel(window, window.tab, entry)
 	end
 
-	refresh(window, animate)
+	refreshPaint(window)
+	moveThumb(window, animate == true)
 end
 
 local function createWindow(tab: string)
@@ -245,7 +308,6 @@ local function createWindow(tab: string)
 		labels = {},
 		order = 0,
 		connections = {},
-		tabButtons = {},
 		tweens = {},
 	}
 
@@ -297,7 +359,7 @@ local function createWindow(tab: string)
 	})
 	assetsService:loadImage(closeIcon, "close")
 
-	-- one row for every button; refresh() places the two tabs for the selected one
+	-- one row for every button; the switch on the right is placed by refreshPaint() for the selected tab
 	local row = createService.new("Frame", "Controls", frame, {
 		BackgroundTransparency = 1,
 		Position = UDim2.fromOffset(0, TOP_BAR_HEIGHT),
@@ -308,9 +370,34 @@ local function createWindow(tab: string)
 	local saveButton = createButton(row, "Save", config.controls.save, SAVE_X, SAVE_WIDTH)
 	window.toggle = createButton(row, "Toggle", config.controls.enabled, ENABLED_X, ENABLED_WIDTH)
 
-	local chatTab = createButton(row, "ChatTab", config.tabs.chat, TABS_X, TABS_WIDTH / 2)
-	local joinTab = createButton(row, "JoinTab", config.tabs.join, TABS_X + TABS_WIDTH / 2, TABS_WIDTH / 2)
-	
+	-- the switch: a dark track, the thumb sliding under the selected tab, then the two tabs on top of it
+	local switch = createService.new("Frame", "Switch", row, {
+		BorderSizePixel = 0,
+		ThemeTag = {
+			BackgroundColor3 = "Colors.Buttons.Default",
+		},
+
+		createService.new("UICorner", {
+			CornerRadius = PILL,
+		}),
+	})
+	placeButton(switch, TABS_X, TABS_WIDTH)
+
+	window.thumb = createService.new("Frame", "Thumb", switch, {
+		BorderSizePixel = 0,
+		ThemeTag = {
+			BackgroundColor3 = "Colors.Border.Holding",
+		},
+
+		createService.new("UICorner", {
+			CornerRadius = PILL,
+		}),
+	})
+	placeSegment(window.thumb, TAB_X.chat)
+
+	local chatTab = createTab(switch, "ChatTab", config.tabs.chat, TAB_X.chat)
+	local joinTab = createTab(switch, "JoinTab", config.tabs.join, TAB_X.join)
+
 	window.tabButtons = { chat = chatTab, join = joinTab }
 	window.actions = { saveButton, clearButton }
 
@@ -387,9 +474,11 @@ local function createWindow(tab: string)
 		else
 			chatLogs.setJoin(not enabled)
 		end
+		
+		saveEnabled(window.tab, not enabled)
 		refreshPaint(window)
 	end)
-	
+
 	connect(window, saveButton.Activated, function()
 		local success, result = chatLogs.save(window.tab)
 		if success then
@@ -398,7 +487,7 @@ local function createWindow(tab: string)
 			notifier:notify(config.messages.saveFailed, result)
 		end
 	end)
-	
+
 	connect(window, clearButton.Activated, function()
 		chatLogs.clear(window.tab)
 		clearLabels(window)
@@ -426,8 +515,14 @@ local function listen()
 	end)
 end
 
--- Opens the window on a tab ("chat" or "join"). If it is already open, it switches to that tab.
+function chatLogsComponent:restore()
+	loadEnabled("chat", chatLogs.setChat)
+	loadEnabled("join", chatLogs.setJoin)
+end
+
 function chatLogsComponent:open(tab: string)
+	self:restore()
+	
 	listen()
 
 	local window = self.window

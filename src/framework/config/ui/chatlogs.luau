@@ -12,7 +12,9 @@ return {
 		closeIconSize = 10,
 		buttonCorner = 6,
 		buttonInset = 2,
+		tabInset = 0, -- gap between the Chat/Joins track and its thumb (0 = the thumb touches the edges)
 		stripeTransparency = 0.96,
+		entryHoverTransparency = 0.88, -- the entry under the pointer is lit up with this transparency
 		shownX = 12,
 		shownY = 100,
 		hiddenX = -360,
@@ -29,6 +31,7 @@ return {
 	textSizes = {
 		title = 16,
 		control = 12,
+		tab = 13, -- the Chat/Joins switch
 		entry = 13,
 	},
 
@@ -47,5 +50,11 @@ return {
 	messages = {
 		saved = "Saved",
 		saveFailed = "Save failed",
+
+		-- clicking an entry copies it: the message in the chat tab, the user id in the joins tab
+		copied = "Copied",
+		chatCopied = "Message copied to the clipboard",
+		joinCopied = "User ID copied to the clipboard:",
+		noClipboard = "Your executor has no clipboard function",
 	},
 }

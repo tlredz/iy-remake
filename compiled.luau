@@ -2891,7 +2891,7 @@ return s end
 
 return i end a.ak=function()local c=a.cache.ak if not c then c={c=b()}a.cache.ak=c end return c.c end end do local b=function()
 return a.ak().new"storage/settings"end a.al=function()local c=a.cache.al if not c then c={c=b()}a.cache.al=c end return c.c end end do local b=function()
-return"v0.6.1"end a.am=function()local c=a.cache.am if not c then c={c=b()}a.cache.am=c end return c.c end end do local b=function()
+return"v0.6.2"end a.am=function()local c=a.cache.am if not c then c={c=b()}a.cache.am=c end return c.c end end do local b=function()
 return{
 owner="tlredz",
 repository="iy-remake"
@@ -21117,7 +21117,9 @@ rowHeight=22,
 closeIconSize=10,
 buttonCorner=6,
 buttonInset=2,
+tabInset=0,
 stripeTransparency=0.96,
+entryHoverTransparency=0.88,
 shownX=12,
 shownY=100,
 hiddenX=-360,
@@ -21134,6 +21136,7 @@ wheelIncrement=40,
 textSizes={
 title=16,
 control=12,
+tab=13,
 entry=13,
 },
 
@@ -21152,6 +21155,12 @@ clear="Clear",
 messages={
 saved="Saved",
 saveFailed="Save failed",
+
+
+copied="Copied",
+chatCopied="Message copied to the clipboard",
+joinCopied="User ID copied to the clipboard:",
+noClipboard="Your executor has no clipboard function",
 },
 }end a.di=function()local ab=a.cache.di if not ab then ab={c=aa()}a.cache.di=ab end return ab.c end end do local aa=function()
 
@@ -21168,154 +21177,173 @@ local ag=a.cT()
 local ah=a.b()
 local ai=a.di()
 local b=a.P()
-local c=a.cE()
-local d=a.bG()
-local e=a.cR().args
-local f=a.cS()
-local g=a.cK()
+local c=a.a()
+local d=a.cE()
+local e=a.bG()
+local f=a.cR().args
+local g=a.cS()
+local h=a.cK()
+local i=a.al()
 
-local h=ai.window
-local i=h.topBarHeight
-local j=i+h.rowHeight
-local k=UDim2.new(0,h.shownX,0,h.shownY)
-local l=UDim2.new(0,h.hiddenX,0,h.shownY)
+local j=ai.window
+local k=j.topBarHeight
+local l=k+j.rowHeight
+local m=UDim2.new(0,j.shownX,0,j.shownY)
+local n=UDim2.new(0,j.hiddenX,0,j.shownY)
 
 
-local m,n=0,0.125
-local o,p=0.125,0.125
-local q,r=0.25,0.25
-local s,t=0.5,0.5
-local u=0.75
+local o,p=0,0.125
+local q,r=0.125,0.125
+local s,t=0.25,0.25
+local u,v=0.5,0.5
 
-local v={
+
+local w=0.5
+local x={chat=0,join=0.5}
+local y=j.tabInset
+local z=UDim.new(0.5,0)
+
+
+local A=j.entryHoverTransparency
+
+local B={
 window=nil,
 listening=false,
-}local w=function(
+}local C=function(
 
 
-w, x, y)
-local z=h.buttonInset
-w.Position=UDim2.new(x,z,0,z)
-w.Size=UDim2.new(y,-z*2,1,-z*2)end local x=function(
-
-
-
-x, y)
-ac:updateObjectProperties(x,{BackgroundColor3=y})end local y=function(
-
-
-y)
-if y=="chat"then
-return d.chatEnabled
-end
-return d.joinEnabled end local z=function(
-
-
-
-z, A)
-local B=g.colorFromRGB(`[{A.time}]`,e.comment)
-local C=`<b>{g.colorFromRGB(g.escapeRichText(A.name),A.color or e.others)}</b>`
-
-if z=="chat"then
-return`{B} {C}: {f:apply(A.message)}`
-end
-return`{B} {C} {f:apply(`joined (id {A.userId})`)}`end local A=function(
-
-
-A, B)
-return A.tabButtons[A.tab]==B end local B=function(
-
-
-B)
-for C,D in B.tweens do
-D:Cancel()
-end
-table.clear(B.tweens)end local C=function(
-
-
-
-C, D, E, F, G)
-local H=h.buttonInset
-local I=UDim2.new(E,H,0,H)
-local J=UDim2.new(F,-H*2,1,-H*2)
-
-local K=c:getScale(h.tabTweenTime)
-if not G or K<=0 then
-D.Position=I
-D.Size=J
-return
-end
-
-local L=TweenInfo.new(K,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut)
-local M=b.TweenService:Create(D,L,{
-Position=I,
-Size=J,
-})
-table.insert(C.tweens,M)
-M:Play()end local D=function(
+C, D, E)
+local F=j.buttonInset
+C.Position=UDim2.new(D,F,0,F)
+C.Size=UDim2.new(E,-F*2,1,-F*2)end local D=function(
 
 
 
 D, E)
-B(D)
-
-local F=if D.tab=="chat"then u else 1-u
-local G=t*F
-local H=t-G
-
-C(D,D.tabButtons.chat,s,G,E)
-C(D,D.tabButtons.join,s+G,H,E)end local E=function(
+ac:updateObjectProperties(D,{BackgroundColor3=E})end local E=function(
 
 
 E)
-local F=y(E.tab)
-E.toggle.Text=if F then ai.controls.enabled else ai.controls.disabled
-x(E.toggle,if F then"Colors.OnPrimary"else"Colors.Buttons.Default")
-
-for G,H in E.actions do
-x(H,"Colors.Buttons.Default")
-end
-
-for G,H in E.tabButtons do
-local I=G==E.tab
-x(H,if I then"Colors.Primary"else"Colors.Buttons.Default")
-ac:updateObjectProperties(H,{Font=if I then"Font.Bold"else"Font.Normal"})
-end end local F=function(
+return e[if E=="chat"then"chatEnabled"else"joinEnabled"]end local F=function(
 
 
 F, G)
-E(F)
-D(F,G==true)end local G=function(
+i:setValue(`chatlogs.{F}.enabled`,G==true)
+i:save()end local G=function(
 
 
-G)
-for H,I in G.connections do
-I:Disconnect()
+G, H)
+H(i:getValue(`chatlogs.{G}.enabled`)==true)end local H=function(
+
+
+H, I)
+local J=h.colorFromRGB(`[{I.time}]`,f.comment)
+local K=`<b>{h.colorFromRGB(h.escapeRichText(I.name),I.color or f.others)}</b>`
+
+if H=="chat"then
+return`{J} {K}: {g:apply(I.message)}`
 end
-table.clear(G.connections)end local H=function(
+return`{J} {K} {g:apply(`joined (id {I.userId})`)}`end local I=function(
 
-
-H, I, J)
-table.insert(H.connections,I:Connect(J))end local I=function(
 
 
 I, J)
-H(I,J.MouseEnter,function()
-if not A(I,J)then
-x(J,"Colors.Buttons.Holding")
+if I=="chat"then
+return tostring(J.message)
+end
+return tostring(J.userId)end local J=function(
+
+
+J, K)
+if not c.setclipboard then
+ag:notify(ai.messages.copied,ai.messages.noClipboard)
+return
+end
+
+local L=I(J,K)
+c.setclipboard(L)
+
+if J=="chat"then
+ag:notify(ai.messages.copied,ai.messages.chatCopied)
+else
+ag:notify(ai.messages.copied,`{ai.messages.joinCopied} {L}`)
+end end local K=function(
+
+
+K, L)
+return K.tabButtons[K.tab]==L end local L=function(
+
+
+L)
+for M,N in L.tweens do
+N:Cancel()
+end
+table.clear(L.tweens)end local M=function(
+
+
+
+M, N)
+L(M)
+
+local O=UDim2.new(x[M.tab],y,0,y)
+local P=d:getScale(j.tabTweenTime)
+if not N or P<=0 then
+M.thumb.Position=O
+return
+end
+
+local Q=TweenInfo.new(P,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut)
+local R=b.TweenService:Create(M.thumb,Q,{
+Position=O,
+})
+table.insert(M.tweens,R)
+R:Play()end local N=function(
+
+
+N)
+local O=E(N.tab)
+N.toggle.Text=if O then ai.controls.enabled else ai.controls.disabled
+D(N.toggle,if O then"Colors.OnPrimary"else"Colors.Buttons.Default")
+
+for P,Q in N.actions do
+D(Q,"Colors.Buttons.Default")
+end
+
+
+for P,Q in N.tabButtons do
+Q.BackgroundTransparency=1
+end end local O=function(
+
+
+O)
+for P,Q in O.connections do
+Q:Disconnect()
+end
+table.clear(O.connections)end local P=function(
+
+
+P, Q, R)
+table.insert(P.connections,Q:Connect(R))end local Q=function(
+
+
+Q, R)
+P(Q,R.MouseEnter,function()
+if not K(Q,R)then
+D(R,"Colors.Buttons.Holding")
+R.BackgroundTransparency=0
 end
 end)
 
-H(I,J.MouseLeave,function()
-E(I)
-end)end local J=function(
+P(Q,R.MouseLeave,function()
+N(Q)
+end)end local R=function(
 
 
-J, K, L, M, N)
-local O=aa.new("TextButton",K,J,{
+R, S, T, U, W)
+local X=aa.new("TextButton",S,R,{
 AutoButtonColor=false,
 BorderSizePixel=0,
-Text=L,
+Text=T,
 TextSize=ai.textSizes.control,
 TextTruncate=Enum.TextTruncate.AtEnd,
 ThemeTag={
@@ -21324,44 +21352,76 @@ TextColor3="Colors.Text.Default",
 },
 
 aa.new("UICorner",{
-CornerRadius=UDim.new(0,h.buttonCorner),
+CornerRadius=UDim.new(0,j.buttonCorner),
 }),
 })
 
-w(O,M,N)
-return O end local K=function(
+C(X,U,W)
+return X end local S=function(
 
 
-K)
-K.content.Position=UDim2.fromOffset(0,-K.scrollBar.index)end local L=function(
+
+S, T)
+S.Position=UDim2.new(T,y,0,y)
+S.Size=UDim2.new(w,-y*2,1,-y*2)end local T=function(
 
 
-L)
-local M=ae:getScale()
-L.scrollBar:setTotalSpace(math.ceil(L.content.AbsoluteSize.Y/M))
-L.scrollBar:setVisibleSpace(math.ceil(L.container.AbsoluteSize.Y/M))
-K(L)end local M=function(
+
+T, U, W, X)
+local Y=aa.new("TextButton",U,T,{
+AutoButtonColor=false,
+BackgroundTransparency=1,
+BorderSizePixel=0,
+Text=W,
+TextSize=ai.textSizes.tab,
+TextTruncate=Enum.TextTruncate.AtEnd,
+ThemeTag={
+Font="Font.Bold",
+TextColor3="Colors.Text.Default",
+},
+
+aa.new("UICorner",{
+CornerRadius=z,
+}),
+})
+
+S(Y,X)
+return Y end local U=function(
 
 
-M)
-for N,O in M.labels do
-O:Destroy()
+U)
+U.content.Position=UDim2.fromOffset(0,-U.scrollBar.index)end local W=function(
+
+
+W)
+local X=ae:getScale()
+W.scrollBar:setTotalSpace(math.ceil(W.content.AbsoluteSize.Y/X))
+W.scrollBar:setVisibleSpace(math.ceil(W.container.AbsoluteSize.Y/X))
+U(W)end local X=function(
+
+
+X)
+for Y,Z in X.labels do
+Z:Destroy()
 end
-table.clear(M.labels)end local N=function(
+table.clear(X.labels)end local aj=function(
 
 
-N, O, P)
-N.order=N.order+1
+Y, Z, _)
+Y.order=Y.order+1
 
-local Q=aa.new("TextLabel","Entry",N.content,{
+local aj=if Y.order%2==1 then j.stripeTransparency else 1
+
+local ak=aa.new("TextButton","Entry",Y.content,{
+AutoButtonColor=false,
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundColor3=Color3.new(1,1,1),
-BackgroundTransparency=if N.order%2==1 then h.stripeTransparency else 1,
+BackgroundTransparency=aj,
 BorderSizePixel=0,
-LayoutOrder=N.order,
+LayoutOrder=Y.order,
 Size=UDim2.new(1,0,0,0),
 RichText=true,
-Text=z(O,P),
+Text=H(Z,_),
 TextSize=ai.textSizes.entry,
 TextWrapped=true,
 TextXAlignment=Enum.TextXAlignment.Left,
@@ -21372,61 +21432,72 @@ TextColor3="Colors.Text.Default",
 },
 })
 
-table.insert(N.labels,Q)
-while#N.labels>ai.maxLabels do
-table.remove(N.labels,1):Destroy()
+
+ak.MouseEnter:Connect(function()
+ak.BackgroundTransparency=A
+end)
+ak.MouseLeave:Connect(function()
+ak.BackgroundTransparency=aj
+end)
+ak.Activated:Connect(function()
+J(Z,_)
+end)
+
+table.insert(Y.labels,ak)
+while#Y.labels>ai.maxLabels do
+table.remove(Y.labels,1):Destroy()
 end
 
 
 task.defer(function()
-if N.frame.Parent then
-L(N)
-N.scrollBar:scrollTo(math.huge)
+if Y.frame.Parent then
+W(Y)
+Y.scrollBar:scrollTo(math.huge)
 end
-end)end local O=function(
+end)end local ak=function(
 
 
-O, P)
-M(O)
+ak, Y)
+X(ak)
 
-for Q,R in d.entries[O.tab]do
-N(O,O.tab,R)
+for Z,_ in e.entries[ak.tab]do
+aj(ak,ak.tab,_)
 end
 
-F(O,P)end local aj=function(
+N(ak)
+M(ak,Y==true)end local al=function(
 
 
-P)
-local Q={
-tab=P,
+Y)
+local Z={
+tab=Y,
 labels={},
 order=0,
 connections={},
-tabButtons={},
 tweens={},
 }
 
-local R=aa.new("Frame","ChatLogs",{
+local _=aa.new("Frame","ChatLogs",{
 Active=true,
 BorderSizePixel=0,
-Position=l,
-Size=UDim2.fromOffset(h.width,h.height),
+Position=n,
+Size=UDim2.fromOffset(j.width,j.height),
 ThemeTag={
 BackgroundColor3="Colors.Background",
 },
 })
-Q.frame=R
+Z.frame=_
 
 
-local S=aa.new("Frame","TopBar",R,{
+local al=aa.new("Frame","TopBar",_,{
 BorderSizePixel=0,
-Size=UDim2.new(1,0,0,i),
+Size=UDim2.new(1,0,0,k),
 ThemeTag={
 BackgroundColor3="Colors.Background",
 },
 })
 
-aa.new("TextLabel","Title",S,{
+aa.new("TextLabel","Title",al,{
 BackgroundTransparency=1,
 Size=UDim2.fromScale(1,1),
 Text=ai.title,
@@ -21437,51 +21508,76 @@ TextColor3="Colors.Text.Default",
 },
 })
 
-local T=aa.new("TextButton","Close",S,{
+local am=aa.new("TextButton","Close",al,{
 BackgroundTransparency=1,
-Position=UDim2.new(1,-i,0,0),
-Size=UDim2.fromOffset(i,i),
+Position=UDim2.new(1,-k,0,0),
+Size=UDim2.fromOffset(k,k),
 Text="",
 })
 
-local U=aa.new("ImageLabel","Icon",T,{
+local an=aa.new("ImageLabel","Icon",am,{
 BackgroundTransparency=1,
 Position=UDim2.fromOffset(5,5),
-Size=UDim2.fromOffset(h.closeIconSize,h.closeIconSize),
+Size=UDim2.fromOffset(j.closeIconSize,j.closeIconSize),
 ThemeTag={
 ImageColor3="Colors.Icons",
 },
 })
-ab:loadImage(U,"close")
+ab:loadImage(an,"close")
 
 
-local W=aa.new("Frame","Controls",R,{
+local ao=aa.new("Frame","Controls",_,{
 BackgroundTransparency=1,
-Position=UDim2.fromOffset(0,i),
-Size=UDim2.new(1,0,0,h.rowHeight),
+Position=UDim2.fromOffset(0,k),
+Size=UDim2.new(1,0,0,j.rowHeight),
 })
 
-local X=J(W,"Clear",ai.controls.clear,m,n)
-local Y=J(W,"Save",ai.controls.save,o,p)
-Q.toggle=J(W,"Toggle",ai.controls.enabled,q,r)
-
-local Z=J(W,"ChatTab",ai.tabs.chat,s,t/2)
-local _=J(W,"JoinTab",ai.tabs.join,s+t/2,t/2)
-
-Q.tabButtons={chat=Z,join=_}
-Q.actions={Y,X}
+local ap=R(ao,"Clear",ai.controls.clear,o,p)
+local aq=R(ao,"Save",ai.controls.save,q,r)
+Z.toggle=R(ao,"Toggle",ai.controls.enabled,s,t)
 
 
-local aj=af.new{
+local ar=aa.new("Frame","Switch",ao,{
+BorderSizePixel=0,
+ThemeTag={
+BackgroundColor3="Colors.Buttons.Default",
+},
+
+aa.new("UICorner",{
+CornerRadius=z,
+}),
+})
+C(ar,u,v)
+
+Z.thumb=aa.new("Frame","Thumb",ar,{
+BorderSizePixel=0,
+ThemeTag={
+BackgroundColor3="Colors.Border.Holding",
+},
+
+aa.new("UICorner",{
+CornerRadius=z,
+}),
+})
+S(Z.thumb,x.chat)
+
+local as=T(ar,"ChatTab",ai.tabs.chat,x.chat)
+local at=T(ar,"JoinTab",ai.tabs.join,x.join)
+
+Z.tabButtons={chat=as,join=at}
+Z.actions={aq,ap}
+
+
+local au=af.new{
 isHorizontal=false,
 barThickness=ai.scrollBar.barThickness,
 increment=ai.scrollBar.increment,
 wheelIncrement=ai.scrollBar.wheelIncrement,
 }
-local ak=aj:create()
-local al=aj.container
+local av=au:create()
+local aw=au.container
 
-local am=aa.new("Frame","Content",al,{
+local ax=aa.new("Frame","Content",aw,{
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundTransparency=1,
 Size=UDim2.new(1,0,0,0),
@@ -21491,157 +21587,164 @@ SortOrder=Enum.SortOrder.LayoutOrder,
 }),
 })
 
-aa.new("Frame","ScrollHolder",R,{
+aa.new("Frame","ScrollHolder",_,{
 Active=true,
 BackgroundTransparency=1,
-Position=UDim2.fromOffset(0,j),
-Size=UDim2.new(1,0,1,-j),
+Position=UDim2.fromOffset(0,l),
+Size=UDim2.new(1,0,1,-l),
 
-ak,
-al,
+av,
+aw,
 })
 
-Q.scrollBar=aj
-Q.container=al
-Q.content=am
+Z.scrollBar=au
+Z.container=aw
+Z.content=ax
 
-H(Q,aj.scrolledSignal,function()
-K(Q)
+P(Z,au.scrolledSignal,function()
+U(Z)
 end)
-H(Q,am:GetPropertyChangedSignal"AbsoluteSize",function()
-L(Q)
+P(Z,ax:GetPropertyChangedSignal"AbsoluteSize",function()
+W(Z)
 end)
-H(Q,al:GetPropertyChangedSignal"AbsoluteSize",function()
-L(Q)
+P(Z,aw:GetPropertyChangedSignal"AbsoluteSize",function()
+W(Z)
 end)
-H(Q,ad.dragStarted,function(an)
-if an==R then
-aj:disableScroll()
+P(Z,ad.dragStarted,function(ay)
+if ay==_ then
+au:disableScroll()
 end
 end)
-H(Q,ad.dragEnded,function(an)
-if an==R then
-aj:enableScroll()
+P(Z,ad.dragEnded,function(ay)
+if ay==_ then
+au:enableScroll()
 end
 end)
 
-H(Q,T.Activated,function()
-v:close()
+P(Z,am.Activated,function()
+B:close()
 end)
 
-H(Q,Z.Activated,function()
-v:select"chat"
+P(Z,as.Activated,function()
+B:select"chat"
 end)
 
-H(Q,_.Activated,function()
-v:select"join"
+P(Z,at.Activated,function()
+B:select"join"
 end)
 
-H(Q,Q.toggle.Activated,function()
-local an=y(Q.tab)
-if Q.tab=="chat"then
-d.setChat(not an)
+P(Z,Z.toggle.Activated,function()
+local ay=E(Z.tab)
+if Z.tab=="chat"then
+e.setChat(not ay)
 else
-d.setJoin(not an)
+e.setJoin(not ay)
 end
-E(Q)
+
+F(Z.tab,not ay)
+N(Z)
 end)
 
-H(Q,Y.Activated,function()
-local an,ao=d.save(Q.tab)
-if an then
-ag:notify(ai.messages.saved,ao)
+P(Z,aq.Activated,function()
+local ay,az=e.save(Z.tab)
+if ay then
+ag:notify(ai.messages.saved,az)
 else
-ag:notify(ai.messages.saveFailed,ao)
+ag:notify(ai.messages.saveFailed,az)
 end
 end)
 
-H(Q,X.Activated,function()
-d.clear(Q.tab)
-M(Q)
+P(Z,ap.Activated,function()
+e.clear(Z.tab)
+X(Z)
 end)
 
-for an,ao in{Z,_,Q.toggle,Y,X}do
-I(Q,ao)
+for ay,az in{as,at,Z.toggle,aq,ap}do
+Q(Z,az)
 end
 
-return Q end local ak=function()
+return Z end local am=function()
 
 
 
 
-if v.listening then
+if B.listening then
 return
 end
-v.listening=true
+B.listening=true
 
-d.onEntry(function(ak,al)
-local am=v.window
-if am and am.tab==ak then
-N(am,ak,al)
+e.onEntry(function(am,an)
+local ao=B.window
+if ao and ao.tab==am then
+aj(ao,am,an)
 end
 end)end
 
 
+B.restore=function(an)
+G("chat",e.setChat)
+G("join",e.setJoin)end
 
-v.open=function(al, am)
-ak()
 
-local an=al.window
-if an then
-al:select(am)
-return an
+B.open=function(an, ao)
+an:restore()
+
+am()
+
+local ap=an.window
+if ap then
+an:select(ao)
+return ap
 end
 
-an=aj(am)
-al.window=an
+ap=al(ao)
+an.window=ap
 
-an.frame.Parent=ah.screenGui
-an.frame:TweenPosition(k,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,h.tweenTime,true)
-ad:addGuiObject(an.frame)
+ap.frame.Parent=ah.screenGui
+ap.frame:TweenPosition(m,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,j.tweenTime,true)
+ad:addGuiObject(ap.frame)
 
-O(an)
-return an end
+ak(ap)
+return ap end
 
 
-v.select=function(al, am)
-local an=al.window
-if not an then
+B.select=function(an, ao)
+local ap=an.window
+if not ap then
 return
 end
 
-an.tab=am
-O(an,true)end
+ap.tab=ao
+ak(ap,true)end
 
 
-v.close=function(al)
-local am=al.window
-if not am then
+B.close=function(an)
+local ao=an.window
+if not ao then
 return
 end
 
-al.window=nil
-G(am)
-B(am)
+an.window=nil
+O(ao)
+L(ao)
 
-am.frame:TweenPosition(l,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,h.tweenTime,true)
-task.delay(h.tweenTime,function()
-am.frame:Destroy()
+ao.frame:TweenPosition(n,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,j.tweenTime,true)
+task.delay(j.tweenTime,function()
+ao.frame:Destroy()
 end)end
 
 
 
-v.reset=function(al)
-local am=al.window
-if am then
-G(am)
-B(am)
+B.reset=function(an)
+local ao=an.window
+if ao then
+O(ao)
+L(ao)
 end
-al.window=nil end
+an.window=nil end
 
 
-return v end a.dj=function()local ab=a.cache.dj if not ab then ab={c=aa()}a.cache.dj=ab end return ab.c end end do local aa=function()
-
+return B end a.dj=function()local ab=a.cache.dj if not ab then ab={c=aa()}a.cache.dj=ab end return ab.c end end do local aa=function()
 
 
 
@@ -21929,14 +22032,14 @@ am.BackgroundTransparency=if ao then 0 else an end
 
 
 
-al.page=function(an, ao, b)
+al.page=function(an, ao, ap)
 return aa.new("ScrollingFrame",ao,an,{
 Active=true,
 AutomaticCanvasSize=Enum.AutomaticSize.Y,
 BorderSizePixel=0,
 CanvasSize=UDim2.new(),
 ElasticBehavior=Enum.ElasticBehavior.Never,
-Position=b,
+Position=ap,
 ScrollBarThickness=af.scrollBarThickness,
 ScrollingDirection=Enum.ScrollingDirection.Y,
 Size=UDim2.fromScale(1,1),
@@ -21962,17 +22065,17 @@ SortOrder=Enum.SortOrder.LayoutOrder,
 an)
 ac:removeObject(an)
 
-for ao,b in an:GetDescendants()do
-ac:removeObject(b)
+for ao,ap in an:GetDescendants()do
+ac:removeObject(ap)
 end end
 
 
 
 al.clear=function(ao)
-for b,c in ao:GetChildren()do
-if not(c:IsA"UIListLayout"or c:IsA"UIPadding")then
-an(c)
-c:Destroy()
+for ap,aq in ao:GetChildren()do
+if not(aq:IsA"UIListLayout"or aq:IsA"UIPadding")then
+an(aq)
+aq:Destroy()
 end
 end end
 
@@ -22000,7 +22103,7 @@ SortOrder=Enum.SortOrder.LayoutOrder,
 })end
 
 
-al.header=function(ao, b)
+al.header=function(ao, ap)
 ao.order=ao.order+1
 ao.index=0
 
@@ -22008,7 +22111,7 @@ return aa.new("TextLabel","Header",ao.parent,{
 BackgroundTransparency=1,
 LayoutOrder=ao.order,
 Size=UDim2.new(1,0,0,af.headerHeight),
-Text=b,
+Text=ap,
 TextSize=aj.header,
 TextXAlignment=Enum.TextXAlignment.Left,
 ThemeTag={
@@ -22023,11 +22126,11 @@ al.row=function(ao)
 ao.order=ao.order+1
 ao.index=ao.index+1
 
-local b=if ao.index%2==1 then af.stripeTransparency else 1
+local ap=if ao.index%2==1 then af.stripeTransparency else 1
 
-local c=aa.new("TextButton","Option",ao.parent,{
+local aq=aa.new("TextButton","Option",ao.parent,{
 AutoButtonColor=false,
-BackgroundTransparency=b,
+BackgroundTransparency=ap,
 BorderSizePixel=0,
 LayoutOrder=ao.order,
 Size=UDim2.new(1,0,0,af.rowHeight),
@@ -22038,49 +22141,49 @@ BackgroundColor3="Colors.Buttons.Default",
 })
 
 
-c.MouseEnter:Connect(function()
-am(c,b,true)
+aq.MouseEnter:Connect(function()
+am(aq,ap,true)
 end)
 
-c.MouseLeave:Connect(function()
-am(c,b,false)
+aq.MouseLeave:Connect(function()
+am(aq,ap,false)
 end)
 
-return c end
+return aq end
 
 
 
-al.pageTop=function(ao, b, c)
-local d=al.row(ao)
-d.Name="BackRow"
-al.icon(d,ae.pages.backIcon)
-al.label(d,ae.pages.back,0)
-d.Activated:Connect(c)
+al.pageTop=function(ao, ap, aq)
+local ar=al.row(ao)
+ar.Name="BackRow"
+al.icon(ar,ae.pages.backIcon)
+al.label(ar,ae.pages.back,0)
+ar.Activated:Connect(aq)
 
-if b then
-al.header(ao,b)
+if ap then
+al.header(ao,ap)
 end end
 
 
 
-al.label=function(ao, b, c, d)
+al.label=function(ao, ap, aq, ar)
 return aa.new("TextLabel","Label",ao,{
 BackgroundTransparency=1,
 Position=UDim2.fromOffset(ag.labelInset,0),
-Size=UDim2.new(1,-(ag.labelInset+c),1,0),
-Text=b,
+Size=UDim2.new(1,-(ag.labelInset+aq),1,0),
+Text=ap,
 TextSize=aj.label,
 TextTruncate=Enum.TextTruncate.AtEnd,
 TextXAlignment=Enum.TextXAlignment.Left,
 ThemeTag={
 Font="Font.Normal",
-TextColor3=d or"Colors.Text.Default",
+TextColor3=ar or"Colors.Text.Default",
 },
 })end
 
 
-al.icon=function(ao, b)
-local c=aa.new("ImageLabel","Icon",ao,{
+al.icon=function(ao, ap)
+local aq=aa.new("ImageLabel","Icon",ao,{
 AnchorPoint=Vector2.new(0,0.5),
 BackgroundTransparency=1,
 Position=UDim2.new(0,ag.iconInset,0.5,0),
@@ -22090,13 +22193,13 @@ ImageColor3="Colors.Icons",
 },
 })
 
-ab:loadImage(c,b)
-return c end
+ab:loadImage(aq,ap)
+return aq end
 
 
 
 al.chevron=function(ao)
-local b=aa.new("ImageLabel","Chevron",ao,{
+local ap=aa.new("ImageLabel","Chevron",ao,{
 AnchorPoint=Vector2.new(1,0.5),
 BackgroundTransparency=1,
 Position=UDim2.new(1,-af.padding,0.5,0),
@@ -22107,22 +22210,22 @@ ImageColor3="Colors.Text.Darker",
 },
 })
 
-ab:loadImage(b,ae.pages.backIcon)
-return b end
+ab:loadImage(ap,ae.pages.backIcon)
+return ap end
 
 
 
 
 
 
-al.rowButton=function(ao, b, c, d)
-local e=aa.new("TextButton","RowButton",ao,{
+al.rowButton=function(ao, ap, aq, ar)
+local as=aa.new("TextButton","RowButton",ao,{
 AnchorPoint=Vector2.new(1,0.5),
 AutoButtonColor=false,
 BorderSizePixel=0,
-Position=UDim2.new(1,-c,0.5,0),
-Size=UDim2.fromOffset(d,ai.height+4),
-Text=b,
+Position=UDim2.new(1,-aq,0.5,0),
+Size=UDim2.fromOffset(ar,ai.height+4),
+Text=ap,
 TextSize=aj.value,
 ThemeTag={
 BackgroundColor3="Colors.Background",
@@ -22135,24 +22238,24 @@ CornerRadius=UDim.new(0,ai.cornerRadius),
 }),
 })
 
-e.MouseEnter:Connect(function()
-ac:updateObjectProperties(e,{
+as.MouseEnter:Connect(function()
+ac:updateObjectProperties(as,{
 BackgroundColor3="Colors.Primary",
 })
 end)
 
-e.MouseLeave:Connect(function()
-ac:updateObjectProperties(e,{
+as.MouseLeave:Connect(function()
+ac:updateObjectProperties(as,{
 BackgroundColor3="Colors.Background",
 })
 end)
 
-return e end
+return as end
 
 
 
 al.box=function(ao)
-local b=aa.new("Frame","Box",ao,{
+local ap=aa.new("Frame","Box",ao,{
 AnchorPoint=Vector2.new(1,0.5),
 BorderSizePixel=0,
 Position=UDim2.new(1,-af.padding,0.5,0),
@@ -22173,7 +22276,7 @@ Color="Colors.Border.Default",
 }),
 })
 
-local c=aa.new("Frame","Fill",b,{
+local aq=aa.new("Frame","Fill",ap,{
 BorderSizePixel=0,
 Position=UDim2.fromOffset(ah.inset,ah.inset),
 Size=UDim2.new(1,-2*ah.inset,1,-2*ah.inset),
@@ -22186,16 +22289,16 @@ CornerRadius=UDim.new(0,ah.fillCornerRadius),
 }),
 })
 
-return b,c end
+return ap,aq end
 
 
 
-al.value=function(ao, b, c)
-local d=aa.new("Frame","Value",ao,{
+al.value=function(ao, ap, aq)
+local ar=aa.new("Frame","Value",ao,{
 AnchorPoint=Vector2.new(1,0.5),
 BorderSizePixel=0,
 Position=UDim2.new(1,-af.padding,0.5,0),
-Size=UDim2.fromOffset(c,ai.height),
+Size=UDim2.fromOffset(aq,ai.height),
 ThemeTag={
 BackgroundColor3="Colors.Buttons.Default",
 },
@@ -22205,10 +22308,10 @@ CornerRadius=UDim.new(0,ai.cornerRadius),
 }),
 })
 
-local e=aa.new("TextLabel","Text",d,{
+local as=aa.new("TextLabel","Text",ar,{
 BackgroundTransparency=1,
 Size=UDim2.fromScale(1,1),
-Text=b,
+Text=ap,
 TextSize=aj.value,
 TextTruncate=Enum.TextTruncate.AtEnd,
 ThemeTag={
@@ -22217,18 +22320,18 @@ TextColor3="Colors.Text.Default",
 },
 })
 
-return d,e end
+return ar,as end
 
 
 
-al.valueInput=function(ao, b, c)
+al.valueInput=function(ao, ap, aq)
 return aa.new("TextBox","ValueInput",ao,{
 AnchorPoint=Vector2.new(1,0.5),
 BorderSizePixel=0,
 ClearTextOnFocus=false,
 Position=UDim2.new(1,-af.padding,0.5,0),
-Size=UDim2.fromOffset(c,ai.height),
-Text=b,
+Size=UDim2.fromOffset(aq,ai.height),
+Text=ap,
 TextSize=aj.value,
 TextXAlignment=Enum.TextXAlignment.Center,
 ThemeTag={
@@ -22246,65 +22349,65 @@ CornerRadius=UDim.new(0,ai.cornerRadius),
 
 
 
-al.keybind=function(ao, b, c)
-local d,e=al.value(ao,"",ai.keybindWidth)
-local f local g=function()
+al.keybind=function(ao, ap, aq)
+local ar,as=al.value(ao,"",ai.keybindWidth)
+local at local au=function()
 
 
-local g=f~=nil
+local au=at~=nil
 
-e.Text=if g then"press a key"else ad:getBindingName(b)
-ac:updateObjectProperties(d,{
-BackgroundColor3=if g then"Colors.Primary"else"Colors.Buttons.Default",
-})end local h=function()
+as.Text=if au then"press a key"else ad:getBindingName(ap)
+ac:updateObjectProperties(ar,{
+BackgroundColor3=if au then"Colors.Primary"else"Colors.Buttons.Default",
+})end local av=function()
 
 
 
-if f then
-local h=f
-f=nil
-h()
+if at then
+local av=at
+at=nil
+av()
 end
 
-g()end
+au()end
 
 
 ao.Activated:Connect(function()
-if f then
-h()
+if at then
+av()
 return
 end
 
-f=ad:capture(function(i)
-f=nil
-ad:setBinding(b,i)
-g()
+at=ad:capture(function(aw)
+at=nil
+ad:setBinding(ap,aw)
+au()
 
-if c then
-c()
+if aq then
+aq()
 end
 end,function()
 
-f=nil
-g()
+at=nil
+au()
 end)
 
-g()
+au()
 end)
 
-g()
-return g,h end
+au()
+return au,av end
 
 
 
-al.textBox=function(ao, b)
+al.textBox=function(ao, ap)
 ao.order=ao.order+1
 
 return aa.new("TextBox","Input",ao.parent,{
 BorderSizePixel=0,
 ClearTextOnFocus=false,
 LayoutOrder=ao.order,
-PlaceholderText=b,
+PlaceholderText=ap,
 Size=UDim2.new(1,0,0,af.rowHeight),
 Text="",
 TextSize=aj.value,
@@ -22364,41 +22467,41 @@ Color="Colors.Background",
 
 
 
-al.choices=function(b, c, d, e)
-b.order=b.order+1
+al.choices=function(ap, aq, ar, as)
+ap.order=ap.order+1
 
-local f=af.rowGap
-local g=aa.new("Frame","Choices",b.parent,{
+local at=af.rowGap
+local au=aa.new("Frame","Choices",ap.parent,{
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundTransparency=1,
 BorderSizePixel=0,
-LayoutOrder=b.order,
+LayoutOrder=ap.order,
 Size=UDim2.new(1,0,0,0),
 
 aa.new("UIGridLayout",{
-CellPadding=UDim2.fromOffset(f,f),
-CellSize=UDim2.new(1/e,-f*(e-1)/e-1,0,af.rowHeight-3),
+CellPadding=UDim2.fromOffset(at,at),
+CellSize=UDim2.new(1/as,-at*(as-1)/as-1,0,af.rowHeight-3),
 SortOrder=Enum.SortOrder.LayoutOrder,
 }),
 })
 
-local h={}
-local i={}local j=function(
+local av={}
+local aw={}local ax=function(
 
-j)
-for k,l in h do
-ac:updateObjectProperties(l,{
-BackgroundColor3=if k==j then"Colors.Primary"else"Colors.Buttons.Default",
+ax)
+for ay,az in av do
+ac:updateObjectProperties(az,{
+BackgroundColor3=if ay==ax then"Colors.Primary"else"Colors.Buttons.Default",
 })
 end end
 
 
-for k,l in c do
-local m=aa.new("TextButton","Choice",g,{
+for ay,az in aq do
+local b=aa.new("TextButton","Choice",au,{
 AutoButtonColor=false,
 BorderSizePixel=0,
-LayoutOrder=k,
-Text=l,
+LayoutOrder=ay,
+Text=az,
 TextSize=aj.value,
 TextTruncate=Enum.TextTruncate.AtEnd,
 ThemeTag={
@@ -22412,40 +22515,40 @@ CornerRadius=UDim.new(0,ai.cornerRadius),
 }),
 })
 
-h[k]=m
-i[k]=ao(m)
+av[ay]=b
+aw[ay]=ao(b)
 
-m.Activated:Connect(function()
-j(k)
-d(k)
+b.Activated:Connect(function()
+ax(ay)
+ar(ay)
 end)
-end local k=function(
+end local ay=function(
 
 
-k, l)
-local m=i[k]
-if not m then return end
+ay, az)
+local b=aw[ay]
+if not b then return end
 
-m.Text=tostring(l)
-m.Visible=l>0 end
-
-
-return j,k end
+b.Text=tostring(az)
+b.Visible=az>0 end
 
 
+return ax,ay end
 
-al.inputRow=function(b, c, d, e)
-local f=al.row(b)
-al.label(f,c,ai.inputWidth+2*af.padding)
 
-local g=aa.new("TextBox","Input",f,{
+
+al.inputRow=function(ap, aq, ar, as)
+local at=al.row(ap)
+al.label(at,aq,ai.inputWidth+2*af.padding)
+
+local au=aa.new("TextBox","Input",at,{
 AnchorPoint=Vector2.new(1,0.5),
 BorderSizePixel=0,
 ClearTextOnFocus=false,
-PlaceholderText=d,
+PlaceholderText=ar,
 Position=UDim2.new(1,-af.padding,0.5,0),
 Size=UDim2.fromOffset(ai.inputWidth,ai.height),
-Text=e or"",
+Text=as or"",
 TextSize=aj.value,
 TextTruncate=Enum.TextTruncate.AtEnd,
 ThemeTag={
@@ -22464,33 +22567,33 @@ CornerRadius=UDim.new(0,ai.cornerRadius),
 }),
 })
 
-return f,g end
+return at,au end
 
 
 
 
-al.formRow=function(b, c, d, e, f)
-b.order=b.order+1
+al.formRow=function(ap, aq, ar, as, at)
+ap.order=ap.order+1
 
-local g=af.rowGap
-local h=ai.addWidth
-local i=f or ai.formDelayWidth
+local au=af.rowGap
+local av=ai.addWidth
+local aw=at or ai.formDelayWidth
 
-local j=aa.new("Frame","Form",b.parent,{
+local ax=aa.new("Frame","Form",ap.parent,{
 BackgroundTransparency=1,
 BorderSizePixel=0,
-LayoutOrder=b.order,
+LayoutOrder=ap.order,
 Size=UDim2.new(1,0,0,af.rowHeight),
-})local k=function(
+})local ay=function(
 
-k, l, m, n, o)
-return aa.new("TextBox",k,j,{
-AnchorPoint=m,
+ay, az, b, c, d)
+return aa.new("TextBox",ay,ax,{
+AnchorPoint=b,
 BorderSizePixel=0,
 ClearTextOnFocus=false,
-PlaceholderText=l,
-Position=n,
-Size=o,
+PlaceholderText=az,
+Position=c,
+Size=d,
 Text="",
 TextSize=aj.value,
 TextTruncate=Enum.TextTruncate.AtEnd,
@@ -22512,18 +22615,18 @@ CornerRadius=UDim.new(0,ai.cornerRadius),
 })end
 
 
-local l=k("Command",c,Vector2.zero,UDim2.fromOffset(0,0),
-UDim2.new(1,-(h+i+2*g),1,0))
-local m=k("Delay",d,Vector2.new(1,0),UDim2.new(1,-(h+g),0,0),
-UDim2.new(0,i,1,0))
+local az=ay("Command",aq,Vector2.zero,UDim2.fromOffset(0,0),
+UDim2.new(1,-(av+aw+2*au),1,0))
+local b=ay("Delay",ar,Vector2.new(1,0),UDim2.new(1,-(av+au),0,0),
+UDim2.new(0,aw,1,0))
 
-local n=aa.new("TextButton","Add",j,{
+local c=aa.new("TextButton","Add",ax,{
 AnchorPoint=Vector2.new(1,0),
 AutoButtonColor=false,
 BorderSizePixel=0,
 Position=UDim2.fromScale(1,0),
-Size=UDim2.new(0,h,1,0),
-Text=e,
+Size=UDim2.new(0,av,1,0),
+Text=as,
 TextSize=aj.label,
 ThemeTag={
 BackgroundColor3="Colors.Primary",
@@ -22536,19 +22639,19 @@ CornerRadius=UDim.new(0,ai.cornerRadius),
 }),
 })
 
-return l,m,n end
+return az,b,c end
 
 
 
 
-al.footer=function(b, c)
-b.order=b.order+1
+al.footer=function(ap, aq)
+ap.order=ap.order+1
 
-return aa.new("TextLabel","Footer",b.parent,{
+return aa.new("TextLabel","Footer",ap.parent,{
 BackgroundTransparency=1,
-LayoutOrder=b.order,
+LayoutOrder=ap.order,
 Size=UDim2.new(1,0,0,af.headerHeight),
-Text=c,
+Text=aq,
 TextSize=aj.footer,
 TextXAlignment=Enum.TextXAlignment.Center,
 ThemeTag={
@@ -22559,15 +22662,15 @@ TextColor3="Colors.Text.Darker",
 
 
 
-al.note=function(b, c)
-b.order=b.order+1
+al.note=function(ap, aq)
+ap.order=ap.order+1
 
-return aa.new("TextLabel","Note",b.parent,{
+return aa.new("TextLabel","Note",ap.parent,{
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundTransparency=1,
-LayoutOrder=b.order,
+LayoutOrder=ap.order,
 Size=UDim2.new(1,0,0,0),
-Text=c,
+Text=aq,
 TextSize=aj.value,
 TextWrapped=true,
 TextXAlignment=Enum.TextXAlignment.Left,
@@ -22633,8 +22736,8 @@ else
 ad.label(ao,`{an.name} {ac.pages.theme.incomplete}`,af.size+2*ae.padding,"Colors.Text.Darker")
 end
 
-local b,c=ad.box(ao)
-aj[an]=c
+local ap,aq=ad.box(ao)
+aj[an]=aq
 end
 
 ak()end
@@ -22699,13 +22802,13 @@ local al={}
 
 for am,an in ag()do
 local ao=ab.bindings[an]
-local b=ad.row(ak)
+local ap=ad.row(ak)
 
-ad.label(b,ao.label or an,af.keybindWidth+2*ae.padding)
+ad.label(ap,ao.label or an,af.keybindWidth+2*ae.padding)
 
-local c,d=ad.keybind(b,an)
-table.insert(al,c)
-table.insert(aj.stoppers,d)
+local aq,ar=ad.keybind(ap,an)
+table.insert(al,aq)
+table.insert(aj.stoppers,ar)
 end
 
 local am=ah()
@@ -22718,16 +22821,16 @@ ad.label(an,ac.pages.keybinds.reset,0)
 
 an.Activated:Connect(function()
 
-for ao,b in aj.stoppers do
-b()
+for ao,ap in aj.stoppers do
+ap()
 end
 
 for ao in ab.bindings do
 aa:resetBinding(ao)
 end
 
-for ao,b in al do
-b()
+for ao,ap in al do
+ap()
 end
 end)end
 
@@ -22769,129 +22872,129 @@ af.pageTop(an,ad.pages.aliases.title,am.back)
 
 af.header(an,ai.addTitle)
 local ao=af.textBox(an,ai.aliasHint)
-local b=af.textBox(an,ai.commandHint)
+local ap=af.textBox(an,ai.commandHint)
 
-local c=af.row(an)
-af.label(c,ai.addButton,0)
+local aq=af.row(an)
+af.label(aq,ai.addButton,0)
 
-local d=af.note(an,"")
+local ar=af.note(an,"")
 
 af.header(an,ai.listTitle)
 af.note(an,ai.listHint)
 
-local e=af.group(an)
+local as=af.group(an)
 
-local f local g=function(
+local at local au=function(
 
 
-g, h)
-ae:ask(ai.undoTitle,string.format(ai.undoMessage,g,h),{
+au, av)
+ae:ask(ai.undoTitle,string.format(ai.undoMessage,au,av),{
 {
 text=ai.undo,
 primary=true,
 onTap=function()
-local i,j=ab.add(ac,g,h)
+local aw,ax=ab.add(ac,au,av)
 
-if not i then
-ae:notify(ai.notifyTitle,j or"")
+if not aw then
+ae:notify(ai.notifyTitle,ax or"")
 return
 end
 
 
-if e.Parent then
-d.Text=string.format(ai.restored,g)
-f()
+if as.Parent then
+ar.Text=string.format(ai.restored,au)
+at()
 end
 end,
 },
 },ai.undoTime)end
 
 
-f=function()
-af.clear(e)
+at=function()
+af.clear(as)
 
-local h=aa:getData()
-local i={}
+local av=aa:getData()
+local aw={}
 
-for j in h do
-table.insert(i,j)
+for ax in av do
+table.insert(aw,ax)
 end
 
-table.sort(i)
+table.sort(aw)
 
-local j=af.list(e)
+local ax=af.list(as)
 
-if#i==0 then
-af.note(j,ai.empty)
+if#aw==0 then
+af.note(ax,ai.empty)
 return
 end
 
-for k,l in i do
-local m=af.row(j)
+for ay,az in aw do
+local b=af.row(ax)
 
-af.label(m,l,ah.aliasWidth+2*ag.padding)
-af.value(m,tostring(h[l]),ah.aliasWidth)
+af.label(b,az,ah.aliasWidth+2*ag.padding)
+af.value(b,tostring(av[az]),ah.aliasWidth)
 
-m.Activated:Connect(function()
-local n,o=ab.remove(ac,l)
+b.Activated:Connect(function()
+local c,d=ab.remove(ac,az)
 
-if n then
-d.Text=string.format(ai.removed,l)
-g(l,o)
+if c then
+ar.Text=string.format(ai.removed,az)
+au(az,d)
 end
 
-f()
+at()
 end)
-end end local h=function()
+end end local av=function()
 
 
 
-local h=aj(ao.Text)
-local i=aj(b.Text)
+local av=aj(ao.Text)
+local aw=aj(ap.Text)
 
-if h==""or i==""then
-d.Text=ai.missing
+if av==""or aw==""then
+ar.Text=ai.missing
 return
 end
 
-if h:find"%s"then
-d.Text=ai.spaces
+if av:find"%s"then
+ar.Text=ai.spaces
 return
 end
 
-if ak(h)then
-d.Text=ai.badCharacters
+if ak(av)then
+ar.Text=ai.badCharacters
 return
 end
 
-local j,k=ab.add(ac,h,i)
+local ax,ay=ab.add(ac,av,aw)
 
-if j then
-d.Text=string.format(ai.added,h:lower())
+if ax then
+ar.Text=string.format(ai.added,av:lower())
 ao.Text=""
-b.Text=""
-f()
+ap.Text=""
+at()
 else
-d.Text=k or""
+ar.Text=ay or""
 end end
 
 
-c.Activated:Connect(h)
+aq.Activated:Connect(av)
 
 
-ao.FocusLost:Connect(function(i)
-if i then
-b:CaptureFocus()
+ao.FocusLost:Connect(function(aw)
+if aw then
+ap:CaptureFocus()
 end
 end)
 
-b.FocusLost:Connect(function(i)
-if i then
-h()
+ap.FocusLost:Connect(function(aw)
+if aw then
+av()
 end
 end)
 
-f()end
+at()end
 
 
 return al end a.dp=function()local ab=a.cache.dp if not ab then ab={c=aa()}a.cache.dp=ab end return ab.c end end do local aa=function()
@@ -22930,238 +23033,238 @@ al, am)
 local an=ai.modes
 local ao=math.clamp(aj,1,#an)
 
-local b=ae.list(al)
-ae.pageTop(b,ai.title,am.back)
+local ap=ae.list(al)
+ae.pageTop(ap,ai.title,am.back)
 
 
-ae.header(b,ai.newTitle)
-local c,d,e=ae.formRow(b,ai.nameHint,ai.positionHint,ai.addButton,ah.positionWidth)
-local f=ae.note(b,ai.formHint)
+ae.header(ap,ai.newTitle)
+local aq,ar,as=ae.formRow(ap,ai.nameHint,ai.positionHint,ai.addButton,ah.positionWidth)
+local at=ae.note(ap,ai.formHint)
 
 
-ae.header(b,ai.modeTitle)
+ae.header(ap,ai.modeTitle)
 
-local g={}
-for h,i in an do
-table.insert(g,i.label)
+local au={}
+for av,aw in an do
+table.insert(au,aw.label)
 end
 
-local h=ae.choices(b,g,function(h)
-ao=h
-aj=h
+local av=ae.choices(ap,au,function(av)
+ao=av
+aj=av
 end,#an)
-h(ao)
+av(ao)
 
 
-local i=ae.row(b)
-ae.label(i,ai.markers,ag.size+2*af.padding)
-local j,k=ae.box(i)
+local aw=ae.row(ap)
+ae.label(aw,ai.markers,ag.size+2*af.padding)
+local ax,ay=ae.box(aw)
 
 
-local l=ae.header(b,"")
-local m=ae.group(b)
+local az=ae.header(ap,"")
+local b=ae.group(ap)
 
 
-ae.header(b,ai.clearTitle)
-local n=ae.row(b)
-ae.label(n,ai.clearGame,0)
-local o=ae.row(b)
-ae.label(o,ai.clearAll,0)
+ae.header(ap,ai.clearTitle)
+local c=ae.row(ap)
+ae.label(c,ai.clearGame,0)
+local d=ae.row(ap)
+ae.label(d,ai.clearAll,0)
 
-local p local q=function(
-
-
-q)
-f.Text=q
-ad:notify(ai.notifyTitle,q)end local r=function()
+local e local f=function(
 
 
-
-k.Visible=aa.isShown()end local s=function(
+f)
+at.Text=f
+ad:notify(ai.notifyTitle,f)end local g=function()
 
 
 
-s)
-local t=an[ao].mode
-local u=aa.format(s.position)
+ay.Visible=aa.isShown()end local h=function(
 
-if not aa.go(s,t)then
-q(ai.cantGo)
+
+
+h)
+local i=an[ao].mode
+local j=aa.format(h.position)
+
+if not aa.go(h,i)then
+f(ai.cantGo)
 return
 end
 
-local v=if t=="tween"then ai.wentTween elseif t=="walk"then ai.wentWalk else ai.went
-f.Text=string.format(v,s.name,u)end local t=function(
+local k=if i=="tween"then ai.wentTween elseif i=="walk"then ai.wentWalk else ai.went
+at.Text=string.format(k,h.name,j)end local i=function(
 
 
 
-t)
-ad:ask(ai.undoTitle,string.format(ai.undoMessage,t.name,aa.format(t.position)),{
+i)
+ad:ask(ai.undoTitle,string.format(ai.undoMessage,i.name,aa.format(i.position)),{
 {
 text=ai.undo,
 primary=true,
 onTap=function()
 
-if aa.find(t.name)then
-ad:notify(ai.notifyTitle,string.format(ai.nameTaken,t.name))
+if aa.find(i.name)then
+ad:notify(ai.notifyTitle,string.format(ai.nameTaken,i.name))
 return
 end
 
-aa.save(t.name,t.position)
+aa.save(i.name,i.position)
 aa.refreshMarkers()
 
 
-if m.Parent then
-f.Text=string.format(ai.restored,t.name)
-p()
+if b.Parent then
+at.Text=string.format(ai.restored,i.name)
+e()
 end
 end,
 },
-},ai.undoTime)end local u=function(
+},ai.undoTime)end local j=function(
 
 
-u)
-if not aa.remove(u.name)then return end
+j)
+if not aa.remove(j.name)then return end
 
 aa.refreshMarkers()
-f.Text=string.format(ai.removed,u.name)
-p()
-t(u)end
+at.Text=string.format(ai.removed,j.name)
+e()
+i(j)end
 
 
-p=function()
-ae.clear(m)
+e=function()
+ae.clear(b)
 
-local v=aa.list()
-local w=ae.list(m)
+local k=aa.list()
+local l=ae.list(b)
 
-l.Text=ai.listTitle..(if#v>0 then` ({#v})`else"")
-r()
+az.Text=ai.listTitle..(if#k>0 then` ({#k})`else"")
+g()
 
-if#v==0 then
-ae.note(w,ai.empty)
+if#k==0 then
+ae.note(l,ai.empty)
 return
 end
 
-ae.note(w,ai.listHint)
+ae.note(l,ai.listHint)
 
-for x,y in v do
-local z=ae.row(w)
+for m,n in k do
+local o=ae.row(l)
 
 
-local A=ae.rowButton(z,ai.delete,af.padding,ah.buttonWidth)
-ae.label(z,y.name,ah.buttonWidth+2*af.padding)
+local p=ae.rowButton(o,ai.delete,af.padding,ah.buttonWidth)
+ae.label(o,n.name,ah.buttonWidth+2*af.padding)
 
-z.Activated:Connect(function()
-s(y)
+o.Activated:Connect(function()
+h(n)
 end)
 
-A.Activated:Connect(function()
-u(y)
+p.Activated:Connect(function()
+j(n)
 end)
-end end local v=function()
+end end local k=function()
 
 
 
-local v=ak(c.Text)
+local k=ak(aq.Text)
 
-if v==""then
-q(ai.missingName)
+if k==""then
+f(ai.missingName)
 return
 end
 
-local w
-local x=ak(d.Text)
+local l
+local m=ak(ar.Text)
 
-if x==""then
-local y=ab:getRootPart()
+if m==""then
+local n=ab:getRootPart()
 
-if not y then
-q(ai.noCharacter)
+if not n then
+f(ai.noCharacter)
 return
 end
 
-w=y.Position
+l=n.Position
 else
-w=aa.parsePosition(x)
+l=aa.parsePosition(m)
 
-if not w then
-q(ai.badPosition)
+if not l then
+f(ai.badPosition)
 return
 end
 end
 
-local y=aa.save(v,w)
+local n=aa.save(k,l)
 aa.refreshMarkers()
 
-c.Text=""
-d.Text=""
-f.Text=string.format(if y then ai.updated else ai.saved,v,aa.format(w))
-p()end
+aq.Text=""
+ar.Text=""
+at.Text=string.format(if n then ai.updated else ai.saved,k,aa.format(l))
+e()end
 
 
-e.Activated:Connect(v)
+as.Activated:Connect(k)
 
 
-for w,x in{c,d}do
-x.FocusLost:Connect(function(y)
-if y then
-v()
+for l,m in{aq,ar}do
+m.FocusLost:Connect(function(n)
+if n then
+k()
 end
 end)
 end
 
-i.Activated:Connect(function()
+aw.Activated:Connect(function()
 if aa.isShown()then
 aa.hide()
 elseif aa.count()==0 then
-q(ai.noMarkers)
+f(ai.noMarkers)
 else
 aa.show()
 end
 
-r()
-end)local w=function(
+g()
+end)local l=function(
 
 
-w)
-local x=if w then aa.countAll()else aa.count()
+l)
+local m=if l then aa.countAll()else aa.count()
 
-if x==0 then
-f.Text=ai.nothingToClear
+if m==0 then
+at.Text=ai.nothingToClear
 return
 end
 
-local y=string.format(if w then ai.confirmAll else ai.confirmGame,x)
+local n=string.format(if l then ai.confirmAll else ai.confirmGame,m)
 
-ad:ask(ai.confirmTitle,y,{
+ad:ask(ai.confirmTitle,n,{
 {text=ai.confirmCancel},
 {
 text=ai.confirmClear,
 primary=true,
 onTap=function()
-local z=if w then aa.clearAll()else aa.clearPlace()
+local o=if l then aa.clearAll()else aa.clearPlace()
 aa.hide()
 
 
-if m.Parent then
-f.Text=string.format(ai.cleared,z)
-p()
+if b.Parent then
+at.Text=string.format(ai.cleared,o)
+e()
 end
 end,
 },
 })end
 
 
-n.Activated:Connect(function()
-w(false)
+c.Activated:Connect(function()
+l(false)
 end)
 
-o.Activated:Connect(function()
-w(true)
+d.Activated:Connect(function()
+l(true)
 end)
 
-p()end
+e()end
 
 
 return al end a.dq=function()local ab=a.cache.dq if not ab then ab={c=aa()}a.cache.dq=ab end return ab.c end end do local aa=function()
@@ -23206,200 +23309,200 @@ local ao=ae.note(al,string.format(ah.folderHint,aa.FOLDER))
 ae.note(al,ah.trustHint)
 
 
-local b=ae.header(al,ah.installedTitle)
-local c=ae.group(al)
+local ap=ae.header(al,ah.installedTitle)
+local aq=ae.group(al)
 
 ae.header(al,ah.folderTitle)
-local d=ae.group(al)
+local ar=ae.group(al)
 
-local e local f=function(
-
-
-f)
-ao.Text=f
-ad:notify(ah.errorTitle,f)end local g=function(
+local as local at=function(
 
 
+at)
+ao.Text=at
+ad:notify(ah.errorTitle,at)end local au=function(
 
-g)
-local h,i=aa.add(ab,g)
 
-if h then
-ao.Text=string.format(ah.added,g,i)
-e()
+
+au)
+local av,aw=aa.add(ab,au)
+
+if av then
+ao.Text=string.format(ah.added,au,aw)
+as()
 return true
 end
 
-f(tostring(i))
-return false end local h=function(
+at(tostring(aw))
+return false end local av=function(
 
 
 
-h)
-if h.loaded then
-return string.format(ah.stateLoaded,h.name,h.commands)
+av)
+if av.loaded then
+return string.format(ah.stateLoaded,av.name,av.commands)
 end
 
-if h.error then
-return string.format(ah.stateFailed,h.name,h.error)
+if av.error then
+return string.format(ah.stateFailed,av.name,av.error)
 end
 
-return string.format(ah.stateUnknown,h.name)end local i=function()
+return string.format(ah.stateUnknown,av.name)end local aw=function()
 
 
 
-ae.clear(c)
+ae.clear(aq)
 
-local i=aa.getInstalled()
-local j=ae.list(c)
+local aw=aa.getInstalled()
+local ax=ae.list(aq)
 
-b.Text=ah.installedTitle..(if#i>0 then` ({#i})`else"")
+ap.Text=ah.installedTitle..(if#aw>0 then` ({#aw})`else"")
 
-if#i==0 then
-ae.note(j,ah.noneInstalled)
+if#aw==0 then
+ae.note(ax,ah.noneInstalled)
 return
 end
 
-ae.note(j,ah.installedHint)
+ae.note(ax,ah.installedHint)
 
-local k=af.rowGap
-local l=af.padding
-local m=l+ag.buttonWidth+k
-local n=m+ag.reloadWidth+af.padding
+local ay=af.rowGap
+local az=af.padding
+local b=az+ag.buttonWidth+ay
+local c=b+ag.reloadWidth+af.padding
 
-for o,p in i do
-local q=ae.row(j)
+for d,e in aw do
+local f=ae.row(ax)
 
-local r=ae.rowButton(q,ah.remove,l,ag.buttonWidth)
-local s=ae.rowButton(q,ah.reload,m,ag.reloadWidth)
+local g=ae.rowButton(f,ah.remove,az,ag.buttonWidth)
+local h=ae.rowButton(f,ah.reload,b,ag.reloadWidth)
 
 
-local t=if p.loaded
-then string.format(ah.loadedLabel,p.name,p.commands)
-else string.format(ah.failedLabel,p.name)
+local i=if e.loaded
+then string.format(ah.loadedLabel,e.name,e.commands)
+else string.format(ah.failedLabel,e.name)
 
-ae.label(q,t,n,if p.loaded then nil else"Colors.Text.Darker")
+ae.label(f,i,c,if e.loaded then nil else"Colors.Text.Darker")
 
-q.Activated:Connect(function()
-ao.Text=h(p)
+f.Activated:Connect(function()
+ao.Text=av(e)
 end)
 
-s.Activated:Connect(function()
-local u,v=aa.reload(ab,p.name)
+h.Activated:Connect(function()
+local j,k=aa.reload(ab,e.name)
 
-if u then
-ao.Text=string.format(ah.reloaded,p.name,v)
-e()
+if j then
+ao.Text=string.format(ah.reloaded,e.name,k)
+as()
 else
-e()
-f(tostring(v))
+as()
+at(tostring(k))
 end
 end)
 
-r.Activated:Connect(function()
-if aa.remove(ab,p.name)then
-ao.Text=string.format(ah.removed,p.name)
-e()
+g.Activated:Connect(function()
+if aa.remove(ab,e.name)then
+ao.Text=string.format(ah.removed,e.name)
+as()
 end
 end)
-end end local j=function()
+end end local ax=function()
 
 
 
-ae.clear(d)
+ae.clear(ar)
 
-local j,k=aa.getAvailable()
-local l=ae.list(d)
+local ax,ay=aa.getAvailable()
+local az=ae.list(ar)
 
-if not j then
-ae.note(l,k or"")
+if not ax then
+ae.note(az,ay or"")
 return
 end
 
-if#j==0 then
-ae.note(l,ah.noneInFolder)
+if#ax==0 then
+ae.note(az,ah.noneInFolder)
 return
 end
 
-local m=af.padding
+local b=af.padding
 
-for n,o in j do
-local p=ae.row(l)
+for c,d in ax do
+local e=ae.row(az)
 
-local q=ae.rowButton(p,ah.add,m,ag.buttonWidth)
-ae.label(p,o,ag.buttonWidth+2*af.padding)
+local f=ae.rowButton(e,ah.add,b,ag.buttonWidth)
+ae.label(e,d,ag.buttonWidth+2*af.padding)
 
 
-p.Activated:Connect(function()
-g(o)
+e.Activated:Connect(function()
+au(d)
 end)
 
-q.Activated:Connect(function()
-g(o)
+f.Activated:Connect(function()
+au(d)
 end)
 end
 
 
-local n=ae.row(l)
-ae.label(n,string.format(ah.addAll,#j),0)
+local c=ae.row(az)
+ae.label(c,string.format(ah.addAll,#ax),0)
 
-n.Activated:Connect(function()
-local o=0
-local p={}
+c.Activated:Connect(function()
+local d=0
+local e={}
 
-for q,r in j do
-local s,t=aa.add(ab,r)
+for f,g in ax do
+local h,i=aa.add(ab,g)
 
-if s then
-o=o+1
+if h then
+d=d+1
 else
-table.insert(p,`{r}: {t}`)
+table.insert(e,`{g}: {i}`)
 end
 end
 
-local q=string.format(ah.addedAll,o)
+local f=string.format(ah.addedAll,d)
 
-if#p>0 then
-q=q..string.format(ah.failedAll,#p)
+if#e>0 then
+f=f..string.format(ah.failedAll,#e)
 
-for r,s in p do
-warn(`plugin {s}`)
+for g,h in e do
+warn(`plugin {h}`)
 end
 end
 
-ao.Text=q
-e()
+ao.Text=f
+as()
 end)end
 
 
-e=function()
-i()
-j()end local k=function()
+as=function()
+aw()
+ax()end local ay=function()
 
 
 
-local k=ai(am.Text)
+local ay=ai(am.Text)
 
-if k==""then
-f(ah.missingName)
+if ay==""then
+at(ah.missingName)
 return
 end
 
-if g(k)then
+if au(ay)then
 am.Text=""
 end end
 
 
-an.Activated:Connect(k)
+an.Activated:Connect(ay)
 
 
-am.FocusLost:Connect(function(l)
-if l then
-k()
+am.FocusLost:Connect(function(az)
+if az then
+ay()
 end
 end)
 
-e()end
+as()end
 
 
 return aj end a.dr=function()local ab=a.cache.dr if not ab then ab={c=aa()}a.cache.dr=ab end return ab.c end end do local aa=function()
@@ -23462,224 +23565,224 @@ return tonumber(am)end local am=function(
 
 am, an)
 local ao=aa.events
-local b=math.clamp(ah,1,#ao)
-local c={}
+local ap=math.clamp(ah,1,#ao)
+local aq={}
 
 
-local d={}
-for e,f in ao do
-table.insert(d,(f.name:gsub("^On","")))
+local ar={}
+for as,at in ao do
+table.insert(ar,(at.name:gsub("^On","")))
 end
 
-local e=ad.list(am)
-ad.pageTop(e,nil,an.back)
+local as=ad.list(am)
+ad.pageTop(as,nil,an.back)
 
-local f,g
-local h
-local i
+local at,au
+local av
+local aw
 
-f,g=ad.choices(e,d,function(j)
-b=j
-ah=j
-h()
-end,ag.columns)local j=function()
+at,au=ad.choices(as,ar,function(ax)
+ap=ax
+ah=ax
+av()
+end,ag.columns)local ax=function()
 
 
 
-for j,k in ao do
-g(j,#aa.getBinds(k.name))
+for ax,ay in ao do
+au(ax,#aa.getBinds(ay.name))
 end end
 
 
 
-local k=ad.header(e,"")
+local ay=ad.header(as,"")
 
 
-local l=ad.group(e)
+local az=ad.group(as)
 
-local m,n,o=ad.formRow(e,ag.commandHint,ag.delayHint,ag.addButton)
+local b,c,d=ad.formRow(as,ag.commandHint,ag.delayHint,ag.addButton)
 
-local p=ad.note(e,"")
+local e=ad.note(as,"")
 
-local q=ad.header(e,"")
-local r=ad.group(e)local s=function()
-
-
-return ao[b]end local t=function(
+local f=ad.header(as,"")
+local g=ad.group(as)local h=function()
 
 
-
-t)
-p.Text=t
-ac:notify(ag.notifyTitle,t)end local u=function(
+return ao[ap]end local i=function(
 
 
 
-u, v, w)
-local x=string.format(ag.undoMessage,w.command,u.name)
+i)
+e.Text=i
+ac:notify(ag.notifyTitle,i)end local j=function(
 
 
-local y={}
-local z=ai(w)
 
-if(w.delay or 0)>0 then
-table.insert(y,string.format(ag.undoDelay,ak(w.delay)))
+j, k, l)
+local m=string.format(ag.undoMessage,l.command,j.name)
+
+
+local n={}
+local o=ai(l)
+
+if(l.delay or 0)>0 then
+table.insert(n,string.format(ag.undoDelay,ak(l.delay)))
 end
 
-if#z>0 then
-table.insert(y,`[{table.concat(z,", ")}]`)
+if#o>0 then
+table.insert(n,`[{table.concat(o,", ")}]`)
 end
 
-if#y>0 then
-x=x.."\n"..table.concat(y,"  ")
+if#n>0 then
+m=m.."\n"..table.concat(n,"  ")
 end
 
-ac:ask(ag.undoTitle,x,{
+ac:ask(ag.undoTitle,m,{
 {
 text=ag.undo,
 primary=true,
 onTap=function()
-if aa.restore(u.name,v,w)then
+if aa.restore(j.name,k,l)then
 
-if r.Parent then
-p.Text=string.format(ag.restored,w.command)
-j()
+if g.Parent then
+e.Text=string.format(ag.restored,l.command)
+ax()
 
-if s()==u then
-i()
+if h()==j then
+aw()
 end
 end
 end
 end,
 },
-},ag.undoTime)end local v=function()
+},ag.undoTime)end local k=function()
 
 
 
 
-ad.clear(l)
-c={}
+ad.clear(az)
+aq={}
 
-local v=ad.list(l)
+local k=ad.list(az)
 
-for w,x in s().conditions do
-local y,z=ad.inputRow(
-v,
-x.label,
-ag.conditionHints[x.kind]or"",
-x.default
+for l,m in h().conditions do
+local n,o=ad.inputRow(
+k,
+m.label,
+ag.conditionHints[m.kind]or"",
+m.default
 )
 
-c[w]=z
+aq[l]=o
 end end
 
 
-i=function()
-j()
-ad.clear(r)
+aw=function()
+ax()
+ad.clear(g)
 
-local w=s()
-local x=ad.list(r)
-local y=aa.getBinds(w.name)
+local l=h()
+local m=ad.list(g)
+local n=aa.getBinds(l.name)
 
-q.Text=string.format(ag.listTitle,w.name)..(if#y>0 then` ({#y})`else"")
+f.Text=string.format(ag.listTitle,l.name)..(if#n>0 then` ({#n})`else"")
 
-if#y==0 then
-ad.note(x,ag.empty)
+if#n==0 then
+ad.note(m,ag.empty)
 return
 end
 
-ad.note(x,ag.listHint)
+ad.note(m,ag.listHint)
 
-for z,A in y do
-local B=ad.row(x)
-ad.label(B,aj(A),af.delayWidth+2*ae.padding)
-
-
-local C=ad.valueInput(B,ak(A.delay or 0),af.delayWidth)
+for o,p in n do
+local q=ad.row(m)
+ad.label(q,aj(p),af.delayWidth+2*ae.padding)
 
 
-C.FocusLost:Connect(function()
-if not C.Parent then return end
+local r=ad.valueInput(q,ak(p.delay or 0),af.delayWidth)
 
-local D=al(C.Text)
 
-if D==nil or D<0 then
-C.Text=ak(A.delay or 0)
-t(if D==nil then ag.badDelay else ag.negativeDelay)
+r.FocusLost:Connect(function()
+if not r.Parent then return end
+
+local s=al(r.Text)
+
+if s==nil or s<0 then
+r.Text=ak(p.delay or 0)
+i(if s==nil then ag.badDelay else ag.negativeDelay)
 return
 end
 
-if aa.setDelay(w.name,z,D)then
-C.Text=ak(D)
-p.Text=string.format(ag.delayChanged,A.command,ak(D))
+if aa.setDelay(l.name,o,s)then
+r.Text=ak(s)
+e.Text=string.format(ag.delayChanged,p.command,ak(s))
 end
 end)
 
-B.Activated:Connect(function()
-local D=aa.remove(w.name,z)
+q.Activated:Connect(function()
+local s=aa.remove(l.name,o)
 
-if D then
-p.Text=string.format(ag.removed,D.command)
-i()
-u(w,z,D)
+if s then
+e.Text=string.format(ag.removed,s.command)
+aw()
+j(l,o,s)
 end
 end)
 end end
 
 
-h=function()
-k.Text=string.format(ag.header,s().name,s().description)
-p.Text=""
+av=function()
+ay.Text=string.format(ag.header,h().name,h().description)
+e.Text=""
 
-f(b)
-v()
-i()end local w=function()
+at(ap)
+k()
+aw()end local l=function()
 
 
 
-local w=if n.Text==""then 0 else al(n.Text)
+local l=if c.Text==""then 0 else al(c.Text)
 
-if w==nil then
-t(ag.badDelay)
+if l==nil then
+i(ag.badDelay)
 return
 end
 
-if w<0 then
-t(ag.negativeDelay)
+if l<0 then
+i(ag.negativeDelay)
 return
 end
 
-local x={}
-for y,z in c do
-x[y]=z.Text
+local m={}
+for n,o in aq do
+m[n]=o.Text
 end
 
-local y=s()
-local z,A=aa.add(y.name,m.Text,w,x)
+local n=h()
+local o,p=aa.add(n.name,b.Text,l,m)
 
-if z then
+if o then
 
-m.Text=""
-i()
-p.Text=string.format(ag.added,y.name)
+b.Text=""
+aw()
+e.Text=string.format(ag.added,n.name)
 else
-t(A or ag.notAdded)
+i(p or ag.notAdded)
 end end
 
 
-o.Activated:Connect(w)
+d.Activated:Connect(l)
 
 
-for x,y in{m,n}do
-y.FocusLost:Connect(function(z)
-if z then
-w()
+for m,n in{b,c}do
+n.FocusLost:Connect(function(o)
+if o then
+l()
 end
 end)
 end
 
-h()end
+av()end
 
 
 return am end a.ds=function()local ab=a.cache.ds if not ab then ab={c=aa()}a.cache.ds=ab end return ab.c end end do local aa=function()
@@ -23709,25 +23812,25 @@ local am=a.dr()
 local an=a.ds()
 
 local ao=ad.panel
-local b=ad.box
-local c=ad.row
-local d=ad.value
+local ap=ad.box
+local aq=ad.row
+local ar=ad.value
 
-local e=af.TweenService
+local as=af.TweenService
 
-local f=ao.shownY
-local g=ao.hiddenY
-
-
-
-local h=ao.floatBackSize
-local i=UDim2.new(1,-(ao.floatBackMargin+ao.scrollBarThickness),0,ao.floatBackMargin)
-local j=UDim2.fromOffset(h,h)
-local k=UDim2.fromOffset(h*ao.floatBackFlat,h)
-local l=UDim2.new(1,0,0,-h*ao.floatBackOut)
+local at=ao.shownY
+local au=ao.hiddenY
 
 
-local m={
+
+local av=ao.floatBackSize
+local aw=UDim2.new(1,-(ao.floatBackMargin+ao.scrollBarThickness),0,ao.floatBackMargin)
+local ax=UDim2.fromOffset(av,av)
+local ay=UDim2.fromOffset(av*ao.floatBackFlat,av)
+local az=UDim2.new(1,0,0,-av*ao.floatBackOut)
+
+
+local b={
 theme=ai,
 keybinds=aj,
 aliases=ak,
@@ -23736,140 +23839,140 @@ plugins=am,
 eventBinds=an,
 }
 
-local n={}
-n.__index=n local o=function(
+local c={}
+c.__index=c local d=function(
 
-o, p)
-ac:setValue(o,p==true)
-ac:save()end local p=function(
-
-
-p)
-return ac:getValue(p)==true end local q=function(
+d, e)
+ac:setValue(d,e==true)
+ac:save()end local e=function(
 
 
-q, r, s)
-q:TweenPosition(r,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,ao.tweenTime,true,s)end
+e)
+return ac:getValue(e)==true end local f=function(
 
 
-n.isKeepMenuOpen=function()
-return p(ad.keys.keepMenuOpen)end
+f, g, h)
+f:TweenPosition(g,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,ao.tweenTime,true,h)end
 
 
-n.setKeepMenuOpen=function(r)
-o(ad.keys.keepMenuOpen,r)end
+c.isKeepMenuOpen=function()
+return e(ad.keys.keepMenuOpen)end
 
 
-n.isKeepIY=function()
-return p(ad.keys.keepIY)end
+c.setKeepMenuOpen=function(g)
+d(ad.keys.keepMenuOpen,g)end
 
 
-n.setKeepIY=function(r)
-o(ad.keys.keepIY,r)end
+c.isKeepIY=function()
+return e(ad.keys.keepIY)end
+
+
+c.setKeepIY=function(g)
+d(ad.keys.keepIY,g)end
 
 
 
-n.createOption=function(r, s, t)
-local u=ah.row(s)
+c.createOption=function(g, h, i)
+local j=ah.row(h)
 
-if t.icon then
-ah.icon(u,t.icon)
+if i.icon then
+ah.icon(j,i.icon)
 end
 
-if t.kind=="switch"then
-local v=ad.keys[t.setting]
-ah.label(u,t.label,b.size+2*ao.padding)
+if i.kind=="switch"then
+local k=ad.keys[i.setting]
+ah.label(j,i.label,ap.size+2*ao.padding)
 
-local w,x=ah.box(u)local y=function()
-
-
-x.Visible=p(v)end
+local l,m=ah.box(j)local n=function()
 
 
-u.Activated:Connect(function()
-local z=not p(v)
-o(v,z)
-y()
+m.Visible=e(k)end
 
-if r.onSwitch then
-r.onSwitch(t.setting,z)
+
+j.Activated:Connect(function()
+local o=not e(k)
+d(k,o)
+n()
+
+if g.onSwitch then
+g.onSwitch(i.setting,o)
 end
 end)
 
-y()
-return y
+n()
+return n
 end
 
-if t.kind=="keybind"then
-ah.label(u,t.label,d.keybindWidth+2*ao.padding)
+if i.kind=="keybind"then
+ah.label(j,i.label,ar.keybindWidth+2*ao.padding)
 
-local v,w=ah.keybind(u,t.binding)
-table.insert(r.stoppers,w)
+local k,l=ah.keybind(j,i.binding)
+table.insert(g.stoppers,l)
 
-return v
+return k
 end
 
 
-local v=m[t.action]~=nil
+local k=b[i.action]~=nil
 
-if v then
-ah.chevron(u)
+if k then
+ah.chevron(j)
 end
 
-ah.label(u,t.label,if v then c.chevronSize+2*ao.padding else 0)
+ah.label(j,i.label,if k then aq.chevronSize+2*ao.padding else 0)
 
-u.Activated:Connect(function()
-if m[t.action]then
-r:openPage(t.action)
-elseif r.onButton then
-r.onButton(t.action)
+j.Activated:Connect(function()
+if b[i.action]then
+g:openPage(i.action)
+elseif g.onButton then
+g.onButton(i.action)
 end
 end)
 
 return nil end
 
 
-n.createOptions=function(r)
-local s=ah.list(r.panel)
+c.createOptions=function(g)
+local h=ah.list(g.panel)
 
-for t,u in ad.sections do
-ah.header(s,u.title)
+for i,j in ad.sections do
+ah.header(h,j.title)
 
-for v,w in u.options do
-local x=r:createOption(s,w)
+for k,l in j.options do
+local m=g:createOption(h,l)
 
-if x then
-table.insert(r.refreshers,x)
+if m then
+table.insert(g.refreshers,m)
 end
 end
 end
 
 
-local t=ad.footer
+local i=ad.footer
 :gsub("{name}",ae.applicationName)
 :gsub("{version}",ae.version)
 
-ah.footer(s,t)end
+ah.footer(h,i)end
 
 
-n.createPages=function(r)
-for s,t in m do
-local u=ah.page(r.holder,`{s}Page`,UDim2.fromScale(1,g))
+c.createPages=function(g)
+for h,i in b do
+local j=ah.page(g.holder,`{h}Page`,UDim2.fromScale(1,au))
 
 
-u.Visible=false
+j.Visible=false
 
-r.pages[s]={
-frame=u,
-build=t,
+g.pages[h]={
+frame=j,
+build=i,
 }
 end end
 
 
-n.new=function(r)
+c.new=function(g)
 return setmetatable({
-onSwitch=r.onSwitch,
-onButton=r.onButton,
+onSwitch=g.onSwitch,
+onButton=g.onButton,
 isOpen=false,
 isShown=false,
 holder=nil,
@@ -23886,39 +23989,39 @@ floatingIcon=nil,
 floatingShown=false,
 floatingTween=nil,
 backIcon=nil,
-},n)end
+},c)end
 
 
-n.create=function(r, s, t)
-local u=aa.new("Frame","SettingsHolder",s,{
-AnchorPoint=t.AnchorPoint,
+c.create=function(g, h, i)
+local j=aa.new("Frame","SettingsHolder",h,{
+AnchorPoint=i.AnchorPoint,
 BackgroundTransparency=1,
 ClipsDescendants=true,
-Position=t.Position,
-Size=t.Size,
+Position=i.Position,
+Size=i.Size,
 Visible=false,
 })
 
-r.holder=u
-r.panel=ah.page(u,"Settings",UDim2.fromScale(0,g))
-r.current=r.panel
+g.holder=j
+g.panel=ah.page(j,"Settings",UDim2.fromScale(0,au))
+g.current=g.panel
 
-r:createOptions()
-r:createPages()
-r:createFloatingBack(u)
+g:createOptions()
+g:createPages()
+g:createFloatingBack(j)
 
-return u end
-
-
+return j end
 
 
-n.createFloatingBack=function(r, s)
-local t=aa.new("TextButton","FloatingBack",s,{
+
+
+c.createFloatingBack=function(g, h)
+local i=aa.new("TextButton","FloatingBack",h,{
 AnchorPoint=Vector2.new(1,0),
 AutoButtonColor=false,
 BorderSizePixel=0,
-Position=i,
-Size=j,
+Position=aw,
+Size=ax,
 Text="",
 Visible=false,
 ZIndex=2,
@@ -23927,7 +24030,7 @@ BackgroundColor3="Colors.Buttons.Holding",
 },
 
 aa.new("UICorner",{
-CornerRadius=UDim.new(0,d.cornerRadius),
+CornerRadius=UDim.new(0,ar.cornerRadius),
 }),
 aa.new("UIStroke",{
 ApplyStrokeMode=Enum.ApplyStrokeMode.Border,
@@ -23939,287 +24042,287 @@ Color="Colors.Border.Default",
 })
 
 
-local u=ah.icon(t,ad.pages.backIcon)
-u.AnchorPoint=Vector2.new(0.5,0.5)
-u.Position=UDim2.fromScale(0.5,0.5)
-u.Size=UDim2.fromScale(c.iconSize/ao.floatBackSize,c.iconSize/ao.floatBackSize)
-u.ZIndex=t.ZIndex+1
+local j=ah.icon(i,ad.pages.backIcon)
+j.AnchorPoint=Vector2.new(0.5,0.5)
+j.Position=UDim2.fromScale(0.5,0.5)
+j.Size=UDim2.fromScale(aq.iconSize/ao.floatBackSize,aq.iconSize/ao.floatBackSize)
+j.ZIndex=i.ZIndex+1
 
-t.Activated:Connect(function()
-r:back()
+i.Activated:Connect(function()
+g:back()
 end)
 
-r.floatingBack=t
-r.floatingIcon=u end
+g.floatingBack=i
+g.floatingIcon=j end
 
 
 
-n.syncFloatingIcon=function(r)
-local s,t=r.floatingIcon,r.backIcon
+c.syncFloatingIcon=function(g)
+local h,i=g.floatingIcon,g.backIcon
 
-if s and t and t.Image~=""and s.Image~=t.Image then
-s.Image=t.Image
+if h and i and i.Image~=""and h.Image~=i.Image then
+h.Image=i.Image
 end end
 
 
 
 
-n.updateFloatingBack=function(r)
-local s=r.floatingBack
-if not s then return end
+c.updateFloatingBack=function(g)
+local h=g.floatingBack
+if not h then return end
 
-local t=r.current
-local u=r.backRow
-local v=false
+local i=g.current
+local j=g.backRow
+local k=false
 
-if r.isShown and t~=r.panel and u and u.Parent then
-v=u.AbsolutePosition.Y+u.AbsoluteSize.Y<=t.AbsolutePosition.Y
+if g.isShown and i~=g.panel and j and j.Parent then
+k=j.AbsolutePosition.Y+j.AbsoluteSize.Y<=i.AbsolutePosition.Y
 end
 
-if v then
-r:syncFloatingIcon()
+if k then
+g:syncFloatingIcon()
 end
 
-if v==r.floatingShown then return end
+if k==g.floatingShown then return end
 
-r.floatingShown=v
+g.floatingShown=k
 
-if v then
-r:showFloatingBack()
+if k then
+g:showFloatingBack()
 else
-r:hideFloatingBack()
+g:hideFloatingBack()
 end end
 
 
 
-n.showFloatingBack=function(r)
-local s=r.floatingBack
+c.showFloatingBack=function(g)
+local h=g.floatingBack
 
 
-if not s.Visible then
-s.Position=l
-s.Size=k
-s.Visible=true
+if not h.Visible then
+h.Position=az
+h.Size=ay
+h.Visible=true
 end
 
-r:tweenFloatingBack(i,j,Enum.EasingStyle.Back,Enum.EasingDirection.Out)end
+g:tweenFloatingBack(aw,ax,Enum.EasingStyle.Back,Enum.EasingDirection.Out)end
 
 
 
-n.hideFloatingBack=function(r)
-local s=r.floatingBack
-if not s.Visible then return end
+c.hideFloatingBack=function(g)
+local h=g.floatingBack
+if not h.Visible then return end
 
-r:tweenFloatingBack(l,k,Enum.EasingStyle.Quart,Enum.EasingDirection.In,function()
-s.Visible=false
+g:tweenFloatingBack(az,ay,Enum.EasingStyle.Quart,Enum.EasingDirection.In,function()
+h.Visible=false
 end)end
 
 
 
 
-n.tweenFloatingBack=function(r, s, t, u, v, w)
-local x=r.floatingBack
-r:stopFloatingTween()
+c.tweenFloatingBack=function(g, h, i, j, k, l)
+local m=g.floatingBack
+g:stopFloatingTween()
 
-local y=ag:getScale(ao.floatBackTime)
+local n=ag:getScale(ao.floatBackTime)
 
-if y<=0 then
-x.Position=s
-x.Size=t
+if n<=0 then
+m.Position=h
+m.Size=i
 
-if w then
-w()
+if l then
+l()
 end
 
 return
 end
 
-local z=e:Create(x,TweenInfo.new(y,u,v),{
-Position=s,
-Size=t,
+local o=as:Create(m,TweenInfo.new(n,j,k),{
+Position=h,
+Size=i,
 })
 
-r.floatingTween=z
+g.floatingTween=o
 
-z.Completed:Connect(function(A)
+o.Completed:Connect(function(p)
 
-if A~=Enum.PlaybackState.Completed then return end
+if p~=Enum.PlaybackState.Completed then return end
 
-if r.floatingTween==z then
-r.floatingTween=nil
+if g.floatingTween==o then
+g.floatingTween=nil
 end
 
-if w then
-w()
+if l then
+l()
 end
 end)
 
-z:Play()end
+o:Play()end
 
 
-n.stopFloatingTween=function(r)
-local s=r.floatingTween
-if not s then return end
+c.stopFloatingTween=function(g)
+local h=g.floatingTween
+if not h then return end
 
-r.floatingTween=nil
-s:Cancel()end
+g.floatingTween=nil
+h:Cancel()end
 
 
-n.refresh=function(r)
-for s,t in r.refreshers do
-t()
+c.refresh=function(g)
+for h,i in g.refreshers do
+i()
 end end
 
 
 
-n.stopWaiting=function(r)
-for s,t in r.stoppers do
-t()
+c.stopWaiting=function(g)
+for h,i in g.stoppers do
+i()
 end
 
-for s,t in r.pageStoppers do
-t()
+for h,i in g.pageStoppers do
+i()
 end end
 
 
 
-n.buildPage=function(r, s)
-ah.clear(s.frame)
-r.pageStoppers={}
+c.buildPage=function(g, h)
+ah.clear(h.frame)
+g.pageStoppers={}
 
-for t,u in r.pageConnections do
-u:Disconnect()
+for i,j in g.pageConnections do
+j:Disconnect()
 end
-table.clear(r.pageConnections)
+table.clear(g.pageConnections)
 
-s.build(s.frame,{
+h.build(h.frame,{
 back=function()
-r:back()
+g:back()
 end,
-stoppers=r.pageStoppers,
+stoppers=g.pageStoppers,
 })
 
-r.backRow=s.frame:FindFirstChild"BackRow"
-r.backIcon=if r.backRow then r.backRow:FindFirstChild"Icon"else nil
+g.backRow=h.frame:FindFirstChild"BackRow"
+g.backIcon=if g.backRow then g.backRow:FindFirstChild"Icon"else nil
 
-if r.backIcon then
+if g.backIcon then
 
-table.insert(r.pageConnections,r.backIcon:GetPropertyChangedSignal"Image":Connect(function()
-r:syncFloatingIcon()
+table.insert(g.pageConnections,g.backIcon:GetPropertyChangedSignal"Image":Connect(function()
+g:syncFloatingIcon()
 end))
 
-r:syncFloatingIcon()
+g:syncFloatingIcon()
 end
 
-table.insert(r.pageConnections,s.frame:GetPropertyChangedSignal"CanvasPosition":Connect(function()
-r:updateFloatingBack()
+table.insert(g.pageConnections,h.frame:GetPropertyChangedSignal"CanvasPosition":Connect(function()
+g:updateFloatingBack()
 end))end
 
 
 
 
 
-n.hideWhenGone=function(r, s)
-return function(t)
-if t and s~=r.current then
-s.Visible=false
+c.hideWhenGone=function(g, h)
+return function(i)
+if i and h~=g.current then
+h.Visible=false
 end
 end end
 
 
 
-n.openPage=function(r, s)
-local t=r.pages[s]
-if not t or not r.isShown or r.current~=r.panel then return end
+c.openPage=function(g, h)
+local i=g.pages[h]
+if not i or not g.isShown or g.current~=g.panel then return end
 
-r:stopWaiting()
-
-
-t.frame.Visible=true
-r:buildPage(t)
-
-t.frame.CanvasPosition=Vector2.zero
-t.frame.Position=UDim2.fromScale(1,f)
-r.current=t.frame
-
-q(r.panel,UDim2.fromScale(-1,f),r:hideWhenGone(r.panel))
-q(t.frame,UDim2.fromScale(0,f))
-
-r:updateFloatingBack()end
+g:stopWaiting()
 
 
+i.frame.Visible=true
+g:buildPage(i)
 
-n.back=function(r)
-if r.current==r.panel then return end
+i.frame.CanvasPosition=Vector2.zero
+i.frame.Position=UDim2.fromScale(1,at)
+g.current=i.frame
 
-r:stopWaiting()
+f(g.panel,UDim2.fromScale(-1,at),g:hideWhenGone(g.panel))
+f(i.frame,UDim2.fromScale(0,at))
 
-local s=r.current
-r.panel.Visible=true
-
-q(s,UDim2.fromScale(1,f),r:hideWhenGone(s))
-q(r.panel,UDim2.fromScale(0,f))
-r.current=r.panel
-
-r:updateFloatingBack()end
+g:updateFloatingBack()end
 
 
 
-n.reset=function(r)
-r.current=r.panel
-r.panel.Visible=true
-r.panel.Position=UDim2.fromScale(0,g)
+c.back=function(g)
+if g.current==g.panel then return end
 
-for s,t in r.pages do
-t.frame.Visible=false
-t.frame.Position=UDim2.fromScale(1,g)
+g:stopWaiting()
+
+local h=g.current
+g.panel.Visible=true
+
+f(h,UDim2.fromScale(1,at),g:hideWhenGone(h))
+f(g.panel,UDim2.fromScale(0,at))
+g.current=g.panel
+
+g:updateFloatingBack()end
+
+
+
+c.reset=function(g)
+g.current=g.panel
+g.panel.Visible=true
+g.panel.Position=UDim2.fromScale(0,au)
+
+for h,i in g.pages do
+i.frame.Visible=false
+i.frame.Position=UDim2.fromScale(1,au)
 end end
 
 
-n.toggle=function(r)
-r.isOpen=not r.isOpen
-r:setShown(r.isOpen)end
+c.toggle=function(g)
+g.isOpen=not g.isOpen
+g:setShown(g.isOpen)end
 
 
-n.setShown=function(r, s)
-if not r.panel or r.isShown==s then return end
+c.setShown=function(g, h)
+if not g.panel or g.isShown==h then return end
 
-r.isShown=s
-local t=r.current
+g.isShown=h
+local i=g.current
 
-r:updateFloatingBack()
+g:updateFloatingBack()
 
-if s then
-r.holder.Visible=true
-q(t,UDim2.fromScale(0,f))
+if h then
+g.holder.Visible=true
+f(i,UDim2.fromScale(0,at))
 return
 end
 
-r:stopWaiting()
+g:stopWaiting()
 
-q(t,UDim2.fromScale(0,g),function(u)
-if u and not r.isShown then
-r.holder.Visible=false
+f(i,UDim2.fromScale(0,au),function(j)
+if j and not g.isShown then
+g.holder.Visible=false
 
 
-if not r.isOpen then
-r:reset()
+if not g.isOpen then
+g:reset()
 end
 end
 end)end
 
 
-n.watchCommandBar=function(r, s)
-ab:Connect(s.Focused,function()
-r:setShown(false)
+c.watchCommandBar=function(g, h)
+ab:Connect(h.Focused,function()
+g:setShown(false)
 end)
 
-ab:Connect(s.FocusLost,function()
-r:setShown(r.isOpen)
+ab:Connect(h.FocusLost,function()
+g:setShown(g.isOpen)
 end)end
 
 
-return n end a.dt=function()local ab=a.cache.dt if not ab then ab={c=aa()}a.cache.dt=ab end return ab.c end end do local aa=function()
+return c end a.dt=function()local ab=a.cache.dt if not ab then ab={c=aa()}a.cache.dt=ab end return ab.c end end do local aa=function()
 
 
 
@@ -24376,18 +24479,18 @@ local am=a.cK()
 
 local an=aj.window
 local ao=aj.textSizes
-local b=aj.buttons
+local ap=aj.buttons
 
-local c=UDim2.new(0.5,-an.width/2,0,an.shownY)
-local d=UDim2.new(0.5,-an.width/2,0,an.hiddenY)
+local aq=UDim2.new(0.5,-an.width/2,0,an.shownY)
+local ar=UDim2.new(0.5,-an.width/2,0,an.hiddenY)
 
-local e=Color3.fromRGB(255,255,255)
-local f=Color3.fromRGB(0,166,0)
+local as=Color3.fromRGB(255,255,255)
+local at=Color3.fromRGB(0,166,0)
 
-local g={}
-g.__index=g
+local au={}
+au.__index=au
 
-g.new=function()
+au.new=function()
 return setmetatable({
 frame=nil,
 hoverBox=nil,
@@ -24400,28 +24503,28 @@ path=nil,
 selectedPart=nil,
 onSelectPart=nil,
 connections={},
-},g)end local h=function(
+},au)end local av=function(
 
 
 
-h, i, j, k)
-return aa.new("Frame",k,h,{
+av, aw, ax, ay)
+return aa.new("Frame",ay,av,{
 BackgroundColor3=Color3.new(1,1,1),
-BackgroundTransparency=if i%2==1 then an.stripeTransparency else 1,
+BackgroundTransparency=if aw%2==1 then an.stripeTransparency else 1,
 BorderSizePixel=0,
-LayoutOrder=i,
-Size=UDim2.new(1,0,0,j),
-})end local i=function(
+LayoutOrder=aw,
+Size=UDim2.new(1,0,0,ax),
+})end local aw=function(
 
 
 
-i, j, k, l)
-local m=aa.new("Frame",k,i,{
+aw, ax, ay, az)
+local b=aa.new("Frame",ay,aw,{
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundColor3=Color3.new(1,1,1),
-BackgroundTransparency=if j%2==1 then an.stripeTransparency else 1,
+BackgroundTransparency=if ax%2==1 then an.stripeTransparency else 1,
 BorderSizePixel=0,
-LayoutOrder=j,
+LayoutOrder=ax,
 Size=UDim2.new(1,0,0,0),
 
 aa.new("UIPadding",{
@@ -24435,72 +24538,72 @@ SortOrder=Enum.SortOrder.LayoutOrder,
 }),
 })
 
-local n=aa.new("TextLabel",l.labelName,m,{
+local c=aa.new("TextLabel",az.labelName,b,{
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundTransparency=1,
 Size=UDim2.new(1,0,0,0),
-TextSize=l.textSize,
+TextSize=az.textSize,
 TextWrapped=true,
 TextXAlignment=Enum.TextXAlignment.Left,
 TextYAlignment=Enum.TextYAlignment.Top,
 ThemeTag={
 Font="Font.MonoSpace",
-TextColor3=l.color,
+TextColor3=az.color,
 },
 })
 
-return m,n end local j=function(
+return b,c end local ax=function(
 
 
 
 
-j)
-local k={}
-local l=""
+ax)
+local ay={}
+local az=""
 
-for m=1,#j do
-local n=string.sub(j,m,m)
+for b=1,#ax do
+local c=string.sub(ax,b,b)
 
-if(n=="."or n=="[")and l~=""then
-table.insert(k,l)
-l=""
+if(c=="."or c=="[")and az~=""then
+table.insert(ay,az)
+az=""
 end
 
-l=l..n
+az=az..c
 end
 
-if l~=""then
-table.insert(k,l)
+if az~=""then
+table.insert(ay,az)
 end
 
-local m={}
-local n=""
+local b={}
+local c=""
 
-for o,p in k do
-if n~=""and#n+#p>aj.window.pathCharsPerLine then
-table.insert(m,n)
-n=""
+for d,e in ay do
+if c~=""and#c+#e>aj.window.pathCharsPerLine then
+table.insert(b,c)
+c=""
 end
 
-n=n..p
+c=c..e
 end
 
-if n~=""then
-table.insert(m,n)
+if c~=""then
+table.insert(b,c)
 end
 
-return table.concat(m,"\n")end local k=function(
+return table.concat(b,"\n")end local ay=function(
 
 
-k, l, m)
-local n=h(k,l,an.rowHeight,"Section")
+ay, az, b)
+local c=av(ay,az,an.rowHeight,"Section")
 
-aa.new("TextLabel","Title",n,{
+aa.new("TextLabel","Title",c,{
 BackgroundTransparency=1,
 Position=UDim2.fromOffset(an.textInset,0),
 Size=UDim2.new(1,-an.textInset*2,1,0),
 RichText=true,
-Text=`<b>{am.escapeRichText(m)}</b>`,
+Text=`<b>{am.escapeRichText(b)}</b>`,
 TextSize=ao.section,
 TextXAlignment=Enum.TextXAlignment.Left,
 TextYAlignment=Enum.TextYAlignment.Center,
@@ -24510,16 +24613,16 @@ TextColor3="Colors.Text.Darker",
 },
 })
 
-return n end local l=function(
+return c end local az=function(
 
 
-l, m, n, o, p)
-local q=aa.new("TextButton",m,l,{
+az, b, c, d, e)
+local f=aa.new("TextButton",b,az,{
 AutoButtonColor=false,
 BorderSizePixel=0,
-Position=o,
-Size=p,
-Text=n,
+Position=d,
+Size=e,
+Text=c,
 TextSize=ao.button,
 ThemeTag={
 BackgroundColor3="Colors.Buttons.Default",
@@ -24528,36 +24631,36 @@ TextColor3="Colors.Text.Default",
 },
 
 aa.new("UICorner",{
-CornerRadius=UDim.new(0,b.cornerRadius),
+CornerRadius=UDim.new(0,ap.cornerRadius),
 }),
 })
 
-ag:Connect(q.MouseEnter,function()
-ac:updateObjectProperties(q,{
+ag:Connect(f.MouseEnter,function()
+ac:updateObjectProperties(f,{
 BackgroundColor3="Colors.Buttons.Holding",
 })
 end)
 
-ag:Connect(q.MouseLeave,function()
-ac:updateObjectProperties(q,{
+ag:Connect(f.MouseLeave,function()
+ac:updateObjectProperties(f,{
 BackgroundColor3="Colors.Buttons.Default",
 })
 end)
 
-return q end
+return f end
 
 
 
-g.create=function(m)
-if m.frame then
-return m.frame
+au.create=function(b)
+if b.frame then
+return b.frame
 end
 
-local n=aa.new("Frame","PartPath",{
+local c=aa.new("Frame","PartPath",{
 Active=true,
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundTransparency=1,
-Position=d,
+Position=ar,
 Size=UDim2.fromOffset(an.width,0),
 Visible=false,
 
@@ -24566,7 +24669,7 @@ SortOrder=Enum.SortOrder.LayoutOrder,
 }),
 })
 
-local o=aa.new("Frame","TopBar",n,{
+local d=aa.new("Frame","TopBar",c,{
 BorderSizePixel=0,
 LayoutOrder=1,
 Size=UDim2.new(1,0,0,an.topBarHeight),
@@ -24575,7 +24678,7 @@ BackgroundColor3="Colors.Background",
 },
 })
 
-aa.new("TextLabel","Title",o,{
+aa.new("TextLabel","Title",d,{
 BackgroundTransparency=1,
 Size=UDim2.fromScale(1,1),
 Text=an.title,
@@ -24586,7 +24689,7 @@ TextColor3="Colors.Text.Default",
 },
 })
 
-local p=aa.new("ImageButton","Exit",o,{
+local e=aa.new("ImageButton","Exit",d,{
 AnchorPoint=Vector2.new(1,0.5),
 BackgroundTransparency=1,
 Position=UDim2.new(1,-an.closeInset,0.5,0),
@@ -24596,9 +24699,9 @@ ImageColor3="Colors.Icons",
 },
 })
 
-ab:loadImage(p,"close")
+ab:loadImage(e,"close")
 
-local q=aa.new("Frame","Body",n,{
+local f=aa.new("Frame","Body",c,{
 Active=true,
 AutomaticSize=Enum.AutomaticSize.Y,
 BorderSizePixel=0,
@@ -24617,197 +24720,197 @@ SortOrder=Enum.SortOrder.LayoutOrder,
 }),
 })
 
-k(q,1,aj.headers.path)
+ay(f,1,aj.headers.path)
 
 
-local r,s=i(q,2,"PathRow",{
+local g,h=aw(f,2,"PathRow",{
 labelName="Path",
 textSize=ao.value,
 color="Colors.Text.Default",
 })
-s.RichText=true
+h.RichText=true
 
-k(q,3,aj.headers.actions)
+ay(f,3,aj.headers.actions)
 
 
-local t=h(q,4,an.buttonRowHeight,"ButtonRow")
-local u=an.buttonGap/2
-local v=an.textInset
-local w=(an.buttonRowHeight-an.buttonHeight)/2
-local x=UDim2.new(0.5,-(v+u),0,an.buttonHeight)
+local i=av(f,4,an.buttonRowHeight,"ButtonRow")
+local j=an.buttonGap/2
+local k=an.textInset
+local l=(an.buttonRowHeight-an.buttonHeight)/2
+local m=UDim2.new(0.5,-(k+j),0,an.buttonHeight)
 
-local y=l(t,"SelectPart",b.selectPart,
-UDim2.new(0,v,0,w),x)
-local z=l(t,"CopyPath",b.copyPath,
-UDim2.new(0.5,u,0,w),x)
+local n=az(i,"SelectPart",ap.selectPart,
+UDim2.new(0,k,0,l),m)
+local o=az(i,"CopyPath",ap.copyPath,
+UDim2.new(0.5,j,0,l),m)
 
-local A,B=i(q,5,"Help",{
+local p,q=aw(f,5,"Help",{
 labelName="HelpText",
 textSize=ao.help,
 color="Colors.Text.Darker",
 })
-B.Text=aj.labels.help
+q.Text=aj.labels.help
 
 
-local C=aa.new("SelectionBox","Hover",af,{
-Color3=e,
+local r=aa.new("SelectionBox","Hover",af,{
+Color3=as,
 })
 
-local D=aa.new("SelectionBox","Selected",af,{
-Color3=f,
+local s=aa.new("SelectionBox","Selected",af,{
+Color3=at,
 })
 
-ag:Connect(p.Activated,function()
-m:close()
+ag:Connect(e.Activated,function()
+b:close()
 end)
 
-ag:Connect(y.Activated,function()
-m:confirmSelection()
+ag:Connect(n.Activated,function()
+b:confirmSelection()
 end)
 
-ag:Connect(z.Activated,function()
-m:copyPath()
+ag:Connect(o.Activated,function()
+b:copyPath()
 end)
 
-ae:addGuiObject(n)
+ae:addGuiObject(c)
 
-m.frame=n
-m.hoverBox=C
-m.selectedBox=D
-m.pathLabel=s
-m.copyButton=z
+b.frame=c
+b.hoverBox=r
+b.selectedBox=s
+b.pathLabel=h
+b.copyButton=o
 
-m:setPath(nil)
+b:setPath(nil)
 
-return n end
+return c end
 
 
 
-g.open=function(m, n)
-m:create()
-m.onSelectPart=n
+au.open=function(b, c)
+b:create()
+b.onSelectPart=c
 
-if m.isOpen then
+if b.isOpen then
 return
 end
 
-m.isOpen=true
-m.frame.Visible=true
-m.frame:TweenPosition(c,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,an.tweenTime,true)
+b.isOpen=true
+b.frame.Visible=true
+b.frame:TweenPosition(aq,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,an.tweenTime,true)
 
-m:startSelecting()end
+b:startSelecting()end
 
 
 
-g.close=function(m)
-if not m.isOpen then
+au.close=function(b)
+if not b.isOpen then
 return
 end
 
-m.isOpen=false
-m:disconnectMouse()
-m:clearSelection()
+b.isOpen=false
+b:disconnectMouse()
+b:clearSelection()
 
-m.frame:TweenPosition(d,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,an.tweenTime,true)
+b.frame:TweenPosition(ar,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,an.tweenTime,true)
 
 task.delay(an.tweenTime,function()
 
-if not m.isOpen and m.frame then
-m.frame.Visible=false
+if not b.isOpen and b.frame then
+b.frame.Visible=false
 end
 end)end
 
 
-g.isPointerOverWindow=function(m)
-return m.frame~=nil and ah:isMouseInGuiObject(m.frame)end
+au.isPointerOverWindow=function(b)
+return b.frame~=nil and ah:isMouseInGuiObject(b.frame)end
 
 
-g.startSelecting=function(m)
-m:disconnectMouse()
+au.startSelecting=function(b)
+b:disconnectMouse()
 
-local n=ah:getMouse()
+local c=ah:getMouse()
 
-table.insert(m.connections,n.Move:Connect(function()
-local o=n.Target
+table.insert(b.connections,c.Move:Connect(function()
+local d=c.Target
 
 
-if m:isPointerOverWindow()or o==m.selectedPart then
-o=nil
+if b:isPointerOverWindow()or d==b.selectedPart then
+d=nil
 end
 
-m.hoverBox.Adornee=o
+b.hoverBox.Adornee=d
 end))
 
-table.insert(m.connections,n.Button1Down:Connect(function()
-if m:isPointerOverWindow()then
+table.insert(b.connections,c.Button1Down:Connect(function()
+if b:isPointerOverWindow()then
 return
 end
 
-local o=n.Target
-if o then
-m:selectPart(o)
+local d=c.Target
+if d then
+b:selectPart(d)
 end
 end))end
 
 
-g.disconnectMouse=function(m)
-for n,o in m.connections do
-o:Disconnect()
+au.disconnectMouse=function(b)
+for c,d in b.connections do
+d:Disconnect()
 end
 
-m.connections={}end
+b.connections={}end
 
 
-g.selectPart=function(m, n)
-m.selectedPart=n
-m.selectedBox.Adornee=n
-m.hoverBox.Adornee=nil
-m:setPath(ak(n))end
+au.selectPart=function(b, c)
+b.selectedPart=c
+b.selectedBox.Adornee=c
+b.hoverBox.Adornee=nil
+b:setPath(ak(c))end
 
 
 
-g.setPath=function(m, n)
-local o=m.pathLabel
-m.path=n
+au.setPath=function(b, c)
+local d=b.pathLabel
+b.path=c
 
-if n then
-ac:addObject(o,{TextColor3="Colors.Text.Default",Font="Font.MonoSpace"})
-o.RichText=true
-o.Text=al:apply(j(n))
+if c then
+ac:addObject(d,{TextColor3="Colors.Text.Default",Font="Font.MonoSpace"})
+d.RichText=true
+d.Text=al:apply(ax(c))
 else
-ac:addObject(o,{TextColor3="Colors.Text.Darker",Font="Font.MonoSpace"})
-o.RichText=false
-o.Text=aj.labels.hint
+ac:addObject(d,{TextColor3="Colors.Text.Darker",Font="Font.MonoSpace"})
+d.RichText=false
+d.Text=aj.labels.hint
 end end
 
 
-g.clearSelection=function(m)
-m.selectedPart=nil
-m.hoverBox.Adornee=nil
-m.selectedBox.Adornee=nil
-m:setPath(nil)end
+au.clearSelection=function(b)
+b.selectedPart=nil
+b.hoverBox.Adornee=nil
+b.selectedBox.Adornee=nil
+b:setPath(nil)end
 
 
 
-g.confirmSelection=function(m)
-local n=m.selectedPart
+au.confirmSelection=function(b)
+local c=b.selectedPart
 
-if not n or not n.Parent then
-m:clearSelection()
+if not c or not c.Parent then
+b:clearSelection()
 ad:notify(an.title,aj.messages.noPart)
 return
 end
 
-if m.onSelectPart then
-m.onSelectPart(n)
+if b.onSelectPart then
+b.onSelectPart(c)
 end end
 
 
 
-g.copyPath=function(m)
-local n=m.path
+au.copyPath=function(b)
+local c=b.path
 
-if not n then
+if not c then
 ad:notify(an.title,aj.messages.noPath)
 return
 end
@@ -24817,40 +24920,40 @@ ad:notify(an.title,aj.messages.noClipboard)
 return
 end
 
-ai.setclipboard(n)
+ai.setclipboard(c)
 
-local o=m.copyButton
-o.Text=b.copied
+local d=b.copyButton
+d.Text=ap.copied
 
-task.delay(b.feedbackTime,function()
-o.Text=aj.buttons.copyPath
+task.delay(ap.feedbackTime,function()
+d.Text=aj.buttons.copyPath
 end)end
 
 
-g.destroy=function(m)
-m.isOpen=false
-m:disconnectMouse()
+au.destroy=function(b)
+b.isOpen=false
+b:disconnectMouse()
 
-if m.hoverBox then
-m.hoverBox:Destroy()
+if b.hoverBox then
+b.hoverBox:Destroy()
 end
 
-if m.selectedBox then
-m.selectedBox:Destroy()
+if b.selectedBox then
+b.selectedBox:Destroy()
 end
 
-if m.frame then
-m.frame:Destroy()
+if b.frame then
+b.frame:Destroy()
 end
 
-m.frame=nil
-m.hoverBox=nil
-m.selectedBox=nil
-m.pathLabel=nil
-m.copyButton=nil end
+b.frame=nil
+b.hoverBox=nil
+b.selectedBox=nil
+b.pathLabel=nil
+b.copyButton=nil end
 
 
-return g end a.dw=function()local ab=a.cache.dw if not ab then ab={c=aa()}a.cache.dw=ab end return ab.c end end do local aa=function()
+return au end a.dw=function()local ab=a.cache.dw if not ab then ab={c=aa()}a.cache.dw=ab end return ab.c end end do local aa=function()
 
 
 
@@ -24909,16 +25012,16 @@ local an=0.5
 
 
 local ao=0.2
-local b=0.5
-local c=1
+local ap=0.5
+local aq=1
 
-local d={
+local ar={
 [Enum.UserInputType.MouseButton1]=true,
 [Enum.UserInputType.Touch]=true,
 }
 
-local e={}
-e.__index=e
+local as={}
+as.__index=as
 
 
 
@@ -24933,19 +25036,19 @@ e.__index=e
 
 
 
-e.new=function(f)
-local g=setmetatable({
-frame=f.frame,
-screenGui=f.screenGui,
-topBarHeight=f.topBarHeight,
-clampPosition=f.clampPosition,
-getScale=f.getScale,
-onMinimize=f.onMinimize,
-onInteractive=f.onInteractive,
+as.new=function(at)
+local au=setmetatable({
+frame=at.frame,
+screenGui=at.screenGui,
+topBarHeight=at.topBarHeight,
+clampPosition=at.clampPosition,
+getScale=at.getScale,
+onMinimize=at.onMinimize,
+onInteractive=at.onInteractive,
 
-hoverToOpen=f.hoverToOpen==true and ae.MouseEnabled,
-commandBarInUse=f.commandBarInUse,
-isMoving=f.isMoving,
+hoverToOpen=at.hoverToOpen==true and ae.MouseEnabled,
+commandBarInUse=at.commandBarInUse,
+isMoving=at.isMoving,
 lastMovingAt=-math.huge,
 
 state="minimized",
@@ -24953,7 +25056,7 @@ interactive=nil,
 hovering=false,
 hoverRequest=0,
 dragging=false,
-keepOpen=f.keepOpen==true,
+keepOpen=at.keepOpen==true,
 windowParts={},
 tween=nil,
 press=nil,
@@ -24962,110 +25065,63 @@ outsideTouches={},
 swipeLocked=false,
 lastInteractionAt=-math.huge,
 connections={},
-},e)
+},as)
 
-g.frame.Position=g:targetFor"minimized"
+au.frame.Position=au:targetFor"minimized"
 
-table.insert(g.connections,ab:Connect(ae.InputBegan,function(h)
-g:onInputBegan(h)
+table.insert(au.connections,ab:Connect(ae.InputBegan,function(av)
+au:onInputBegan(av)
 end))
 
-table.insert(g.connections,ab:Connect(ae.InputEnded,function(h)
-g:onInputEnded(h)
+table.insert(au.connections,ab:Connect(ae.InputEnded,function(av)
+au:onInputEnded(av)
 end))
 
-table.insert(g.connections,ab:Connect(ae.InputChanged,function(h)
-g:onInputChanged(h)
+table.insert(au.connections,ab:Connect(ae.InputChanged,function(av)
+au:onInputChanged(av)
 end))
 
 
-table.insert(g.connections,ab:Connect(af.Heartbeat,function()
-if g.isMoving and g.isMoving()then
-g.lastMovingAt=os.clock()
+table.insert(au.connections,ab:Connect(af.Heartbeat,function()
+if au.isMoving and au.isMoving()then
+au.lastMovingAt=os.clock()
 end
 
-g:checkLockIdle()
+au:checkLockIdle()
 end))
 
-g:setInteractive(false)
+au:setInteractive(false)
 
-if g.hoverToOpen then
+if au.hoverToOpen then
 
-table.insert(g.connections,ab:Connect(g.frame.MouseEnter,function()
-if g.frame.Visible then g:setHovering(true)end
+table.insert(au.connections,ab:Connect(au.frame.MouseEnter,function()
+if au.frame.Visible then au:setHovering(true)end
 end))
 
-table.insert(g.connections,ab:Connect(g.frame.MouseLeave,function()
-g:setHovering(false)
+table.insert(au.connections,ab:Connect(au.frame.MouseLeave,function()
+au:setHovering(false)
 end))
 end
 
-return g end local f=function(
+return au end local at=function(
 
 
-f, g)
-local h=f.AbsolutePosition
-local i=f.AbsoluteSize
+at, au)
+local av=at.AbsolutePosition
+local aw=at.AbsoluteSize
 
-return g.X>=h.X and g.X<=h.X+i.X
-and g.Y>=h.Y and g.Y<=h.Y+i.Y end
+return au.X>=av.X and au.X<=av.X+aw.X
+and au.Y>=av.Y and au.Y<=av.Y+aw.Y end
 
 
 
-e.isOverWindow=function(g, h)
-if f(g.frame,h)then
+as.isOverWindow=function(au, av)
+if at(au.frame,av)then
 return true
 end
 
-for i,j in g.windowParts do
-if f(j,h)then
-return true
-end
-end
-
-return false end
-
-
-
-e.addWindowPart=function(g, h)
-table.insert(g.windowParts,h)end
-
-
-
-e.setKeepOpen=function(g, h)
-g.keepOpen=h==true
-
-if g.keepOpen and g.state=="minimized"then
-g:expand()
-end end
-
-
-
-e.reveal=function(g)
-
-g:lockSwipe()
-
-if g.state=="minimized"then
-g:expand()
-end end
-
-
-
-
-
-
-e.lockSwipe=function(g)
-if g.hoverToOpen then return end
-if not g:fingerOutsideWindow()then return end
-
-g.swipeLocked=true
-g.lastInteractionAt=os.clock()end
-
-
-
-e.fingerOutsideWindow=function(g)
-for h,i in g.touches do
-if not g:isOverWindow(i)then
+for aw,ax in au.windowParts do
+if at(ax,av)then
 return true
 end
 end
@@ -25074,48 +25130,95 @@ return false end
 
 
 
-e.unlockSwipe=function(g)
-g.swipeLocked=false end
+as.addWindowPart=function(au, av)
+table.insert(au.windowParts,av)end
 
 
 
+as.setKeepOpen=function(au, av)
+au.keepOpen=av==true
 
-e.noteInteraction=function(g)
-g.lastInteractionAt=os.clock()end
-
-
-
-
-e.checkLockIdle=function(g)
-if g.swipeLocked and os.clock()-g.lastInteractionAt>=am then
-g.swipeLocked=false
+if au.keepOpen and au.state=="minimized"then
+au:expand()
 end end
 
 
 
-e.onSettled=function(g, h)
-local i=g.tween
+as.reveal=function(au)
 
-if i and i.PlaybackState==Enum.PlaybackState.Playing then
-i.Completed:Once(h)
+au:lockSwipe()
+
+if au.state=="minimized"then
+au:expand()
+end end
+
+
+
+
+
+
+as.lockSwipe=function(au)
+if au.hoverToOpen then return end
+if not au:fingerOutsideWindow()then return end
+
+au.swipeLocked=true
+au.lastInteractionAt=os.clock()end
+
+
+
+as.fingerOutsideWindow=function(au)
+for av,aw in au.touches do
+if not au:isOverWindow(aw)then
+return true
+end
+end
+
+return false end
+
+
+
+as.unlockSwipe=function(au)
+au.swipeLocked=false end
+
+
+
+
+as.noteInteraction=function(au)
+au.lastInteractionAt=os.clock()end
+
+
+
+
+as.checkLockIdle=function(au)
+if au.swipeLocked and os.clock()-au.lastInteractionAt>=am then
+au.swipeLocked=false
+end end
+
+
+
+as.onSettled=function(au, av)
+local aw=au.tween
+
+if aw and aw.PlaybackState==Enum.PlaybackState.Playing then
+aw.Completed:Once(av)
 else
-task.defer(h)
+task.defer(av)
 end end
 
 
 
 
 
-e.nearestSnap=function(g)
-local h=g.frame
-local i=h.AbsolutePosition.Y
-local j=g.screenGui.AbsoluteSize.Y-(h.AbsolutePosition.Y+h.AbsoluteSize.Y)
+as.nearestSnap=function(au)
+local av=au.frame
+local aw=av.AbsolutePosition.Y
+local ax=au.screenGui.AbsoluteSize.Y-(av.AbsolutePosition.Y+av.AbsoluteSize.Y)
 
-if i<=j then
+if aw<=ax then
 return"top"
 end
 
-if g.state=="expanded"then
+if au.state=="expanded"then
 return"expanded"
 end
 
@@ -25123,153 +25226,153 @@ return"minimized"end
 
 
 
-e.targetFor=function(g, h)
-local i=g.clampPosition(g.frame.Position).X
+as.targetFor=function(au, av)
+local aw=au.clampPosition(au.frame.Position).X
 
-if h=="top"then
+if av=="top"then
 
-return UDim2.new(i.Scale,i.Offset,0,0)
+return UDim2.new(aw.Scale,aw.Offset,0,0)
 end
 
-if h=="expanded"then
+if av=="expanded"then
 
-return UDim2.new(i.Scale,i.Offset,1,-g.frame.Size.Y.Offset)
+return UDim2.new(aw.Scale,aw.Offset,1,-au.frame.Size.Y.Offset)
 end
 
 
-return UDim2.new(i.Scale,i.Offset,1,-g.topBarHeight)end
+return UDim2.new(aw.Scale,aw.Offset,1,-au.topBarHeight)end
 
 
 
 
-e.clampDrag=function(g, h)
-local i=g.clampPosition(h).X
+as.clampDrag=function(au, av)
+local aw=au.clampPosition(av).X
 
-local j=math.max(g.getScale(),0.01)
-local k=g.screenGui.AbsoluteSize.Y/j
-local l=math.max(k-g.topBarHeight,0)
-local m=math.clamp(h.Y.Scale*k+h.Y.Offset,0,l)
+local ax=math.max(au.getScale(),0.01)
+local ay=au.screenGui.AbsoluteSize.Y/ax
+local az=math.max(ay-au.topBarHeight,0)
+local b=math.clamp(av.Y.Scale*ay+av.Y.Offset,0,az)
 
-return UDim2.new(i.Scale,i.Offset,0,m)end
-
-
-
-e.wasMovingRecently=function(g)
-return os.clock()-g.lastMovingAt<an end
+return UDim2.new(aw.Scale,aw.Offset,0,b)end
 
 
 
-e.setInteractive=function(g, h)
-if g.interactive==h then return end
-g.interactive=h
+as.wasMovingRecently=function(au)
+return os.clock()-au.lastMovingAt<an end
 
-if g.onInteractive then
-g.onInteractive(h)
+
+
+as.setInteractive=function(au, av)
+if au.interactive==av then return end
+au.interactive=av
+
+if au.onInteractive then
+au.onInteractive(av)
 end end
 
 
-e.cancel=function(g)
-if g.tween then
-g.tween:Cancel()
-g.tween=nil
+as.cancel=function(au)
+if au.tween then
+au.tween:Cancel()
+au.tween=nil
 end end
 
 
-e.moveTo=function(g, h, i, j)
+as.moveTo=function(au, av, aw, ax)
 
-if h==g.state and g.tween and g.tween.PlaybackState==Enum.PlaybackState.Playing then
+if av==au.state and au.tween and au.tween.PlaybackState==Enum.PlaybackState.Playing then
 return
 end
 
-local k=g.state=="minimized"
-g.state=h
-g:cancel()
+local ay=au.state=="minimized"
+au.state=av
+au:cancel()
 
 
-if h=="minimized"then
-g.swipeLocked=false
-elseif k then
-g:lockSwipe()
+if av=="minimized"then
+au.swipeLocked=false
+elseif ay then
+au:lockSwipe()
 end
 
 
-if h=="minimized"then
-g:setInteractive(false)
+if av=="minimized"then
+au:setInteractive(false)
 end
 
-local l=g:targetFor(h)
-local m=ac:getScale(i or ag)
+local az=au:targetFor(av)
+local b=ac:getScale(aw or ag)
 
-if m<=0 then
-g.frame.Position=l
-g:setInteractive(h~="minimized")
+if b<=0 then
+au.frame.Position=az
+au:setInteractive(av~="minimized")
 return
 end
 
-local n=TweenInfo.new(m,Enum.EasingStyle.Quart,j or Enum.EasingDirection.Out)
-local o=ad:Create(g.frame,n,{Position=l})
-g.tween=o
+local c=TweenInfo.new(b,Enum.EasingStyle.Quart,ax or Enum.EasingDirection.Out)
+local d=ad:Create(au.frame,c,{Position=az})
+au.tween=d
 
 
 
-o.Completed:Connect(function(p)
-if p~=Enum.PlaybackState.Completed then return end
-if g.tween~=o or g.state=="minimized"then return end
+d.Completed:Connect(function(e)
+if e~=Enum.PlaybackState.Completed then return end
+if au.tween~=d or au.state=="minimized"then return end
 
-g:setInteractive(true)
+au:setInteractive(true)
 end)
 
-o:Play()end
+d:Play()end
 
 
-e.expand=function(g, h, i)
-g:moveTo("expanded",h,i)end
+as.expand=function(au, av, aw)
+au:moveTo("expanded",av,aw)end
 
 
 
 
-e.setHovering=function(g, h)
-if h==g.hovering then return end
-g.hovering=h
+as.setHovering=function(au, av)
+if av==au.hovering then return end
+au.hovering=av
 
 
-if g.dragging then return end
+if au.dragging then return end
 
-if h then
-g:onHoverEnter()
+if av then
+au:onHoverEnter()
 else
-g:onHoverLeave()
+au:onHoverLeave()
 end end
 
 
 
 
-e.onHoverEnter=function(g)
-g.hoverRequest=g.hoverRequest+1
+as.onHoverEnter=function(au)
+au.hoverRequest=au.hoverRequest+1
 
-if g.state=="minimized"then
-g:expand(ao,Enum.EasingDirection.InOut)
+if au.state=="minimized"then
+au:expand(ao,Enum.EasingDirection.InOut)
 end end
 
 
 
 
-e.onHoverLeave=function(g)
-g.hoverRequest=g.hoverRequest+1
-local h=g.hoverRequest
+as.onHoverLeave=function(au)
+au.hoverRequest=au.hoverRequest+1
+local av=au.hoverRequest
 
-if not g:canHoverMinimize()then return end
+if not au:canHoverMinimize()then return end
 
-task.delay(c,function()
-if h~=g.hoverRequest or not g:canHoverMinimize()then return end
+task.delay(aq,function()
+if av~=au.hoverRequest or not au:canHoverMinimize()then return end
 
-g:minimize(b,Enum.EasingDirection.InOut)
+au:minimize(ap,Enum.EasingDirection.InOut)
 end)end
 
 
 
-e.canHoverMinimize=function(g)
-return g.state=="expanded"and not g.keepOpen and not g:commandBarBusy()end
+as.canHoverMinimize=function(au)
+return au.state=="expanded"and not au.keepOpen and not au:commandBarBusy()end
 
 
 
@@ -25277,116 +25380,116 @@ return g.state=="expanded"and not g.keepOpen and not g:commandBarBusy()end
 
 
 
-e.onCommandBarClosed=function(g, h)
-if not g.hoverToOpen then return end
+as.onCommandBarClosed=function(au, av)
+if not au.hoverToOpen then return end
 
 
-if g:fingerOnWindow()then return end
+if au:fingerOnWindow()then return end
 
-local i=g.hoverRequest
+local aw=au.hoverRequest
 task.wait()
 
 
-if i~=g.hoverRequest or g.dragging or not g:canHoverMinimize()then return end
-if g.hovering and not h then return end
-if g:fingerOnWindow()then return end
+if aw~=au.hoverRequest or au.dragging or not au:canHoverMinimize()then return end
+if au.hovering and not av then return end
+if au:fingerOnWindow()then return end
 
-g:minimize(b,Enum.EasingDirection.InOut)end
-
-
+au:minimize(ap,Enum.EasingDirection.InOut)end
 
 
 
-e.onMobileEnter=function(g, h)
-if g.hoverToOpen then return end
+
+
+as.onMobileEnter=function(au, av)
+if au.hoverToOpen then return end
 
 
 
-if not g:wasMovingRecently()then return end
+if not au:wasMovingRecently()then return end
 
 task.wait()
 
-if g.dragging or h()then return end
-if g.state~="expanded"or g.keepOpen then return end
+if au.dragging or av()then return end
+if au.state~="expanded"or au.keepOpen then return end
 
-g:minimize()end
-
-
+au:minimize()end
 
 
 
-e.setDragging=function(g, h)
-local i=g.dragging
-g.dragging=h==true
+
+
+as.setDragging=function(au, av)
+local aw=au.dragging
+au.dragging=av==true
 
 
 
-if i and not g.dragging and g.hoverToOpen and not g.hovering then
-g:onHoverLeave()
+if aw and not au.dragging and au.hoverToOpen and not au.hovering then
+au:onHoverLeave()
 end end
 
 
-e.minimize=function(g, h, i)
+as.minimize=function(au, av, aw)
 
-if g.onMinimize then
-g.onMinimize()
+if au.onMinimize then
+au.onMinimize()
 end
 
-g:moveTo("minimized",h,i)end
+au:moveTo("minimized",av,aw)end
 
 
 
-e.reflow=function(g)
-g:cancel()
-g.frame.Position=g:targetFor(g.state)
-g:setInteractive(g.state~="minimized")end
+as.reflow=function(au)
+au:cancel()
+au.frame.Position=au:targetFor(au.state)
+au:setInteractive(au.state~="minimized")end
 
 
 
 
-e.sleep=function(g)
-g:cancel()
-g.state="minimized"
-g.swipeLocked=false
-g.frame.Position=g:targetFor"minimized"
-g:setInteractive(false)end
+as.sleep=function(au)
+au:cancel()
+au.state="minimized"
+au.swipeLocked=false
+au.frame.Position=au:targetFor"minimized"
+au:setInteractive(false)end
 
 
 
-e.onDragEnded=function(g, h)
-if h.travel<=ai then
+as.onDragEnded=function(au, av)
+if av.travel<=ai then
 
-g:moveTo(g.state)
+au:moveTo(au.state)
 return
 end
 
-if h.dy>=aj and not g:commandBarBusy()and not g.swipeLocked then
-g:minimize()
+if av.dy>=aj and not au:commandBarBusy()and not au.swipeLocked then
+au:minimize()
 return
 end
 
-g:moveTo(g:nearestSnap())end
+au:moveTo(au:nearestSnap())end
 
 
 
 
 
-e.onListSwipeDown=function(g)
-if g.hoverToOpen or g.swipeLocked then return end
-if g.state=="minimized"or g:commandBarBusy()then return end
+as.onListSwipeDown=function(au)
+if au.hoverToOpen or au.swipeLocked then return end
+if au.state=="minimized"or au:commandBarBusy()then return end
 
-g:minimize()end
-
-
-
-e.commandBarBusy=function(g)
-return g.commandBarInUse~=nil and g.commandBarInUse()==true end
+au:minimize()end
 
 
 
-e.fingerOnWindow=function(g)
-for h,i in g.touches do
-if g:isOverWindow(i)then
+as.commandBarBusy=function(au)
+return au.commandBarInUse~=nil and au.commandBarInUse()==true end
+
+
+
+as.fingerOnWindow=function(au)
+for av,aw in au.touches do
+if au:isOverWindow(aw)then
 return true
 end
 end
@@ -25395,74 +25498,74 @@ return false end
 
 
 
-e.onInputChanged=function(g, h)
-if h.UserInputType~=Enum.UserInputType.Touch then return end
-if g.touches[h]==nil then return end
+as.onInputChanged=function(au, av)
+if av.UserInputType~=Enum.UserInputType.Touch then return end
+if au.touches[av]==nil then return end
 
-g.touches[h]=h.Position
+au.touches[av]=av.Position
 
-if g:isOverWindow(h.Position)then
-g:noteInteraction()
+if au:isOverWindow(av.Position)then
+au:noteInteraction()
 end
 
-local i=g.outsideTouches[h]
-if i and(h.Position-i).Magnitude>=al then
-g:onOutsideSwipe()
+local aw=au.outsideTouches[av]
+if aw and(av.Position-aw).Magnitude>=al then
+au:onOutsideSwipe()
 end end
 
 
 
 
 
-e.onOutsideSwipe=function(g)
-if g.hoverToOpen or g.dragging or g.swipeLocked then return end
-if g.state~="expanded"or g.keepOpen or g:commandBarBusy()then return end
+as.onOutsideSwipe=function(au)
+if au.hoverToOpen or au.dragging or au.swipeLocked then return end
+if au.state~="expanded"or au.keepOpen or au:commandBarBusy()then return end
 
-table.clear(g.outsideTouches)
-g:minimize()end
+table.clear(au.outsideTouches)
+au:minimize()end
 
 
-e.onInputBegan=function(g, h)
-if h.UserInputType==Enum.UserInputType.Touch then
-g.touches[h]=h.Position
+as.onInputBegan=function(au, av)
+if av.UserInputType==Enum.UserInputType.Touch then
+au.touches[av]=av.Position
 
-if g:isOverWindow(h.Position)then
-g:noteInteraction()
+if au:isOverWindow(av.Position)then
+au:noteInteraction()
 else
-g.outsideTouches[h]=h.Position
+au.outsideTouches[av]=av.Position
 end
 end
 
-if not d[h.UserInputType]then return end
+if not ar[av.UserInputType]then return end
 
-g.press={
-type=h.UserInputType,
+au.press={
+type=av.UserInputType,
 time=os.clock(),
-position=h.Position,
-inside=g:isOverWindow(h.Position),
+position=av.Position,
+inside=au:isOverWindow(av.Position),
 
-startedExpanded=g.state=="expanded",
+startedExpanded=au.state=="expanded",
 }end
 
 
 
-e.onInputEnded=function(g, h)
-if h.UserInputType==Enum.UserInputType.Touch then
-g.touches[h]=nil
-g.outsideTouches[h]=nil
+as.onInputEnded=function(au, av)
+if av.UserInputType==Enum.UserInputType.Touch then
+au.touches[av]=nil
+au.outsideTouches[av]=nil
 end
 
-local i=g.press
-if not i or h.UserInputType~=i.type then return end
-g.press=nil
+local aw=au.press
+if not aw or av.UserInputType~=aw.type then return end
+au.press=nil
 
-local j=os.clock()-i.time
-local k=(h.Position-i.position).Magnitude
+local ax=os.clock()-aw.time
+local ay=(av.Position-aw.position).Magnitude
 
-if i.inside then
+if aw.inside then
 
-if j<=ah and k<=ai and g.state=="minimized"then
-g:expand()
+if ax<=ah and ay<=ai and au.state=="minimized"then
+au:expand()
 end
 
 return
@@ -25470,27 +25573,27 @@ end
 
 
 
-local l=j<=ak and k<=ai
+local az=ax<=ak and ay<=ai
 
-if l and i.startedExpanded and not g.hoverToOpen and g.state=="expanded"and not g.keepOpen
-and not g:commandBarBusy()and not g:wasMovingRecently()then
-g:minimize()
+if az and aw.startedExpanded and not au.hoverToOpen and au.state=="expanded"and not au.keepOpen
+and not au:commandBarBusy()and not au:wasMovingRecently()then
+au:minimize()
 end end
 
 
-e.destroy=function(g)
-g:cancel()
-g.hoverRequest=g.hoverRequest+1
+as.destroy=function(au)
+au:cancel()
+au.hoverRequest=au.hoverRequest+1
 
-for h,i in g.connections do
-ab:disconnect(i)
+for av,aw in au.connections do
+ab:disconnect(aw)
 end
-table.clear(g.connections)
-table.clear(g.touches)
-table.clear(g.outsideTouches)end
+table.clear(au.connections)
+table.clear(au.touches)
+table.clear(au.outsideTouches)end
 
 
-return e end a.dx=function()local ab=a.cache.dx if not ab then ab={c=aa()}a.cache.dx=ab end return ab.c end end do local aa=function()
+return as end a.dx=function()local ab=a.cache.dx if not ab then ab={c=aa()}a.cache.dx=ab end return ab.c end end do local aa=function()
 
 
 
@@ -25513,255 +25616,255 @@ local am=a.cO()
 local an=a.cL()
 
 local ao=a.cJ()
-local b=a.bY()
-local c=a.cT()
+local ap=a.bY()
+local aq=a.cT()
 
-local d=a.c4()
-local e=a.cP()
-local f=a.c5()
+local ar=a.c4()
+local as=a.cP()
+local at=a.c5()
 
-local g=a.c6()
-local h=a.c9()
-local i=a.db()
-local j=a.df()
-local k=a.dh()
-local l=a.dj()
-local m=a.dt()
-local n=a.dw()
+local au=a.c6()
+local av=a.c9()
+local aw=a.db()
+local ax=a.df()
+local ay=a.dh()
+local az=a.dj()
+local b=a.dt()
+local c=a.dw()
 
-local o=a.dd()
-local p=a.dx()
+local d=a.dd()
+local e=a.dx()
 
-local q=450
-local s=e.uiScale
+local f=450
+local h=as.uiScale
 
-local t={
+local i={
 awoken=false,
-}local u=function(
+}local j=function(
 
-u)
-local v=type(u)=="string"and ao[u:lower()]
+j)
+local k=type(j)=="string"and ao[j:lower()]
 
-if v and v.Colors and v.Font then
-return u
+if k and k.Colors and k.Font then
+return j
 end
 
-return aa.theme.defaultTheme end local v=function(
+return aa.theme.defaultTheme end local k=function(
 
 
-v, w, x, y)
-local z=(v.Scale*x)/y+v.Offset
-local A=math.floor(x/y-w)
+k, l, m, n)
+local o=(k.Scale*m)/n+k.Offset
+local p=math.floor(m/n-l)
 
-if math.floor(z)>=A then
-return 1,-w
+if math.floor(o)>=p then
+return 1,-l
 end
 
-return 0,math.clamp(math.floor(z),0,math.max(A,0))end
+return 0,math.clamp(math.floor(o),0,math.max(p,0))end
 
 
-t.awake=function(w)
-if w.awoken then
-return w.screenGui
+i.awake=function(l)
+if l.awoken then
+return l.screenGui
 end
 
-w.awoken=true
+l.awoken=true
 
-w:setupTheme()
-w:setupScreenGui()
-w:setupScale()
-w:setupMainFrame()
-w:createQuickCapture()
-w:createReference()
-w:createPartPath()
-w:createNotifications()
-w:setupListeners()
-w:updateNotificationsPosition()
+l:setupTheme()
+l:setupScreenGui()
+l:setupScale()
+l:setupMainFrame()
+l:createQuickCapture()
+l:createReference()
+l:createPartPath()
+l:createNotifications()
+l:setupListeners()
+l:updateNotificationsPosition()
 
 aj:log"interface started"
-return w.screenGui end
+return l.screenGui end
 
 
-t.setupTheme=function(w)
+i.setupTheme=function(l)
 aj:debug"interface: initializing theme service"
 
 an:init{
-theme=u(aa.theme.selectedTheme),
+theme=j(aa.theme.selectedTheme),
 }end
 
 
-t.setupScreenGui=function(w)
-local x=w:createScreenGui()
+i.setupScreenGui=function(l)
+local m=l:createScreenGui()
 
-x.Parent=b
-ac.screenGui=x
+m.Parent=ap
+ac.screenGui=m
 
-s.Parent=x end
-
-
-t.setupScale=function(w)
-w:setScale(ai:getValue"interface.uiScale"or 1)end
+h.Parent=m end
 
 
-t.setupMainFrame=function(w)
-local x=w:createMainFrame()
-
-w:createCommands()
-w:dragMainFrame(x)
-w.commands:enable()
-
-x.Parent=w.screenGui end
+i.setupScale=function(l)
+l:setScale(ai:getValue"interface.uiScale"or 1)end
 
 
-t.setupListeners=function(w)
-ae:Connect(w.screenGui:GetPropertyChangedSignal"AbsoluteSize",function()
-w:updateMainFramePosition()
+i.setupMainFrame=function(l)
+local m=l:createMainFrame()
+
+l:createCommands()
+l:dragMainFrame(m)
+l.commands:enable()
+
+m.Parent=l.screenGui end
+
+
+i.setupListeners=function(l)
+ae:Connect(l.screenGui:GetPropertyChangedSignal"AbsoluteSize",function()
+l:updateMainFramePosition()
 end)
 
-ae:Connect(w.mainFrame:GetPropertyChangedSignal"AbsolutePosition",function()
-w:updateNotificationsPosition()
+ae:Connect(l.mainFrame:GetPropertyChangedSignal"AbsolutePosition",function()
+l:updateNotificationsPosition()
 end)
 
-ae:Connect(w.mainFrame:GetPropertyChangedSignal"AbsoluteSize",function()
-w:updateNotificationsPosition()
+ae:Connect(l.mainFrame:GetPropertyChangedSignal"AbsoluteSize",function()
+l:updateNotificationsPosition()
 end)
 
 ae:Connect(af.RunService.RenderStepped,function()
-w:updateNotificationsPosition()
+l:updateNotificationsPosition()
 end)end
 
 
-t.createScreenGui=function(w)
-local x=al.new("ScreenGui",{
+i.createScreenGui=function(l)
+local m=al.new("ScreenGui",{
 IgnoreGuiInset=true,
 Name=ak.randomString(math.random(30,50)),
 DisplayOrder=2147483647,
 })
 
-w.screenGui=x
-return x end
+l.screenGui=m
+return m end
 
 
-t.calculateScale=function(w, x)
-return(w.screenGui.AbsoluteSize.Y/q)*x end
+i.calculateScale=function(l, m)
+return(l.screenGui.AbsoluteSize.Y/f)*m end
 
 
-t.setScale=function(w, x)
-x=math.abs(x)
+i.setScale=function(l, m)
+m=math.abs(m)
 
-if x>=3 then
-x=w:calculateScale(x)
+if m>=3 then
+m=l:calculateScale(m)
 end
 
-if ai:getValue"interface.uiScale"~=x then
-ai:setValue("interface.uiScale",x)
+if ai:getValue"interface.uiScale"~=m then
+ai:setValue("interface.uiScale",m)
 ai:save()
 end
 
-e:setScale(x)
-w:updateMainFramePosition()end
+as:setScale(m)
+l:updateMainFramePosition()end
 
 
-t.calculateMainFramePosition=function(w, x)
-local y=w.mainFrame
-local z=w.screenGui
-local A=e:getScale()
-local B=y.Size
+i.calculateMainFramePosition=function(l, m)
+local n=l.mainFrame
+local o=l.screenGui
+local p=as:getScale()
+local q=n.Size
 
-x=x or y.Position
+m=m or n.Position
 
-local C,D=v(x.X,B.X.Offset,z.AbsoluteSize.X,A)
-local E,F=v(x.Y,B.Y.Offset,z.AbsoluteSize.Y,A)
+local r,s=k(m.X,q.X.Offset,o.AbsoluteSize.X,p)
+local t,u=k(m.Y,q.Y.Offset,o.AbsoluteSize.Y,p)
 
-return UDim2.new(C,D,E,F)end
+return UDim2.new(r,s,t,u)end
 
 
-t.updateMainFramePosition=function(w)
-if not w.mainFrame then return end
+i.updateMainFramePosition=function(l)
+if not l.mainFrame then return end
 
-if w.dock then
-w.dock:reflow()
+if l.dock then
+l.dock:reflow()
 else
-w.mainFrame.Position=w:calculateMainFramePosition()
+l.mainFrame.Position=l:calculateMainFramePosition()
 end
 
-w:updateNotificationsPosition()end
+l:updateNotificationsPosition()end
 
 
-t.createMainScroll=function(w, x)
-local y=h.new{
+i.createMainScroll=function(l, m)
+local n=av.new{
 isHorizontal=false,
 barThickness=12,
 }
 
-local z=y:create()
-local A=y.container
+local o=n:create()
+local p=n.container
 
-local B=al.new("Frame","ScrollHolder",x,{
+local q=al.new("Frame","ScrollHolder",m,{
 Size=UDim2.new(1,0,0,180),
 Position=UDim2.fromScale(0.5,1),
 AnchorPoint=Vector2.new(0.5,1),
 BackgroundTransparency=1,
 Active=true,
 
-z,
-A,
+o,
+p,
 })
 
-w.scrollHolder=B
-w.scrollBar=y
-w.scrollContainer=A
+l.scrollHolder=q
+l.scrollBar=n
+l.scrollContainer=p
 
-return y end
+return n end
 
 
-t.createMainFrame=function(w)
-local x=g:create()
-local y=x.mainFrame
+i.createMainFrame=function(l)
+local m=au:create()
+local n=m.mainFrame
 
-x.titleLabel.Text=d.getDisplayName()
+m.titleLabel.Text=ar.getDisplayName()
 
-w.mainFrame=y
-w.topBar=x.topBar
-w.buttons=x.buttons
+l.mainFrame=n
+l.topBar=m.topBar
+l.buttons=m.buttons
 
-am:loadImage(w.buttons.settings,"settings")
-am:loadImage(w.buttons.reference,"reference")
+am:loadImage(l.buttons.settings,"settings")
+am:loadImage(l.buttons.reference,"reference")
 
-w:createMainScroll(y)
+l:createMainScroll(n)
 
-w.settings=m.new{
+l.settings=b.new{
 
-onSwitch=function(z,A)
-if z=="keepMenuOpen"and w.dock then
-w.dock:setKeepOpen(A)
+onSwitch=function(o,p)
+if o=="keepMenuOpen"and l.dock then
+l.dock:setKeepOpen(p)
 end
 
 
-if z=="keepIY"and A and ad.queueteleport==nil then
-w:setKeepIY(false)
-c:notify("Keepiy","your exploit does not support queueteleport")
+if o=="keepIY"and p and ad.queueteleport==nil then
+l:setKeepIY(false)
+aq:notify("Keepiy","your exploit does not support queueteleport")
 end
 end,
 }
-w.settings:create(y,w.scrollHolder)
+l.settings:create(n,l.scrollHolder)
 
-ae:Connect(w.buttons.settings.Activated,function()
-w.settings:toggle()
+ae:Connect(l.buttons.settings.Activated,function()
+l.settings:toggle()
 end)
 
-return y end
+return n end
 
 
-t.createCommands=function(w)
-local x=w.scrollBar
+i.createCommands=function(l)
+local m=l.scrollBar
 
-local y=i.new{
-scrolledSignal=x.scrolledSignal,
-scrollContainer=w.scrollContainer,
-scrollHolder=w.scrollHolder,
-screenGui=w.screenGui,
-scrollBar=x,
+local n=aw.new{
+scrolledSignal=m.scrolledSignal,
+scrollContainer=l.scrollContainer,
+scrollHolder=l.scrollHolder,
+screenGui=l.screenGui,
+scrollBar=m,
 
 configs={
 placeholderText=aa.ui.commands.placeholderText,
@@ -25772,230 +25875,230 @@ textSize=aa.ui.commands.textSize,
 }
 
 aj:log"created commands interface"
-y:create()
+n:create()
 
 aj:log"initialized commands"
-y:createCommandsData()
+n:createCommandsData()
 
 aj:log"awaked commands module"
-y:awake()
+n:awake()
 
-w.commands=y
+l.commands=n
 
 
-y.onCommandSent=function()
-if w.dock then
-w.dock:unlockSwipe()
+n.onCommandSent=function()
+if l.dock then
+l.dock:unlockSwipe()
 end
 end
 
 
-y.onInteraction=function()
-if w.dock then
-w.dock:noteInteraction()
+n.onInteraction=function()
+if l.dock then
+l.dock:noteInteraction()
 end
 end
 
-w.settings:watchCommandBar(y.searchBox)
+l.settings:watchCommandBar(n.searchBox)
 
 if ag then
 
-y.onSwipeDown=function()
-if w.dock then
-w.dock:onListSwipeDown()
+n.onSwipeDown=function()
+if l.dock then
+l.dock:onListSwipeDown()
 end
 end
 
-ae:Connect(y.searchBox.Focused,function()
-w.commandBarUsedAt=os.clock()
+ae:Connect(n.searchBox.Focused,function()
+l.commandBarUsedAt=os.clock()
 end)
 
-ae:Connect(y.searchBox.FocusLost,function(z)
-w.commandBarUsedAt=os.clock()
+ae:Connect(n.searchBox.FocusLost,function(o)
+l.commandBarUsedAt=os.clock()
 
 
-if z and w.dock then
-w.dock:onMobileEnter(function()
-return y.searchBox:IsFocused()
+if o and l.dock then
+l.dock:onMobileEnter(function()
+return n.searchBox:IsFocused()
 end)
 end
 end)
 else
 
-ae:Connect(y.searchBox.FocusLost,function(z)
-if w.dock then
-w.dock:onCommandBarClosed(z)
+ae:Connect(n.searchBox.FocusLost,function(o)
+if l.dock then
+l.dock:onCommandBarClosed(o)
 end
 end)
 end
 
-return y end
+return n end
 
 
-t.createInfoMenu=function(w)
-return k:create()end
+i.createInfoMenu=function(l)
+return ay:create()end
 
 
-t.chatLogs=function(w, x)
-return l:open(x or"chat")end
+i.chatLogs=function(l, m)
+return az:open(m or"chat")end
 
 
-t.dragMainFrame=function(w, x)
-x.Size=aa.ui.window.windowSize
+i.dragMainFrame=function(l, m)
+m.Size=aa.ui.window.windowSize
 
-x.Position=UDim2.fromOffset(1e5,1e5)
-x.Position=w:calculateMainFramePosition()
+m.Position=UDim2.fromOffset(1e5,1e5)
+m.Position=l:calculateMainFramePosition()
 
-w.dock=p.new{
-frame=x,
-screenGui=w.screenGui,
-topBarHeight=w.topBar.Size.Y.Offset,
-keepOpen=m.isKeepMenuOpen(),
-clampPosition=function(y)
-return w:calculateMainFramePosition(y)
+l.dock=e.new{
+frame=m,
+screenGui=l.screenGui,
+topBarHeight=l.topBar.Size.Y.Offset,
+keepOpen=b.isKeepMenuOpen(),
+clampPosition=function(n)
+return l:calculateMainFramePosition(n)
 end,
 getScale=function()
-return e:getScale()
+return as:getScale()
 end,
 commandBarInUse=function()
-return w:isCommandBarInUse()
+return l:isCommandBarInUse()
 end,
 isMoving=function()
-return w:isCharacterMoving()
+return l:isCharacterMoving()
 end,
-onInteractive=function(y)
-if w.commands then
-w.commands:setInteractive(y)
+onInteractive=function(n)
+if l.commands then
+l.commands:setInteractive(n)
 end
 end,
 hoverToOpen=not ag,
 onMinimize=function()
-w:releaseCommandFocus()
+l:releaseCommandFocus()
 
 
-if w.hidden then
-w:hideWindow()
+if l.hidden then
+l:hideWindow()
 end
 end,
 }
 
-o:addGuiObject(x)
+d:addGuiObject(m)
 
-o:setFilter(x,function(y)
-return w.dock:clampDrag(y)
+d:setFilter(m,function(n)
+return l.dock:clampDrag(n)
 end)
 
-o.dragStarted:Connect(function(y)
-if y~=x then return end
+d.dragStarted:Connect(function(n)
+if n~=m then return end
 
-w.dock:cancel()
-w.dock:setDragging(true)
-w.scrollBar:disableScroll()
+l.dock:cancel()
+l.dock:setDragging(true)
+l.scrollBar:disableScroll()
 end)
 
-o.dragEnded:Connect(function(y,z)
-if y~=x then return end
+d.dragEnded:Connect(function(n,o)
+if n~=m then return end
 
-w.scrollBar:enableScroll()
-w.dock:setDragging(false)
-w.dock:onDragEnded(z)
+l.scrollBar:enableScroll()
+l.dock:setDragging(false)
+l.dock:onDragEnded(o)
 end)end
 
 
 
-local w=0.3
+local l=0.3
 
-t.isCommandBarInUse=function(x)
-local y=x.commands and x.commands.searchBox
-if y and y:IsFocused()then
+i.isCommandBarInUse=function(m)
+local n=m.commands and m.commands.searchBox
+if n and n:IsFocused()then
 return true
 end
 
-return os.clock()-(x.commandBarUsedAt or 0)<w end
+return os.clock()-(m.commandBarUsedAt or 0)<l end
 
 
 
 
-t.isCharacterMoving=function(x)
-local y=ah:getHumanoid()
-if not y then return false end
+i.isCharacterMoving=function(m)
+local n=ah:getHumanoid()
+if not n then return false end
 
-if y.MoveDirection.Magnitude>0.05 then
+if n.MoveDirection.Magnitude>0.05 then
 return true
 end
 
-local z=y.RootPart
-if not z then return false end
+local o=n.RootPart
+if not o then return false end
 
-local A=z.AssemblyLinearVelocity
-return Vector3.new(A.X,0,A.Z).Magnitude>1 end
+local p=o.AssemblyLinearVelocity
+return Vector3.new(p.X,0,p.Z).Magnitude>1 end
 
 
-t.releaseCommandFocus=function(x)
-local y=x.commands and x.commands.searchBox
+i.releaseCommandFocus=function(m)
+local n=m.commands and m.commands.searchBox
 
-if y and y:IsFocused()then
-y:ReleaseFocus()
+if n and n:IsFocused()then
+n:ReleaseFocus()
 end end
 
 
 
-t.showWindow=function(x)
-x.hidden=false
-x:revealWindow()end
+i.showWindow=function(m)
+m.hidden=false
+m:revealWindow()end
 
 
 
 
-t.revealWindow=function(x)
-if not x.mainFrame then return end
+i.revealWindow=function(m)
+if not m.mainFrame then return end
 
-x.mainFrame.Visible=true
-if x.dock then
-x.dock:reveal()
+m.mainFrame.Visible=true
+if m.dock then
+m.dock:reveal()
 end end
 
 
 
-t.hideWindow=function(x)
-if not x.mainFrame then return end
+i.hideWindow=function(m)
+if not m.mainFrame then return end
 
-x.hidden=true
-x.mainFrame.Visible=false
+m.hidden=true
+m.mainFrame.Visible=false
 
-if x.dock then
-x.dock:sleep()
+if m.dock then
+m.dock:sleep()
 end
 
-x:releaseCommandFocus()end
+m:releaseCommandFocus()end
 
 
-t.showCommandBar=function(x)
-local y=x.commands and x.commands.searchBox
-if not y then return end
+i.showCommandBar=function(m)
+local n=m.commands and m.commands.searchBox
+if not n then return end
 
-x:revealWindow()
+m:revealWindow()
 
-x.dock:onSettled(function()
-if x.dock.state=="minimized"then return end
+m.dock:onSettled(function()
+if m.dock.state=="minimized"then return end
 
-x.commands:captureFocus()
+m.commands:captureFocus()
 end)end
 
 
 
-t.setKeepIY=function(x, y)
-m.setKeepIY(y)
+i.setKeepIY=function(m, n)
+b.setKeepIY(n)
 
-if x.settings then
-x.settings:refresh()
+if m.settings then
+m.settings:refresh()
 end end
 
 
-t.createQuickCapture=function(x)
+i.createQuickCapture=function(m)
 if not ag then return end
 
-local y=al.new("TextButton",ak.randomString(math.random(30,50)),x.screenGui,{
+local n=al.new("TextButton",ak.randomString(math.random(30,50)),m.screenGui,{
 BackgroundTransparency=0.14,
 Position=UDim2.fromScale(0.5,0.15),
 AnchorPoint=Vector2.new(0.5,0.5),
@@ -26013,117 +26116,117 @@ CornerRadius=UDim.new(0.5,0)
 }),
 })
 
-x.dock:addWindowPart(y)
-o:addGuiObject(y)
+m.dock:addWindowPart(n)
+d:addGuiObject(n)
 
-ae:Connect(y.Activated,function()
-x:showCommandBar()
+ae:Connect(n.Activated,function()
+m:showCommandBar()
 end)
 
-x.quickCapture=y
-return y end
+m.quickCapture=n
+return n end
 
 
-t.createReference=function(x)
-local y=j.new()
-local z=y:create()
+i.createReference=function(m)
+local n=ax.new()
+local o=n:create()
 
-am:loadImage(y.closeIcon,"close")
+am:loadImage(n.closeIcon,"close")
 
-z.Parent=x.screenGui
-x.reference=y
+o.Parent=m.screenGui
+m.reference=n
 
-ae:Connect(x.buttons.reference.Activated,function()
-y:open()
+ae:Connect(m.buttons.reference.Activated,function()
+n:open()
 end)
 
-return y end
+return n end
 
 
-t.createPartPath=function(x)
-local y=n.new()
-local z=y:create()
+i.createPartPath=function(m)
+local n=c.new()
+local o=n:create()
 
-z.Parent=x.screenGui
-x.partPathWindow=y
+o.Parent=m.screenGui
+m.partPathWindow=n
 
-return y end
-
-
+return n end
 
 
-t.openPartPath=function(x, y)
-if not x.partPathWindow then return end
-
-x.partPathWindow:open(y)end
 
 
-t.createNotifications=function(x)
-local y=c:getContainer(x.screenGui)
-x.notificationsContainer=y
+i.openPartPath=function(m, n)
+if not m.partPathWindow then return end
 
-c.onLayoutChanged=function()
-x:updateNotificationsPosition()
+m.partPathWindow:open(n)end
+
+
+i.createNotifications=function(m)
+local n=aq:getContainer(m.screenGui)
+m.notificationsContainer=n
+
+aq.onLayoutChanged=function()
+m:updateNotificationsPosition()
 end
 
-x:updateNotificationsPosition()
-return y end
+m:updateNotificationsPosition()
+return n end
 
 
-t.updateNotificationsPosition=function(x)
-local y=x.notificationsContainer
-local z=x.mainFrame
-local A=x.screenGui
-if not(y and z and A)then return end
+i.updateNotificationsPosition=function(m)
+local n=m.notificationsContainer
+local o=m.mainFrame
+local p=m.screenGui
+if not(n and o and p)then return end
 
 
 
-local B=e:getScale()
-local C=A.AbsoluteSize/B
+local q=as:getScale()
+local r=p.AbsoluteSize/q
 
-local D=z.Position
-local E=f.compute({
-x={scale=D.X.Scale,offset=D.X.Offset},
-y={scale=D.Y.Scale,offset=D.Y.Offset},
-width=z.Size.X.Offset,
-height=z.Size.Y.Offset,
+local s=o.Position
+local t=at.compute({
+x={scale=s.X.Scale,offset=s.X.Offset},
+y={scale=s.Y.Scale,offset=s.Y.Offset},
+width=o.Size.X.Offset,
+height=o.Size.Y.Offset,
 },{
-width=C.X,
-height=C.Y,
+width=r.X,
+height=r.Y,
 },{
-width=y.Size.X.Offset,
+width=n.Size.X.Offset,
 },ab.gapToWindow)
 
 
-c:setRoom(E.room)
+aq:setRoom(t.room)
 
-y.AnchorPoint=Vector2.new(E.anchorX,E.anchorY)
-y.Position=UDim2.new(E.x.scale,E.x.offset,E.y.scale,E.y.offset)end
+n.AnchorPoint=Vector2.new(t.anchorX,t.anchorY)
+n.Position=UDim2.new(t.x.scale,t.x.offset,t.y.scale,t.y.offset)end
 
 
-t.destroy=function(x)
-c:destroy()
-if x.dock then
-x.dock:destroy()
-x.dock=nil
+i.destroy=function(m)
+aq:destroy()
+if m.dock then
+m.dock:destroy()
+m.dock=nil
 end
 
-l:reset()
+az:reset()
 
-if x.partPathWindow then
-x.partPathWindow:destroy()
-x.partPathWindow=nil
+if m.partPathWindow then
+m.partPathWindow:destroy()
+m.partPathWindow=nil
 end
 
-if x.screenGui then
-x.screenGui:Destroy()
+if m.screenGui then
+m.screenGui:Destroy()
 end
 
-x.screenGui=nil
-x.awoken=false end
+m.screenGui=nil
+m.awoken=false end
 
 
-return t end a.dy=function()local ab=a.cache.dy if not ab then ab={c=aa()}a.cache.dy=ab end return ab.c end end do local aa=function()a.e()
+return i end a.dy=function()local ab=a.cache.dy if not ab then ab={c=aa()}a.cache.dy=ab end return ab.c end end do local aa=function()a.e()
 
 
 :init()
