@@ -2,8 +2,8 @@ local function oldConsole(self)
 	self.fetchService.load("backups/console.luau", "iy/oldconsole")()
 end
 
-local function dexExplorer(self, args)
-	if args:nextValue() == true then
+local function dexExplorer(self, byMoon)
+	if byMoon == true then
 		self.fetchService.load("backups/explorer.luau", "iy/explorer")()
 	else
 		self.fetchService.load("backups/dexPlusPlus.luau", "iy/dexPlusPlus")()
@@ -45,7 +45,7 @@ return {
 		action = "explorer|dex",
 		description = "Opens the dex Explorer",
 		args = { name = "load dex by moon", kind = "boolean", optional = true },
-		run = function(self) task.spawn(dexExplorer, self) end
+		run = function(self, args) task.spawn(dexExplorer, self, args:nextValue()) end
 	},
 	{
 		action = "emotemenu|7yd7",
