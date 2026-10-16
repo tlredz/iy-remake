@@ -12,11 +12,10 @@
 > Suggestions and pull requests are highly welcome! Feel free to contribute to improve and fix the project.
 
 > [!WARNING]
-> **Infinite Yield RV** is currently **UNDER DEVELOPMENT**.
-> There is no official release date yet, and you may encounter bugs.
+> **AI Use** AI was used to fix, reorganize, and rebuild some code. (This does not mean that the entire project was scrutinized by AI.) 
 
-> [!WARNING]
-> **AI Use** AI was used to fix, reorganize, and rebuild some code. 
+> [!NOTE]
+> Models used: Claude (Sonnet 5.5, Haiku 5.5)
 
 ## 📌 About
 - **Infinite Yield** is a feature-rich admin command panel designed for Roblox games.
