@@ -161,9 +161,9 @@ end
 function playerService:cancelTween(): boolean
 	local tween = activeTween
 	activeTween = nil
-
+	
 	releaseSeated()
-
+	
 	if tween then
 		tween:Cancel()
 		return true
@@ -224,10 +224,10 @@ end
 
 function playerService:waitForStreamPlayerCharacter(character: Model, waitTime: number?): ()
 	if not (character and workspace.StreamingEnabled) then return end
-
+	
 	local targetPosition = character:GetPivot().Position
 	waitTime = waitTime or 5
-
+	
 	task.spawn(localPlayer.RequestStreamAroundAsync, localPlayer, targetPosition, waitTime)
 	character:WaitForChild("HumanoidRootPart", waitTime)
 end

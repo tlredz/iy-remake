@@ -15,6 +15,10 @@ return {
 			local speed = args:nextValue()
 			if speed then
 				self.privateEnv.flySpeed = speed
+			elseif self.privateEnv.flySpeed then
+				self:notify("Fly", `no speed given, using the last speed set: {self.privateEnv.flySpeed}`)
+			else
+				self:notify("Fly", `no speed given, using the default speed: {DEFAULT_SPEED}`)
 			end
 
 			flight.start(self, {
@@ -29,7 +33,7 @@ return {
 	},
 	{
 		action = "flyspeed|flysp",
-		description = "Set fly speed (default is 20)",
+		description = "Set fly speed (default is 100)",
 		args = {
 			kind = "number",
 			name = "fly speed"

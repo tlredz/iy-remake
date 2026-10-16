@@ -25,6 +25,10 @@ return {
 	["imgstudiopluginlogo"] = 4113050383,
 	["pin"]                 = 6234691350,
 	
+	["lucide-send"]               = 80218825031596, -- send command
+	["lucide-sliders-horizontal"] = 116738462591690, -- command settings
+	["lucide-arrow-down-up"]      = 121401768678469, -- import / export
+	
 	-- top bar
 	["reference"] = 116342494079103, -- lucide-book-open
 	["settings"]  = 102340652201372, -- lucide-settings

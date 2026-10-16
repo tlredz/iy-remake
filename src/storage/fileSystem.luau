@@ -208,6 +208,14 @@ function fileSystem:getData()
 	return table.clone(self.object)
 end
 
+-- replaces everything in the store (settings import) and saves it. The object is copied, so the caller's table is not kept
+function fileSystem:replaceData(object)
+	logger:expect(object, {"table"}, "'fileSystem:replaceData' #1")
+
+	self.object = table.clone(object)
+	self:save()
+end
+
 function fileSystem.new(filePath, config)
 	logger:expect(filePath, {"string"}, "'fileSystem.new' #1")
 	logger:expect(config, {"table", "nil"}, "'fileSystem.new' #2")

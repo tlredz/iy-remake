@@ -237,6 +237,11 @@ function interface:createMainFrame()
 	self:createMainScroll(mainFrame)
 
 	self.settings = settingsComponent.new({
+		-- the settings panel opened or closed: its button takes the Primary color while it is open
+		onOpenChanged = function(open)
+			self:paintTopButton(self.buttons.settings, open)
+		end,
+
 		-- a switch changed. The dock needs to know about keep menu open, and keep interface needs queueteleport
 		onSwitch = function(setting, enabled)
 			if setting == "keepMenuOpen" and self.dock then
@@ -482,10 +487,12 @@ function interface:showCommandBar()
 
 	self:revealWindow()
 
+	-- the window is still moving up (the prefix key can come right after a hidden window is shown), so the focus is
+	-- asked for once it has arrived. ensureFocus keeps asking for a few frames, in case the first try is taken back
 	self.dock:onSettled(function()
 		if self.dock.state == "minimized" then return end
-		
-		self.commands:captureFocus()
+
+		self.commands:ensureFocus()
 	end)
 end
 
@@ -530,9 +537,23 @@ function interface:createQuickCapture()
 	return quickCapture
 end
 
+-- a top bar button shows whether its window is open: the Primary color while it is, the icon color otherwise.
+-- It goes through the theme service, so the theme change keeps it right
+function interface:paintTopButton(button: GuiObject, active: boolean)
+	if not button then return end
+
+	themeService:addObject(button, {
+		ImageColor3 = if active then "Colors.Primary" else "Colors.Icons",
+	})
+end
+
 function interface:createReference()
 	local reference = referenceComponent.new()
 	local referenceFrame = reference:create()
+
+	reference.onOpenChanged = function(open)
+		self:paintTopButton(self.buttons.reference, open)
+	end
 
 	assetsService:loadImage(reference.closeIcon, "close")
 

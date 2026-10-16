@@ -4,7 +4,8 @@
 -- The freecam commands use it. The commands that take the camera back (view, fixcam)
 -- stop it first, otherwise it would keep overriding the camera every frame.
 --
--- On a computer the keyboard moves and the mouse turns. On a phone or tablet (isMobile)
+-- On a computer the keyboard moves and the mouse turns. Holding the boost key (Settings > Command Settings) makes it
+-- faster, the same as the BOOST button on a phone. On a phone or tablet (isMobile)
 -- the Roblox thumbstick moves, the same way it flies the character. Buttons on screen go up and down,
 -- BOOST (held) makes it faster, the X button turns it off, TP turns it off and moves the character to the camera, and
 -- dragging on the right half of the screen turns the
@@ -13,6 +14,7 @@
 
 local robloxServices = require("../../framework/services/rbxServices")
 local createService = require("../../framework/services/createService")
+local keyboardService = require("../../framework/services/keyboardService")
 local playerService = require("../../framework/services/playerService")
 local localPlayer = require("../../framework/services/localPlayer")
 
@@ -308,7 +310,9 @@ local function stepFreecam(self, garbage, dt: number)
 	)
 
 	local shift = UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) and SHIFT_MULTIPLIER or 1
-	local boost = if garbage.holds.boost then freecam.getBoost(self) else 1
+	-- the boost is held: the BOOST button on a phone, or the boost key (Settings > Command Settings) on a computer
+	local boostHeld = garbage.holds.boost or UserInputService:IsKeyDown(keyboardService:getBinding("freecamBoost"))
+	local boost = if boostHeld then freecam.getBoost(self) else 1
 	local speed = (self.privateEnv.freecamSpeed or freecam.DEFAULT_SPEED) * garbage.navMultiplier * shift * boost
 	local velocity = updateSpring(garbage.velocitySpring, dt, keys * speed)
 

@@ -1,38 +1,81 @@
+-- The commands that load scripts from the repo. Each load tells the user what is happening: it starts, it is still
+-- going after SLOW_LOAD seconds, it finishes, or it could not be loaded.
+
+local SLOW_LOAD = 3 -- seconds before a load that is still going gets a notice
+
+-- loads a script (fetchService.load) with notices. Returns the chunk, or nil when it could not be loaded.
+-- quiet: no notices for a load that works (for a script that is only a helper of another one)
+local function fetchScript(self, label: string, path: string, chunkName: string?, quiet: boolean?)
+	if not quiet then
+		self:notify(label, "started loading")
+	end
+
+	local finished = false
+
+	task.delay(SLOW_LOAD, function()
+		if not finished then
+			self:notify(label, "is taking a while to load, still loading...")
+		end
+	end)
+
+	local chunk = self.fetchService.load(path, chunkName)
+	finished = true
+
+	if chunk == nil then
+		self:notify(label, "could not be loaded")
+	elseif not quiet then
+		self:notify(label, "finished loading")
+	end
+
+	return chunk
+end
+
 local function oldConsole(self)
-	self.fetchService.load("backups/console.luau", "iy/oldconsole")()
+	local chunk = fetchScript(self, "Old Console", "backups/oldconsole.luau", "iy/oldconsole")
+	if chunk then chunk() end
 end
 
 local function dexExplorer(self, byMoon)
+	local chunk
 	if byMoon == true then
-		self.fetchService.load("backups/explorer.luau", "iy/explorer")()
+		chunk = fetchScript(self, "Dex Explorer", "backups/explorer.luau", "iy/explorer")
 	else
-		self.fetchService.load("backups/dexPlusPlus.luau", "iy/dexPlusPlus")()
+		chunk = fetchScript(self, "Dex Explorer", "backups/dexPlusPlus.luau", "iy/dexPlusPlus")
 	end
+
+	if chunk then chunk() end
 end
 
 local function emoteMenu(self, args)
-	local notify = self.fetchService.load("backups/emotes/notify.luau", "iy/7yd7/notify.luau")()
-	
+	local notifyChunk = fetchScript(self, "Emote Menu", "backups/emotes/notify.luau", "iy/7yd7/notify.luau", true)
+	local notify = notifyChunk and notifyChunk() or function() end
+
 	local keycode = args:nextValue()
 	local notifyEnabled = args:nextValue()
-	
-	self.fetchService.load("backups/emotes/main.luau", "iy/7yd7/emotes.luau")({
-		notifyFunction = if notifyEnabled ~= false then notify else function()end,
+
+	local main = fetchScript(self, "Emote Menu", "backups/emotes/main.luau", "iy/7yd7/emotes.luau")
+	if not main then return end
+
+	main({
+		notifyFunction = if notifyEnabled ~= false then notify else function() end,
 		isMobile = self.isMobile,
 		keycode = keycode,
 	})
 end
 
 local function cobaltSpy(self)
-	self.fetchService.load("backups/cobalt.luau", "iy/cobalt")()
+	local chunk = fetchScript(self, "Cobalt", "backups/cobalt.luau", "iy/cobalt")
+	if chunk then chunk() end
 end
 
 local function remoteSpy(self)
-	self.fetchService.load("backups/remotespy/main.luau", "iy/remotespy")()
+	local chunk = fetchScript(self, "Remote Spy", "backups/remotespy/main.luau", "iy/remotespy")
+	if chunk then chunk() end
 end
 
 local function audioLogger(self)
-	self.fetchService.load("backups/audiologger.luau", "iy/audiologger")()
+	local chunk = fetchScript(self, "Audio Logger", "backups/audiologger.luau", "iy/audiologger")
+	if chunk then chunk() end
 end
 
 return {

@@ -1,8 +1,10 @@
 -- Flight shared by fly and vehiclefly.
 -- Movement follows the camera and reads humanoid.MoveDirection, so keyboard and the
--- mobile thumbstick both work. Q and E move down and up while the qefly hotkeys are on.
+-- mobile thumbstick both work. The up and down keys (flyUp / flyDown in Settings > Command Settings) move the
+-- character up and down while the qefly hotkeys are on.
 
 local robloxServices = require("../../framework/services/rbxServices")
+local keyboardService = require("../../framework/services/keyboardService")
 
 local UserInputService = robloxServices.UserInputService
 
@@ -29,10 +31,10 @@ local function getDirection(self, humanoid: Humanoid): Vector3
 
 	local vertical = 0
 	if self.privateEnv.qeFly ~= false then
-		if UserInputService:IsKeyDown(Enum.KeyCode.E) then
+		if UserInputService:IsKeyDown(keyboardService:getBinding("flyUp")) then
 			vertical += 1
 		end
-		if UserInputService:IsKeyDown(Enum.KeyCode.Q) then
+		if UserInputService:IsKeyDown(keyboardService:getBinding("flyDown")) then
 			vertical -= 1
 		end
 	end

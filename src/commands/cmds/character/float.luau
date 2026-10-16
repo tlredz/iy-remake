@@ -1,3 +1,5 @@
+local keyboardService = require("../../../framework/services/keyboardService")
+
 local FLOAT_OFFSET = -3.1
 
 local function removeFloat(self)
@@ -46,26 +48,27 @@ local function startFloat(self)
 		platform.CFrame = currentRoot.CFrame * CFrame.new(0, garbage.offset, 0)
 	end))
 
-	-- Same steps as IY: holding E lifts the platform, holding Q lowers it
+	-- Same steps as IY: holding the up key lifts the platform, holding the down key lowers it. The keys are read at
+	-- each press, so a key changed in Settings > Command Settings applies at once
 	table.insert(garbage.connections, self:connect(self.robloxServices.UserInputService.InputBegan, function(input, processed)
 		if processed then return end
 
-		if input.KeyCode == Enum.KeyCode.E then
+		if input.KeyCode == keyboardService:getBinding("floatUp") then
 			garbage.offset += 1.5
-		elseif input.KeyCode == Enum.KeyCode.Q then
+		elseif input.KeyCode == keyboardService:getBinding("floatDown") then
 			garbage.offset -= 0.5
 		end
 	end))
 
 	table.insert(garbage.connections, self:connect(self.robloxServices.UserInputService.InputEnded, function(input)
-		if input.KeyCode == Enum.KeyCode.E then
+		if input.KeyCode == keyboardService:getBinding("floatUp") then
 			garbage.offset -= 1.5
-		elseif input.KeyCode == Enum.KeyCode.Q then
+		elseif input.KeyCode == keyboardService:getBinding("floatDown") then
 			garbage.offset += 0.5
 		end
 	end))
 
-	self:notify("Float", "Enabled (Q = down & E = up)")
+	self:notify("Float", `Enabled ({keyboardService:getBindingName("floatDown")} = down & {keyboardService:getBindingName("floatUp")} = up)`)
 end
 
 return {

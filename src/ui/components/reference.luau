@@ -195,14 +195,27 @@ local function createSection(order, blocks, isLast)
 end
 
 function reference.new()
-	return setmetatable({}, reference)
+	return setmetatable({
+		isOpen = false,
+		onOpenChanged = nil, -- called with true / false when the window opens or closes (the top bar button follows it)
+	}, reference)
+end
+
+function reference:setOpen(open: boolean)
+	self.isOpen = open
+
+	if self.onOpenChanged then
+		self.onOpenChanged(open)
+	end
 end
 
 function reference:open()
+	self:setOpen(true)
 	self.frame:TweenPosition(SHOWN_POSITION, Enum.EasingDirection.InOut, Enum.EasingStyle.Quart, TWEEN_TIME, true)
 end
 
 function reference:close()
+	self:setOpen(false)
 	self.frame:TweenPosition(HIDDEN_POSITION, Enum.EasingDirection.InOut, Enum.EasingStyle.Quart, TWEEN_TIME, true)
 end
 

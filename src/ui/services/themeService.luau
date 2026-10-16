@@ -1,12 +1,19 @@
 local themes = require("../themes")
+local themeConfig = require("../../framework/config/ui/themes")
+local settingsData = require("../../storage/data/settings")
 
 local logger = require("../../utils/logger")
 local tools = require("../../utils/tools")
 
+-- The theme in use is a copy of the theme with the primary color the user picked for it (framework/config/ui/themes).
+-- Each theme keeps its own pick, saved as themePrimary.<theme name>, so changing one theme does not change the others.
 local themeService = {
 	objects = {},
-	selectedTheme = nil
+	selectedTheme = nil, -- the theme in use, with its primary color applied
+	selectedKey = nil,   -- the name of the theme in use, as selectTheme takes it
 }
+
+local PRIMARY_PREFIX = "themePrimary."
 
 -- a theme can be used once it has its Colors and Font (ui/init falls back to the default theme without them)
 function themeService:isUsable(theme): boolean
@@ -33,22 +40,89 @@ function themeService:getThemes()
 	return list
 end
 
+-- the primary color options (framework/config/ui/themes), in the order they are shown
+function themeService:getPrimaryOptions()
+	return themeConfig.options
+end
+
+local function findOption(key: string)
+	for _, option in themeConfig.options do
+		if option.key == key then
+			return option
+		end
+	end
+
+	return nil
+end
+
+-- the option picked for a theme, or the default one when none was picked (or the saved one is gone)
+function themeService:getPrimaryKey(themeName: string): string
+	local saved = settingsData:getValue(PRIMARY_PREFIX .. themeName:lower())
+
+	if type(saved) == "string" and findOption(saved) then
+		return saved
+	end
+
+	return themeConfig.defaultKey
+end
+
+-- the color an option shows for a theme: the theme's own primary for the default option, its color otherwise
+function themeService:getPrimaryColor(theme, primaryKey: string): Color3
+	local option = findOption(primaryKey)
+
+	if option and option.color then
+		return option.color
+	end
+
+	return theme.Colors.Primary
+end
+
+-- a copy of the theme with the primary color of the option. The theme itself is never changed
+local function withPrimary(theme, primaryKey: string)
+	local option = findOption(primaryKey)
+
+	if not option or option.color == nil then
+		return theme
+	end
+
+	local colors = table.clone(theme.Colors)
+	colors.Primary = option.color
+	colors.OnPrimary = option.color:Lerp(Color3.new(0, 0, 0), themeConfig.darken)
+
+	local copy = table.clone(theme)
+	copy.Colors = colors
+
+	return copy
+end
+
 function themeService:selectTheme(themeName)
 	logger:expect(themeName, {"string"}, "'themeService:selectTheme' #1")
-	
-	local theme = themes[themeName:lower()]
-	
+
+	local key = themeName:lower()
+	local theme = themes[key]
+
 	if not theme then
 		logger:error(`'{themeName}' isn't a valid theme`)
 		return
 	end
-	
-	if theme ~= self.selectedTheme then
-		self.selectedTheme = theme
-		self:updateObjects()
-	end
-	
+
+	self.selectedKey = key
+	self.selectedTheme = if self:isUsable(theme) then withPrimary(theme, self:getPrimaryKey(key)) else theme
+	self:updateObjects()
+
 	return self
+end
+
+-- keeps the primary color picked for a theme. When that theme is the one in use, it is applied at once
+function themeService:setPrimary(themeName: string, primaryKey: string)
+	local key = themeName:lower()
+
+	settingsData:setValue(PRIMARY_PREFIX .. key, primaryKey)
+	settingsData:save()
+
+	if self.selectedKey == key then
+		self:selectTheme(key)
+	end
 end
 
 function themeService:updateObject(object: Instance): (nil)
@@ -84,7 +158,7 @@ end
 
 function themeService:init(config)
 	logger:expect(config, {"table"}, "'themeService:init' #1")
-	
+
 	if config.theme ~= nil then
 		self:selectTheme(config.theme)
 	end

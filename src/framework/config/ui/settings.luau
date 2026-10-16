@@ -93,11 +93,33 @@ return {
 		theme = {
 			title = "#theme",
 			incomplete = "(incomplete)",
+			primary = "primary", -- the label of the row of primary colors under the theme in use
 		},
 		keybinds = {
 			title = "#keybinds",
 			reset = "Reset to defaults",
 			alwaysWorks = "%s also works as the %s", -- a fixed key and the label of its binding
+		},
+		commands = {
+			title = "#command settings",
+			reset = "Reset command keys to defaults",
+		},
+		importExport = {
+			title = "#import / export",
+			exportTitle = "#export",
+			exportRow = "Copy settings",
+			exportHint = "copies your settings, keybinds, aliases, event binds and waypoints as text",
+			importTitle = "#import",
+			importRow = "Import settings",
+			importHint = "paste a copied text in the box, then import it. It replaces the settings it holds",
+			placeholder = "paste the copied text here",
+			copied = "settings copied to the clipboard",
+			copyFailed = "your exploit can't copy: the text is in the box, copy it from there",
+			empty = "paste a copied text first",
+			notAnExport = "that text is not an export of IY",
+			imported = "imported %s", -- the parts that were in the text, like "settings, aliases"
+			restartNote = "aliases and plugins apply when IY is opened again",
+			notifyTitle = "Import / Export",
 		},
 		aliases = {
 			title = "#aliases",
@@ -249,6 +271,8 @@ return {
 				{ kind = "button", label = "Edit/Goto Waypoints", icon = "lucide-map-pin", action = "waypoints" },
 				{ kind = "button", label = "Manage Plugins", icon = "lucide-puzzle", action = "plugins" },
 				{ kind = "button", label = "Edit Event Binds", icon = "lucide-zap", action = "eventBinds" },
+				{ kind = "button", label = "Command Settings", icon = "lucide-sliders-horizontal", action = "commands" },
+				{ kind = "button", label = "Import / Export", icon = "lucide-arrow-down-up", action = "importExport" },
 			},
 		},
 	},

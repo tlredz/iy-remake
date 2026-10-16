@@ -16,7 +16,8 @@ local uiTweens = require("../../../framework/services/tweenService")
 
 local widgets = require("./widgets")
 local buildThemePicker = require("./themePicker")
-local buildKeybindsEditor = require("./keybindsEditor")
+local keybindPages = require("./keybindsEditor")
+local buildImportExport = require("./importExportEditor")
 local buildAliasesEditor = require("./aliasesEditor")
 local buildWaypointsEditor = require("./waypointsEditor")
 local buildPluginsEditor = require("./pluginsEditor")
@@ -43,7 +44,9 @@ local FLOAT_START = UDim2.new(1, 0, 0, -FLOAT_SIZE * PANEL.floatBackOut)
 -- the editor pages, by the action of the button that opens them
 local PAGES = {
 	theme = buildThemePicker,
-	keybinds = buildKeybindsEditor,
+	keybinds = keybindPages.interface,
+	commands = keybindPages.commands,
+	importExport = buildImportExport,
 	aliases = buildAliasesEditor,
 	waypoints = buildWaypointsEditor,
 	plugins = buildPluginsEditor,
@@ -184,6 +187,7 @@ function settings.new(options)
 	return setmetatable({
 		onSwitch = options.onSwitch,
 		onButton = options.onButton,
+		onOpenChanged = options.onOpenChanged,
 		isOpen = false,
 		isShown = false,
 		holder = nil,
@@ -493,6 +497,11 @@ end
 function settings:toggle()
 	self.isOpen = not self.isOpen
 	self:setShown(self.isOpen)
+
+	-- the interface paints the settings button while the panel is open (its open state, not the command bar focus)
+	if self.onOpenChanged then
+		self.onOpenChanged(self.isOpen)
+	end
 end
 
 function settings:setShown(shown: boolean)

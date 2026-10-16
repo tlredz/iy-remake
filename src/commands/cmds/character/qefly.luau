@@ -1,6 +1,6 @@
 return {
 	action = "qefly|flyqe",
-	description = "Enables or disables the Q and E hotkeys for fly",
+	description = "Enables or disables the up and down keys for fly (set them in Settings > Command Settings)",
 	args = {
 		kind = "boolean",
 		optional = true

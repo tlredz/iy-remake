@@ -8,6 +8,7 @@ local commandParser      = require("../../commands/systems/commandParser")
 local commandRunner      = require("../../commands/systems/commandRunner")
 
 local inputUtils   = require("../utils/inputUtils")
+local assetsService = require("../services/assetsService")
 local commandsList = require("../../commands/list")
 
 local signal      = require("../../utils/signal")
@@ -21,6 +22,7 @@ local isMobile = require("../../framework/environment/isMobile")
 
 local userInputService = robloxServices.UserInputService
 local runService       = robloxServices.RunService
+local tweenService     = robloxServices.TweenService
 
 local richFontSize     = tools.richFontSize
 local colorFromRGB     = tools.colorFromRGB
@@ -30,6 +32,17 @@ commands.__index = commands
 
 local DELETE_DEBOUNCE = 0.15
 local SEARCH_BOX_ROWS = 2.50
+local FOCUS_FRAMES    = 6  -- frames the command bar keeps asking for the focus after a click, a correction or the prefix key
+local SEND_WIDTH      = 24 -- the send button at the right of the command bar
+local SEND_HEIGHT     = 18
+local SEND_ICON_INSET = 3  -- space between the send icon and the edges of its button, so the icon is smaller than the bar
+local SEND_MARGIN     = 5  -- space at the edges of the command bar, the same as on the left
+local SEND_GAP        = 4  -- space between the command bar and the send button
+local BAR_TWEEN_TIME  = 0.2 -- seconds the command bar takes to make room for the send button, or to go back to full width
+-- the command bar at its original width (the one it has without the send button)
+local BAR_FULL       = UDim2.new(1, -2 * SEND_MARGIN, 0, SEND_HEIGHT)
+-- the command bar while the send button is shown: it gives the button and the gap its space on the right
+local BAR_WITH_SEND  = UDim2.new(1, -(SEND_MARGIN + SEND_GAP + SEND_WIDTH + SEND_MARGIN), 0, SEND_HEIGHT)
 local SWIPE_DOWN_MIN  = 50 -- px a finger must move down, from the top of the list, to minimize the window (the dock's DRAG_DOWN_MIN)
 
 local function getCommand(commandName)
@@ -84,6 +97,81 @@ function commands:applyCorrection()
 	end
 	
 	self:writeText(newText)
+end
+
+-- Gives the focus back to the command bar. A click on a command, a correction or the prefix key can take the focus
+-- before the click or the key is finished with, so the box asks again on the next frames until it has it. A new
+-- request ends an older one, and a box the user let go of on purpose is not kept after FOCUS_FRAMES frames
+function commands:ensureFocus()
+	local searchBox = self.searchBox
+	if not searchBox then return end
+
+	self.focusRequest = (self.focusRequest or 0) + 1
+	local request = self.focusRequest
+
+	task.spawn(function()
+		for _ = 1, FOCUS_FRAMES do
+			if request ~= self.focusRequest or not self.isEnabled then return end
+			if searchBox:IsFocused() then return end
+
+			if searchBox.Parent ~= nil then
+				searchBox:CaptureFocus()
+			end
+
+			runService.Heartbeat:Wait()
+		end
+	end)
+end
+
+-- sends what is in the command bar, as Enter does. Empty text sends nothing
+function commands:sendText()
+	local text = cleanInput(self.searchBox.Text)
+	if not text:match("%S") then return end
+
+	self:refresh(text)
+	self:sendInputCommand()
+end
+
+-- the send button is shown only while the command bar has text and no focus (a tap outside, or a closed keyboard,
+-- takes the focus away without sending). When it shows, the command bar makes room for it on the right; when it
+-- hides, the command bar tweens back to its original width
+function commands:updateSendButton()
+	local sendButton = self.sendButton
+	local searchBox  = self.searchBox
+	if not (sendButton and searchBox) then return end
+
+	local shown = not searchBox:IsFocused() and searchBox.Text:match("%S") ~= nil
+	if shown == self.sendShown then return end
+
+	self.sendShown = shown
+	sendButton.Visible = shown
+	self:tweenSearchBar(if shown then BAR_WITH_SEND else BAR_FULL)
+end
+
+-- tweens the width of the command bar. The search box follows it (updateSearchBoxPosition runs every frame)
+function commands:tweenSearchBar(size: UDim2)
+	local holder = self.searchBoxHolder
+	if not holder then return end
+
+	if self.barTween then
+		self.barTween:Cancel()
+		self.barTween = nil
+	end
+
+	if holder.Size == size then return end
+
+	-- a bar that is not on screen (the window is hidden or not created) has no animation to show
+	if not self.isEnabled then
+		holder.Size = size
+		return
+	end
+
+	local tween = tweenService:Create(holder, TweenInfo.new(BAR_TWEEN_TIME, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+		Size = size,
+	})
+
+	self.barTween = tween
+	tween:Play()
 end
 
 function commands:captureFocus()
@@ -149,14 +237,10 @@ function commands:awake()
 		end
 	end
 	
-	local function captureFocus()
-		searchBox:CaptureFocus()
-	end
-	
 	local function onEnterPressed()
 		if cmdInput.correction then
 			self:applyCorrection()
-			task.defer(captureFocus)
+			self:ensureFocus()
 			return true
 		end
 		
@@ -168,19 +252,32 @@ function commands:awake()
 	local function updatePlaceholder()
 		local visible = not searchBox:IsFocused() and #searchBox.Text == 0
 		placeholder.Visible = visible
+
+		self:updateSendButton()
 	end
 	
 	self.commandClickedSignal:Connect(function(data)
 		if not self.interactive then return end
 		
 		self:writeText(data.aliases[1])
-		task.defer(captureFocus)
+		self:ensureFocus()
 	end)
 	
 	connectionService:Connect(searchHolder.Activated, function()
 		if not self.interactive then return end
 		
-		captureFocus()
+		self:ensureFocus()
+	end)
+
+	connectionService:Connect(self.sendButton.Activated, function()
+		if not self.interactive then return end
+
+		-- the bar gives up the focus it may still have, then sends what is written in it
+		if searchBox:IsFocused() then
+			searchBox:ReleaseFocus()
+		end
+
+		self:sendText()
 	end)
 	
 	connectionService:Connect(searchBox.Focused, function()
@@ -255,7 +352,7 @@ function commands:awake()
 			self:browseHistory(1)
 		elseif input.KeyCode == Enum.KeyCode.Tab and self.commandInput.correction then
 			self:applyCorrection()
-			task.defer(captureFocus)
+			self:ensureFocus()
 		end
 	end)
 end
@@ -376,9 +473,9 @@ end
 
 function commands:create()
 	self.searchBoxHolder = createService.new("ImageButton", {
-		Size         = UDim2.new(1, -10, 0, 18),
-		Position     = UDim2.fromScale(0.5, 0),
-		AnchorPoint  = Vector2.new(0.5, 1),
+		Size         = BAR_FULL,
+		Position     = UDim2.new(0, SEND_MARGIN, 0, 0),
+		AnchorPoint  = Vector2.new(0, 1),
 		BorderSizePixel  = 0,
 		ClipsDescendants = true,
 		ThemeTag = { BackgroundColor3 = "Colors.Buttons.Default" },
@@ -489,6 +586,47 @@ function commands:create()
 	end)
 	
 	self.commandsFolder = createService.new("Folder", "Commands")
+
+	self:createSendButton()
+end
+
+-- the button at the right of the command bar that sends what is written in it (see updateSendButton)
+function commands:createSendButton()
+	-- the button is the same height as the command bar, with the bar's background. The icon is a child inset by
+	-- SEND_ICON_INSET: an ImageButton would draw its icon across its whole size, which made it as tall as the bar
+	local sendButton = createService.new("TextButton", "Send", {
+		AnchorPoint     = Vector2.new(1, 1),
+		AutoButtonColor = false,
+		BorderSizePixel = 0,
+		Position        = UDim2.new(1, -SEND_MARGIN, 0, 0),
+		Size            = UDim2.new(0, SEND_WIDTH, 0, SEND_HEIGHT),
+		Text            = "",
+		Visible         = false, -- no text yet: updateSendButton shows it when there is text and no focus
+		ThemeTag = {
+			BackgroundColor3 = "Colors.Buttons.Default", -- the command bar's own background
+		},
+
+		createService.new("UICorner", {
+			CornerRadius = UDim.new(0, 4), -- square with soft corners, to match the command bar
+		}),
+	})
+
+	local sendIcon = createService.new("ImageLabel", "Icon", sendButton, {
+		AnchorPoint            = Vector2.new(0.5, 0.5),
+		BackgroundTransparency = 1,
+		Position               = UDim2.fromScale(0.5, 0.5),
+		ScaleType              = Enum.ScaleType.Fit,
+		Size                   = UDim2.new(1, -2 * SEND_ICON_INSET, 1, -2 * SEND_ICON_INSET),
+		ThemeTag = {
+			ImageColor3 = "Colors.Icons",
+		},
+	})
+
+	assetsService:loadImage(sendIcon, "lucide-send")
+
+	self.sendIcon = sendIcon
+	self.sendButton = sendButton
+	self.sendShown  = false
 end
 
 function commands:createCommandsData()
@@ -972,6 +1110,7 @@ function commands:enable()
 	self.commandsFolder.Parent  = container
 	self.searchBox.Parent       = self.screenGui
 	self.searchBoxHolder.Parent = self.scrollHolder
+	self.sendButton.Parent      = self.scrollHolder
 	self.commandInfo.Parent     = self.scrollHolder
 
 	self.scrollConnection = self.scrolledSignal:Connect(function()
@@ -1005,6 +1144,7 @@ function commands:disable()
 	self.commandsFolder.Parent  = nil
 	self.searchBox.Parent       = nil
 	self.searchBoxHolder.Parent = nil
+	self.sendButton.Parent      = nil
 	self.commandInfo.Parent     = nil
 
 	connectionService:disconnect(self.containerConnection)
