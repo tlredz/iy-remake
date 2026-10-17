@@ -214,20 +214,20 @@ end end
 d.init=function(f)
 if b.screenGui then
 b.screenGui:Destroy()
-c:log"destroyed old interface"
+c:log("destroyed old interface")
 end
 
 if b.connectionService then
 b.connectionService:cleanup()
 b.connectionService=nil
-c:log"cleaned old connections"
+c:log("cleaned old connections")
 end
 
 for g,h in b.iyGarbages or{}do
 e(h)
 end
 
-c:log"finished cleanup!"end
+c:log("finished cleanup!")end
 
 
 return d end a.e=function()local c=a.cache.e if not c then c={c=b()}a.cache.e=c end return c.c end end do local b=function()
@@ -303,11 +303,11 @@ local k=g:nextValue()
 local l=c(f,"Emote Menu","backups/emotes/main.luau","iy/7yd7/emotes.luau")
 if not l then return end
 
-l{
+l({
 notifyFunction=if k~=false then i else function()end,
 isMobile=f.isMobile,
 keycode=j,
-}end local g=function(
+})end local g=function(
 
 
 g)
@@ -414,7 +414,7 @@ end
 action="copyplaceid",
 description="Copies the current place id to your clipboard",
 run=function(d)
-local e=d:expectExploit"setclipboard"
+local e=d:expectExploit("setclipboard")
 if not e then return end
 
 e(tostring(game.PlaceId))
@@ -425,7 +425,7 @@ end
 action="copygameid",
 description="Copies the current game id to your clipboard",
 run=function(d)
-local e=d:expectExploit"setclipboard"
+local e=d:expectExploit("setclipboard")
 if not e then return end
 
 e(tostring(game.GameId))
@@ -484,12 +484,12 @@ action="autorejoin|autorj",
 description="Automatically rejoins the server if you get kicked/disconnected",
 run=function(b)
 if b.privateEnv.autoRejoinConn then
-b:notify"auto rejoin is already enabled"
+b:notify("auto rejoin is already enabled")
 return
 end
 
 b.privateEnv.autoRejoinConn=b:connect(b.guiService.ErrorMessageChanged,function()
-b:run"rejoin"
+b:run("rejoin")
 end)
 end
 }end a.m=function()local c=a.cache.m if not c then c={c=b()}a.cache.m=c end return c.c end end do local b=function()
@@ -504,8 +504,8 @@ if e then
 f=f.."&cursor="..e
 end
 
-local g=c{Url=f,Method="GET"}
-return game:GetService"HttpService":JSONDecode(g.Body)end
+local g=c({Url=f,Method="GET"})
+return game:GetService("HttpService"):JSONDecode(g.Body)end
 
 
 return{
@@ -513,7 +513,7 @@ return{
 action="serverhop|shop",
 description="Teleports you to a different server",
 run=function(d)
-local e=d:expectExploit"httprequest"
+local e=d:expectExploit("httprequest")
 if not e then return end
 
 d:notify("Serverhop","looking for a server with free space...")
@@ -608,7 +608,7 @@ local c=b.executorEnv.getconnections
 local d=b.privateEnv
 
 if d.enabledAntiAfk then
-b:notify"anti AFK is already enabled"
+b:notify("anti AFK is already enabled")
 return
 end
 
@@ -630,7 +630,7 @@ g(f)
 end
 end
 
-b:notify"anti AFK is now enabled"
+b:notify("anti AFK is now enabled")
 end
 }end a.q=function()local c=a.cache.q if not c then c={c=b()}a.cache.q=c end return c.c end end do local b=function()
 return{
@@ -664,13 +664,13 @@ b.executorEnv.setfpscap(d)
 end
 }end a.t=function()local c=a.cache.t if not c then c={c=b()}a.cache.t=c end return c.c end end do local b=function()local b=function(
 b)
-if not b:IsA"PackageLink"then return end
+if not b:IsA("PackageLink")then return end
 
-if b.Parent:FindFirstChild"ADpart"then
+if b.Parent:FindFirstChild("ADpart")then
 b.Parent:Destroy()
 end
 
-if b.Parent:FindFirstChild"AdGuiAdornee"then
+if b.Parent:FindFirstChild("AdGuiAdornee")then
 b.Parent.Parent:Destroy()
 end end
 
@@ -697,7 +697,7 @@ return{
 action="saveinstance|savegame|saveplace|savep",
 description="Uses saveinstance to save the game",
 run=function(b)
-local c=b:expectExploit"saveinstance"
+local c=b:expectExploit("saveinstance")
 if not c then return end
 
 b:notify("Saveinstance","saving the game, this can take a while")
@@ -726,7 +726,7 @@ end
 local b="CoreScripts/NetworkPause"local c=function(
 
 c)
-local d=c:collectGarbage"antigameplaypaused"
+local d=c:collectGarbage("antigameplaypaused")
 if d then
 d.connection:Disconnect()
 end end
@@ -739,13 +739,13 @@ description="Clears the annoying box shown when a game is loading assets due to 
 run=function(d)
 c(d)
 
-local e=d.coreGui:FindFirstChild"RobloxGui"
+local e=d.coreGui:FindFirstChild("RobloxGui")
 if not e then
 d:notify("Anti Pause","RobloxGui was not found")
 return
 end
 
-local f=d:createGarbage"antigameplaypaused"
+local f=d:createGarbage("antigameplaypaused")
 f.connection=d:connect(e.ChildAdded,function(g)
 if g.Name==b then
 g:Destroy()
@@ -776,8 +776,8 @@ b:notify("Client Antikick","already active")
 return
 end
 
-local c=b:expectExploit"hookmetamethod"
-local d=b:expectExploit"getnamecallmethod"
+local c=b:expectExploit("hookmetamethod")
+local d=b:expectExploit("getnamecallmethod")
 if not(c and d)then return end
 
 local e=b.localPlayer
@@ -818,8 +818,8 @@ b:notify("Client AntiTP","already active")
 return
 end
 
-local c=b:expectExploit"hookmetamethod"
-local d=b:expectExploit"getnamecallmethod"
+local c=b:expectExploit("hookmetamethod")
+local d=b:expectExploit("getnamecallmethod")
 if not(c and d)then return end
 
 local e=b.teleportService
@@ -846,7 +846,7 @@ if k:lower()=="teleport"or k=="TeleportToPlaceInstance"then
 
 
 local l=...
-local m=f:getValue"allowRejoin"==true and l==game.PlaceId
+local m=f:getValue("allowRejoin")==true and l==game.PlaceId
 if not m then return end
 end
 end
@@ -868,7 +868,7 @@ local d=c:nextValue()
 
 
 if d==nil then
-d=not b.storage.settings:getValue"allowRejoin"
+d=not b.storage.settings:getValue("allowRejoin")
 end
 
 b.storage.settings:setValue("allowRejoin",d)
@@ -933,7 +933,7 @@ local c={
 }local d=function(
 
 d)
-local e=workspace:FindFirstChildWhichIsA"Terrain"
+local e=workspace:FindFirstChildWhichIsA("Terrain")
 local f=d.rbxServices.Lighting
 
 e.WaterWaveSize=0
@@ -957,7 +957,7 @@ end
 end
 
 d:connect(workspace.DescendantAdded,function(g)
-if g:IsA"BasePart"then
+if g:IsA("BasePart")then
 BasePart.CastShadow=false
 return
 end
@@ -977,7 +977,7 @@ action="antilag|boostfps|lowgraphics",
 description="Lowers game quality to boost FPS",
 run=function(e)
 if e.privateEnv.antiLagEnabled then
-e:notify"anti lag is already enabled"
+e:notify("anti lag is already enabled")
 return
 end
 
@@ -1110,7 +1110,7 @@ return{
 action="alignmentkeys",
 description="Enables the left and right alignment keys (comma and period)",
 run=function(c)
-local d=c:createGarbage"alignmentkeys"
+local d=c:createGarbage("alignmentkeys")
 if not d then return end
 
 d.akConn=c:connect(c.robloxServices.UserInputService.InputBegan,function(e,f)
@@ -1133,7 +1133,7 @@ end
 action="unalignmentkeys|noalignmentkeys",
 description="Disables the alignment keys",
 run=function(c)
-local d=c:collectGarbage"alignmentkeys"
+local d=c:collectGarbage("alignmentkeys")
 if not d then return end
 
 if d.akEmotes~=nil then
@@ -1147,7 +1147,7 @@ end
 b, c)
 local d=b.localPlayer.PlayerScripts
 local e=d.PlayerModule.CameraModule.MouseLockController
-local f=e:FindFirstChild"BoundKeys"
+local f=e:FindFirstChild("BoundKeys")
 
 if not f then
 f=Instance.new("StringValue",e)
@@ -1251,7 +1251,7 @@ e:TeleportToPlaceInstance(n,m,c)end
 
 h.isAlive=function(l, m)
 local n=if m
-then m:FindFirstChildOfClass"Humanoid"
+then m:FindFirstChildOfClass("Humanoid")
 else l:getHumanoid()
 
 return n~=nil and n.Health>0 end
@@ -1263,7 +1263,7 @@ return c.Character end
 
 h.getHumanoid=function(l)
 local m=l:getCharacter()
-return m and m:FindFirstChildOfClass"Humanoid"end
+return m and m:FindFirstChildOfClass("Humanoid")end
 
 
 h.getRootPart=function(l)
@@ -1275,7 +1275,7 @@ h.resetCharacter=function(l)
 local m=l:getCharacter()
 if not m then return end
 
-local n=m:FindFirstChildOfClass"Humanoid"
+local n=m:FindFirstChildOfClass("Humanoid")
 if n then
 n:ChangeState(Enum.HumanoidStateType.Dead)
 else
@@ -1345,7 +1345,7 @@ local o=os.clock()+(m or 1)
 task.spawn(function()
 while os.clock()<o and n.Parent do
 for p,q in n:GetDescendants()do
-if q:IsA"BasePart"then
+if q:IsA("BasePart")then
 q.AssemblyLinearVelocity=Vector3.zero
 q.AssemblyAngularVelocity=Vector3.zero
 end
@@ -1471,12 +1471,12 @@ return e end local f=function(
 
 f)
 local g=f.Character
-return g and g:FindFirstChildOfClass"Humanoid"end local g=function(
+return g and g:FindFirstChildOfClass("Humanoid")end local g=function(
 
 
 g)
 local h=g.Character
-return h and h:FindFirstChild"HumanoidRootPart"end local h=function(
+return h and h:FindFirstChild("HumanoidRootPart")end local h=function(
 
 
 h)
@@ -1683,7 +1683,7 @@ return false end local r=function(
 
 
 r)
-return r:match"^%s*(.-)%s*$"end local s=function(
+return r:match("^%s*(.-)%s*$")end local s=function(
 
 
 
@@ -1797,7 +1797,7 @@ return A end local x=function(
 x)
 local y={}
 
-for z in x:gmatch"[^,]+"do
+for z in x:gmatch("[^,]+")do
 local A=r(z)
 
 if A~=""then
@@ -1810,7 +1810,7 @@ return y end local y=function(
 
 
 y)
-return y~=nil and y:find"[,+%-]"~=nil end local z=function(
+return y~=nil and y:find("[,+%-]")~=nil end local z=function(
 
 
 
@@ -1904,7 +1904,7 @@ return{
 action="inviteprompt",
 description="Prompts the game invite window, so you can invite friends",
 run=function(b)
-local c=game:GetService"SocialService"
+local c=game:GetService("SocialService")
 
 local d,e=pcall(function()
 c:PromptGameInvite(b.localPlayer)
@@ -2012,14 +2012,14 @@ local c=b.localPlayer
 local d=c.Character
 if not d then return end
 
-local e=d:FindFirstChildWhichIsA"Humanoid"
+local e=d:FindFirstChildWhichIsA("Humanoid")
 if e then
 e:ChangeState(Enum.HumanoidStateType.Dead)
 end
 
 d:ClearAllChildren()
 
-local f=Instance.new"Model"
+local f=Instance.new("Model")
 f.Parent=workspace
 
 task.wait()
@@ -2112,7 +2112,7 @@ local g=b.executorEnv.firetouchinterest
 
 if f and g then
 for h,i in workspace:GetDescendants()do
-if i:IsA"SpawnLocation"and i.BrickColor==e.TeamColor and i.AllowTeamChangeOnTouch then
+if i:IsA("SpawnLocation")and i.BrickColor==e.TeamColor and i.AllowTeamChangeOnTouch then
 g(i,f,0)
 g(i,f,1)
 break
@@ -2142,12 +2142,12 @@ optional=true
 }
 },
 run=function(c,d)
-local e=c:expectExploit"firetouchinterest"
+local e=c:expectExploit("firetouchinterest")
 if not e then return end
 
 local f=c.playerService:getCharacter()
-local g=f and f:FindFirstChildWhichIsA"Tool"
-local h=g and g:FindFirstChild"Handle"
+local g=f and f:FindFirstChildWhichIsA("Tool")
+local h=g and g:FindFirstChild("Handle")
 if not h then
 c:notify("Handle Kill",'You need to hold a "Tool" that does damage on touch.')
 return
@@ -2157,12 +2157,12 @@ local i=b(d:nextValue())
 local j=d:nextValue()or math.huge
 
 
-local k=c:collectGarbage"handlekill"
+local k=c:collectGarbage("handlekill")
 if k then
 k.running=false
 end
 
-local l=c:createGarbage"handlekill"
+local l=c:createGarbage("handlekill")
 l.running=true
 c:notify("Handle Kill","Started!")
 
@@ -2177,8 +2177,8 @@ if not(m and g.Parent==m)then break end
 local n=c.playerService:getRootPart()
 for o,p in i do
 local q=p~=c.localPlayer and p.Character
-local r=q and q:FindFirstChildWhichIsA"Humanoid"
-local s=q and q:FindFirstChild"HumanoidRootPart"
+local r=q and q:FindFirstChildWhichIsA("Humanoid")
+local s=q and q:FindFirstChild("HumanoidRootPart")
 
 if n and r and s and r.Health>0 and(n.Position-s.Position).Magnitude<=j then
 e(h,s,1)
@@ -2335,7 +2335,7 @@ if not l or l:lower()~=j.roleName then return end
 i:notify(d,`{k.Name} has the role '{l}'`)
 
 if i.privateEnv.rolewatchLeave then
-i.localPlayer:Kick"rolewatch: a watched player joined"
+i.localPlayer:Kick("rolewatch: a watched player joined")
 end end local j=function(
 
 
@@ -2378,7 +2378,7 @@ local n=l:nextValue()
 
 h(k,"rolewatch")
 
-local o=k:createGarbage"rolewatch"
+local o=k:createGarbage("rolewatch")
 o.groupId=m
 o.roleName=n:lower()
 
@@ -2417,7 +2417,7 @@ description="Notify if a staff member of the game joins the server",
 run=function(k)
 h(k,"staffwatch")
 
-local l=k:createGarbage"staffwatch"local m=function(
+local l=k:createGarbage("staffwatch")local m=function(
 
 m)
 if m~=k.localPlayer and j(m)then
@@ -2488,7 +2488,7 @@ b:notify("Click delete","nothing under the mouse")
 return
 end
 
-if c:IsA"Terrain"then
+if c:IsA("Terrain")then
 b:notify("Click delete","terrain cannot be deleted")
 return
 end
@@ -2507,7 +2507,7 @@ end
 action="clickteleport",
 description="Go to Settings > Keybinds > Add for click teleport",
 run=function(b)
-b:run"mousetp"
+b:run("mousetp")
 end
 }
 }end a.ae=function()local c=a.cache.ae if not c then c={c=b()}a.cache.ae=c end return c.c end end do local b=function()local b=function(
@@ -2527,7 +2527,7 @@ e:PromptSaveAvatar(d.HumanoidDescription,Enum.HumanoidRigType[c])
 
 local f=e.PromptSaveAvatarCompleted:Wait()
 if f==Enum.AvatarPromptResult.Success then
-b:run"reset"
+b:run("reset")
 end
 end)end
 
@@ -2738,7 +2738,7 @@ return n end local m=function(
 
 
 m)
-local n=m:split"/"
+local n=m:split("/")
 local o={}
 
 for p,q in n do
@@ -2794,7 +2794,7 @@ return r end
 
 i.deep=function(q, r)
 local s=q.object
-local t=r:split"."
+local t=r:split(".")
 local u=table.remove(t)
 
 for v,w in t do
@@ -2942,7 +2942,7 @@ return s end
 
 
 return i end a.ak=function()local c=a.cache.ak if not c then c={c=b()}a.cache.ak=c end return c.c end end do local b=function()
-return a.ak().new"storage/settings"end a.al=function()local c=a.cache.al if not c then c={c=b()}a.cache.al=c end return c.c end end do local b=function()
+return a.ak().new("storage/settings")end a.al=function()local c=a.cache.al if not c then c={c=b()}a.cache.al=c end return c.c end end do local b=function()
 return"v0.7.0"end a.am=function()local c=a.cache.am if not c then c={c=b()}a.cache.am=c end return c.c end end do local b=function()
 return{
 owner="tlredz",
@@ -3077,12 +3077,12 @@ for e,f in d do
 e.Visible=f
 end
 
-local e=b:registerGarbage"bindedHideGuis"
+local e=b:registerGarbage("bindedHideGuis")
 e[c]=nil end local c=function(
 
 
 c, d, e)
-local f=c:registerGarbage"bindedHideGuis"
+local f=c:registerGarbage("bindedHideGuis")
 
 for g,h in f do
 b(c,g)
@@ -3094,7 +3094,7 @@ local g=c:createGarbage(d)
 local h=c.localPlayer.PlayerGui
 
 for i,j in h:GetDescendants()do
-if j:IsA"GuiObject"and j.Visible~=e then
+if j:IsA("GuiObject")and j.Visible~=e then
 local k=j.Visible
 j.Visible=e
 g[j]=k
@@ -3234,7 +3234,7 @@ end
 return c end
 
 
-return b{Quote=
+return b({Quote=
 "'",QuotedDouble=
 "\"",Comma=
 ",",Minus=
@@ -3278,7 +3278,7 @@ return b{Quote=
 "7",Eight=
 "8",Nine=
 "9"
-}end a.aw=function()local c=a.cache.aw if not c then c={c=b()}a.cache.aw=c end return c.c end end do local b=function()
+})end a.aw=function()local c=a.cache.aw if not c then c={c=b()}a.cache.aw=c end return c.c end end do local b=function()
 
 
 
@@ -3482,7 +3482,7 @@ return h end a.ax=function()local c=a.cache.ax if not c then c={c=b()}a.cache.ax
 local b=a.ax()local c=function(
 
 c)
-local d=c:collectGarbage"hideiy"
+local d=c:collectGarbage("hideiy")
 if d and d.connection then
 d.connection:Disconnect()
 end end local d=function(
@@ -3493,7 +3493,7 @@ end end local d=function(
 d, e)
 c(d)
 
-local f=d:registerGarbage"hideiy"
+local f=d:registerGarbage("hideiy")
 f.connection=b:onBindingPressed("prefix",function()
 
 if e.mainFrame.Visible then return end
@@ -3517,7 +3517,7 @@ end
 f:hideWindow()
 d(e,f)
 
-local g=b:getBindingName"prefix"
+local g=b:getBindingName("prefix")
 e:notify("IY",`hidden. Press {g} or tap the IY button to type a command`)end local f=function(
 
 
@@ -3592,10 +3592,10 @@ local m=k:Dot(g(j.RightVector))
 
 local n=0
 if h.privateEnv.qeFly~=false then
-if d:IsKeyDown(c:getBinding"flyUp")then
+if d:IsKeyDown(c:getBinding("flyUp"))then
 n=n+1
 end
-if d:IsKeyDown(c:getBinding"flyDown")then
+if d:IsKeyDown(c:getBinding("flyDown"))then
 n=n-1
 end
 end
@@ -3640,12 +3640,12 @@ i:notify("Fly","your character is not loaded")
 return
 end
 
-local m=Instance.new"BodyVelocity"
+local m=Instance.new("BodyVelocity")
 m.MaxForce=f
 m.Velocity=Vector3.zero
 m.Parent=l
 
-local n=Instance.new"BodyGyro"
+local n=Instance.new("BodyGyro")
 n.MaxTorque=f
 n.P=9e4
 n.CFrame=l.CFrame
@@ -3727,9 +3727,9 @@ name="fly speed",
 optional=true
 },
 run=function(d,e)
-local f=d:getGarbage"fly"
+local f=d:getGarbage("fly")
 if f and f.kind=="fly"then
-d:run"unfly"
+d:run("unfly")
 else
 d:run("fly",e)
 end
@@ -3750,7 +3750,7 @@ local b="Noclip"
 local c={kind="string",name="nonotify",optional=true}local d=function(
 
 d)
-local e=d:collectGarbage"noclip"
+local e=d:collectGarbage("noclip")
 if not e then return false end
 
 e.connection:Disconnect()
@@ -3765,18 +3765,18 @@ return true end local e=function(
 
 
 e)
-local f=e:createGarbage"noclip"
+local f=e:createGarbage("noclip")
 f.parts=setmetatable({},{__mode="k"})
 
 f.connection=e:connect(e.runService.Stepped,function()
 local g=e.playerService:getCharacter()
 if not g then return end
 
-local h=e:getGarbage"float"
+local h=e:getGarbage("float")
 local i=h and h.platform
 
 for j,k in g:GetDescendants()do
-if k:IsA"BasePart"and k.CanCollide and k~=i then
+if k:IsA("BasePart")and k.CanCollide and k~=i then
 k.CanCollide=false
 f.parts[k]=true
 end
@@ -3817,7 +3817,7 @@ end
 action="togglenoclip",
 description="Toggles noclip",
 run=function(f)
-f:run(if f:hasGarbage"noclip"then"unnoclip"else"noclip")
+f:run(if f:hasGarbage("noclip")then"unnoclip"else"noclip")
 end
 }
 }end a.aC=function()local c=a.cache.aC if not c then c={c=b()}a.cache.aC=c end return c.c end end do local b=function()
@@ -3872,9 +3872,9 @@ name="vehicle fly speed",
 optional=true
 },
 run=function(d,e)
-local f=d:getGarbage"fly"
+local f=d:getGarbage("fly")
 if f and f.kind=="vehiclefly"then
-d:run"unvehiclefly"
+d:run("unvehiclefly")
 else
 d:run("vehiclefly",e)
 end
@@ -3893,7 +3893,7 @@ local b=50 local c=function(
 
 
 c)
-local d=c:collectGarbage"cframefly"
+local d=c:collectGarbage("cframefly")
 if not d then return end
 
 d.connection:Disconnect()
@@ -3907,7 +3907,7 @@ c(d)
 
 local e=d.playerService:getHumanoid()
 local f=d.playerService:getCharacter()
-local g=f and f:FindFirstChild"Head"
+local g=f and f:FindFirstChild("Head")
 if not(e and g)then
 d:notify("cframefly","your character is not loaded")
 return
@@ -3916,7 +3916,7 @@ end
 e.PlatformStand=true
 g.Anchored=true
 
-local h=d:createGarbage"cframefly"
+local h=d:createGarbage("cframefly")
 h.humanoid=e
 h.head=g
 h.connection=d:connect(d.runService.Heartbeat,function(i)
@@ -3993,14 +3993,14 @@ end
 
 b)
 local c=b
-while c and not c:IsA"Model"do
+while c and not c:IsA("Model")do
 c=c.Parent
 end
 return c end local c=function(
 
 
 c)
-local d=c:collectGarbage"vehiclenoclip"
+local d=c:collectGarbage("vehiclenoclip")
 if not d then return end
 
 for e,f in d.parts do
@@ -4023,11 +4023,11 @@ d:notify("vehiclenoclip","you are not sitting in a vehicle")
 return
 end
 
-local h=d:createGarbage"vehiclenoclip"
+local h=d:createGarbage("vehiclenoclip")
 h.parts={}
 
 for i,j in g:GetDescendants()do
-if j:IsA"BasePart"and j.CanCollide then
+if j:IsA("BasePart")and j.CanCollide then
 j.CanCollide=false
 table.insert(h.parts,j)
 end
@@ -4038,7 +4038,7 @@ end
 action="togglevnoclip",
 description="Toggles vehicle collision",
 run=function(d)
-d:run(if d:hasGarbage"vehiclenoclip"then"vehicleclip"else"vehiclenoclip")
+d:run(if d:hasGarbage("vehiclenoclip")then"vehicleclip"else"vehiclenoclip")
 end
 },
 {
@@ -4055,7 +4055,7 @@ local b=a.ax()
 local c=-3.1 local d=function(
 
 d)
-local e=d:collectGarbage"float"
+local e=d:collectGarbage("float")
 if not e then return end
 
 for f,g in e.connections do
@@ -4065,8 +4065,8 @@ e.platform:Destroy()end local e=function(
 
 
 e)
-if e:hasGarbage"float"then
-e:notify"float is already enabled"
+if e:hasGarbage("float")then
+e:notify("float is already enabled")
 return
 end
 
@@ -4077,7 +4077,7 @@ e:notify("Float","your character is not loaded")
 return
 end
 
-local h=Instance.new"Part"
+local h=Instance.new("Part")
 h.Name="IYFloatPlatform"
 h.Transparency=1
 h.Size=Vector3.new(2,0.2,1.5)
@@ -4085,7 +4085,7 @@ h.Anchored=true
 h.CFrame=g.CFrame*CFrame.new(0,c,0)
 h.Parent=f
 
-local i=e:createGarbage"float"
+local i=e:createGarbage("float")
 i.platform=h
 i.offset=c
 i.connections={}
@@ -4105,22 +4105,22 @@ end))
 table.insert(i.connections,e:connect(e.robloxServices.UserInputService.InputBegan,function(j,k)
 if k then return end
 
-if j.KeyCode==b:getBinding"floatUp"then
+if j.KeyCode==b:getBinding("floatUp")then
 i.offset=i.offset+1.5
-elseif j.KeyCode==b:getBinding"floatDown"then
+elseif j.KeyCode==b:getBinding("floatDown")then
 i.offset=i.offset-0.5
 end
 end))
 
 table.insert(i.connections,e:connect(e.robloxServices.UserInputService.InputEnded,function(j)
-if j.KeyCode==b:getBinding"floatUp"then
+if j.KeyCode==b:getBinding("floatUp")then
 i.offset=i.offset-1.5
-elseif j.KeyCode==b:getBinding"floatDown"then
+elseif j.KeyCode==b:getBinding("floatDown")then
 i.offset=i.offset+0.5
 end
 end))
 
-e:notify("Float",`Enabled ({b:getBindingName"floatDown"} = down & {b:getBindingName"floatUp"} = up)`)end
+e:notify("Float",`Enabled ({b:getBindingName("floatDown")} = down & {b:getBindingName("floatUp")} = up)`)end
 
 
 return{
@@ -4135,14 +4135,14 @@ end
 action="togglefloat",
 description="Toggles float",
 run=function(f)
-f:run(if f:hasGarbage"float"then"unfloat"else"float")
+f:run(if f:hasGarbage("float")then"unfloat"else"float")
 end
 },
 {
 action="unfloat|noplatform|nofloat|unplatform",
 description="Removes the platform",
 run=function(f)
-if not f:hasGarbage"float"then return end
+if not f:hasGarbage("float")then return end
 
 d(f)
 f:notify("Float","Disabled")
@@ -4162,7 +4162,7 @@ return b end local c=function(
 
 
 c)
-local d=c:collectGarbage"swim"
+local d=c:collectGarbage("swim")
 if not d then return end
 
 for e,f in d.connections do
@@ -4175,8 +4175,8 @@ workspace.Gravity=d.gravity end local d=function(
 
 
 d)
-if d:hasGarbage"swim"then
-d:notify"swim is already enabled"
+if d:hasGarbage("swim")then
+d:notify("swim is already enabled")
 return
 end
 
@@ -4186,7 +4186,7 @@ d:notify("swim","your character is not loaded")
 return
 end
 
-local f=d:createGarbage"swim"
+local f=d:createGarbage("swim")
 f.humanoid=e
 f.gravity=workspace.Gravity
 f.states=b()
@@ -4234,7 +4234,7 @@ end
 action="toggleswim",
 description="Toggles swimming",
 run=function(e)
-if e:hasGarbage"swim"then
+if e:hasGarbage("swim")then
 c(e)
 else
 d(e)
@@ -4332,7 +4332,7 @@ local f=os.clock()
 task.spawn(function()
 while os.clock()-f<1 do
 for g,h in e:GetDescendants()do
-if h:IsA"BasePart"then
+if h:IsA("BasePart")then
 h.AssemblyLinearVelocity=Vector3.zero
 h.AssemblyAngularVelocity=Vector3.zero
 end
@@ -4550,7 +4550,7 @@ return e and e:GetAccessories()or{}end local e=function(
 
 
 e)
-return e:IsA"SpecialMesh"end
+return e:IsA("SpecialMesh")end
 
 
 return{
@@ -4559,8 +4559,8 @@ action="blockhead",
 description="Removes the mesh from your head (makes it block-like)",
 run=function(f)
 local g=c(f)
-local h=g and g:FindFirstChild"Head"
-local i=h and h:FindFirstChildOfClass"SpecialMesh"
+local h=g and g:FindFirstChild("Head")
+local i=h and h:FindFirstChildOfClass("SpecialMesh")
 if i then
 i:Destroy()
 end
@@ -4583,7 +4583,7 @@ local g=c(f)
 if not g then return end
 
 for h,i in g:GetChildren()do
-if i:IsA"Tool"or i:IsA"HopperBin"then
+if i:IsA("Tool")or i:IsA("HopperBin")then
 b(i,e)
 end
 end
@@ -4594,7 +4594,7 @@ action="nobgui|unbgui|nobillboardgui|unbillboardgui|noname|rohg",
 description="Removes BillboardGuis and SurfaceGuis from your character",
 run=function(f)
 b(c(f),function(g)
-return g:IsA"BillboardGui"or g:IsA"SurfaceGui"
+return g:IsA("BillboardGui")or g:IsA("SurfaceGui")
 end)
 end
 },
@@ -4603,7 +4603,7 @@ action="naked",
 description="Removes your clothing and shirt graphics",
 run=function(f)
 b(c(f),function(g)
-return g:IsA"Clothing"or g:IsA"ShirtGraphic"
+return g:IsA("Clothing")or g:IsA("ShirtGraphic")
 end)
 end
 },
@@ -4612,7 +4612,7 @@ action="noface|removeface",
 description="Removes your face decal",
 run=function(f)
 b(c(f),function(g)
-return g:IsA"Decal"and g.Name=="face"
+return g:IsA("Decal")and g.Name=="face"
 end)
 end
 },
@@ -4621,7 +4621,7 @@ action="deletehats|nohats|rhats",
 description="Removes the welds that hold your accessories on",
 run=function(f)
 b(c(f),function(g)
-return g:IsA"Weld"and g:FindFirstAncestorWhichIsA"Accessory"~=nil
+return g:IsA("Weld")and g:FindFirstAncestorWhichIsA("Accessory")~=nil
 end)
 end
 },
@@ -4654,8 +4654,8 @@ f:notify("R15 Required","This command requires the R15 rig type")
 return
 end
 
-local i=g:FindFirstChild"UpperTorso"
-local j=i and i:FindFirstChild"Waist"
+local i=g:FindFirstChild("UpperTorso")
+local j=i and i:FindFirstChild("Waist")
 if j then
 j:Destroy()
 end
@@ -4666,7 +4666,7 @@ end
 local b=a.S()local c=function(
 
 c)
-return c:IsA"Tool"or c:IsA"HopperBin"end local d=function(
+return c:IsA("Tool")or c:IsA("HopperBin")end local d=function(
 
 
 d)
@@ -4684,7 +4684,7 @@ return{
 action="notools|rtools|clrtools|removetools|deletetools|dtools",
 description="Deletes every tool in your backpack and character",
 run=function(e)
-d(e.localPlayer:FindFirstChildOfClass"Backpack")
+d(e.localPlayer:FindFirstChildOfClass("Backpack"))
 d(e.localPlayer.Character)
 end
 },
@@ -4699,7 +4699,7 @@ end
 action="equiptools",
 description="Equips every tool in your backpack",
 run=function(e)
-local f=e.localPlayer:FindFirstChildOfClass"Backpack"
+local f=e.localPlayer:FindFirstChildOfClass("Backpack")
 local g=e.localPlayer.Character
 if not(f and g)then return end
 
@@ -4724,7 +4724,7 @@ end
 action="droptools|droptool",
 description="Drops every tool from your backpack to the workspace",
 run=function(e)
-local f=e.localPlayer:FindFirstChildOfClass"Backpack"
+local f=e.localPlayer:FindFirstChildOfClass("Backpack")
 local g=e.localPlayer.Character
 if not(f and g)then return end
 
@@ -4748,11 +4748,11 @@ action="copytools",
 description="Copies the tools from a player's backpack into yours",
 args={kind="player"},
 run=function(e,f)
-local g=e.localPlayer:FindFirstChildOfClass"Backpack"
+local g=e.localPlayer:FindFirstChildOfClass("Backpack")
 if not g then return end
 
 for h,i in b(f:nextValue())do
-local j=i:FindFirstChildOfClass"Backpack"
+local j=i:FindFirstChildOfClass("Backpack")
 if j then
 for k,l in j:GetChildren()do
 if c(l)then
@@ -4783,7 +4783,7 @@ end end local e=function(
 
 e, f)
 local g=e.localPlayer.Character
-local h=g and g:FindFirstChild"Animate"
+local h=g and g:FindFirstChild("Animate")
 if h then
 h.Disabled=f
 end end local f=function(
@@ -4792,7 +4792,7 @@ end end local f=function(
 f)
 local g=f.playerService:getHumanoid()
 local h=f.localPlayer.Character
-local i=h and h:FindFirstChild"Animate"
+local i=h and h:FindFirstChild("Animate")
 
 if not(g and i)then
 f:notify("Refresh Animations","Failed to get Animate/Humanoid")
@@ -4805,7 +4805,7 @@ i.Disabled=false end local g=function(
 
 
 g)
-local h=g:collectGarbage"dance"
+local h=g:collectGarbage("dance")
 if h and h.track then
 h.track:Stop()
 h.track:Destroy()
@@ -4831,11 +4831,11 @@ if not k then return end
 
 local l=tostring(j:nextValue())
 local m=j:nextValue()
-if not l:find"rbxassetid://"then
+if not l:find("rbxassetid://")then
 l="rbxassetid://"..l
 end
 
-local n=Instance.new"Animation"
+local n=Instance.new("Animation")
 n.AnimationId=l
 
 local o=k:LoadAnimation(n)
@@ -4956,14 +4956,14 @@ if not j then return end
 g(i)
 
 local k=j.RigType==Enum.HumanoidRigType.R15 and c or b
-local l=Instance.new"Animation"
+local l=Instance.new("Animation")
 l.AnimationId="rbxassetid://"..k[math.random(1,#k)]
 
 local m=j:LoadAnimation(l)
 m.Looped=true
 m:Play()
 
-i:registerGarbage"dance".track=m
+i:registerGarbage("dance").track=m
 end
 },
 {
@@ -4980,7 +4980,7 @@ local d=b.localPlayer.Character
 if not d then return end
 
 for e,f in d:GetDescendants()do
-if f:IsA"BasePart"then
+if f:IsA("BasePart")then
 f.CustomPhysicalProperties=PhysicalProperties.new(c,0.3,0.5)
 end
 end end
@@ -5020,12 +5020,12 @@ return{
 action="antivoid",
 description="Pushes you back up when you fall below the destroy height",
 run=function(c)
-if c:hasGarbage"antivoid"then
-c:notify"antivoid is already enabled"
+if c:hasGarbage("antivoid")then
+c:notify("antivoid is already enabled")
 return
 end
 
-local d=c:createGarbage"antivoid"
+local d=c:createGarbage("antivoid")
 d.connection=c:connect(c.runService.Stepped,function()
 local e=c.playerService:getRootPart()
 if e and e.Position.Y<=b+25 then
@@ -5040,7 +5040,7 @@ end
 action="unantivoid|noantivoid",
 description="Disables antivoid",
 run=function(c)
-local d=c:collectGarbage"antivoid"
+local d=c:collectGarbage("antivoid")
 if d and d.connection then
 d.connection:Disconnect()
 c:notify("antivoid","Disabled")
@@ -5050,7 +5050,7 @@ end
 }end a.aP=function()local c=a.cache.aP if not c then c={c=b()}a.cache.aP=c end return c.c end end do local b=function()local b=function(
 
 b)
-local c=b:collectGarbage"spasm"
+local c=b:collectGarbage("spasm")
 if c and c.track then
 c.track:Stop()
 c.track:Destroy()
@@ -5080,14 +5080,14 @@ end
 
 b(d)
 
-local f=Instance.new"Animation"
+local f=Instance.new("Animation")
 f.AnimationId="rbxassetid://33796059"
 
 local g=e:LoadAnimation(f)
 g:Play()
 g:AdjustSpeed(99)
 
-d:registerGarbage"spasm".track=g
+d:registerGarbage("spasm").track=g
 end
 },
 {
@@ -5109,7 +5109,7 @@ d:notify("R6 Required","This command requires the r6 rig type")
 return
 end
 
-local f=Instance.new"Animation"
+local f=Instance.new("Animation")
 f.AnimationId="rbxassetid://35154961"
 
 local g=e:LoadAnimation(f)
@@ -5123,16 +5123,16 @@ description="Uses the sit animation while walking, running and jumping",
 run=function(d)
 local e=d.localPlayer.Character
 local f=d.playerService:getHumanoid()
-local g=e and e:FindFirstChild"Animate"
+local g=e and e:FindFirstChild("Animate")
 if not(f and g)then return end
 
-local h=g:FindFirstChild"sit"
-local i=h and h:FindFirstChildWhichIsA"Animation"
+local h=g:FindFirstChild("sit")
+local i=h and h:FindFirstChildWhichIsA("Animation")
 if not i then return end
 
 for j,k in{"idle","walk","run","jump"}do
 local l=g:FindFirstChild(k)
-local m=l and l:FindFirstChildWhichIsA"Animation"
+local m=l and l:FindFirstChildWhichIsA("Animation")
 if m then
 m.AnimationId=i.AnimationId
 end
@@ -5151,7 +5151,7 @@ if not f then return end
 
 c(f)
 
-local g=Instance.new"BodyAngularVelocity"
+local g=Instance.new("BodyAngularVelocity")
 g.Name="Spinning"
 g.MaxTorque=Vector3.new(0,math.huge,0)
 g.AngularVelocity=Vector3.new(0,e:nextValue()or 20,0)
@@ -5171,7 +5171,7 @@ end
 }end a.aQ=function()local c=a.cache.aQ if not c then c={c=b()}a.cache.aQ=c end return c.c end end do local b=function()local b=function(
 
 b)
-return b:IsA"BillboardGui"or b:IsA"SurfaceGui"end local c=function(
+return b:IsA("BillboardGui")or b:IsA("SurfaceGui")end local c=function(
 
 
 c, d)
@@ -5192,8 +5192,8 @@ local e=d.localPlayer.Character
 local f=d.playerService:getHumanoid()
 if not(e and f)then return end
 
-local g=e:FindFirstChild"Head"
-local h=g and g:FindFirstChildOfClass"SpecialMesh"
+local g=e:FindFirstChild("Head")
+local h=g and g:FindFirstChildOfClass("SpecialMesh")
 if h then
 h:Destroy()
 end
@@ -5250,7 +5250,7 @@ run=function(d)
 local e=d.localPlayer.Character
 if not e then return end
 
-local f=d:collectGarbage"nobgui"
+local f=d:collectGarbage("nobgui")
 if f and f.connection then
 f.connection:Disconnect()
 end
@@ -5261,7 +5261,7 @@ h:Destroy()
 end
 end
 
-local g=d:createGarbage"nobgui"
+local g=d:createGarbage("nobgui")
 g.connection=d:connect(e.DescendantAdded,function(h)
 if b(h)then
 task.wait()
@@ -5274,7 +5274,7 @@ end
 action="unloopnobgui|unloopunbgui|unloopnobillboardgui|unloopunbillboardgui|unloopnoname|unlooprohg",
 description="Stops removing BillboardGuis and SurfaceGuis from your character",
 run=function(d)
-local e=d:collectGarbage"nobgui"
+local e=d:collectGarbage("nobgui")
 if e and e.connection then
 e.connection:Disconnect()
 end
@@ -5290,7 +5290,7 @@ run=function(b)
 local c=b.localPlayer.Character
 if not c then return end
 
-local d=c:FindFirstChildOfClass"Humanoid"
+local d=c:FindFirstChildOfClass("Humanoid")
 local e=d and d.RootPart
 
 c.Parent=nil
@@ -5325,7 +5325,7 @@ end
 
 
 b)
-local c=b:registerGarbage"removespecifictool"
+local c=b:registerGarbage("removespecifictool")
 c.connections=c.connections or{}
 return c end
 
@@ -5341,7 +5341,7 @@ local f=b(c)
 if f.connections[e]then return end
 
 f.connections[e]=c:connect(c.runService.RenderStepped,function()
-local g=c.localPlayer:FindFirstChildOfClass"Backpack"
+local g=c.localPlayer:FindFirstChildOfClass("Backpack")
 if not g then return end
 
 for h,i in g:GetChildren()do
@@ -5358,7 +5358,7 @@ description="Stops removing tools with the given name",
 args={kind="string",name="tool name"},
 run=function(c,d)
 local e=(d:nextValue()or""):lower()
-local f=c:getGarbage"removespecifictool"
+local f=c:getGarbage("removespecifictool")
 local g=f and f.connections and f.connections[e]
 
 if g then
@@ -5371,7 +5371,7 @@ end
 action="clearremovespecifictool",
 description="Stops removing every tool that is being filtered",
 run=function(c)
-local d=c:collectGarbage"removespecifictool"
+local d=c:collectGarbage("removespecifictool")
 if not(d and d.connections)then return end
 
 for e,f in d.connections do
@@ -5392,7 +5392,7 @@ run=function(c,d)
 local e=b(d:nextValue())[1]
 if not e then return end
 
-local f=c:collectGarbage"walkto"
+local f=c:collectGarbage("walkto")
 if f then
 f.running=false
 end
@@ -5403,13 +5403,13 @@ g.Sit=false
 task.wait(0.1)
 end
 
-local h=c:createGarbage"walkto"
+local h=c:createGarbage("walkto")
 h.running=true
 
 task.spawn(function()
 while h.running do
 local i=c.playerService:getHumanoid()
-local j=e.Character and e.Character:FindFirstChild"HumanoidRootPart"
+local j=e.Character and e.Character:FindFirstChild("HumanoidRootPart")
 
 if not(i and j)then
 break
@@ -5425,7 +5425,7 @@ end
 action="unwalkto|nowalkto|unfollow|nofollow",
 description="Stops walking to the player",
 run=function(c)
-local d=c:collectGarbage"walkto"
+local d=c:collectGarbage("walkto")
 if d then
 d.running=false
 end
@@ -5474,7 +5474,7 @@ k(l)
 end
 
 table.insert(j.connections,e:connect(e.localPlayer.CharacterAdded,function(m)
-k(m:WaitForChild"Humanoid")
+k(m:WaitForChild("Humanoid"))
 end))end
 
 
@@ -5519,7 +5519,7 @@ local c=PhysicalProperties.new(100,0.3,0.5)
 local d=Vector3.yAxis*99999 local e=function()
 
 
-local e=Instance.new"BodyAngularVelocity"
+local e=Instance.new("BodyAngularVelocity")
 
 e.MaxTorque=Vector3.new(0,math.huge,0)
 e.P=math.huge
@@ -5527,8 +5527,8 @@ return e end local f=function(
 
 
 f)
-if f:hasGarbage"fling"then
-f:notify"fling is already enabled\ndisable using 'unfling'"
+if f:hasGarbage("fling")then
+f:notify("fling is already enabled\ndisable using 'unfling'")
 return
 end
 
@@ -5540,15 +5540,15 @@ if not h then return end
 
 local i=g.Parent
 
-f:notify"fling now is activated"
+f:notify("fling now is activated")
 
-f:run("noclip",b.new{{value="nonotify"}})
+f:run("noclip",b.new({{value="nonotify"}}))
 
-local j=f:createGarbage"fling"
+local j=f:createGarbage("fling")
 j.originalStates={}
 
 for k,l in i:GetDescendants()do
-if not l:IsA"BasePart"then continue end
+if not l:IsA("BasePart")then continue end
 
 j.originalStates[l]={
 CustomPhysicalProperties=l.CustomPhysicalProperties,
@@ -5562,18 +5562,18 @@ local k=e()
 j.flingVelocity=k
 
 j.flingConnection=f:connect(g.Died,function()
-f:notify"player died: disabling fling..."
-f:run"unfling"
+f:notify("player died: disabling fling...")
+f:run("unfling")
 end)
 
 
 j.flingThread=task.spawn(function()
 
 task.wait(0.1)
-if f:getGarbage"fling"~=j then return end
+if f:getGarbage("fling")~=j then return end
 
 for l,m in i:GetChildren()do
-if m:IsA"BasePart"then
+if m:IsA("BasePart")then
 m.Massless=true
 m.Velocity=Vector3.zero
 end
@@ -5582,7 +5582,7 @@ end
 k.Parent=h
 
 
-while f:getGarbage"fling"==j and h.Parent do
+while f:getGarbage("fling")==j and h.Parent do
 k.AngularVelocity=d
 task.wait(0.2)
 k.AngularVelocity=Vector3.zero
@@ -5592,7 +5592,7 @@ end)end local g=function(
 
 
 g)
-local h=g:collectGarbage"fling"
+local h=g:collectGarbage("fling")
 if not h then return end
 
 
@@ -5614,7 +5614,7 @@ i[k]=l
 end
 end
 
-g:notify"fling disabled"end
+g:notify("fling disabled")end
 
 
 
@@ -5626,22 +5626,22 @@ return i~=nil and i.Parent~=nil and j~=nil and j.Parent~=nil end local j=functio
 
 
 j)
-if j:hasGarbage"walkfling"then
-j:notify"walkfling is already enabled\ndisable using 'unwalkfling'"
+if j:hasGarbage("walkfling")then
+j:notify("walkfling is already enabled\ndisable using 'unwalkfling'")
 return
 end
 
-local k=j:createGarbage"walkfling"
+local k=j:createGarbage("walkfling")
 
 
-if not j:hasGarbage"noclip"then
-j:run("noclip",b.new{{value="nonotify"}})
+if not j:hasGarbage("noclip")then
+j:run("noclip",b.new({{value="nonotify"}}))
 k.enabledNoclip=true
 end
 
 local l=j.runService local m=function()
 
-return j:getGarbage"walkfling"==k end
+return j:getGarbage("walkfling")==k end
 
 
 k.thread=task.spawn(function()
@@ -5649,12 +5649,12 @@ while m()do
 l.Heartbeat:Wait()
 
 local n=j.playerService:getCharacter()
-local o=n and n:FindFirstChild"HumanoidRootPart"
+local o=n and n:FindFirstChild("HumanoidRootPart")
 
 while m()and not i(n,o)do
 l.Heartbeat:Wait()
 n=j.playerService:getCharacter()
-o=n and n:FindFirstChild"HumanoidRootPart"
+o=n and n:FindFirstChild("HumanoidRootPart")
 end
 
 if not m()then break end
@@ -5678,13 +5678,13 @@ end)
 local n=j.playerService:getHumanoid()
 if n then
 k.diedConnection=j:connect(n.Died,function()
-j:run"unwalkfling"
+j:run("unwalkfling")
 end)
 end end local k=function(
 
 
 k)
-local l=k:collectGarbage"walkfling"
+local l=k:collectGarbage("walkfling")
 if not l then return end
 
 if l.diedConnection then
@@ -5692,13 +5692,13 @@ l.diedConnection:Disconnect()
 end
 
 if l.enabledNoclip then
-k:run("unnoclip",b.new{{value="nonotify"}})
+k:run("unnoclip",b.new({{value="nonotify"}}))
 end end local l=function(
 
 
 l, m)
-l:run"unvehiclefly"
-l:run"unwalkfling"
+l:run("unvehiclefly")
+l:run("unwalkfling")
 
 local n=m and m:nextValue()
 if n then
@@ -5706,19 +5706,19 @@ l.privateEnv.vehicleFlySpeed=n
 end
 
 
-l:run("vehiclefly",b.new{})
+l:run("vehiclefly",b.new({}))
 j(l)
 
-local o=l:getGarbage"walkfling"
+local o=l:getGarbage("walkfling")
 if o then
 o.flyfling=true
 end end local m=function(
 
 
 m)
-m:run"unvehiclefly"
-m:run"unwalkfling"
-m:run"breakvelocity"end
+m:run("unvehiclefly")
+m:run("unwalkfling")
+m:run("breakvelocity")end
 
 
 return{
@@ -5761,7 +5761,7 @@ run=k
 action="togglefling",
 description="Toggles fling",
 run=function(n)
-n:run(if n:hasGarbage"fling"then"unfling"else"fling")
+n:run(if n:hasGarbage("fling")then"unfling"else"fling")
 end
 },
 {
@@ -5773,9 +5773,9 @@ name="speed",
 optional=true
 },
 run=function(n,o)
-local p=n:getGarbage"walkfling"
+local p=n:getGarbage("walkfling")
 if p and p.flyfling then
-n:run"unflyfling"
+n:run("unflyfling")
 else
 n:run("flyfling",o)
 end
@@ -5785,24 +5785,24 @@ end
 action="togglewalkfling",
 description="Toggles walkfling",
 run=function(n)
-n:run(if n:hasGarbage"walkfling"then"unwalkfling"else"walkfling")
+n:run(if n:hasGarbage("walkfling")then"unwalkfling"else"walkfling")
 end
 },
 {
 action="toggleantifling",
 description="Toggles antifling",
 run=function(n)
-n:run(if n:hasGarbage"antifling"then"unantifling"else"antifling")
+n:run(if n:hasGarbage("antifling")then"unantifling"else"antifling")
 end
 },
 {
 action="invisfling",
 description="Enables invisible fling (the invis part is patched, try using the god command before using this)",
 run=function(n)
-n:run"invisible"
+n:run("invisible")
 
 task.spawn(function()
-n:run"fling"
+n:run("fling")
 end)
 end
 },
@@ -5810,14 +5810,14 @@ end
 action="antifling",
 description="Disables player collisions to prevent you from being flung",
 run=function(n)
-if n:hasGarbage"antifling"then return end
+if n:hasGarbage("antifling")then return end
 
-local o=n:createGarbage"antifling"
+local o=n:createGarbage("antifling")
 o.connection=n:connect(n.runService.Stepped,function()
 for p,q in n.players:GetPlayers()do
 if q~=n.localPlayer and q.Character then
 for r,s in q.Character:GetDescendants()do
-if s:IsA"BasePart"then
+if s:IsA("BasePart")then
 s.CanCollide=false
 end
 end
@@ -5830,7 +5830,7 @@ end
 action="unantifling",
 description="Disables antifling",
 run=function(n)
-local o=n:collectGarbage"antifling"
+local o=n:collectGarbage("antifling")
 if o then
 o.connection:Disconnect()
 end
@@ -5844,7 +5844,7 @@ local d=b.playerService:getCharacter()
 if not d then return end
 
 for e,f in d:GetDescendants()do
-if(f:IsA"BasePart"or f:IsA"Decal")and c.originals[f]==nil then
+if(f:IsA("BasePart")or f:IsA("Decal"))and c.originals[f]==nil then
 c.originals[f]=f.Transparency
 f.Transparency=1
 end
@@ -5852,7 +5852,7 @@ end end local c=function(
 
 
 c)
-local d=c:getGarbage"invisible"
+local d=c:getGarbage("invisible")
 if d and d.connection and d.connection.Connected then
 c:notify("Invisible","you are already invisible")
 return
@@ -5861,13 +5861,13 @@ end
 local e={}
 if d then
 e=d.originals or{}
-c:collectGarbage"invisible"
+c:collectGarbage("invisible")
 if d.connection then
 d.connection:Disconnect()
 end
 end
 
-local f=c:createGarbage"invisible"
+local f=c:createGarbage("invisible")
 f.originals=e
 
 b(c,f)
@@ -5880,7 +5880,7 @@ c:notify("Invisible","other players can no longer see your character")end local 
 
 
 d)
-local e=d:collectGarbage"invisible"
+local e=d:collectGarbage("invisible")
 if not e then return false end
 
 if e.connection then
@@ -5917,7 +5917,7 @@ end
 action="toggleinvis",
 description="Toggles invisibility",
 run=function(e)
-e:run(if e:hasGarbage"invisible"then"visible"else"invisible")
+e:run(if e:hasGarbage("invisible")then"visible"else"invisible")
 end
 },
 {
@@ -5980,16 +5980,16 @@ end
 
 
 b)
-local c=b:collectGarbage"hatspin"
+local c=b:collectGarbage("hatspin")
 if not c then return end
 
 c.connection:Disconnect()
 
 for d,e in c.accessories do
-local f=e:FindFirstChild"Handle"
+local f=e:FindFirstChild("Handle")
 if f then
 for g,h in f:GetChildren()do
-if h:IsA"BodyPosition"or h:IsA"BodyAngularVelocity"then
+if h:IsA("BodyPosition")or h:IsA("BodyAngularVelocity")then
 h:Destroy()
 end
 end
@@ -6022,24 +6022,24 @@ if not(e and f)then return end
 
 local g=d:nextValue()or 100
 
-local h=c:createGarbage"hatspin"
+local h=c:createGarbage("hatspin")
 h.character=f
 h.accessories={}
 h.keeps={}
 
 for i,j in e:GetAccessories()do
-local k=j:FindFirstChild"Handle"
-local l=k and k:FindFirstChildOfClass"Weld"
+local k=j:FindFirstChild("Handle")
+local l=k and k:FindFirstChildOfClass("Weld")
 if l then
 l:Destroy()
 
 
-local m=Instance.new"BodyPosition"
+local m=Instance.new("BodyPosition")
 m.P=30000
 m.D=50
 m.Parent=k
 
-local n=Instance.new"BodyAngularVelocity"
+local n=Instance.new("BodyAngularVelocity")
 n.AngularVelocity=Vector3.new(0,g,0)
 n.MaxTorque=Vector3.new(0,g*2,0)
 n.Parent=k
@@ -6056,7 +6056,7 @@ b(c)
 return
 end
 
-local j=f:FindFirstChild"Head"
+local j=f:FindFirstChild("Head")
 if not j then return end
 
 for k,l in h.keeps do
@@ -6076,7 +6076,7 @@ end
 action="clearhats|cleanhats",
 description="Clears hats in the workspace",
 run=function(c)
-local d=c:expectExploit"firetouchinterest"
+local d=c:expectExploit("firetouchinterest")
 if not d then return end
 
 
@@ -6090,7 +6090,7 @@ local h=g.CFrame
 
 local i={}
 for j,k in workspace:GetChildren()do
-if k:IsA"Accessory"then
+if k:IsA("Accessory")then
 table.insert(i,k)
 end
 end
@@ -6100,7 +6100,7 @@ k:Destroy()
 end
 
 for j,k in i do
-local l=k:FindFirstChild"Handle"
+local l=k:FindFirstChild("Handle")
 local m=c.playerService:getRootPart()
 if l and m then
 d(l,m,0)
@@ -6108,12 +6108,12 @@ end
 
 
 local n=0
-while e.Parent and not e:FindFirstChildOfClass"Accessory"and n<120 do
+while e.Parent and not e:FindFirstChildOfClass("Accessory")and n<120 do
 task.wait()
 n=n+1
 end
 
-local o=e:FindFirstChildOfClass"Accessory"
+local o=e:FindFirstChildOfClass("Accessory")
 if o then
 o:Destroy()
 end
@@ -6143,7 +6143,7 @@ local b=60
 
 local function copyTools(c,d)
 for e,f in c:GetChildren()do
-if f:IsA"Tool"or f:IsA"HopperBin"then
+if f:IsA("Tool")or f:IsA("HopperBin")then
 f:Clone().Parent=d
 end
 copyTools(f,d)
@@ -6154,7 +6154,7 @@ c)
 if not c then return end
 
 for d,e in c:GetChildren()do
-if e:IsA"Tool"then
+if e:IsA("Tool")then
 e.CanBeDropped=true
 end
 end end local d=function(
@@ -6164,13 +6164,13 @@ end end local d=function(
 
 d, e)
 local f=d.playerService:getHumanoid()
-if f and e:IsA"BackpackItem"and e:FindFirstChild"Handle"then
+if f and e:IsA("BackpackItem")and e:FindFirstChild("Handle")then
 f:EquipTool(e)
 end end local e=function(
 
 
 e)
-local f=e:collectGarbage"grabtools"
+local f=e:collectGarbage("grabtools")
 if f and f.connection then
 f.connection:Disconnect()
 end end local f=function(
@@ -6179,7 +6179,7 @@ end end local f=function(
 f)
 e(f)
 
-local g=f:createGarbage"grabtools"
+local g=f:createGarbage("grabtools")
 
 for h,i in workspace:GetChildren()do
 d(f,i)
@@ -6194,13 +6194,13 @@ end)end local g=function(
 
 
 g)
-local h=g:collectGarbage"reach"
+local h=g:collectGarbage("reach")
 if not h then return end
 
 for i,j in h.records do
 local k=j.handle
 
-local l=k:FindFirstChild"SelectionBoxCreated"
+local l=k:FindFirstChild("SelectionBoxCreated")
 if l then
 l:Destroy()
 end
@@ -6221,14 +6221,14 @@ h:notify("Reach","your character is not loaded")
 return
 end
 
-local l=h:createGarbage"reach"
+local l=h:createGarbage("reach")
 l.records={}
 
 for m,n in j:GetDescendants()do
-if not n:IsA"Tool"then continue end
+if not n:IsA("Tool")then continue end
 
-local o=n:FindFirstChild"Handle"
-if not(o and o:IsA"BasePart")then continue end
+local o=n:FindFirstChild("Handle")
+if not(o and o:IsA("BasePart"))then continue end
 
 table.insert(l.records,{
 tool=n,
@@ -6238,7 +6238,7 @@ massless=o.Massless,
 gripPos=n.GripPos
 })
 
-local p=Instance.new"SelectionBox"
+local p=Instance.new("SelectionBox")
 p.Name="SelectionBoxCreated"
 p.Adornee=o
 p.Parent=o
@@ -6257,7 +6257,7 @@ return{
 action="tools|gears",
 description="Copies tools from ReplicatedStorage and Lighting",
 run=function(i)
-local j=i.localPlayer:FindFirstChildOfClass"Backpack"
+local j=i.localPlayer:FindFirstChildOfClass("Backpack")
 if not j then
 i:notify("Tools","your backpack is not loaded")
 return
@@ -6292,7 +6292,7 @@ args={
 kind="number"
 },
 run=function(i,j)
-local k=i.localPlayer:FindFirstChildOfClass"Backpack"
+local k=i.localPlayer:FindFirstChildOfClass("Backpack")
 if not k then
 i:notify("Dupetools","your backpack is not loaded")
 return
@@ -6303,7 +6303,7 @@ local l=math.clamp(math.floor(j:nextValue()or 1),1,100)
 local m=0
 
 for n,o in k:GetChildren()do
-if o:IsA"Tool"or o:IsA"HopperBin"then
+if o:IsA("Tool")or o:IsA("HopperBin")then
 for p=1,l do
 o:Clone().Parent=k
 m=m+1
@@ -6319,7 +6319,7 @@ action="droppabletools",
 description="Makes your tools droppable",
 run=function(i)
 c(i.playerService:getCharacter())
-c(i.localPlayer:FindFirstChildOfClass"Backpack")
+c(i.localPlayer:FindFirstChildOfClass("Backpack"))
 end
 },
 {
@@ -6359,12 +6359,12 @@ kind="vector3"
 },
 run=function(i,j)
 local k=i.localPlayer.Character
-local l=i.localPlayer:FindFirstChildOfClass"Backpack"
+local l=i.localPlayer:FindFirstChildOfClass("Backpack")
 if not(k and l)then return end
 
 local m=j:nextValue()
 for n,o in k:GetChildren()do
-if o:IsA"Tool"then
+if o:IsA("Tool")then
 o.Parent=l
 o.GripPos=m
 o.Parent=k
@@ -6388,7 +6388,7 @@ optional=true
 }
 },
 run=function(i,j)
-local k=i.localPlayer:FindFirstChildOfClass"Backpack"
+local k=i.localPlayer:FindFirstChildOfClass("Backpack")
 local l=i.playerService:getCharacter()
 if not(k and l)then return end
 
@@ -6396,7 +6396,7 @@ local m=j:nextValue()or 1
 local n=j:nextValue()
 
 for o,p in k:GetChildren()do
-if not p:IsA"Tool"then continue end
+if not p:IsA("Tool")then continue end
 
 p.Parent=l
 task.spawn(function()
@@ -6437,7 +6437,7 @@ description="Automatically jumps when you run into an object",
 run=function(d)
 b(d,"autojump")
 
-local e=d:createGarbage"autojump"
+local e=d:createGarbage("autojump")
 e.connection=d:connect(d.runService.RenderStepped,function()
 local f=d.playerService:getCharacter()
 local g=d.playerService:getHumanoid()
@@ -6461,7 +6461,7 @@ description="Automatically jumps when you get to the edge of an object",
 run=function(d)
 b(d,"edgejump")
 
-local e=d:createGarbage"edgejump"
+local e=d:createGarbage("edgejump")
 e.connection=d:connect(d.runService.RenderStepped,function()
 local f=d.playerService:getHumanoid()
 local g=d.playerService:getRootPart()
@@ -6504,8 +6504,8 @@ f.value=d
 return
 end
 
-local g=b:expectExploit"hookmetamethod"
-local h=b:expectExploit"checkcaller"
+local g=b:expectExploit("hookmetamethod")
+local h=b:expectExploit("checkcaller")
 if not(g and h)then return end
 
 local i=b.localPlayer
@@ -6518,7 +6518,7 @@ k, l)
 if h()or typeof(k)~="Instance"or typeof(l)~="string"then
 return false
 end
-if string.lower(l)~=j or not k:IsA"Humanoid"then
+if string.lower(l)~=j or not k:IsA("Humanoid")then
 return false
 end
 
@@ -6601,8 +6601,8 @@ local f=b(e:nextValue())
 local g=e:nextValue()or 1
 
 for h,i in f do
-local j=i~=d.localPlayer and i.Character and i.Character:FindFirstChild"Head"
-if j and j:IsA"BasePart"then
+local j=i~=d.localPlayer and i.Character and i.Character:FindFirstChild("Head")
+if j and j:IsA("BasePart")then
 j.CanCollide=false
 j.Size=c(g)
 end
@@ -6634,8 +6634,8 @@ local g=e:nextValue()or 1
 local h=e:nextValue()or 0.4
 
 for i,j in f do
-local k=j~=d.localPlayer and j.Character and j.Character:FindFirstChild"HumanoidRootPart"
-if k and k:IsA"BasePart"then
+local k=j~=d.localPlayer and j.Character and j.Character:FindFirstChild("HumanoidRootPart")
+if k and k:IsA("BasePart")then
 k.CanCollide=false
 k.Size=c(g)
 k.Transparency=h
@@ -6648,7 +6648,7 @@ end
 local b=a.S()local c=function(
 
 c)
-local d=c:collectGarbage"orbit"
+local d=c:collectGarbage("orbit")
 if not d then return end
 
 for e,f in d.connections do
@@ -6685,13 +6685,13 @@ local h=e:nextValue()or 6
 local i=d.playerService:getHumanoid()
 if not(f and i)then return end
 
-local j=d:createGarbage"orbit"
+local j=d:createGarbage("orbit")
 j.connections={}
 
 local k=0 local l=function()
 
 
-return f.Character and f.Character:FindFirstChild"HumanoidRootPart"end
+return f.Character and f.Character:FindFirstChild("HumanoidRootPart")end
 
 
 table.insert(j.connections,d:connect(d.runService.Heartbeat,function()
@@ -6729,7 +6729,7 @@ end
 action="unorbit",
 description="Disables orbit",
 run=function(d)
-if not d:hasGarbage"orbit"then return end
+if not d:hasGarbage("orbit")then return end
 
 c(d)
 d:notify("Orbit","Stopped orbiting player")
@@ -6740,7 +6740,7 @@ end
 local b=a.S()local c=function(
 
 c)
-local d=c:collectGarbage"headsit"
+local d=c:collectGarbage("headsit")
 if d then
 d.connection:Disconnect()
 end end
@@ -6763,11 +6763,11 @@ local g=d.playerService:getHumanoid()
 if not g then return end
 g.Sit=true
 
-local h=d:createGarbage"headsit"
+local h=d:createGarbage("headsit")
 h.connection=d:connect(d.runService.Heartbeat,function()
 local i=d.playerService:getRootPart()
 local j=d.playerService:getHumanoid()
-local k=f.Character and f.Character:FindFirstChild"HumanoidRootPart"
+local k=f.Character and f.Character:FindFirstChild("HumanoidRootPart")
 
 if not(i and j and k and j.Sit)then
 c(d)
@@ -6787,7 +6787,7 @@ description="Makes your character difficult to kill in most games",
 run=function(b)
 local c=b.localPlayer
 local d=c.Character
-local e=d and d:FindFirstChildWhichIsA"Humanoid"
+local e=d and d:FindFirstChildWhichIsA("Humanoid")
 if not e then return end
 
 local f=workspace.CurrentCamera
@@ -6811,7 +6811,7 @@ f.CFrame=g
 h.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.None
 
 
-local i=d:FindFirstChild"Animate"
+local i=d:FindFirstChild("Animate")
 if i then
 i.Disabled=true
 task.wait()
@@ -6851,9 +6851,9 @@ if not g then return end
 local h=g.CFrame
 
 
-local i=f:hasGarbage"antivoid"
+local i=f:hasGarbage("antivoid")
 if i then
-f:run"unantivoid"
+f:run("unantivoid")
 end
 
 
@@ -6874,7 +6874,7 @@ workspace.FallenPartsDestroyHeight=c
 end)
 
 if i then
-f:run"antivoid"
+f:run("antivoid")
 end
 end
 },
@@ -6887,7 +6887,7 @@ kind="player"
 run=function(f,g)
 local h=b(g:nextValue())[1]
 local i=f.playerService:getRootPart()
-local j=h and h~=f.localPlayer and h.Character and h.Character:FindFirstChild"HumanoidRootPart"
+local j=h and h~=f.localPlayer and h.Character and h.Character:FindFirstChild("HumanoidRootPart")
 if not(i and j)then return end
 
 local k=i.CFrame
@@ -6905,7 +6905,7 @@ end
 action="jerk",
 description="Makes you jork it",
 run=function(f)
-local g=f:collectGarbage"jerk"
+local g=f:collectGarbage("jerk")
 if g then
 local h=g.track~=nil and g.track.IsPlaying
 e(g)
@@ -6913,13 +6913,13 @@ if h then return end
 end
 
 local h=f.playerService:getHumanoid()
-local i=h and h:FindFirstChildOfClass"Animator"
+local i=h and h:FindFirstChildOfClass("Animator")
 if not i then
 f:notify("Jerk","your character has no Animator")
 return
 end
 
-local j=Instance.new"Animation"
+local j=Instance.new("Animation")
 j.AnimationId=d
 
 local k,l=pcall(function()
@@ -6933,11 +6933,11 @@ end
 l.Looped=true
 l:Play()
 
-local m=f:createGarbage"jerk"
+local m=f:createGarbage("jerk")
 m.track=l
 
 m.connection=f:connect(h.Died,function()
-local n=f:collectGarbage"jerk"
+local n=f:collectGarbage("jerk")
 if n then
 e(n)
 end
@@ -6956,15 +6956,15 @@ local e="rbxassetid://282574440"local f=function(
 f)
 if not f then return nil end
 
-return f:FindFirstChild"Torso"
-or f:FindFirstChild"UpperTorso"
-or f:FindFirstChild"LowerTorso"
-or f:FindFirstChild"HumanoidRootPart"end local g=function(
+return f:FindFirstChild("Torso")
+or f:FindFirstChild("UpperTorso")
+or f:FindFirstChild("LowerTorso")
+or f:FindFirstChild("HumanoidRootPart")end local g=function(
 
 
 
 g, h)
-local i=Instance.new"Animation"
+local i=Instance.new("Animation")
 i.AnimationId=h
 
 local j=g:LoadAnimation(i)
@@ -6973,7 +6973,7 @@ return j,i end local h=function(
 
 
 h)
-local i=h:collectGarbage"bang"
+local i=h:collectGarbage("bang")
 if not i then return end
 
 for j,k in i.connections do
@@ -6984,7 +6984,7 @@ i.animation:Destroy()end local i=function(
 
 
 i)
-local j=i:collectGarbage"carpet"
+local j=i:collectGarbage("carpet")
 if not j then return end
 
 for k,l in j.connections do
@@ -7021,7 +7021,7 @@ local o=n.RigType==Enum.HumanoidRigType.R15 and d or c
 local p,q=g(n,o)
 p:AdjustSpeed(m)
 
-local r=j:createGarbage"bang"
+local r=j:createGarbage("bang")
 r.track=p
 r.animation=q
 r.connections={}
@@ -7069,7 +7069,7 @@ if not m then return end
 
 local n,o=g(l,e)
 
-local p=j:createGarbage"carpet"
+local p=j:createGarbage("carpet")
 p.track=n
 p.animation=o
 p.connections={}
@@ -7080,7 +7080,7 @@ end))
 
 table.insert(p.connections,j:connect(j.runService.Heartbeat,function()
 local q=j.playerService:getRootPart()
-local r=m.Character and m.Character:FindFirstChild"HumanoidRootPart"
+local r=m.Character and m.Character:FindFirstChild("HumanoidRootPart")
 if q and r then
 q.CFrame=r.CFrame
 end
@@ -7113,7 +7113,7 @@ local g=e.playerService:getHumanoid()
 if not g then return end
 
 for h,i in b(f:nextValue())do
-local j=i.Character and i.Character:FindFirstChildOfClass"Humanoid"
+local j=i.Character and i.Character:FindFirstChildOfClass("Humanoid")
 if j then
 for k,l in g:GetPlayingAnimationTracks()do
 l:Stop()
@@ -7144,7 +7144,7 @@ kind="player",
 optional=true
 },
 run=function(e,f)
-local g=e:expectExploit"setclipboard"
+local g=e:expectExploit("setclipboard")
 if not g then return end
 
 local h=e.localPlayer
@@ -7153,7 +7153,7 @@ if i then
 h=b(i)[1]
 end
 
-local j=h and h.Character and h.Character:FindFirstChildWhichIsA"Humanoid"
+local j=h and h.Character and h.Character:FindFirstChildWhichIsA("Humanoid")
 if not j then
 e:notify("Animations","character is not loaded")
 return
@@ -7234,7 +7234,7 @@ return{a.aB()
 
 }end a.a9=function()local c=a.cache.a9 if not c then c={c=b()}a.cache.a9=c end return c.c end end do local b=function()
 
-return a.ak().new"storage/createdWaypoints"end a.ba=function()local c=a.cache.ba if not c then c={c=b()}a.cache.ba=c end return c.c end end do local b=function()
+return a.ak().new("storage/createdWaypoints")end a.ba=function()local c=a.cache.ba if not c then c={c=b()}a.cache.ba=c end return c.c end end do local b=function()
 local b={}
 
 local c={Vector3=
@@ -7248,11 +7248,11 @@ end
 
 local d={Vector3=
 function(d)
-local e=d:split" "
+local e=d:split(" ")
 return Vector3.new(e[1]or 0,e[2]or 0,e[3]or 0)
 end,Color3=
 function(d)
-local e=d:split" "
+local e=d:split(" ")
 return Color3.new(e[1]or 0,e[2]or 0,e[3]or 0)
 end
 }
@@ -7460,7 +7460,7 @@ return`({math.round(m.X)}, {math.round(m.Y)}, {math.round(m.Z)})`end
 h.parsePosition=function(m)
 local n={}
 
-for o in m:gmatch"[^%s,;]+"do
+for o in m:gmatch("[^%s,;]+")do
 local p=tonumber(o)
 
 if p==nil or p~=p or math.abs(p)==math.huge then
@@ -7483,10 +7483,10 @@ h.go=function(m, n, o)
 if n=="tween"then
 o=if typeof(o)=="number"then o else nil
 
-local p=d:tweenTeleportTo{
+local p=d:tweenTeleportTo({
 target=CFrame.new(m.position),
 speed=o or c.tweenSpeed,
-}
+})
 
 return p~=nil
 end
@@ -7523,7 +7523,7 @@ return true end local m=function(
 
 
 m)
-local n=Instance.new"Part"
+local n=Instance.new("Part")
 n.Size=Vector3.new(5,5,5)
 n.CFrame=CFrame.new(m.position)
 n.Anchored=true
@@ -7532,21 +7532,21 @@ n.CanTouch=false
 n.CanQuery=false
 n.Parent=workspace
 
-local o=Instance.new"BoxHandleAdornment"
+local o=Instance.new("BoxHandleAdornment")
 o.Adornee=n
 o.AlwaysOnTop=true
 o.ZIndex=10
 o.Size=n.Size
 o.Parent=n
 
-local p=Instance.new"BillboardGui"
+local p=Instance.new("BillboardGui")
 p.Adornee=n
 p.AlwaysOnTop=true
 p.Size=UDim2.fromOffset(160,30)
 p.StudsOffset=Vector3.new(0,4,0)
 p.Parent=n
 
-local q=Instance.new"TextLabel"
+local q=Instance.new("TextLabel")
 q.BackgroundTransparency=1
 q.Size=UDim2.fromScale(1,1)
 q.Text=m.name
@@ -7770,7 +7770,7 @@ local b=a.S()local c=function(
 
 
 c)
-local d=c:collectGarbage"loopgoto"
+local d=c:collectGarbage("loopgoto")
 if d and d.id then
 c.loopService:remove(d.id)
 end end local d=function(
@@ -7822,10 +7822,10 @@ local h=d(b(g:nextValue()))
 if not h then return end
 
 local i=g:nextValue()or f.privateEnv.tweenSpeed
-f.playerService:tweenTeleportTo{
+f.playerService:tweenTeleportTo({
 target=e(h),
 speed=i
-}
+})
 end
 },
 {
@@ -7854,7 +7854,7 @@ if not h then return end
 
 f.playerService:unseat()
 
-local k=f:createGarbage"loopgoto"
+local k=f:createGarbage("loopgoto")
 k.id=f.loopService:add(function()
 if h.Parent==nil then
 c(f)
@@ -7892,11 +7892,11 @@ return
 end
 
 local g=b(d:nextValue())[1]
-local h=g and g.Character and g.Character:FindFirstChild"HumanoidRootPart"
+local h=g and g.Character and g.Character:FindFirstChild("HumanoidRootPart")
 if not h then return end
 
 
-local i=f:FindFirstAncestorWhichIsA"Model"
+local i=f:FindFirstAncestorWhichIsA("Model")
 if i then
 i:PivotTo(h:GetPivot())
 end
@@ -7922,7 +7922,7 @@ run=function(c,d)
 local e=b(d:nextValue())[1]
 local f=d:nextValue()or 1
 
-local g=e and e.Character and e.Character:FindFirstChild"HumanoidRootPart"
+local g=e and e.Character and e.Character:FindFirstChild("HumanoidRootPart")
 if not g then return end
 
 local h=c.playerService:getRootPart()
@@ -7940,7 +7940,7 @@ local b=a.S()local c=function(
 
 
 c, d)
-local e=c:getGarbage"loopbring"
+local e=c:getGarbage("loopbring")
 if not e then return end
 
 if d then
@@ -7952,7 +7952,7 @@ e.targets={}
 end
 
 if next(e.targets)==nil then
-c:collectGarbage"loopbring"
+c:collectGarbage("loopbring")
 if e.id then
 c.loopService:remove(e.id)
 end
@@ -7969,9 +7969,9 @@ kind="player"
 run=function(d,e)
 for f,g in b(e:nextValue())do
 local h=g.Character
-local i=h and h:FindFirstChild"HumanoidRootPart"
+local i=h and h:FindFirstChild("HumanoidRootPart")
 if i then
-local j=h:FindFirstChildOfClass"Humanoid"
+local j=h:FindFirstChildOfClass("Humanoid")
 if j then
 j.Sit=false
 end
@@ -8009,7 +8009,7 @@ local g=e:nextValue()or 3
 local h=e:nextValue()or 0
 
 
-local i=d:registerGarbage"loopbring"
+local i=d:registerGarbage("loopbring")
 i.targets=i.targets or{}
 i.distance=g
 for j,k in f do
@@ -8029,7 +8029,7 @@ for k in i.targets do
 if k.Parent==nil then
 i.targets[k]=nil
 else
-local l=k.Character and k.Character:FindFirstChild"HumanoidRootPart"
+local l=k.Character and k.Character:FindFirstChild("HumanoidRootPart")
 if j and l then
 l.CFrame=j.CFrame+Vector3.new(i.distance,1,0)
 end
@@ -8071,7 +8071,7 @@ for f,g in b(e:nextValue())do
 local h=g.Character
 if h then
 for i,j in h:GetDescendants()do
-if j:IsA"BasePart"and not j.Anchored then
+if j:IsA("BasePart")and not j.Anchored then
 j.Anchored=true
 end
 end
@@ -8089,7 +8089,7 @@ for f,g in b(e:nextValue())do
 local h=g.Character
 if h then
 for i,j in h:GetDescendants()do
-if j:IsA"BasePart"and j.Anchored and j.Name~=c then
+if j:IsA("BasePart")and j.Anchored and j.Name~=c then
 j.Anchored=false
 end
 end
@@ -8104,7 +8104,7 @@ b, c)
 local d=b.playerService:getCharacter()
 if not d then return end
 
-local e=d:FindFirstChildOfClass"Humanoid"or d:FindFirstChildOfClass"AnimationController"
+local e=d:FindFirstChildOfClass("Humanoid")or d:FindFirstChildOfClass("AnimationController")
 if not e then return end
 
 for f,g in e:GetPlayingAnimationTracks()do
@@ -8179,10 +8179,10 @@ run=function(b,c)
 local d=c:nextValue()
 local e=c:nextValue()or b.privateEnv.tweenSpeed
 
-b.playerService:tweenTeleportTo{
+b.playerService:tweenTeleportTo({
 target=d,
 speed=e
-}
+})
 end
 },
 {
@@ -8216,10 +8216,10 @@ local e=c:nextValue()or b.privateEnv.tweenSpeed
 local f=b.playerService:getRootPart()
 if not f then return end
 
-b.playerService:tweenTeleportTo{
+b.playerService:tweenTeleportTo({
 target=f.Position+d,
 speed=e
-}
+})
 end
 },
 {
@@ -8251,7 +8251,7 @@ e=b(d)[1]
 end
 
 local f=e and e.Character
-local g=f and(f:FindFirstChild"HumanoidRootPart"or f:FindFirstChildWhichIsA"BasePart")
+local g=f and(f:FindFirstChild("HumanoidRootPart")or f:FindFirstChildWhichIsA("BasePart"))
 if not g then return nil end
 
 local h=g.Position
@@ -8296,7 +8296,7 @@ kind="player",
 optional=true
 },
 run=function(d,e)
-local f=d:expectExploit"setclipboard"
+local f=d:expectExploit("setclipboard")
 if not f then return end
 
 local g=c(d,e:nextValue())
@@ -8330,7 +8330,7 @@ end
 }end a.bo=function()local c=a.cache.bo if not c then c={c=b()}a.cache.bo=c end return c.c end end do local b=function()local b=function(
 
 b)
-local c=b:collectGarbage"spawnpoint"
+local c=b:collectGarbage("spawnpoint")
 if c then
 c.connection:Disconnect()
 end
@@ -8353,7 +8353,7 @@ if not e then return end
 local f=d:nextValue()or 0.1
 b(c)
 
-local g=c:createGarbage"spawnpoint"
+local g=c:createGarbage("spawnpoint")
 g.cframe=e.CFrame
 g.delay=f
 
@@ -8389,7 +8389,7 @@ local f=e:WaitForChild("Humanoid",10)
 if not f then return end
 
 b:Connect(f.Died,function()
-local g=e:FindFirstChild"HumanoidRootPart"
+local g=e:FindFirstChild("HumanoidRootPart")
 if g then
 d=g.CFrame
 end
@@ -8415,7 +8415,7 @@ end
 }end a.bq=function()local c=a.cache.bq if not c then c={c=b()}a.cache.bq=c end return c.c end end do local b=function()local b=function(
 
 b)
-local c=b:collectGarbage"walltp"
+local c=b:collectGarbage("walltp")
 if c then
 c.connection:Disconnect()
 end end
@@ -8429,19 +8429,19 @@ run=function(c)
 b(c)
 
 local d=c.playerService:getCharacter()
-local e=d and(d:FindFirstChild"UpperTorso"or d:FindFirstChild"Torso")
+local e=d and(d:FindFirstChild("UpperTorso")or d:FindFirstChild("Torso"))
 if not e then return end
 
-local f=c:createGarbage"walltp"
+local f=c:createGarbage("walltp")
 f.connection=c:connect(e.Touched,function(g)
 local h=c.playerService:getRootPart()
 local i=c.playerService:getHumanoid()
 if not(h and i and g.Parent)then return end
-if not g:IsA"BasePart"then return end
+if not g:IsA("BasePart")then return end
 if g.Position.Y<=h.Position.Y-i.HipHeight then return end
 
 local j=h.CFrame.LookVector
-local k=g.Parent:FindFirstChild"HumanoidRootPart"
+local k=g.Parent:FindFirstChild("HumanoidRootPart")
 if k then
 c.playerService:setRootCFrame(g.CFrame*CFrame.new(j.X,k.Size.Z/2+i.HipHeight,j.Z))
 else
@@ -8463,13 +8463,13 @@ return{
 action="teleporttool|tptool",
 description="Gives you a teleport tool",
 run=function(b)
-local c=b.localPlayer:FindFirstChildOfClass"Backpack"
+local c=b.localPlayer:FindFirstChildOfClass("Backpack")
 if not c then
 b:notify("Teleport Tool","your backpack is not loaded")
 return
 end
 
-local d=Instance.new"Tool"
+local d=Instance.new("Tool")
 d.Name="Teleport Tool"
 d.RequiresHandle=false
 d.Parent=c
@@ -8493,10 +8493,10 @@ b.playerService:unseat()
 task.wait(b.privateEnv.gotopartDelay or 0.1)
 
 if d then
-b.playerService:tweenTeleportTo{
+b.playerService:tweenTeleportTo({
 target=c,
 speed=b.privateEnv.tweenSpeed
-}
+})
 else
 b.playerService:setRootCFrame(c)
 end end local c=function(
@@ -8549,54 +8549,54 @@ return f:GetPivot()end
 
 
 return{
-c{
+c({
 action="gotopart|topart",
 description="Teleports you to every part with the given name",
 kind="string",argName="part name",
 className="BasePart",field="Name",cframeOf=e,tween=false
-},
-c{
+}),
+c({
 action="tweengotopart|tgotopart|ttopart",
 description="Tweens you to every part with the given name",
 kind="string",argName="part name",
 className="BasePart",field="Name",cframeOf=e,tween=true
-},
-c{
+}),
+c({
 action="gotopartclass|gpc",
 description="Teleports you to every part with the given class name",
 kind="className",argName="class name",
 className="BasePart",field="ClassName",cframeOf=e,tween=false
-},
-c{
+}),
+c({
 action="tweengotopartclass|tgpc",
 description="Tweens you to every part with the given class name",
 kind="className",argName="class name",
 className="BasePart",field="ClassName",cframeOf=e,tween=true
-},
-c{
+}),
+c({
 action="gotomodel|tomodel",
 description="Teleports you to every model with the given name",
 kind="string",argName="model name",
 className="Model",field="Name",cframeOf=f,tween=false
-},
-c{
+}),
+c({
 action="tweengotomodel|tgotomodel|ttomodel",
 description="Tweens you to every model with the given name",
 kind="string",argName="model name",
 className="Model",field="Name",cframeOf=f,tween=true
-},
-d{
+}),
+d({
 action="bringpart",
 description="Brings every part with the given name to you",
 kind="string",argName="part name",
 className="BasePart",field="Name"
-},
-d{
+}),
+d({
 action="bringpartclass|bpc",
 description="Brings every part with the given class name to you",
 kind="className",argName="class name",
 className="BasePart",field="ClassName"
-},
+}),
 {
 action="gotopartdelay",
 description="Sets the delay before the goto part commands teleport (default is 0.1)",
@@ -8622,7 +8622,7 @@ end
 }end a.bu=function()local c=a.cache.bu if not c then c={c=b()}a.cache.bu=c end return c.c end end do local b=function()local b=function(
 
 b)
-local c=b:collectGarbage"tpwalk"
+local c=b:collectGarbage("tpwalk")
 if c then
 c.connection:Disconnect()
 end end local c=function(
@@ -8678,7 +8678,7 @@ local h=d.playerService:getCharacter()
 local i=d.playerService:getHumanoid()
 if not(h and i)then return end
 
-local j=d:createGarbage"tpwalk"
+local j=d:createGarbage("tpwalk")
 j.connection=d:connect(d.runService.Heartbeat,function(k)
 if not(h.Parent and i.Parent)then
 b(d)
@@ -8705,7 +8705,7 @@ end
 action="wallwalk|walkonwalls",
 description="Walk on walls",
 run=function(d)
-local e=d:collectGarbage"wallwalk"
+local e=d:collectGarbage("wallwalk")
 if e and e.active then
 e.stop()
 d:notify("Wallwalk","disabled")
@@ -8721,7 +8721,7 @@ d:notify("Wallwalk",`could not start: {tostring(h)}`)
 return
 end
 
-local i=d:createGarbage"wallwalk"
+local i=d:createGarbage("wallwalk")
 i.active=true
 i.stop=function()
 i.active=false
@@ -8735,7 +8735,7 @@ end
 action="unwallwalk|nowallwalk",
 description="Turns off wallwalk",
 run=function(d)
-local e=d:collectGarbage"wallwalk"
+local e=d:collectGarbage("wallwalk")
 local f=e~=nil and e.active==true
 
 if e and e.stop then
@@ -8778,7 +8778,7 @@ end end local k=function(
 
 
 k)
-local l=k:collectGarbage"pathfind"
+local l=k:collectGarbage("pathfind")
 if not l then return false end
 
 l.running=false
@@ -8863,7 +8863,7 @@ return not u end local o=function(
 o, p, q)
 k(o)
 
-local r=o:createGarbage"pathfind"
+local r=o:createGarbage("pathfind")
 r.running=true
 
 task.spawn(function()
@@ -8914,8 +8914,8 @@ end
 end
 end
 
-if o:getGarbage"pathfind"==r then
-o:collectGarbage"pathfind"
+if o:getGarbage("pathfind")==r then
+o:collectGarbage("pathfind")
 end
 end)end
 
@@ -8935,7 +8935,7 @@ return
 end
 
 o(p,true,function()
-local s=r.Character and r.Character:FindFirstChild"HumanoidRootPart"
+local s=r.Character and r.Character:FindFirstChild("HumanoidRootPart")
 return s and s.Position
 end)
 end
@@ -8997,13 +8997,13 @@ return{a.be()
 
 }end a.bx=function()local c=a.cache.bx if not c then c={c=b()}a.cache.bx=c end return c.c end end do local b=function()
 
-return a.ak().new"storage/installedPlugins"end a.by=function()local c=a.cache.by if not c then c={c=b()}a.cache.by=c end return c.c end end do local b=function()
+return a.ak().new("storage/installedPlugins")end a.by=function()local c=a.cache.by if not c then c={c=b()}a.cache.by=c end return c.c end end do local b=function()
 return a.ak().new("storage/.userData",{
 encrypt=true
 })end a.bz=function()local c=a.cache.bz if not c then c={c=b()}a.cache.bz=c end return c.c end end do local b=function()
-return a.ak().new"storage/aliases"end a.bA=function()local c=a.cache.bA if not c then c={c=b()}a.cache.bA=c end return c.c end end do local b=function()
-return a.ak().new"storage/totalUsedCommands"end a.bB=function()local c=a.cache.bB if not c then c={c=b()}a.cache.bB=c end return c.c end end do local b=function()
-return a.ak().new"storage/eventBinds"end a.bC=function()local c=a.cache.bC if not c then c={c=b()}a.cache.bC=c end return c.c end end do local b=function()
+return a.ak().new("storage/aliases")end a.bA=function()local c=a.cache.bA if not c then c={c=b()}a.cache.bA=c end return c.c end end do local b=function()
+return a.ak().new("storage/totalUsedCommands")end a.bB=function()local c=a.cache.bB if not c then c={c=b()}a.cache.bB=c end return c.c end end do local b=function()
+return a.ak().new("storage/eventBinds")end a.bC=function()local c=a.cache.bC if not c then c={c=b()}a.cache.bC=c end return c.c end end do local b=function()
 
 return{
 waypoints=a.ba(),
@@ -9137,7 +9137,7 @@ listeners={},
 local n={}local o=function(
 
 o, p)
-p.time=os.date"%H:%M:%S"
+p.time=os.date("%H:%M:%S")
 
 local q=m.entries[o]
 table.insert(q,p)
@@ -9175,10 +9175,10 @@ local s=c.httprequest
 
 if s then
 local t,u=pcall(function()
-local t=s{
+local t=s({
 Url=`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds={q}&size=420x420&format=Png&isCircular=false`,
 Method="GET",
-}
+})
 return b.HttpService:JSONDecode(t.Body).data
 end)
 
@@ -9201,12 +9201,12 @@ end
 
 
 task.spawn(function()
-local u=b.HttpService:JSONEncode{
+local u=b.HttpService:JSONEncode({
 content=r,
 avatar_url=p(q),
 username=q.Name,
 allowed_mentions={parse={}},
-}
+})
 
 local v,w=pcall(t,{
 Url=s,
@@ -9356,7 +9356,7 @@ description="Opens the chat logs window with chat and join logs turned on",
 run=function(c)
 b.setChat(true)
 b.setJoin(true)
-c.infiniteYield:chatLogs"chat"
+c.infiniteYield:chatLogs("chat")
 end
 },
 {
@@ -9364,7 +9364,7 @@ action="chatlogs|clogs",
 description="Turns on chat logs and opens the chat tab",
 run=function(c)
 b.setChat(true)
-c.infiniteYield:chatLogs"chat"
+c.infiniteYield:chatLogs("chat")
 end
 },
 {
@@ -9372,7 +9372,7 @@ action="joinlogs|jlogs",
 description="Turns on join logs and opens the joins tab",
 run=function(c)
 b.setJoin(true)
-c.infiniteYield:chatLogs"join"
+c.infiniteYield:chatLogs("join")
 end
 },
 {
@@ -9654,13 +9654,13 @@ end end local e=function()
 local e=b.TextChatService
 
 local f={
-{e:FindFirstChildOfClass"BubbleChatConfiguration",{
+{e:FindFirstChildOfClass("BubbleChatConfiguration"),{
 Enabled=true,
 BackgroundColor3=Color3.fromRGB(),
 BackgroundTransparency=0.3,
 TailVisible=true,
 }},
-{e:FindFirstChildOfClass"ChatWindowConfiguration",{
+{e:FindFirstChildOfClass("ChatWindowConfiguration"),{
 Enabled=true,
 BackgroundColor3=Color3.fromRGB(),
 BackgroundTransparency=0.3,
@@ -9668,7 +9668,7 @@ TextColor3=Color3.fromRGB(0xFF,0xFF,0xFF),
 TextStrokeColor3=Color3.fromRGB(),
 TextStrokeTransparency=0.5,
 }},
-{e:FindFirstChildOfClass"ChatInputBarConfiguration",{
+{e:FindFirstChildOfClass("ChatInputBarConfiguration"),{
 Enabled=true,
 BackgroundColor3=Color3.fromRGB(),
 BackgroundTransparency=0.5,
@@ -9750,7 +9750,7 @@ end end local f=function(
 
 
 f)
-local g=f:collectGarbage"listento"
+local g=f:collectGarbage("listento")
 if not g then
 return false
 end
@@ -9764,11 +9764,11 @@ return true end local g=function(
 
 
 g, h)
-local i=g:createGarbage"listento"local j=function(
+local i=g:createGarbage("listento")local j=function(
 
 j)
 local k=j:WaitForChild("HumanoidRootPart",10)
-if k and g:getGarbage"listento"==i then
+if k and g:getGarbage("listento")==i then
 b.SoundService:SetListener(Enum.ListenerType.ObjectPosition,k)
 end end
 
@@ -9876,21 +9876,21 @@ return{
 action="loopoof",
 description="Makes every player's head play its sounds (oof) over and over",
 run=function(b)
-if b:hasGarbage"oof"then
-b:notify"oof loop is already enabled"
+if b:hasGarbage("oof")then
+b:notify("oof loop is already enabled")
 return
 end
 
-local c=b:createGarbage"oof"
+local c=b:createGarbage("oof")
 c.running=true
 
 task.spawn(function()
 while c.running do
 for d,e in b.robloxServices.Players:GetPlayers()do
-local f=e.Character and e.Character:FindFirstChild"Head"
+local f=e.Character and e.Character:FindFirstChild("Head")
 if f then
 for g,h in f:GetChildren()do
-if h:IsA"Sound"then
+if h:IsA("Sound")then
 h.Playing=true
 end
 end
@@ -9905,7 +9905,7 @@ end
 action="unloopoof",
 description="Stops the oof loop",
 run=function(b)
-local c=b:collectGarbage"oof"
+local c=b:collectGarbage("oof")
 if c then
 c.running=false
 end
@@ -9925,10 +9925,10 @@ kind="player"
 run=function(c,d)
 for e,f in b(d:nextValue())do
 task.spawn(function()
-local g={f.Character,f:FindFirstChildOfClass"Backpack"}
+local g={f.Character,f:FindFirstChildOfClass("Backpack")}
 for h,i in g do
 for j,k in i:GetDescendants()do
-if k:IsA"Sound"then
+if k:IsA("Sound")then
 k.Playing=false
 end
 end
@@ -9950,7 +9950,7 @@ local g=f.Character
 if not g then return end
 
 for h,i in g:GetDescendants()do
-if i:IsA"Sound"and not i.Playing then
+if i:IsA("Sound")and not i.Playing then
 i.Playing=true
 end
 end
@@ -9993,7 +9993,7 @@ local j=b.CoreGui
 local k=j:FindFirstChild(i)
 
 if not k then
-k=Instance.new"Folder"
+k=Instance.new("Folder")
 k.Name=i
 k.Parent=j
 end
@@ -10003,14 +10003,14 @@ return k end local k=function(
 
 
 k)
-if k:IsA"BasePart"then
+if k:IsA("BasePart")then
 return k
 end
 
-if k:IsA"Model"then
-return k:FindFirstChild"Head"
+if k:IsA("Model")then
+return k:FindFirstChild("Head")
 or k.PrimaryPart
-or k:FindFirstChildWhichIsA"BasePart"
+or k:FindFirstChildWhichIsA("BasePart")
 end
 
 return nil end local l=function(
@@ -10018,7 +10018,7 @@ return nil end local l=function(
 
 
 l, m)
-local n=l:IsA"Model"and l:FindFirstChildOfClass"Humanoid"
+local n=l:IsA("Model")and l:FindFirstChildOfClass("Humanoid")
 
 if n then
 return("%s <font color='rgb(160, 160, 160)'>[ %dm ]</font>\n<font color='rgb(25, 240, 25)'>[%d/%d]</font>"):format(
@@ -10043,7 +10043,7 @@ m.__index=m
 
 
 m.new=function(n)
-local o=Instance.new"Folder"
+local o=Instance.new("Folder")
 o.Name=n.tag
 o.Parent=j()
 
@@ -10070,11 +10070,11 @@ end
 local q={instance=o,adornee=p,boxes={}}
 
 if n.showBoxes then
-local r=o:IsA"Model"and o:GetChildren()or{o}
+local r=o:IsA("Model")and o:GetChildren()or{o}
 
 for s,t in r do
-if t:IsA"BasePart"then
-local u=Instance.new"BoxHandleAdornment"
+if t:IsA("BasePart")then
+local u=Instance.new("BoxHandleAdornment")
 u.Adornee=t
 u.Size=t.Size
 u.AlwaysOnTop=true
@@ -10086,14 +10086,14 @@ end
 end
 
 if n.showText then
-local r=Instance.new"BillboardGui"
+local r=Instance.new("BillboardGui")
 r.Adornee=p
 r.Size=UDim2.new(0,200,0,50)
 r.StudsOffset=Vector3.new(0,2,0)
 r.AlwaysOnTop=true
 r.Parent=n.folder
 
-local s=Instance.new"TextLabel"
+local s=Instance.new("TextLabel")
 s.BackgroundTransparency=1
 s.Size=UDim2.new(1,0,1,0)
 s.TextSize=14
@@ -10272,7 +10272,7 @@ return function()
 local q={}
 
 for r,s in workspace:GetDescendants()do
-if s:IsA"BasePart"and p[s.Name:lower()]then
+if s:IsA("BasePart")and p[s.Name:lower()]then
 table.insert(q,s)
 end
 end
@@ -10284,7 +10284,7 @@ end end local q=function(
 
 q, r, s)
 local t=f:GetPlayerFromCharacter(q)
-local u=q:FindFirstChildOfClass"Humanoid"
+local u=q:FindFirstChildOfClass("Humanoid")
 
 local v=0
 if u then
@@ -10318,7 +10318,7 @@ v:start()end local t=function(
 
 
 t, u)
-if t:hasGarbage"chams"then
+if t:hasGarbage("chams")then
 t:notify("ESP","Disable chams (nochams) before using esp")
 return
 end
@@ -10405,7 +10405,7 @@ local A=e.partEspNames or{}
 e.partEspNames=A
 A[z:lower()]=true
 
-if not x:hasGarbage"partesp"then
+if not x:hasGarbage("partesp")then
 s(x,"partesp",{
 source=p(A),
 color=o(k),
@@ -10443,7 +10443,7 @@ end
 action="chams",
 description="ESP but without text in the way",
 run=function(x)
-if x:hasGarbage"esp"then
+if x:hasGarbage("esp")then
 x:notify("Chams","Disable ESP (noesp) before using chams")
 return
 end
@@ -10533,11 +10533,11 @@ b)
 local c=b.privateEnv.xrayEnabled==true
 
 for d,e in workspace:GetDescendants()do
-if e:IsA"BasePart"then
+if e:IsA("BasePart")then
 local f=e.Parent
 local g=f and f.Parent
-local h=(f and f:FindFirstChildWhichIsA"Humanoid")
-or(g and g:FindFirstChildWhichIsA"Humanoid")
+local h=(f and f:FindFirstChildWhichIsA("Humanoid"))
+or(g and g:FindFirstChildWhichIsA("Humanoid"))
 
 if not h then
 e.LocalTransparencyModifier=c and 0.5 or 0
@@ -10547,7 +10547,7 @@ end end local c=function(
 
 
 c)
-local d=c:collectGarbage"loopxray"
+local d=c:collectGarbage("loopxray")
 if d then
 d.connection:Disconnect()
 end end
@@ -10576,7 +10576,7 @@ description="Makes all parts in workspace transparent but looped",
 run=function(d)
 c(d)
 
-local e=d:createGarbage"loopxray"
+local e=d:createGarbage("loopxray")
 e.connection=d:connect(d.runService.RenderStepped,function()
 d.privateEnv.xrayEnabled=true
 b(d)
@@ -10607,14 +10607,14 @@ end
 b, c)
 if not c then return nil end
 
-local d=c:FindFirstAncestorOfClass"Model"
+local d=c:FindFirstAncestorOfClass("Model")
 if not d then return nil end
 
 return b.players:GetPlayerFromCharacter(d)end local c=function(
 
 
 c)
-local d=c:collectGarbage"hovername"
+local d=c:collectGarbage("hovername")
 if not d then return false end
 
 if d.connection then
@@ -10627,14 +10627,14 @@ return true end local d=function(
 
 
 d)
-local e=Instance.new"ScreenGui"
+local e=Instance.new("ScreenGui")
 e.Name="HovernameGui"
 e.ResetOnSpawn=false
 
 local f=d.executorEnv.gethui and d.executorEnv.gethui()
 e.Parent=f or d.coreGui
 
-local g=Instance.new"TextLabel"
+local g=Instance.new("TextLabel")
 g.Name="Name"
 g.BackgroundTransparency=1
 g.Size=UDim2.fromOffset(200,20)
@@ -10659,7 +10659,7 @@ c(e)
 local f=e.playerService:getMouse()
 local g,h=d(e)
 
-local i=e:createGarbage"hovername"
+local i=e:createGarbage("hovername")
 i.gui=g
 i.connection=e:connect(e.runService.RenderStepped,function()
 local j=b(e,f.Target)
@@ -10686,7 +10686,7 @@ end
 
 b, c)
 local d=pcall(function()
-settings():GetService"RenderSettings".ShowBoundingBoxes=c
+settings():GetService("RenderSettings").ShowBoundingBoxes=c
 end)
 
 if not d then
@@ -10803,7 +10803,7 @@ end
 end
 
 if d==b.CoreGui then
-local f=d:FindFirstChild"RobloxGui"
+local f=d:FindFirstChild("RobloxGui")
 d=if f~=nil then f else d
 end
 
@@ -11064,8 +11064,8 @@ end))end local Q=function(
 
 
 Q, R)
-local S=b.Players.LocalPlayer:FindFirstChildOfClass"PlayerGui"
-local T=S and S:FindFirstChild"TouchGui"
+local S=b.Players.LocalPlayer:FindFirstChildOfClass("PlayerGui")
+local T=S and S:FindFirstChild("TouchGui")
 local U=T and T:FindFirstChild("JumpButton",true)
 if not U then return end
 
@@ -11073,7 +11073,7 @@ R.jumpButton=U
 R.jumpVisible=U.Visible
 U.Visible=false
 
-table.insert(R.connections,Q:connect(U:GetPropertyChangedSignal"Visible",function()
+table.insert(R.connections,Q:connect(U:GetPropertyChangedSignal("Visible"),function()
 if U.Visible then
 U.Visible=false
 end
@@ -11124,7 +11124,7 @@ K(Enum.KeyCode.S,Enum.KeyCode.W)+Y.Z
 
 local ab=j:IsKeyDown(Enum.KeyCode.LeftShift)and A or 1
 
-local ac=U.holds.boost or j:IsKeyDown(d:getBinding"freecamBoost")
+local ac=U.holds.boost or j:IsKeyDown(d:getBinding("freecamBoost"))
 local ad=if ac then k.getBoost(T)else 1
 local ae=(T.privateEnv.freecamSpeed or k.DEFAULT_SPEED)*U.navMultiplier*ab*ad
 local af=J(U.velocitySpring,V,aa*ae)
@@ -11256,7 +11256,7 @@ ak.holds={}
 ak.cameraType=ag.CameraType
 ak.cameraSubject=ag.CameraSubject
 
-local T=f.Character and f.Character:FindFirstChildOfClass"Humanoid"
+local T=f.Character and f.Character:FindFirstChildOfClass("Humanoid")
 ak.isLPHumanoid=
 (ak.cameraSubject~=nil and T==ak.cameraSubject)or
 ak.cameraSubject==nil
@@ -11359,7 +11359,7 @@ local ab=a.bZ()local ac=function(
 
 ac)
 if not ac then return nil end
-return ac:FindFirstChildOfClass"Humanoid"or ac end local ad=function(
+return ac:FindFirstChildOfClass("Humanoid")or ac end local ad=function(
 
 
 ad, ae)
@@ -11379,7 +11379,7 @@ end end local af=function(
 
 
 af)
-local ag=af:collectGarbage"view"
+local ag=af:collectGarbage("view")
 if not ag then return false end
 
 for ah,ai in ag.connections do
@@ -11400,7 +11400,7 @@ if not ai then return end
 ab.stop(ag)
 af(ag)
 
-local aj=ag:createGarbage"view"
+local aj=ag:createGarbage("view")
 aj.connections={}
 
 local ak=ag.playerService:getCamera()local b=function()
@@ -11413,7 +11413,7 @@ ad(ag,b)
 end end
 
 
-table.insert(aj.connections,ag:connect(ak:GetPropertyChangedSignal"CameraSubject",b))
+table.insert(aj.connections,ag:connect(ak:GetPropertyChangedSignal("CameraSubject"),b))
 
 table.insert(aj.connections,ag:connect(ai.CharacterAdded,function(c)
 c:WaitForChild("Humanoid",10)
@@ -11448,7 +11448,7 @@ af(ag)
 
 local aj=string.lower(ai)
 for ak,b in workspace:GetDescendants()do
-if b:IsA"BasePart"and string.lower(b.Name)==aj then
+if b:IsA("BasePart")and string.lower(b.Name)==aj then
 ad(ag,b)
 return
 end
@@ -11544,7 +11544,7 @@ description="Moves / opens freecam to a player",
 args={kind="player"},
 run=function(af,ag)
 local ah=aa(ag:nextValue())[1]
-local ai=ah and ah.Character and ah.Character:FindFirstChild"HumanoidRootPart"
+local ai=ah and ah.Character and ah.Character:FindFirstChild("HumanoidRootPart")
 if not ai then
 af:notify(ac,"that player's character is not loaded")
 return
@@ -11591,7 +11591,7 @@ af:notify(ac,"freecam is not on")
 return
 end
 
-local ah=af:expectExploit"setclipboard"
+local ah=af:expectExploit("setclipboard")
 if not ah then return end
 
 ah(ae(ag))
@@ -11622,10 +11622,10 @@ end
 action="tweengotocamera|tweengotocam|tgotocamera|tgotocam",
 description="Tweens you to the location of your camera",
 run=function(aa)
-aa.playerService:tweenTeleportTo{
+aa.playerService:tweenTeleportTo({
 target=aa.playerService:getCamera().CFrame,
 speed=aa.privateEnv.tweenSpeed
-}
+})
 end
 }
 }end a.b1=function()local ab=a.cache.b1 if not ab then ab={c=aa()}a.cache.b1=ab end return ab.c end end do local aa=function()
@@ -11649,21 +11649,21 @@ end
 
 
 aa)
-local ab=aa:FindFirstChild"PlayerScripts"
-local ac=ab and ab:FindFirstChild"PlayerModule"
-local ad=ac and ac:FindFirstChild"CameraModule"
-local ae=ad and ad:FindFirstChild"ZoomController"
-return ae and ae:FindFirstChild"Popper"end
+local ab=aa:FindFirstChild("PlayerScripts")
+local ac=ab and ab:FindFirstChild("PlayerModule")
+local ad=ac and ac:FindFirstChild("CameraModule")
+local ae=ad and ad:FindFirstChild("ZoomController")
+return ae and ae:FindFirstChild("Popper")end
 
 
 return{
 action="noclipcam|nccam",
 description="Allows camera to go through objects like walls",
 run=function(ab)
-local ac=ab:expectExploit"getgc"
-local ad=ab:expectExploit"getconstants"
-local ae=ab:expectExploit"setconstant"
-local af=ab:expectExploit"getfenv"
+local ac=ab:expectExploit("getgc")
+local ad=ab:expectExploit("getconstants")
+local ae=ab:expectExploit("setconstant")
+local af=ab:expectExploit("getfenv")
 if not(ac and ad and ae and af)then return end
 
 local ag=aa(ab.localPlayer)
@@ -11750,8 +11750,8 @@ local ad=ab.localPlayer
 aa.stop(ab)
 
 
-if ab:hasGarbage"view"then
-ab:run"unview"
+if ab:hasGarbage("view")then
+ab:run("unview")
 end
 
 local ae=ac:getHumanoid()
@@ -11767,7 +11767,7 @@ ad.CameraMinZoomDistance=0.5
 ad.CameraMaxZoomDistance=400
 ad.CameraMode=Enum.CameraMode.Classic
 
-ab:notify"camera has been reseted successfully"
+ab:notify("camera has been reseted successfully")
 end
 end
 }end a.b6=function()local ab=a.cache.b6 if not ab then ab={c=aa()}a.cache.b6=ab end return ab.c end end do local aa=function()
@@ -11780,10 +11780,10 @@ local ab=aa.localPlayer
 ab.DevEnableMouseLock=true
 
 
-if aa:hasGarbage"shiftlock"then return end
+if aa:hasGarbage("shiftlock")then return end
 
-local ac=aa:createGarbage"shiftlock"
-ac.connection=aa:connect(ab:GetPropertyChangedSignal"DevEnableMouseLock",function()
+local ac=aa:createGarbage("shiftlock")
+ac.connection=aa:connect(ab:GetPropertyChangedSignal("DevEnableMouseLock"),function()
 ab.DevEnableMouseLock=true
 end)
 
@@ -11802,7 +11802,7 @@ description="Moves your camera view to a player",
 args={kind="player"},
 run=function(ac,ad)
 local ae=aa(ad:nextValue())[1]
-local af=ae and ae.Character and ae.Character:FindFirstChild"Head"
+local af=ae and ae.Character and ae.Character:FindFirstChild("Head")
 if not af then
 ac:notify("Lookat","the player's character is not loaded")
 return
@@ -11836,7 +11836,7 @@ end
 local aa=a.S()local ab=function(
 
 ab)
-local ac=ab:collectGarbage"stareat"
+local ac=ab:collectGarbage("stareat")
 if ac then
 ac.connection:Disconnect()
 end end
@@ -11855,7 +11855,7 @@ if not ae then return end
 
 ab(ac)
 
-local af=ac:createGarbage"stareat"
+local af=ac:createGarbage("stareat")
 af.connection=ac:connect(ac.runService.RenderStepped,function()
 if ae.Parent==nil then
 ab(ac)
@@ -11863,7 +11863,7 @@ return
 end
 
 local ag=ac.playerService:getRootPart()
-local ah=ae.Character and ae.Character:FindFirstChild"HumanoidRootPart"
+local ah=ae.Character and ae.Character:FindFirstChild("HumanoidRootPart")
 if not(ag and ah)then return end
 
 
@@ -11906,7 +11906,7 @@ client=true,
 action="btools",
 description="Gives you building tools (DOES NOT REPLICATE)",
 run=function(ab)
-local ac=ab.localPlayer:FindFirstChildWhichIsA"Backpack"
+local ac=ab.localPlayer:FindFirstChildWhichIsA("Backpack")
 if not ac then
 ab:notify("Btools","your backpack is not loaded")
 return
@@ -11914,7 +11914,7 @@ end
 
 
 for ad,ae in Enum.BinType:GetEnumItems()do
-local af=Instance.new"HopperBin"
+local af=Instance.new("HopperBin")
 af.BinType=ae
 af.Name="Building Tool"
 af.Parent=ac
@@ -11931,7 +11931,7 @@ ab:notify("F3X","no script link is set, fill in F3X_SOURCE_URL at the top of wor
 return
 end
 
-local ac=ab:expectExploit"loadstring"
+local ac=ab:expectExploit("loadstring")
 if not ac then return end
 
 local ad,ae=pcall(function()
@@ -12071,7 +12071,7 @@ return{
 action="lockworkspace|lockws",
 description="Locks the whole workspace",
 run=function(aa)
-local ab=aa:createGarbage"lockworkspace"
+local ab=aa:createGarbage("lockworkspace")
 if not ab then
 aa:notify("Lock workspace","the workspace is already locked")
 return
@@ -12080,7 +12080,7 @@ end
 local ac=aa.playerService:getCharacter()
 
 for ad,ae in workspace:GetDescendants()do
-if ae:IsA"BasePart"and not(ac and ae:IsDescendantOf(ac))then
+if ae:IsA("BasePart")and not(ac and ae:IsDescendantOf(ac))then
 ab[ae]=ae.Locked
 ae.Locked=true
 end
@@ -12093,7 +12093,7 @@ end
 action="unlockworkspace|unlockws",
 description="Unlocks the whole workspace",
 run=function(aa)
-local ab=aa:collectGarbage"lockworkspace"
+local ab=aa:collectGarbage("lockworkspace")
 if not ab then return end
 
 for ac,ad in ab do
@@ -12117,7 +12117,7 @@ local ab=aa.privateEnv.shownParts or{}
 aa.privateEnv.shownParts=ab
 
 for ac,ad in workspace:GetDescendants()do
-if ad:IsA"BasePart"and ad.Transparency==1 then
+if ad:IsA("BasePart")and ad.Transparency==1 then
 if not table.find(ab,ad)then
 table.insert(ab,ad)
 end
@@ -12175,12 +12175,12 @@ ab:notify("Incompatible Exploit","Your exploit does not support this command (mi
 return
 end
 
-if ab:hasGarbage"instantpp"then
-ab:notify"instant proximity prompts is already enabled"
+if ab:hasGarbage("instantpp")then
+ab:notify("instant proximity prompts is already enabled")
 return
 end
 
-local ad=ab:createGarbage"instantpp"
+local ad=ab:createGarbage("instantpp")
 ad.connection=ab:connect(ab.proximityPromptService.PromptButtonHoldBegan,function(ae)
 ac(ae)
 end)
@@ -12190,7 +12190,7 @@ end
 action="uninstantproximityprompts|uninstantpp",
 description="Disables instant proximity prompts",
 run=function(ab)
-local ac=ab:collectGarbage"instantpp"
+local ac=ab:collectGarbage("instantpp")
 if ac and ac.connection then
 ac.connection:Disconnect()
 end
@@ -12226,7 +12226,7 @@ action="deleteinvisparts|deleteinvisibleparts|dip",
 description="Deletes invisible collidable parts",
 run=function()
 for aa,ab in workspace:GetDescendants()do
-if ab:IsA"BasePart"and ab.Transparency==1 and ab.CanCollide then
+if ab:IsA("BasePart")and ab.Transparency==1 and ab.CanCollide then
 ab:Destroy()
 end
 end
@@ -12236,7 +12236,7 @@ end
 action="removeterrain|rterrain|noterrain",
 description="Clears all the terrain",
 run=function()
-local aa=workspace:FindFirstChildOfClass"Terrain"
+local aa=workspace:FindFirstChildOfClass("Terrain")
 if aa then
 aa:Clear()
 end
@@ -12254,11 +12254,11 @@ ab)
 local ac=ab.Parent
 if ac==nil then
 return nil
-elseif ac:IsA"Attachment"then
+elseif ac:IsA("Attachment")then
 return ac.WorldPosition
-elseif ac:IsA"BasePart"then
+elseif ac:IsA("BasePart")then
 return ac.Position
-elseif ac:IsA"Model"then
+elseif ac:IsA("Model")then
 return ac:GetPivot().Position
 end
 return nil end local ac=function(
@@ -12274,7 +12274,7 @@ local ae
 local af=math.huge
 
 for ag,ah in workspace:GetDescendants()do
-if ah:IsA"ProximityPrompt"and ah.Enabled then
+if ah:IsA("ProximityPrompt")and ah.Enabled then
 local ai=ab(ah)
 if not ai then continue end
 
@@ -12307,13 +12307,13 @@ kind="object",
 optional=true
 },
 run=function(ae,af)
-local ag=ae:expectExploit"fireclickdetector"
+local ag=ae:expectExploit("fireclickdetector")
 if not ag then return end
 
 local ah=(af:nextValue()or""):lower()
 
 for ai,aj in workspace:GetDescendants()do
-if aj:IsA"ClickDetector"and aa(aj,ah)then
+if aj:IsA("ClickDetector")and aa(aj,ah)then
 ag(aj)
 end
 end
@@ -12327,13 +12327,13 @@ kind="object",
 optional=true
 },
 run=function(ae,af)
-local ag=ae:expectExploit"fireproximityprompt"
+local ag=ae:expectExploit("fireproximityprompt")
 if not ag then return end
 
 local ah=(af:nextValue()or""):lower()
 
 for ai,aj in workspace:GetDescendants()do
-if aj:IsA"ProximityPrompt"and aa(aj,ah)then
+if aj:IsA("ProximityPrompt")and aa(aj,ah)then
 ag(aj)
 end
 end
@@ -12348,12 +12348,12 @@ kind="boolean",
 name="teleport to prompt"
 },
 run=function(ae,af)
-local ag=ae:expectExploit"fireproximityprompt"
+local ag=ae:expectExploit("fireproximityprompt")
 if not ag then return end
 
 local ah=ac(ae)
 if not ah then
-ae:notify"Can't find any ProximityPrompt on workspace"
+ae:notify("Can't find any ProximityPrompt on workspace")
 return
 end
 
@@ -12374,7 +12374,7 @@ kind="object",
 optional=true
 },
 run=function(ae,af)
-local ag=ae:expectExploit"firetouchinterest"
+local ag=ae:expectExploit("firetouchinterest")
 if not ag then return end
 
 local ah=ae.playerService:getRootPart()
@@ -12383,7 +12383,7 @@ if not ah then return end
 local ai=(af:nextValue()or""):lower()
 
 for aj,ak in workspace:GetDescendants()do
-if ak:IsA"TouchTransmitter"and ak.Parent:IsA"BasePart"and aa(ak.Parent,ai)then
+if ak:IsA("TouchTransmitter")and ak.Parent:IsA("BasePart")and aa(ak.Parent,ai)then
 ag(ak.Parent,ah,0)
 ag(ak.Parent,ah,1)
 end
@@ -12396,12 +12396,12 @@ local aa=a.S()local ab=function(
 
 ab)
 local ac=ab.Parent
-if ac and ac:FindFirstChildWhichIsA"Humanoid"then
+if ac and ac:FindFirstChildWhichIsA("Humanoid")then
 return true
 end
 
 local ad=ac and ac.Parent
-return ad~=nil and ad:FindFirstChildWhichIsA"Humanoid"~=nil end local ac=function(
+return ad~=nil and ad:FindFirstChildWhichIsA("Humanoid")~=nil end local ac=function(
 
 
 
@@ -12410,7 +12410,7 @@ local ad=ac.playerService:getCharacter()
 local ae={}
 
 for af,ag in workspace:GetDescendants()do
-if ag:IsA"BasePart"and not ag.Anchored and not(ad and ag:IsDescendantOf(ad))and not ab(ag)then
+if ag:IsA("BasePart")and not ag.Anchored and not(ad and ag:IsDescendantOf(ad))and not ab(ag)then
 table.insert(ae,ag)
 end
 end
@@ -12427,15 +12427,15 @@ kind="player"
 },
 run=function(ad,ae)
 local af=aa(ae:nextValue())[1]
-local ag=af and af.Character and af.Character:FindFirstChild"Head"
+local ag=af and af.Character and af.Character:FindFirstChild("Head")
 if not ag then return end
 
-local ah=ad:registerGarbage"tpunanchored"
+local ah=ad:registerGarbage("tpunanchored")
 ah.forces=ah.forces or{}
 
 for ai,aj in ac(ad)do
 
-local ak=Instance.new"BodyPosition"
+local ak=Instance.new("BodyPosition")
 ak.MaxForce=Vector3.one*math.huge
 ak.Position=ag.Position
 ak.Parent=aj
@@ -12447,12 +12447,12 @@ end
 action="freezeunanchored|freezeua|animsunanchored",
 description="Freezes unanchored parts",
 run=function(ad)
-if ad:hasGarbage"freezeua"then
+if ad:hasGarbage("freezeua")then
 ad:notify("Freeze","unanchored parts are already frozen, use thawunanchored")
 return
 end
 
-local ae=ad:createGarbage"freezeua"
+local ae=ad:createGarbage("freezeua")
 ae.parts={}
 
 for af,ag in ac(ad)do
@@ -12467,14 +12467,14 @@ end
 action="thawunanchored|thawua|unfreezeua",
 description="Thaws unanchored parts",
 run=function(ad)
-local ae=ad:collectGarbage"tpunanchored"
+local ae=ad:collectGarbage("tpunanchored")
 if ae then
 for af,ag in ae.forces or{}do
 ag:Destroy()
 end
 end
 
-local af=ad:collectGarbage"freezeua"
+local af=ad:collectGarbage("freezeua")
 if af then
 for ag,ah in af.parts do
 if ah.Parent then
@@ -12509,7 +12509,7 @@ ab.OutdoorAmbient=Color3.fromRGB(128,128,128)end local ab=function(
 
 
 ab)
-local ac=ab:collectGarbage"loopfullbright"
+local ac=ab:collectGarbage("loopfullbright")
 if ac then
 ac.connection:Disconnect()
 end end
@@ -12529,7 +12529,7 @@ description="Makes the map brighter / more visible but looped (CLIENT)",
 run=function(ac)
 ab(ac)
 
-local ad=ac:createGarbage"loopfullbright"
+local ad=ac:createGarbage("loopfullbright")
 ad.connection=ac:connect(ac.runService.RenderStepped,function()
 aa(ac)
 end)
@@ -12586,7 +12586,7 @@ local ab=aa.robloxServices.Lighting
 ab.FogEnd=100000
 
 for ac,ad in ab:GetDescendants()do
-if ad:IsA"Atmosphere"then
+if ad:IsA("Atmosphere")then
 ad:Destroy()
 end
 end
@@ -12676,15 +12676,15 @@ local aj=ab(ai:nextValue())
 local ak=ai:nextValue()or 10
 
 for b,c in aj do
-local d=c.Character and c.Character:FindFirstChild"HumanoidRootPart"
+local d=c.Character and c.Character:FindFirstChild("HumanoidRootPart")
 if not d then return end
 
-local e=Instance.new"PointLight"
+local e=Instance.new("PointLight")
 e.Range=ak
 e.Brightness=5
 e.Parent=d
 
-table.insert(ah:registerGarbage"dynamicLights",e)
+table.insert(ah:registerGarbage("dynamicLights"),e)
 end
 end
 },
@@ -12692,14 +12692,14 @@ end
 action="nolight|unlight",
 description="Removes dynamic light from your player",
 run=function(ah)
-for ai,aj in ah:collectGarbage"dynamicLights"or{}do
+for ai,aj in ah:collectGarbage("dynamicLights")or{}do
 aj:Destroy()
 end
 
 local ai=ah.playerService:getCharacter()
 if ai then
 for aj,ak in ai:GetDescendants()do
-if ak:IsA"PointLight"then
+if ak:IsA("PointLight")then
 ak:Destroy()
 end
 end
@@ -12914,7 +12914,7 @@ if ak:sub(-#ae)==ae then
 ak=ak:sub(1,-#ae-1)
 end
 
-if ak:match"^[%w_%-]+$"then
+if ak:match("^[%w_%-]+$")then
 return ak
 end
 return nil end local ak=function(
@@ -12989,7 +12989,7 @@ return nil,`run of '{h.action}' must be a function`
 end
 
 local i={}
-for j,k in h.action:split"|"do
+for j,k in h.action:split("|")do
 local l=k:lower()
 if l==""then
 return nil,`empty name in '{h.action}'`
@@ -13167,7 +13167,7 @@ end
 local k={added={},failed={}}
 
 for l,m in j do
-local n=type(m)=="string"and m:match"([^/\\]+)%.luau$"
+local n=type(m)=="string"and m:match("([^/\\]+)%.luau$")
 
 if n and not ag[n]then
 local o,p=ad.add(h,n)
@@ -13220,7 +13220,7 @@ end
 local j={}
 
 for k,l in i do
-local m=type(l)=="string"and l:match"([^/\\]+)%.luau$"
+local m=type(l)=="string"and l:match("([^/\\]+)%.luau$")
 
 if m and aj(m)and ac.object[m]==nil then
 table.insert(j,m)
@@ -13326,7 +13326,7 @@ local ag={}
 local ah=af.args or{}
 af.args=ah
 
-for ai,aj in af.action:split"|"do
+for ai,aj in af.action:split("|")do
 if not af.name then
 af.name=aj
 end
@@ -13378,7 +13378,7 @@ original=ac
 }end
 
 
-return ab{
+return ab({
 {
 name="general",
 commands=a.ag()
@@ -13427,7 +13427,7 @@ commands=a.cv()
 name="plugins",
 commands=a.cx()
 }
-}end a.cy=function()local ab=a.cache.cy if not ab then ab={c=aa()}a.cache.cy=ab end return ab.c end end do local aa=function()
+})end a.cy=function()local ab=a.cache.cy if not ab then ab={c=aa()}a.cache.cy=ab end return ab.c end end do local aa=function()
 
 
 
@@ -14753,7 +14753,7 @@ end end
 
 ac.new=function()
 return setmetatable({
-message=Instance.new"Message"
+message=Instance.new("Message")
 },ac)end
 
 
@@ -14981,7 +14981,7 @@ return table.concat(ae)end
 
 
 aa.getDeep=function(ad, ae)
-for af in ae:gmatch"[^%.]+"do
+for af in ae:gmatch("[^%.]+")do
 ad=ad[af]
 end
 return ad end
@@ -15029,7 +15029,7 @@ return ae end
 
 aa.charset=function(ad)
 local ae={}
-for af in ad:gmatch"."do
+for af in ad:gmatch(".")do
 ae[af]=true
 end
 return ae end
@@ -15039,7 +15039,7 @@ aa.versionToNumber=function(ad)
 local ae=ad:gsub("^v","")
 
 local af=0
-local ag=ae:split"."
+local ag=ae:split(".")
 
 for ah,ai in ag do
 local aj=tonumber(ai)or 0
@@ -15236,7 +15236,7 @@ local ad=a.cM()
 
 ac.ThemeTag=function(ae, af)
 if type(af)~="table"then
-ab:error"expected a 'table' when setting a theme tag"
+ab:error("expected a 'table' when setting a theme tag")
 return
 end
 
@@ -15362,10 +15362,10 @@ end)end
 
 return ak end a.cP=function()local ab=a.cache.cP if not ab then ab={c=aa()}a.cache.cP=ab end return ab.c end end do local aa=function()
 return{
-uiScale=Instance.new"UIScale",
+uiScale=Instance.new("UIScale"),
 getScale=function(aa)
 local ab=aa.uiScale
-return ab and(ab:GetAttribute"REAL_SCALE"or ab.Scale)or 1
+return ab and(ab:GetAttribute("REAL_SCALE")or ab.Scale)or 1
 end,
 setScale=function(aa,ab)
 local ac=aa.uiScale
@@ -15459,7 +15459,7 @@ local ab=a.cL()
 local ac={}
 
 
-local ad=ab.charset":#()[]<>{}-––&*$%@"
+local ad=ab.charset(":#()[]<>{}-––&*$%@")
 
 
 local ae="^[%w_%.]+"
@@ -15824,7 +15824,7 @@ local j=0
 local k=0
 
 for l,m in i:GetChildren()do
-if m:IsA"GuiObject"then
+if m:IsA("GuiObject")then
 j=j+1
 k=k+m.Size.Y.Offset
 end
@@ -16042,7 +16042,7 @@ h:remove(m)
 end))
 
 
-table.insert(m.connections,ae:Connect(m.textLabel:GetPropertyChangedSignal"AbsoluteSize",function()
+table.insert(m.connections,ae:Connect(m.textLabel:GetPropertyChangedSignal("AbsoluteSize"),function()
 h:fitHeight(m)
 end))
 
@@ -16050,7 +16050,7 @@ table.insert(h.items,m)
 h:tweenHeight(m,m.height)
 
 
-m.frame:GetPropertyChangedSignal"Size":Connect(function()
+m.frame:GetPropertyChangedSignal("Size"):Connect(function()
 h:refreshLayout()
 end)
 h:refreshLayout()
@@ -16306,7 +16306,7 @@ end
 local q=`{l}/{os.time()}-{m}.txt`
 local r=table.concat({
 `command: {m}`,
-`time: {os.date"%Y-%m-%d %H:%M:%S"}`,
+`time: {os.date("%Y-%m-%d %H:%M:%S")}`,
 `error: {n}`,
 "",
 "traceback:",
@@ -16341,7 +16341,7 @@ local r=ac.lookup[o]
 ae:assert(r,"invalid command")
 
 
-p=p or ak.new{}
+p=p or ak.new({})
 
 local s=coroutine.running()
 local t=k[s]
@@ -16516,8 +16516,8 @@ links=ai.links
 o.userSettings=UserSettings()
 o.gameSettings=settings()
 
-o.userGameSettings=o.userSettings:GetService"UserGameSettings"
-o.gameNetworkSettings=o.gameSettings:GetService"NetworkSettings"
+o.userGameSettings=o.userSettings:GetService("UserGameSettings")
+o.gameNetworkSettings=o.gameSettings:GetService("NetworkSettings")
 
 
 o.loopService=a.cV()
@@ -16617,7 +16617,7 @@ ab:Connect(ac.Players.LocalPlayer.OnTeleport,c)end
 
 
 ah.enable=function(d)
-if not d:expectExploit"queueteleport"then return end
+if not d:expectExploit("queueteleport")then return end
 
 d.infiniteYield:setKeepIY(true)
 d:notify("Keepiy","on: IY runs again after you teleport, and the interface stays open")end
@@ -16833,7 +16833,7 @@ f, g)
 local h=tonumber(f)
 
 if h==nil or h~=h or math.abs(h)==math.huge then
-return ai" - invalid number"
+return ai(" - invalid number")
 end
 
 local i,j=g.min,g.max
@@ -16851,12 +16851,12 @@ return ai(` - the <b>MAX</b> is <b>{j}</b>`)
 end
 
 if g.floor and math.floor(h)~=h then
-return ai" - whole numbers only"
+return ai(" - whole numbers only")
 end
 
 
 if tonumber(string.format("%.5f",h))~=h then
-return ai" - too many decimal places"
+return ai(" - too many decimal places")
 end
 
 return{
@@ -16868,17 +16868,17 @@ color="number",
 
 
 g)
-local h=g:split","
+local h=g:split(",")
 
 if#h>3 then
-return ai" - too many args"
+return ai(" - too many args")
 end
 
 local i={}
 
 for j,k in h do
 
-if k:match"^%s*$"then
+if k:match("^%s*$")then
 k="0"
 end
 
@@ -16910,7 +16910,7 @@ color="others",
 
 
 h)
-local i=h:match"^#?(%x%x%x%x%x%x)$"
+local i=h:match("^#?(%x%x%x%x%x%x)$")
 
 if i then
 local j=tonumber(i:sub(1,2),16)
@@ -16924,10 +16924,10 @@ color="others",
 }
 end
 
-local j=h:split","
+local j=h:split(",")
 
 if#j~=3 then
-return ai" - use R,G,B or #hex"
+return ai(" - use R,G,B or #hex")
 end
 
 local k={}
@@ -16951,24 +16951,24 @@ color="others",
 
 i)
 if i==""then
-return ai" - player missing"
+return ai(" - player missing")
 end
 
 local j=ab.parts(i)
 
 if#j==0 then
-return ai" - player missing"
+return ai(" - player missing")
 end
 
 
 for k,l in j do
 if#ab(l)==0 then
 if ab.hasOperators(l)then
-return ai" - no players match this"
+return ai(" - no players match this")
 end
 
 if ab.isSelector(l)then
-return ai" - no players match this selector"
+return ai(" - no players match this selector")
 end
 
 local m={}
@@ -17008,7 +17008,7 @@ l)
 local m=ak(ad:getValue(tostring(game.PlaceId)))
 
 if#m==0 then
-return ai" - no waypoints created"
+return ai(" - no waypoints created")
 end
 
 local n=aj(m,l)
@@ -17028,7 +17028,7 @@ table.insert(n,p.Name)
 end
 
 if#n==0 then
-return ai" - there are no teams"
+return ai(" - there are no teams")
 end
 
 local o=aj(n,m)
@@ -17145,9 +17145,9 @@ local ak="inf"
 
 local b="!"
 
-local c=ae.lookupify{"`","'","\""}
-local d=ae.lookupify{" ","\t","\n","\r"}
-local e=ae.lookupify{",","|","&"}local f=function(
+local c=ae.lookupify({"`","'","\""})
+local d=ae.lookupify({" ","\t","\n","\r"})
+local e=ae.lookupify({",","|","&"})local f=function(
 
 f)
 return ac.lookup[f]end local g=function(
@@ -17249,7 +17249,7 @@ if o then
 return o..n..o
 end
 
-if n:find"%s"then
+if n:find("%s")then
 return`"{n}"`
 end
 
@@ -17572,7 +17572,7 @@ t.hasGhost=false
 t.args={}
 t.statements={}
 
-s:setComment""end
+s:setComment("")end
 
 
 
@@ -17605,7 +17605,7 @@ local E=false
 
 
 if y.kind=="identifier"then
-local F,G=A:match"^(.*%^)(.*)$"
+local F,G=A:match("^(.*%^)(.*)$")
 
 if F then
 C,D=q(F:sub(1,-2))
@@ -17930,7 +17930,7 @@ ah[aj.name]=aj
 end local ai=function(
 
 ai)
-return ai:match"^%s*(.-)%s*$"or""end
+return ai:match("^%s*(.-)%s*$")or""end
 
 
 
@@ -18120,7 +18120,7 @@ return true end local d=function(
 
 
 d)
-if d:match"^[%w_%-%.]+$"then
+if d:match("^[%w_%-%.]+$")then
 return d
 end
 
@@ -18228,7 +18228,7 @@ task.spawn(function()
 local e=d:WaitForChild("Humanoid",10)
 
 
-if not e or not e:IsA"Humanoid"or c.Character~=d then
+if not e or not e:IsA("Humanoid")or c.Character~=d then
 return
 end
 
@@ -18246,10 +18246,10 @@ ak(aj,c,e.Died,function()
 ac.fire("OnDied",c.Name)
 
 
-local g=e:FindFirstChild"creator"
-local h=if g and g:IsA"ObjectValue"then g.Value else nil
+local g=e:FindFirstChild("creator")
+local h=if g and g:IsA("ObjectValue")then g.Value else nil
 
-if h and h:IsA"Player"then
+if h and h:IsA("Player")then
 ac.fire("OnKilled",c.Name,h.Name)
 end
 end)
@@ -18321,7 +18321,7 @@ for g,h in ad:GetPlayers()do
 d(h)
 end
 
-ac.fire"OnExecute"end
+ac.fire("OnExecute")end
 
 
 return af end a.c3=function()local ab=a.cache.c3 if not ab then ab={c=aa()}a.cache.c3=ab end return ab.c end end do local aa=function()
@@ -18343,7 +18343,7 @@ local ab=a.ap()
 local ac=a.c4()
 
 aa.getEasterDate=function()
-local ad=tonumber(os.date"%Y")
+local ad=tonumber(os.date("%Y"))
 
 local ae=math.floor(ad/100)
 local af=math.floor((13+8*ae)/25)
@@ -18379,7 +18379,7 @@ local ae={
 [ad]=ac.EASTER
 }
 
-local af=os.date"%m %d"
+local af=os.date("%m %d")
 return ae[af]end
 
 
@@ -19027,10 +19027,10 @@ end end
 
 
 ai.updateArrowTransparency=function(aj, ak, b)
-if not ak:FindFirstChild"Arrow"then return end
+if not ak:FindFirstChild("Arrow")then return end
 
 for c,d in ak.Arrow:GetChildren()do
-if not d:IsA"GuiObject"then continue end
+if not d:IsA("GuiObject")then continue end
 d.Transparency=b and 0.6 or 0
 end end
 
@@ -19092,7 +19092,7 @@ end
 for b,c in pairs(aj.markers)do
 if b>=aj.totalSpace then continue end
 
-local d=Instance.new"Frame"
+local d=Instance.new("Frame")
 d.BackgroundColor3=c
 d.BorderSizePixel=0
 d.BackgroundTransparency=0
@@ -19297,7 +19297,7 @@ local F=D.rawText
 
 local G=F:sub(1,E.from-1)..E.text..F:sub(E.to+1)
 
-if e:getValue"spaceAfterCorrection"then
+if e:getValue("spaceAfterCorrection")then
 G=G.." "
 end
 
@@ -19331,7 +19331,7 @@ end)end
 
 m.sendText=function(C)
 local D=B(C.searchBox.Text)
-if not D:match"%S"then return end
+if not D:match("%S")then return end
 
 C:refresh(D)
 C:sendInputCommand()end
@@ -19345,7 +19345,7 @@ local D=C.sendButton
 local E=C.searchBox
 if not(D and E)then return end
 
-local F=not E:IsFocused()and E.Text:match"%S"~=nil
+local F=not E:IsFocused()and E.Text:match("%S")~=nil
 if F==C.sendShown then return end
 
 C.sendShown=F
@@ -19425,7 +19425,7 @@ local G=C.inputMarker
 
 local H=F.Placeholder
 
-local I=E:GetPropertyChangedSignal"Text"
+local I=E:GetPropertyChangedSignal("Text")
 
 local J=0 local K=function()
 
@@ -19492,7 +19492,7 @@ N()
 C.markerConnection=aa:Connect(i.Stepped,K)
 
 if#E.Text==0 then
-C:setComment""
+C:setComment("")
 end
 end)
 
@@ -19513,7 +19513,7 @@ if C.onInteraction then C.onInteraction()end
 local O=E.Text
 
 
-if O:find"\t"then
+if O:find("\t")then
 E.Text=(O:gsub("\t",""))
 return
 end
@@ -19525,7 +19525,7 @@ end
 
 local P=O:sub(-1)=="\n"or O:sub(-1)=="\r"
 
-if O:find"[\r\n]"then
+if O:find("[\r\n]")then
 O=B(O)
 E.Text=O
 
@@ -19599,8 +19599,8 @@ break
 end
 end
 
-if e:getValue"clearOnEnter"then
-D:writeText""
+if e:getValue("clearOnEnter")then
+D:writeText("")
 end
 
 D.historyIndex=nil
@@ -19619,7 +19619,7 @@ ag.runStatement(E)end
 
 
 m.addToHistory=function(D, E)
-local F=(E or""):match"^(.-)%s*$"
+local F=(E or""):match("^(.-)%s*$")
 
 if F==""then return end
 
@@ -19655,7 +19655,7 @@ end
 
 if G>#F then
 D.historyIndex=nil
-D:setSearchText""
+D:setSearchText("")
 return
 end
 
@@ -20375,10 +20375,10 @@ scrollBar=D.scrollBar,
 screenGui=D.screenGui,
 
 configs={
-placeholderText=E"placeholderText",
-padding=E"padding",
-labelSize=E"labelSize",
-textSize=E"textSize"
+placeholderText=E("placeholderText"),
+padding=E("padding"),
+labelSize=E("labelSize"),
+textSize=E("textSize")
 },
 
 commandClickedSignal=ak.new(),
@@ -20529,7 +20529,7 @@ local e={
 object=c,
 input=d,
 isMouse=ai(d),
-isButton=c:IsA"GuiButton",
+isButton=c:IsA("GuiButton"),
 }
 
 b._press=e
@@ -20683,16 +20683,16 @@ sections={
 {
 {"title","Command Arguments"},
 {"text","Some commands need extra information. Anything you type after the command name is an argument, and arguments are separated by spaces."},
-{"text",`The gray hint in the command bar shows what each argument expects. For example, {ad"(fly_speed: number?)"} means you type a number.`},
+{"text",`The gray hint in the command bar shows what each argument expects. For example, {ad("(fly_speed: number?)")} means you type a number.`},
 {"bold","The ? means the argument is optional. You can leave it out and the command still runs."},
-{"text",`Arguments are read in order, so optional ones go last. If a value has spaces, put it in quotes, like {ad'"John Doe"'}.`},
+{"text",`Arguments are read in order, so optional ones go last. If a value has spaces, put it in quotes, like {ad('"John Doe"')}.`},
 {"text","If something is wrong, the command bar tells you what to fix, and nothing runs."},
 {"bold","Examples:"},
 {"text",";fly 50 - fly at speed 50\n;fov 90 - set the field of view to 90\n;tppos 0,10,0 - teleport to X 0, Y 10, Z 0"},
 },
 {
 {"title","What the Hint Words Mean"},
-{"text",`<b>number</b> - a number, like 10 or 2.5\n<b>string</b> - text, like a name or a word\n<b>boolean</b> - yes or no. You can also type true/false or enabled/disabled\n<b>player</b> - a player name, or one of the special words above\n<b>vector3</b> - a position written as three numbers with commas: X,Y,Z, like 0,10,0\n<b>color3</b> - a color, written as {ad"#ff0000"} or as red,green,blue from 0 to 255\n<b>waypoint</b> - the name of a waypoint you saved\n<b>className</b> - a type of object in the game, like Part or Model\n<b>team</b> - the name of a team in the game\n<b>keycode</b> - a keyboard key, like E\n<b>command</b> - the name of a command\n<b>alias</b> - a shortcut name you made with addalias\n<b>plugin</b> - the name of a plugin you installed\n<b>object</b> - any text, nothing is checked`},
+{"text",`<b>number</b> - a number, like 10 or 2.5\n<b>string</b> - text, like a name or a word\n<b>boolean</b> - yes or no. You can also type true/false or enabled/disabled\n<b>player</b> - a player name, or one of the special words above\n<b>vector3</b> - a position written as three numbers with commas: X,Y,Z, like 0,10,0\n<b>color3</b> - a color, written as {ad("#ff0000")} or as red,green,blue from 0 to 255\n<b>waypoint</b> - the name of a waypoint you saved\n<b>className</b> - a type of object in the game, like Part or Model\n<b>team</b> - the name of a team in the game\n<b>keycode</b> - a keyboard key, like E\n<b>command</b> - the name of a command\n<b>alias</b> - a shortcut name you made with addalias\n<b>plugin</b> - the name of a plugin you installed\n<b>object</b> - any text, nothing is checked`},
 },
 {
 {"title","Various Operators"},
@@ -21005,12 +21005,12 @@ ImageColor3="Colors.Icons",
 },
 })
 
-local z=ac.new{
+local z=ac.new({
 isHorizontal=false,
 barThickness=c,
 increment=d,
 wheelIncrement=e,
-}
+})
 
 local A=z:create()
 local B=z.container
@@ -21053,8 +21053,8 @@ D(z.index)end
 
 
 ae:Connect(z.scrolledSignal,D)
-ae:Connect(C:GetPropertyChangedSignal"AbsoluteSize",E)
-ae:Connect(B:GetPropertyChangedSignal"AbsoluteSize",E)
+ae:Connect(C:GetPropertyChangedSignal("AbsoluteSize"),E)
+ae:Connect(B:GetPropertyChangedSignal("AbsoluteSize"),E)
 
 ae:Connect(x.Activated,function()
 u:close()
@@ -21967,12 +21967,12 @@ Z.tabButtons={chat=as,join=at}
 Z.actions={aq,ap}
 
 
-local au=af.new{
+local au=af.new({
 isHorizontal=false,
 barThickness=ai.scrollBar.barThickness,
 increment=ai.scrollBar.increment,
 wheelIncrement=ai.scrollBar.wheelIncrement,
-}
+})
 local av=au:create()
 local aw=au.container
 
@@ -22003,10 +22003,10 @@ Z.content=ax
 N(Z,au.scrolledSignal,function()
 S(Z)
 end)
-N(Z,ax:GetPropertyChangedSignal"AbsoluteSize",function()
+N(Z,ax:GetPropertyChangedSignal("AbsoluteSize"),function()
 T(Z)
 end)
-N(Z,aw:GetPropertyChangedSignal"AbsoluteSize",function()
+N(Z,aw:GetPropertyChangedSignal("AbsoluteSize"),function()
 T(Z)
 end)
 N(Z,ad.dragStarted,function(ay)
@@ -22025,11 +22025,11 @@ z:close()
 end)
 
 N(Z,as.Activated,function()
-z:select"chat"
+z:select("chat")
 end)
 
 N(Z,at.Activated,function()
-z:select"join"
+z:select("join")
 end)
 
 N(Z,Z.toggle.Activated,function()
@@ -22496,7 +22496,7 @@ end end
 
 al.clear=function(ao)
 for ap,aq in ao:GetChildren()do
-if not(aq:IsA"UIListLayout"or aq:IsA"UIPadding")then
+if not(aq:IsA("UIListLayout")or aq:IsA("UIPadding"))then
 an(aq)
 aq:Destroy()
 end
@@ -23399,19 +23399,19 @@ end end
 
 
 return{
-interface=ai{
+interface=ai({
 title=ac.pages.keybinds.title,
 reset=ac.pages.keybinds.reset,
 groups={
 {key="interface"},
 },
-},
+}),
 
-commands=ai{
+commands=ai({
 title=ac.pages.commands.title,
 reset=ac.pages.commands.reset,
 groups=ab.groups,
-},
+}),
 }end a.dp=function()local ab=a.cache.dp if not ab then ab={c=aa()}a.cache.dp=ab end return ab.c end end do local aa=function()
 
 
@@ -23461,7 +23461,7 @@ return false end local am=function(
 
 
 am)
-if am:match"^%s*$"then
+if am:match("^%s*$")then
 return nil,ai.empty
 end
 
@@ -23564,13 +23564,13 @@ local ah=ad.value
 local ai=ad.pages.aliases local aj=function(
 
 aj)
-return aj:match"^%s*(.-)%s*$"or""end local ak=function(
+return aj:match("^%s*(.-)%s*$")or""end local ak=function(
 
 
 
 
 ak)
-return ak:find"[\\%^!,|&\"']"~=nil end local al=function(
+return ak:find("[\\%^!,|&\"']")~=nil end local al=function(
 
 
 al, am)
@@ -23664,7 +23664,7 @@ ar.Text=ai.missing
 return
 end
 
-if av:find"%s"then
+if av:find("%s")then
 ar.Text=ai.spaces
 return
 end
@@ -23733,7 +23733,7 @@ local ai=ac.pages.waypoints
 local aj=1 local ak=function(
 
 ak)
-return ak:match"^%s*(.-)%s*$"or""end local al=function(
+return ak:match("^%s*(.-)%s*$")or""end local al=function(
 
 
 al, am)
@@ -23998,7 +23998,7 @@ local ag=ac.value
 local ah=ac.pages.plugins local ai=function(
 
 ai)
-return ai:match"^%s*(.-)%s*$"or""end local aj=function(
+return ai:match("^%s*(.-)%s*$")or""end local aj=function(
 
 
 aj, ak)
@@ -24913,19 +24913,19 @@ end,
 stoppers=h.pageStoppers,
 })
 
-h.backRow=i.frame:FindFirstChild"BackRow"
-h.backIcon=if h.backRow then h.backRow:FindFirstChild"Icon"else nil
+h.backRow=i.frame:FindFirstChild("BackRow")
+h.backIcon=if h.backRow then h.backRow:FindFirstChild("Icon")else nil
 
 if h.backIcon then
 
-table.insert(h.pageConnections,h.backIcon:GetPropertyChangedSignal"Image":Connect(function()
+table.insert(h.pageConnections,h.backIcon:GetPropertyChangedSignal("Image"):Connect(function()
 h:syncFloatingIcon()
 end))
 
 h:syncFloatingIcon()
 end
 
-table.insert(h.pageConnections,i.frame:GetPropertyChangedSignal"CanvasPosition":Connect(function()
+table.insert(h.pageConnections,i.frame:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
 h:updateFloatingBack()
 end))end
 
@@ -25783,7 +25783,7 @@ lastInteractionAt=-math.huge,
 connections={},
 },as)
 
-au.frame.Position=au:targetFor"minimized"
+au.frame.Position=au:targetFor("minimized")
 
 table.insert(au.connections,ab:Connect(ae.InputBegan,function(av)
 au:onInputBegan(av)
@@ -26167,7 +26167,7 @@ as.sleep=function(au)
 au:cancel()
 au.state="minimized"
 au.swipeLocked=false
-au.frame.Position=au:targetFor"minimized"
+au.frame.Position=au:targetFor("minimized")
 au:setInteractive(false)end
 
 
@@ -26397,16 +26397,16 @@ l:createNotifications()
 l:setupListeners()
 l:updateNotificationsPosition()
 
-aj:log"interface started"
+aj:log("interface started")
 return l.screenGui end
 
 
 i.setupTheme=function(l)
-aj:debug"interface: initializing theme service"
+aj:debug("interface: initializing theme service")
 
-an:init{
+an:init({
 theme=j(aa.theme.selectedTheme),
-}end
+})end
 
 
 i.setupScreenGui=function(l)
@@ -26419,7 +26419,7 @@ h.Parent=m end
 
 
 i.setupScale=function(l)
-l:setScale(ai:getValue"interface.uiScale"or 1)end
+l:setScale(ai:getValue("interface.uiScale")or 1)end
 
 
 i.setupMainFrame=function(l)
@@ -26433,15 +26433,15 @@ m.Parent=l.screenGui end
 
 
 i.setupListeners=function(l)
-ae:Connect(l.screenGui:GetPropertyChangedSignal"AbsoluteSize",function()
+ae:Connect(l.screenGui:GetPropertyChangedSignal("AbsoluteSize"),function()
 l:updateMainFramePosition()
 end)
 
-ae:Connect(l.mainFrame:GetPropertyChangedSignal"AbsolutePosition",function()
+ae:Connect(l.mainFrame:GetPropertyChangedSignal("AbsolutePosition"),function()
 l:updateNotificationsPosition()
 end)
 
-ae:Connect(l.mainFrame:GetPropertyChangedSignal"AbsoluteSize",function()
+ae:Connect(l.mainFrame:GetPropertyChangedSignal("AbsoluteSize"),function()
 l:updateNotificationsPosition()
 end)
 
@@ -26472,7 +26472,7 @@ if m>=3 then
 m=l:calculateScale(m)
 end
 
-if ai:getValue"interface.uiScale"~=m then
+if ai:getValue("interface.uiScale")~=m then
 ai:setValue("interface.uiScale",m)
 ai:save()
 end
@@ -26508,10 +26508,10 @@ l:updateNotificationsPosition()end
 
 
 i.createMainScroll=function(l, m)
-local n=av.new{
+local n=av.new({
 isHorizontal=false,
 barThickness=12,
-}
+})
 
 local o=n:create()
 local p=n.container
@@ -26549,7 +26549,7 @@ am:loadImage(l.buttons.reference,"reference")
 
 l:createMainScroll(n)
 
-l.settings=b.new{
+l.settings=b.new({
 
 onOpenChanged=function(o)
 l:paintTopButton(l.buttons.settings,o)
@@ -26567,7 +26567,7 @@ l:setKeepIY(false)
 aq:notify("Keepiy","your exploit does not support queueteleport")
 end
 end,
-}
+})
 l.settings:create(n,l.scrollHolder)
 
 ae:Connect(l.buttons.settings.Activated,function()
@@ -26580,7 +26580,7 @@ return n end
 i.createCommands=function(l)
 local m=l.scrollBar
 
-local n=aw.new{
+local n=aw.new({
 scrolledSignal=m.scrolledSignal,
 scrollContainer=l.scrollContainer,
 scrollHolder=l.scrollHolder,
@@ -26593,15 +26593,15 @@ padding=aa.ui.commands.padding,
 labelSize=aa.ui.commands.labelSize,
 textSize=aa.ui.commands.textSize,
 },
-}
+})
 
-aj:log"created commands interface"
+aj:log("created commands interface")
 n:create()
 
-aj:log"initialized commands"
+aj:log("initialized commands")
 n:createCommandsData()
 
-aj:log"awaked commands module"
+aj:log("awaked commands module")
 n:awake()
 
 l.commands=n
@@ -26670,7 +26670,7 @@ m.Size=aa.ui.window.windowSize
 m.Position=UDim2.fromOffset(1e5,1e5)
 m.Position=l:calculateMainFramePosition()
 
-l.dock=e.new{
+l.dock=e.new({
 frame=m,
 screenGui=l.screenGui,
 topBarHeight=l.topBar.Size.Y.Offset,
@@ -26701,7 +26701,7 @@ if l.hidden then
 l:hideWindow()
 end
 end,
-}
+})
 
 d:addGuiObject(m)
 
@@ -26983,11 +26983,11 @@ local ag={}
 ag.boot=function(ah)
 ah.boot=nil
 
-aa:init{
+aa:init({
 infiniteYield=af,
 playerService=ac,
 fetchService=ad
-}
+})
 
 ab.start()
 

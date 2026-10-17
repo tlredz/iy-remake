@@ -11,7 +11,6 @@
         "convert_index_to_field",
         "convert_local_function_to_assign",
         "convert_function_to_assignment",
-        "remove_function_call_parens",
         "remove_nil_declaration",
         "remove_method_definition",
         "compute_expression",
