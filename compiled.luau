@@ -106,6 +106,7 @@ getconnections or
 get_signal_cons
 ),
 writefile=c("function",writefile),
+delfile=c("function",delfile),
 readfile=c("function",readfile),
 listfiles=c("function",listfiles),
 loadstring=c("function",loadstring),
@@ -231,20 +232,490 @@ c:log("finished cleanup!")end
 
 
 return d end a.e=function()local c=a.cache.e if not c then c={c=b()}a.cache.e=c end return c.c end end do local b=function()
+local b={}
+
+local c=a.a()
+local d=a.d()
+
+b.__index=function(e, f)
+d:expect(f,{"string"},"[index] serviceName")
+
+local g=game:GetService(f)
+local h=c.cloneref(g)
+
+rawset(e,f,h)
+return h end
+
+
+return setmetatable({},b)end a.f=function()local c=a.cache.f if not c then c={c=b()}a.cache.f=c end return c.c end end do local b=function()
+local b=a.f()
+return b.Players.LocalPlayer end a.g=function()local c=a.cache.g if not c then c={c=b()}a.cache.g=c end return c.c end end do local b=function()
+local b=a.d()
+
+local c={}
+c.__index=c
+
+c.encrypt=function(d, e)
+b:expect(e,{"string"},"'encryptor:encrypt' #1")
+local f=d.encryptKey
+local g={}
+
+for h=1,#e do
+f=(f*16807)%2147483647
+table.insert(g,string.format("%02X",(e:byte(h)+f%256)%256))
+end
+
+return table.concat(g)end
+
+
+c.decrypt=function(d, e, f)
+b:expect(e,{"string"},"'encryptor:decrypt' #1")
+local g=d.encryptKey
+local h={}
+
+for i=1,#e,2 do
+local j=tonumber(e:sub(i,i+1),16)
+g=(g*16807)%2147483647
+h[#h+1]=string.char((j-g%256+256)%256)
+end
+
+return table.concat(h)end
+
+
+c.new=function(d)
+b:expect(d,{"number"},"'encryptor.new' #1")
+
+return setmetatable({
+encryptKey=d
+},c)end
+
+
+return c end a.h=function()local c=a.cache.h if not c then c={c=b()}a.cache.h=c end return c.c end end do local b=function()
+local b=a.f()
+local c=a.d()
+
+local d=b.HttpService
+local e=d.JSONEncode
+local f=d.JSONDecode
+
+return{
+encode=function(g,h)
+local i,j=pcall(e,d,g)
+
+if not i then
+c:warn(`failed to encode json '{h or"unknown"}': {j}`)
+return nil
+end
+
+return j
+end,
+decode=function(g,h)
+local i,j=pcall(f,d,g)
+
+if not i then
+c:warn(`failed to decode json '{h or"unknown"}': {j}`)
+return nil
+end
+
+return j
+end
+}end a.i=function()local c=a.cache.i if not c then c={c=b()}a.cache.i=c end return c.c end end do local b=function()
+return{
+privateFolder="infiniteYield",
+
+imagePath="assets/%s.png",
+
+downloadPath="backups/%s/%s/%s",
+encryptKey=676767
+}end a.j=function()local c=a.cache.j if not c then c={c=b()}a.cache.j=c end return c.c end end do local b=function()
+local b=a.a()
+
+local c=a.h()
+local d=a.d()
+local e=a.i()
+
+local f=a.j()
+
+local g=f.privateFolder
+local h=f.encryptKey
+
+c=c.new(h)
+
+if g:sub(#g)=="/"then
+g=g:sub(1,-2)
+end
+
+local i={}
+i.__index=i local j=function(
+
+j)
+local k,l=pcall(b.isfile,j)
+
+if k and type(l)=="boolean"then
+return l
+end
+
+return false end local k=function(
+
+
+k)
+local l,m=pcall(b.isfolder,k)
+
+if l and type(m)=="boolean"then
+return m
+end
+
+return false end local l=function(
+
+
+l)
+if not j(l)then
+d:log(`the file '{l}' don't exist, skipped!`)
+return""
+end
+
+local m,n=pcall(b.readfile,l)
+
+if not m then
+d:warn(`failed to read file '{l}':\n\t{n}`)
+n=nil
+end
+
+if type(n)~="string"then
+n=""
+end
+
+return n end local m=function(
+
+
+m)
+local n=m:split("/")
+local o={}
+
+for p,q in n do
+table.insert(o,q)
+
+local r=table.concat(o,"/")
+if k(r)then continue end
+
+local s,t=pcall(b.makefolder,r)
+
+if not s then
+d:warn(`failed to create a folder '{r}':\n\t{t}`)
+end
+end end local n=function(
+
+
+n, o)
+local p,q=pcall(b.writefile,n,o)
+
+if p then
+d:log(`successfully writed the file '{n}'!`)
+else
+d:warn(`failed to write file '{n}':\n\t{q}`)
+end end local o=function(
+
+
+o)
+local p,q=pcall(b.getcustomasset,o)
+
+if not(p and type(q)=="string")then
+d:warn(`failed to get custom asset '{o}':\n\t{q}`)
+return
+end
+
+return q end local p=function(
+
+
+p)
+local q=string.split(p,"/")
+local r=table.remove(q)
+
+return table.concat(q,"/"),r end
+
+
+i.getRealPath=function(q, r)
+if r:sub(1,1)~="/"then
+r="/"..r
+end
+
+r=g..r
+return r end
+
+
+i.deep=function(q, r)
+local s=q.object
+local t=r:split(".")
+local u=table.remove(t)
+
+for v,w in t do
+local x=s[w]
+if type(x)~="table"then x={}end
+s[w]=x
+s=x
+end
+
+return s,u end
+
+
+i.setValue=function(q, r, s)
+local t,u=q:deep(r)
+t[u]=s end
+
+
+i.getValue=function(q, r)
+local s,t=q:deep(r)
+return s[t]end
+
+
+i.hasValue=function(q, r)
+return q:getValue(r)~=nil end
+
+
+i.increment=function(q, r, s)
+return q:setValue(r,(q:getValue(r)or 0)+s)end
+
+
+i.exist=function(q, r)
+r=q:getRealPath(r)
+return j(r)end
+
+
+
+i.readFile=function(q, r)
+return l(q:getRealPath(r))end
+
+
+
+i.makeFolder=function(q, r)
+m(q:getRealPath(r))end
+
+
+
+i.getEntry=function(q, r)
+return q.object[r]end
+
+
+
+i.setEntry=function(q, r, s)
+q.object[r]=s end
+
+
+
+
+i.delete=function(q, r)
+local s=q:getRealPath(r)
+
+if not j(s)then
+return true
+end
+
+if b.delfile==nil then
+return false
+end
+
+pcall(b.delfile,s)
+return not j(s)end
+
+
+i.writeFile=function(q, r, s)
+if q.filePath~=nil then
+r,s=q.filePath,r
+else
+r=q:getRealPath(r)
+end
+
+n(r,s)end
+
+
+i.register=function(q, r, s)
+local t=q:getValue(r)
+
+if typeof(t)~=typeof(s)then
+t=s
+q:setValue(r,t)
+end
+
+return t end
+
+
+i.add=function(q, r, s)
+local t=q:getValue(r)
+d:expect(t,{"table"},"'userData:add' #1")
+
+if not table.find(t,s)then
+table.insert(t,s)
+end end
+
+
+i.save=function(q)
+if q.isSaving then return end
+
+q.isSaving=true
+q.lastSave=tick()
+
+task.delay(1,function()
+local r=e.encode(q.object,q.filePath)
+q.isSaving=false
+
+
+if r==nil then return end
+
+if q.encryptData then
+r=c:encrypt(r)
+end
+
+q:writeFile(r)
+end)end
+
+
+i.getCustomAsset=function(q, r)
+r=q:getRealPath(r)
+return o(r)end
+
+
+i.getData=function(q)
+return table.clone(q.object)end
+
+
+
+i.replaceData=function(q, r)
+d:expect(r,{"table"},"'fileSystem:replaceData' #1")
+
+q.object=table.clone(r)
+q:save()end
+
+
+i.new=function(q, r)
+d:expect(q,{"string"},"'fileSystem.new' #1")
+d:expect(r,{"table","nil"},"'fileSystem.new' #2")
+
+if q:sub(-5,-1)~=".json"then
+q=q..".json"
+end
+
+local s=setmetatable({
+object={},
+lastSave=0,
+isSaving=false,
+
+encryptData=r and r.encrypt
+},i)
+
+local t=s:getRealPath(q)
+local u=p(t)
+
+s.filePath=t
+s.folderPath=u
+
+if#u>0 then
+m(u)
+end
+
+local v=l(t)
+
+if#v>0 then
+if s.encryptData then
+v=c:decrypt(v)
+end
+
+local w=e.decode(v)
+
+if type(w)~="table"then
+d:warn(`the json content has been returned a unexpected value '{t}'`)
+return s
+end
+
+s.object=w
+end
+
+return s end
+
+
+return i end a.k=function()local c=a.cache.k if not c then c={c=b()}a.cache.k=c end return c.c end end do local b=function()
+return a.k().new("storage/createdWaypoints")end a.l=function()local c=a.cache.l if not c then c={c=b()}a.cache.l=c end return c.c end end do local b=function()
+return a.k().new("storage/installedPlugins")end a.m=function()local c=a.cache.m if not c then c={c=b()}a.cache.m=c end return c.c end end do local b=function()
+return a.k().new("storage/settings")end a.n=function()local c=a.cache.n if not c then c={c=b()}a.cache.n=c end return c.c end end do local b=function()
+return a.k().new("storage/.userData",{
+encrypt=true
+})end a.o=function()local c=a.cache.o if not c then c={c=b()}a.cache.o=c end return c.c end end do local b=function()
+return a.k().new("storage/aliases")end a.p=function()local c=a.cache.p if not c then c={c=b()}a.cache.p=c end return c.c end end do local b=function()
+return a.k().new("storage/totalUsedCommands")end a.q=function()local c=a.cache.q if not c then c={c=b()}a.cache.q=c end return c.c end end do local b=function()
+return a.k().new("storage/eventBinds")end a.r=function()local c=a.cache.r if not c then c={c=b()}a.cache.r=c end return c.c end end do local b=function()
+
+
+
+return a.k().new("storage/backgrounds")end a.s=function()local c=a.cache.s if not c then c={c=b()}a.cache.s=c end return c.c end end do local b=function()
+
+return{
+waypoints=a.l(),
+plugins=a.m(),
+settings=a.n(),
+user=a.o(),
+aliases=a.p(),
+usedCmds=a.q(),
+eventBinds=a.r(),
+backgrounds=a.s(),
+}end a.t=function()local c=a.cache.t if not c then c={c=b()}a.cache.t=c end return c.c end end do local b=function()
+
+local b=a.g()
+local c=a.t()local d=function()
+
+
+local d=c.settings
+d:register("clearOnEnter",true)
+d:register("spaceAfterCorrection",true)
+d:register("uiScale",1.4)
+d:save()end local e=function()
+
+
+
+
+
+return DateTime.now().UnixTimestamp end local f=function()
+
+
+
+local f=c.user
+local g=f:register("usedPlaces",{})
+
+f:register("totalUsedCommands",{})
+f:register("usedAccounts",{})
+
+
+f:register("firstTimeExecuted",e())
+f:register("lastTimeExecuted",0)
+f:register("executionCount",0)
+
+f:add("usedAccounts",b.UserId)
+f:increment("executionCount",1)
+f:setValue("lastTimeExecuted",e())
+
+
+local h=tostring(game.GameId)
+g[h]=(g[h]or 0)+1
+
+f:save()end
+
+
+d()
+f()
+
+return true end a.u=function()local c=a.cache.u if not c then c={c=b()}a.cache.u=c end return c.c end end do local b=function()
 return{
 action="discord|support|help",
 description="Invite to the Infinite Yield discord server.",
 run=function(b)
 b.executorEnv.setclipboard(b.config.links.discord)
 end
-}end a.f=function()local c=a.cache.f if not c then c={c=b()}a.cache.f=c end return c.c end end do local b=function()
+}end a.v=function()local c=a.cache.v if not c then c={c=b()}a.cache.v=c end return c.c end end do local b=function()
 return{
 action="console",
 description="Opens the Roblox console",
 run=function(b)
 b.starterGui:SetCore("DevConsoleVisible",true)
 end
-}end a.g=function()local c=a.cache.g if not c then c={c=b()}a.cache.g=c end return c.c end end do local b=function()
+}end a.w=function()local c=a.cache.w if not c then c={c=b()}a.cache.w=c end return c.c end end do local b=function()
 
 
 
@@ -361,7 +832,7 @@ action="audiologger|alogger",
 description="Opens Edges audio logger",
 run=function(j)task.spawn(i,j)end
 }
-}end a.h=function()local c=a.cache.h if not c then c={c=b()}a.cache.h=c end return c.c end end do local b=function()
+}end a.x=function()local c=a.cache.x if not c then c={c=b()}a.cache.x=c end return c.c end end do local b=function()
 
 return{
 action="serverinfo|info|sinfo",
@@ -369,7 +840,7 @@ description="Gives you info about the server",
 run=function(b)
 b.infiniteYield:createInfoMenu()
 end
-}end a.i=function()local c=a.cache.i if not c then c={c=b()}a.cache.i=c end return c.c end end do local b=function()
+}end a.y=function()local c=a.cache.y if not c then c={c=b()}a.cache.y=c end return c.c end end do local b=function()
 local b={
 kind="boolean",
 name="copy",
@@ -432,7 +903,7 @@ e(tostring(game.GameId))
 d:notify("Copied","game id copied to your clipboard")
 end
 }
-}end a.j=function()local c=a.cache.j if not c then c={c=b()}a.cache.j=c end return c.c end end do local b=function()local b=function(
+}end a.z=function()local c=a.cache.z if not c then c={c=b()}a.cache.z=c end return c.c end end do local b=function()local b=function(
 
 
 b)
@@ -470,7 +941,7 @@ c.localPlayer.UserId=e
 c:notify("Set ID",`Set UserId to '{e}'`)
 end
 }
-}end a.k=function()local c=a.cache.k if not c then c={c=b()}a.cache.k=c end return c.c end end do local b=function()
+}end a.A=function()local c=a.cache.A if not c then c={c=b()}a.cache.A=c end return c.c end end do local b=function()
 
 return{
 action="rejoin|rj",
@@ -478,7 +949,7 @@ description="Makes you rejoin the game",
 run=function(b)
 b.playerService:teleportToJobId(game.JobId)
 end
-}end a.l=function()local c=a.cache.l if not c then c={c=b()}a.cache.l=c end return c.c end end do local b=function()
+}end a.B=function()local c=a.cache.B if not c then c={c=b()}a.cache.B=c end return c.c end end do local b=function()
 return{
 action="autorejoin|autorj",
 description="Automatically rejoins the server if you get kicked/disconnected",
@@ -492,7 +963,7 @@ b.privateEnv.autoRejoinConn=b:connect(b.guiService.ErrorMessageChanged,function(
 b:run("rejoin")
 end)
 end
-}end a.m=function()local c=a.cache.m if not c then c={c=b()}a.cache.m=c end return c.c end end do local b=function()
+}end a.C=function()local c=a.cache.C if not c then c={c=b()}a.cache.C=c end return c.c end end do local b=function()
 
 
 
@@ -545,7 +1016,7 @@ d.playerService:teleportToJobId(f[math.random(1,#f)])
 end)
 end
 }
-}end a.n=function()local c=a.cache.n if not c then c={c=b()}a.cache.n=c end return c.c end end do local b=function()
+}end a.D=function()local c=a.cache.D if not c then c={c=b()}a.cache.D=c end return c.c end end do local b=function()
 
 return{
 action="selfkick|kickmyself",
@@ -559,7 +1030,7 @@ run=function(b,c)
 local d=c:nextValue()
 b.localPlayer:Kick(d)
 end
-}end a.o=function()local c=a.cache.o if not c then c={c=b()}a.cache.o=c end return c.c end end do local b=function()
+}end a.E=function()local c=a.cache.E if not c then c={c=b()}a.cache.E=c end return c.c end end do local b=function()
 local b=tostring(game.PlaceId)
 local c=tostring(game.JobId)
 
@@ -599,7 +1070,7 @@ local g=e:nextValue()or game.PlaceId
 d.playerService:teleportToJobId(f,g)
 end
 }
-}end a.p=function()local c=a.cache.p if not c then c={c=b()}a.cache.p=c end return c.c end end do local b=function()
+}end a.F=function()local c=a.cache.F if not c then c={c=b()}a.cache.F=c end return c.c end end do local b=function()
 return{
 action="antiafk|antiidle",
 description="Prevents the game from kicking you for being idle/afk",
@@ -632,7 +1103,7 @@ end
 
 b:notify("anti AFK is now enabled")
 end
-}end a.q=function()local c=a.cache.q if not c then c={c=b()}a.cache.q=c end return c.c end end do local b=function()
+}end a.G=function()local c=a.cache.G if not c then c={c=b()}a.cache.G=c end return c.c end end do local b=function()
 return{
 action="datalimit",
 description="Set outgoing KBPS limit",
@@ -641,7 +1112,7 @@ run=function(b,c)
 local d=c:nextValue()
 b.networkClient:SetOutgoingKBPSLimit(d)
 end
-}end a.r=function()local c=a.cache.r if not c then c={c=b()}a.cache.r=c end return c.c end end do local b=function()
+}end a.H=function()local c=a.cache.H if not c then c={c=b()}a.cache.H=c end return c.c end end do local b=function()
 return{
 action="replicationlag|backtrack",
 description="Set IncomingReplicationLag",
@@ -649,7 +1120,7 @@ args={kind="number"},
 run=function(b,c)
 b.gameNetworkSettings.IncomingReplicationLag=c:nextValue()
 end
-}end a.s=function()local c=a.cache.s if not c then c={c=b()}a.cache.s=c end return c.c end end do local b=function()
+}end a.I=function()local c=a.cache.I if not c then c={c=b()}a.cache.I=c end return c.c end end do local b=function()
 return{
 action="setfpscap|fpscap|maxfps",
 description="limits your FPS",
@@ -662,7 +1133,7 @@ run=function(b,c)
 local d=c:nextValue()
 b.executorEnv.setfpscap(d)
 end
-}end a.t=function()local c=a.cache.t if not c then c={c=b()}a.cache.t=c end return c.c end end do local b=function()local b=function(
+}end a.J=function()local c=a.cache.J if not c then c={c=b()}a.cache.J=c end return c.c end end do local b=function()local b=function(
 b)
 if not b:IsA("PackageLink")then return end
 
@@ -689,7 +1160,7 @@ c.privateEnv.adBlockConn=c:connect(workspace.DescendantAdded,function(d)
 task.defer(b,d)
 end)
 end
-}end a.u=function()local c=a.cache.u if not c then c={c=b()}a.cache.u=c end return c.c end end do local b=function()
+}end a.K=function()local c=a.cache.K if not c then c={c=b()}a.cache.K=c end return c.c end end do local b=function()
 
 
 return{
@@ -713,7 +1184,7 @@ end
 end)
 end
 }
-}end a.v=function()local c=a.cache.v if not c then c={c=b()}a.cache.v=c end return c.c end end do local b=function()
+}end a.L=function()local c=a.cache.L if not c then c={c=b()}a.cache.L=c end return c.c end end do local b=function()
 
 return{
 action="clearerror",
@@ -721,7 +1192,7 @@ description="Clears the annoying box and blur when a game kicks you",
 run=function(b)
 b.guiService:ClearError()
 end
-}end a.w=function()local c=a.cache.w if not c then c={c=b()}a.cache.w=c end return c.c end end do local b=function()
+}end a.M=function()local c=a.cache.M if not c then c={c=b()}a.cache.M=c end return c.c end end do local b=function()
 
 local b="CoreScripts/NetworkPause"local c=function(
 
@@ -765,7 +1236,7 @@ run=function(d)
 c(d)
 end
 }
-}end a.x=function()local c=a.cache.x if not c then c={c=b()}a.cache.x=c end return c.c end end do local b=function()
+}end a.N=function()local c=a.cache.N if not c then c={c=b()}a.cache.N=c end return c.c end end do local b=function()
 
 return{
 action="clientantikick|antikick",
@@ -807,7 +1278,7 @@ end)
 b.privateEnv.clientAntiKick=true
 b:notify("Client Antikick","Client anti kick is now active (only effective on localscript kick)")
 end
-}end a.y=function()local c=a.cache.y if not c then c={c=b()}a.cache.y=c end return c.c end end do local b=function()
+}end a.O=function()local c=a.cache.O if not c then c={c=b()}a.cache.O=c end return c.c end end do local b=function()
 
 return{
 action="clientantiteleport|antiteleport",
@@ -856,7 +1327,7 @@ end)
 b.privateEnv.clientAntiTeleport=true
 b:notify("Client AntiTP","Client anti teleport is now active (only effective on localscript teleport)")
 end
-}end a.z=function()local c=a.cache.z if not c then c={c=b()}a.cache.z=c end return c.c end end do local b=function()
+}end a.P=function()local c=a.cache.P if not c then c={c=b()}a.cache.P=c end return c.c end end do local b=function()
 
 return{
 client=true,
@@ -874,7 +1345,7 @@ end
 b.storage.settings:setValue("allowRejoin",d)
 b:notify("Client AntiTP",`Scripts now {d and"may"or"may not"} make you rejoin the server`)
 end
-}end a.A=function()local c=a.cache.A if not c then c={c=b()}a.cache.A=c end return c.c end end do local b=function()
+}end a.Q=function()local c=a.cache.Q if not c then c={c=b()}a.cache.Q=c end return c.c end end do local b=function()
 
 return{
 action="cancelteleport|canceltp",
@@ -883,7 +1354,7 @@ run=function(b)
 b.playerService:cancelTween()
 b.teleportService:TeleportCancel()
 end
-}end a.B=function()local c=a.cache.B if not c then c={c=b()}a.cache.B=c end return c.c end end do local b=function()
+}end a.R=function()local c=a.cache.R if not c then c={c=b()}a.cache.R=c end return c.c end end do local b=function()
 
 return{
 action="volume|vol",
@@ -896,7 +1367,7 @@ run=function(b,c)
 local d=1/c:nextValue()
 b.userGameSettings.MasterVolume=d
 end
-}end a.C=function()local c=a.cache.C if not c then c={c=b()}a.cache.C=c end return c.c end end do local b=function()
+}end a.S=function()local c=a.cache.S if not c then c={c=b()}a.cache.S=c end return c.c end end do local b=function()
 local b={
 BasePart={
 CastShadow=false,
@@ -984,7 +1455,7 @@ end
 e.privateEnv.antiLagEnabled=true
 d(e)
 end
-}end a.D=function()local c=a.cache.D if not c then c={c=b()}a.cache.D=c end return c.c end end do local b=function()
+}end a.T=function()local c=a.cache.T if not c then c={c=b()}a.cache.T=c end return c.c end end do local b=function()
 return{
 {
 action="record|rec",
@@ -1007,7 +1478,7 @@ run=function(b)
 b.guiService:ToggleFullscreen()
 end
 }
-}end a.E=function()local c=a.cache.E if not c then c={c=b()}a.cache.E=c end return c.c end end do local b=function()
+}end a.U=function()local c=a.cache.U if not c then c={c=b()}a.cache.U=c end return c.c end end do local b=function()
 local b={}
 b.__index=b
 
@@ -1043,8 +1514,8 @@ index=1
 },b)end
 
 
-return b end a.F=function()local c=a.cache.F if not c then c={c=b()}a.cache.F=c end return c.c end end do local b=function()
-local b=a.F()
+return b end a.V=function()local c=a.cache.V if not c then c={c=b()}a.cache.V=c end return c.c end end do local b=function()
+local b=a.V()
 
 return{
 action="lastcommand|lastcmd",
@@ -1058,7 +1529,7 @@ end
 
 c:run(d.name,b.new(d.args),true)
 end
-}end a.G=function()local c=a.cache.G if not c then c={c=b()}a.cache.G=c end return c.c end end do local b=function()
+}end a.W=function()local c=a.cache.W if not c then c={c=b()}a.cache.W=c end return c.c end end do local b=function()
 
 return{
 action="notifyping|ping",
@@ -1067,7 +1538,7 @@ run=function(b)
 local c=b.localPlayer:GetNetworkPing()
 b:notify("Ping",`{math.round(c*1000)}ms`)
 end
-}end a.H=function()local c=a.cache.H if not c then c={c=b()}a.cache.H=c end return c.c end end do local b=function()
+}end a.X=function()local c=a.cache.X if not c then c={c=b()}a.cache.X=c end return c.c end end do local b=function()
 return{
 {
 action="norender",
@@ -1083,7 +1554,7 @@ run=function(b)
 b.runService:Set3dRenderingEnabled(true)
 end
 }
-}end a.I=function()local c=a.cache.I if not c then c={c=b()}a.cache.I=c end return c.c end end do local b=function()
+}end a.Y=function()local c=a.cache.Y if not c then c={c=b()}a.cache.Y=c end return c.c end end do local b=function()
 return{
 {
 action="use2022materials|2022materials",
@@ -1099,7 +1570,7 @@ run=function(b)
 b.rbxServices.MaterialService.Use2022Materials=false
 end
 }
-}end a.J=function()local c=a.cache.J if not c then c={c=b()}a.cache.J=c end return c.c end end do local b=function()
+}end a.Z=function()local c=a.cache.Z if not c then c={c=b()}a.cache.Z=c end return c.c end end do local b=function()
 local b={
 [Enum.KeyCode.Comma]=-1,
 [Enum.KeyCode.Period]=1,
@@ -1143,7 +1614,7 @@ end
 d.akConn:Disconnect()
 end
 }
-}end a.K=function()local c=a.cache.K if not c then c={c=b()}a.cache.K=c end return c.c end end do local b=function()local b=function(
+}end a._=function()local c=a.cache._ if not c then c={c=b()}a.cache._=c end return c.c end end do local b=function()local b=function(
 b, c)
 local d=b.localPlayer.PlayerScripts
 local e=d.PlayerModule.CameraModule.MouseLockController
@@ -1172,14 +1643,14 @@ run=function(c)
 b(c,"LeftShift")
 end
 }
-}end a.L=function()local c=a.cache.L if not c then c={c=b()}a.cache.L=c end return c.c end end do local b=function()
+}end a.aa=function()local c=a.cache.aa if not c then c={c=b()}a.cache.aa=c end return c.c end end do local b=function()
 return{
 action="exit|shutdown|leave",
 description="Kills roblox process",
 run=function()
 game:shutdown()
 end
-}end a.M=function()local c=a.cache.M if not c then c={c=b()}a.cache.M=c end return c.c end end do local b=function()
+}end a.ab=function()local c=a.cache.ab if not c then c={c=b()}a.cache.ab=c end return c.c end end do local b=function()
 
 
 return{
@@ -1188,35 +1659,17 @@ description="Stops any cmd loops (100^1^cmd)",
 run=function(b)
 b.loopService:stop()
 end
-}end a.N=function()local c=a.cache.N if not c then c={c=b()}a.cache.N=c end return c.c end end do local b=function()
+}end a.ac=function()local c=a.cache.ac if not c then c={c=b()}a.cache.ac=c end return c.c end end do local b=function()
 return{
 action="notifyjobid",
 description="Notifies the JobId and PlaceId of the current server",
 run=function(b)
 b:notify("JobId / PlaceId",`{game.JobId} / {game.PlaceId}`)
 end
-}end a.O=function()local c=a.cache.O if not c then c={c=b()}a.cache.O=c end return c.c end end do local b=function()
+}end a.ad=function()local c=a.cache.ad if not c then c={c=b()}a.cache.ad=c end return c.c end end do local b=function()
 
-local b={}
-
-local c=a.a()
-local d=a.d()
-
-b.__index=function(e, f)
-d:expect(f,{"string"},"[index] serviceName")
-
-local g=game:GetService(f)
-local h=c.cloneref(g)
-
-rawset(e,f,h)
-return h end
-
-
-return setmetatable({},b)end a.P=function()local c=a.cache.P if not c then c={c=b()}a.cache.P=c end return c.c end end do local b=function()
-local b=a.P()
-return b.Players.LocalPlayer end a.Q=function()local c=a.cache.Q if not c then c={c=b()}a.cache.Q=c end return c.c end end do local b=function()
-local b=a.P()
-local c=a.Q()
+local b=a.f()
+local c=a.g()
 local d=a.d()
 
 local e=b.TeleportService
@@ -1449,11 +1902,11 @@ task.spawn(c.RequestStreamAroundAsync,c,q,p)
 o:WaitForChild("HumanoidRootPart",p)end
 
 
-return h end a.R=function()local c=a.cache.R if not c then c={c=b()}a.cache.R=c end return c.c end end do local b=function()
+return h end a.ae=function()local c=a.cache.ae if not c then c={c=b()}a.cache.ae=c end return c.c end end do local b=function()
 
-local b=a.P()
-local c=a.R()
-local d=a.Q()local e=function(
+local b=a.f()
+local c=a.ae()
+local d=a.g()local e=function(
 
 
 
@@ -1847,9 +2300,9 @@ parts=x,
 __call=function(A,B)
 return z(B)
 end,
-})end a.S=function()local c=a.cache.S if not c then c={c=b()}a.cache.S=c end return c.c end end do local b=function()
+})end a.af=function()local c=a.cache.af if not c then c={c=b()}a.cache.af=c end return c.c end end do local b=function()
 
-local b=a.S()
+local b=a.af()
 
 return{
 {
@@ -1898,7 +2351,7 @@ c.executorEnv.setclipboard(tostring(d))
 c:notify("Copied ID","Copied creator ID to clipboard")
 end
 }
-}end a.T=function()local c=a.cache.T if not c then c={c=b()}a.cache.T=c end return c.c end end do local b=function()
+}end a.ag=function()local c=a.cache.ag if not c then c={c=b()}a.cache.ag=c end return c.c end end do local b=function()
 
 return{
 action="inviteprompt",
@@ -1914,7 +2367,7 @@ if not d then
 b:notify("Invite Prompt","could not open the invite prompt: "..tostring(e))
 end
 end
-}end a.U=function()local c=a.cache.U if not c then c={c=b()}a.cache.U=c end return c.c end end do local b=function()
+}end a.ah=function()local c=a.cache.ah if not c then c={c=b()}a.cache.ah=c end return c.c end end do local b=function()
 
 local b={inventory=
 Enum.CoreGuiType.Backpack,leaderboard=
@@ -1955,7 +2408,7 @@ run=function(d,e)
 c(d,e:nextValue():lower(),false)
 end
 }
-}end a.V=function()local c=a.cache.V if not c then c={c=b()}a.cache.V=c end return c.c end end do local b=function()
+}end a.ai=function()local c=a.cache.ai if not c then c={c=b()}a.cache.ai=c end return c.c end end do local b=function()
 
 return{
 action="clearnilinstances|nonilinstances|cni",
@@ -1970,7 +2423,7 @@ for c,d in getnilinstances()do
 d:Destroy()
 end
 end
-}end a.W=function()local c=a.cache.W if not c then c={c=b()}a.cache.W=c end return c.c end end do local b=function()
+}end a.aj=function()local c=a.cache.aj if not c then c={c=b()}a.cache.aj=c end return c.c end end do local b=function()
 
 return{
 action="mousesensitivity|ms",
@@ -1979,9 +2432,9 @@ args={kind="number",name="sensitivity"},
 run=function(b,c)
 b.robloxServices.UserInputService.MouseDeltaSensitivity=c:nextValue()
 end
-}end a.X=function()local c=a.cache.X if not c then c={c=b()}a.cache.X=c end return c.c end end do local b=function()
+}end a.ak=function()local c=a.cache.ak if not c then c={c=b()}a.cache.ak=c end return c.c end end do local b=function()
 
-local b=a.S()
+local b=a.af()
 
 return{
 {
@@ -2004,7 +2457,7 @@ c.localPlayer:RevokeFriendship(f)
 end
 end
 }
-}end a.Y=function()local c=a.cache.Y if not c then c={c=b()}a.cache.Y=c end return c.c end end do local b=function()local b=function(
+}end a.al=function()local c=a.cache.al if not c then c={c=b()}a.cache.al=c end return c.c end end do local b=function()local b=function(
 
 
 b)
@@ -2067,7 +2520,7 @@ run=function(c)
 c.playerService:resetCharacter()
 end
 }
-}end a.Z=function()local c=a.cache.Z if not c then c={c=b()}a.cache.Z=c end return c.c end end do local b=function()
+}end a.am=function()local c=a.cache.am if not c then c={c=b()}a.cache.am=c end return c.c end end do local b=function()
 
 local b=a.d()
 
@@ -2089,7 +2542,7 @@ end
 
 c:notify("debug",tostring(e))
 end
-}end a._=function()local c=a.cache._ if not c then c={c=b()}a.cache._=c end return c.c end end do local b=function()
+}end a.an=function()local c=a.cache.an if not c then c={c=b()}a.cache.an=c end return c.c end end do local b=function()
 
 return{
 {
@@ -2123,9 +2576,9 @@ b.localPlayer.Team=e
 end
 end
 }
-}end a.aa=function()local c=a.cache.aa if not c then c={c=b()}a.cache.aa=c end return c.c end end do local b=function()
+}end a.ao=function()local c=a.cache.ao if not c then c={c=b()}a.cache.ao=c end return c.c end end do local b=function()
 
-local b=a.S()
+local b=a.af()
 
 return{
 {
@@ -2192,7 +2645,7 @@ c:notify("Handle Kill","Stopped!")
 end)
 end
 }
-}end a.ab=function()local c=a.cache.ab if not c then c={c=b()}a.cache.ab=c end return c.c end end do local b=function()
+}end a.ap=function()local c=a.cache.ap if not c then c={c=b()}a.cache.ap=c end return c.c end end do local b=function()
 
 
 
@@ -2294,12 +2747,12 @@ run=function(f)
 d(f,"autokeypress")
 end
 }
-}end a.ac=function()local c=a.cache.ac if not c then c={c=b()}a.cache.ac=c end return c.c end end do local b=function()
+}end a.aq=function()local c=a.cache.aq if not c then c={c=b()}a.cache.aq=c end return c.c end end do local b=function()
 
 
 
 
-local b=a.P()
+local b=a.f()
 local c=b.Players
 
 local d="Rolewatch"
@@ -2470,7 +2923,7 @@ k:notify("Friend groups",table.concat(m,", "))
 end
 end
 }
-}end a.ad=function()local c=a.cache.ad if not c then c={c=b()}a.cache.ad=c end return c.c end end do local b=function()
+}end a.ar=function()local c=a.cache.ar if not c then c={c=b()}a.cache.ar=c end return c.c end end do local b=function()
 
 
 
@@ -2510,7 +2963,7 @@ run=function(b)
 b:run("mousetp")
 end
 }
-}end a.ae=function()local c=a.cache.ae if not c then c={c=b()}a.cache.ae=c end return c.c end end do local b=function()local b=function(
+}end a.as=function()local c=a.cache.as if not c then c={c=b()}a.cache.as=c end return c.c end end do local b=function()local b=function(
 
 
 b, c)
@@ -2547,25 +3000,9 @@ run=function(c)
 b(c,"R15")
 end
 }
-}end a.af=function()local c=a.cache.af if not c then c={c=b()}a.cache.af=c end return c.c end end do local b=function()
+}end a.at=function()local c=a.cache.at if not c then c={c=b()}a.cache.at=c end return c.c end end do local b=function()
 
-return{a.f()
-,a.g()
-,a.h()
-,a.i()
-,a.j()
-,a.k()
-,a.l()
-,a.m()
-,a.n()
-,a.o()
-,a.p()
-,a.q()
-,a.r()
-,a.s()
-,a.t()
-,a.u()
-,a.v()
+return{a.v()
 ,a.w()
 ,a.x()
 ,a.y()
@@ -2575,6 +3012,7 @@ return{a.f()
 ,a.C()
 ,a.D()
 ,a.E()
+,a.F()
 ,a.G()
 ,a.H()
 ,a.I()
@@ -2583,11 +3021,13 @@ return{a.f()
 ,a.L()
 ,a.M()
 ,a.N()
-
 ,a.O()
+,a.P()
+,a.Q()
+,a.R()
+,a.S()
 ,a.T()
 ,a.U()
-,a.V()
 ,a.W()
 ,a.X()
 ,a.Y()
@@ -2596,372 +3036,44 @@ return{a.f()
 ,a.aa()
 ,a.ab()
 ,a.ac()
+
 ,a.ad()
-,a.ae()
-,a.af()
-
-}end a.ag=function()local c=a.cache.ag if not c then c={c=b()}a.cache.ag=c end return c.c end end do local b=function()
-
-local b=a.d()
-
-local c={}
-c.__index=c
-
-c.encrypt=function(d, e)
-b:expect(e,{"string"},"'encryptor:encrypt' #1")
-local f=d.encryptKey
-local g={}
-
-for h=1,#e do
-f=(f*16807)%2147483647
-table.insert(g,string.format("%02X",(e:byte(h)+f%256)%256))
-end
-
-return table.concat(g)end
-
-
-c.decrypt=function(d, e, f)
-b:expect(e,{"string"},"'encryptor:decrypt' #1")
-local g=d.encryptKey
-local h={}
-
-for i=1,#e,2 do
-local j=tonumber(e:sub(i,i+1),16)
-g=(g*16807)%2147483647
-h[#h+1]=string.char((j-g%256+256)%256)
-end
-
-return table.concat(h)end
-
-
-c.new=function(d)
-b:expect(d,{"number"},"'encryptor.new' #1")
-
-return setmetatable({
-encryptKey=d
-},c)end
-
-
-return c end a.ah=function()local c=a.cache.ah if not c then c={c=b()}a.cache.ah=c end return c.c end end do local b=function()
-local b=a.P()
-local c=a.d()
-
-local d=b.HttpService
-local e=d.JSONEncode
-local f=d.JSONDecode
-
-return{
-encode=function(g,h)
-local i,j=pcall(e,d,g)
-
-if not i then
-c:warn(`failed to encode json '{h or"unknown"}': {j}`)
-return nil
-end
-
-return j
-end,
-decode=function(g,h)
-local i,j=pcall(f,d,g)
-
-if not i then
-c:warn(`failed to decode json '{h or"unknown"}': {j}`)
-return nil
-end
-
-return j
-end
-}end a.ai=function()local c=a.cache.ai if not c then c={c=b()}a.cache.ai=c end return c.c end end do local b=function()
-return{
-privateFolder="infiniteYield",
-imagePath="assets/%s.png",
-encryptKey=676767
-}end a.aj=function()local c=a.cache.aj if not c then c={c=b()}a.cache.aj=c end return c.c end end do local b=function()
-local b=a.a()
-
-local c=a.ah()
-local d=a.d()
-local e=a.ai()
-
-local f=a.aj()
-
-local g=f.privateFolder
-local h=f.encryptKey
-
-c=c.new(h)
-
-if g:sub(#g)=="/"then
-g=g:sub(1,-2)
-end
-
-local i={}
-i.__index=i local j=function(
-
-j)
-local k,l=pcall(b.isfile,j)
-
-if k and type(l)=="boolean"then
-return l
-end
-
-return false end local k=function(
-
-
-k)
-local l,m=pcall(b.isfolder,k)
-
-if l and type(m)=="boolean"then
-return m
-end
-
-return false end local l=function(
-
-
-l)
-if not j(l)then
-d:log(`the file '{l}' don't exist, skipped!`)
-return""
-end
-
-local m,n=pcall(b.readfile,l)
-
-if not m then
-d:warn(`failed to read file '{l}':\n\t{n}`)
-n=nil
-end
-
-if type(n)~="string"then
-n=""
-end
-
-return n end local m=function(
-
-
-m)
-local n=m:split("/")
-local o={}
-
-for p,q in n do
-table.insert(o,q)
-
-local r=table.concat(o,"/")
-if k(r)then continue end
-
-local s,t=pcall(b.makefolder,r)
-
-if not s then
-d:warn(`failed to create a folder '{r}':\n\t{t}`)
-end
-end end local n=function(
-
-
-n, o)
-local p,q=pcall(b.writefile,n,o)
-
-if p then
-d:log(`successfully writed the file '{n}'!`)
-else
-d:warn(`failed to write file '{n}':\n\t{q}`)
-end end local o=function(
-
-
-o)
-local p,q=pcall(b.getcustomasset,o)
-
-if not(p and type(q)=="string")then
-d:warn(`failed to get custom asset '{o}':\n\t{q}`)
-return
-end
-
-return q end local p=function(
-
-
-p)
-local q=string.split(p,"/")
-local r=table.remove(q)
-
-return table.concat(q,"/"),r end
-
-
-i.getRealPath=function(q, r)
-if r:sub(1,1)~="/"then
-r="/"..r
-end
-
-r=g..r
-return r end
-
-
-i.deep=function(q, r)
-local s=q.object
-local t=r:split(".")
-local u=table.remove(t)
-
-for v,w in t do
-local x=s[w]
-if type(x)~="table"then x={}end
-s[w]=x
-s=x
-end
-
-return s,u end
-
-
-i.setValue=function(q, r, s)
-local t,u=q:deep(r)
-t[u]=s end
-
-
-i.getValue=function(q, r)
-local s,t=q:deep(r)
-return s[t]end
-
-
-i.hasValue=function(q, r)
-return q:getValue(r)~=nil end
-
-
-i.increment=function(q, r, s)
-return q:setValue(r,(q:getValue(r)or 0)+s)end
-
-
-i.exist=function(q, r)
-r=q:getRealPath(r)
-return j(r)end
-
-
-i.writeFile=function(q, r, s)
-if q.filePath~=nil then
-r,s=q.filePath,r
-else
-r=q:getRealPath(r)
-end
-
-n(r,s)end
-
-
-i.register=function(q, r, s)
-local t=q:getValue(r)
-
-if typeof(t)~=typeof(s)then
-t=s
-q:setValue(r,t)
-end
-
-return t end
-
-
-i.add=function(q, r, s)
-local t=q:getValue(r)
-d:expect(t,{"table"},"'userData:add' #1")
-
-if not table.find(t,s)then
-table.insert(t,s)
-end end
-
-
-i.save=function(q)
-if q.isSaving then return end
-
-q.isSaving=true
-q.lastSave=tick()
-
-task.delay(1,function()
-local r=e.encode(q.object,q.filePath)
-
-if q.encryptData then
-r=c:encrypt(r)
-end
-
-q.isSaving=false
-q:writeFile(r)
-end)end
-
-
-i.getCustomAsset=function(q, r)
-r=q:getRealPath(r)
-return o(r)end
-
-
-i.getData=function(q)
-return table.clone(q.object)end
-
-
-
-i.replaceData=function(q, r)
-d:expect(r,{"table"},"'fileSystem:replaceData' #1")
-
-q.object=table.clone(r)
-q:save()end
-
-
-i.new=function(q, r)
-d:expect(q,{"string"},"'fileSystem.new' #1")
-d:expect(r,{"table","nil"},"'fileSystem.new' #2")
-
-if q:sub(-5,-1)~=".json"then
-q=q..".json"
-end
-
-local s=setmetatable({
-object={},
-lastSave=0,
-isSaving=false,
-
-encryptData=r and r.encrypt
-},i)
-
-local t=s:getRealPath(q)
-local u=p(t)
-
-s.filePath=t
-s.folderPath=u
-
-if#u>0 then
-m(u)
-end
-
-local v=l(t)
-
-if#v>0 then
-if s.encryptData then
-v=c:decrypt(v)
-end
-
-local w=e.decode(v)
-
-if type(w)~="table"then
-d:warn(`the json content has been returned a unexpected value '{t}'`)
-return s
-end
-
-s.object=w
-end
-
-return s end
-
-
-return i end a.ak=function()local c=a.cache.ak if not c then c={c=b()}a.cache.ak=c end return c.c end end do local b=function()
-return a.ak().new("storage/settings")end a.al=function()local c=a.cache.al if not c then c={c=b()}a.cache.al=c end return c.c end end do local b=function()
-return"v0.7.0"end a.am=function()local c=a.cache.am if not c then c={c=b()}a.cache.am=c end return c.c end end do local b=function()
+,a.ag()
+,a.ah()
+,a.ai()
+,a.aj()
+,a.ak()
+,a.al()
+,a.am()
+,a.an()
+,a.ao()
+,a.ap()
+,a.aq()
+,a.ar()
+,a.as()
+,a.at()
+
+}end a.au=function()local c=a.cache.au if not c then c={c=b()}a.cache.au=c end return c.c end end do local b=function()
+
+return"v0.8.0"end a.av=function()local c=a.cache.av if not c then c={c=b()}a.cache.av=c end return c.c end end do local b=function()
 return{
 owner="tlredz",
 repository="iy-remake"
-}end a.an=function()local c=a.cache.an if not c then c={c=b()}a.cache.an=c end return c.c end end do local b=function()
-local b=a.an()
+}end a.aw=function()local c=a.cache.aw if not c then c={c=b()}a.cache.aw=c end return c.c end end do local b=function()
+local b=a.aw()
 
 return{
 discord="https://discord.gg/78ZuWSq",
 github=`https://github.com/{b.owner}/{b.repository}`
-}end a.ao=function()local c=a.cache.ao if not c then c={c=b()}a.cache.ao=c end return c.c end end do local b=function()
+}end a.ax=function()local c=a.cache.ax if not c then c={c=b()}a.cache.ax=c end return c.c end end do local b=function()
 
 
-local b=a.al()
+local b=a.n()
 
 return{
 applicationName="Infinite Yield RV",
 isRemakeVersion=true,
-version=a.am(),
+version=a.av(),
 newVersionMessage="You're using an old version of Infinite Yield RV",
 
 theme={
@@ -2996,10 +3108,10 @@ draggable=true
 }
 },
 
-links=a.ao(),
-storage=a.aj(),
-}end a.ap=function()local c=a.cache.ap if not c then c={c=b()}a.cache.ap=c end return c.c end end do local b=function()
-local b=a.ap().ui.scale
+links=a.ax(),
+storage=a.j(),
+}end a.ay=function()local c=a.cache.ay if not c then c={c=b()}a.cache.ay=c end return c.c end end do local b=function()
+local b=a.ay().ui.scale
 
 return{
 action="guiscale|uiscale",
@@ -3012,7 +3124,7 @@ run=function(c,d)
 local e=d:nextValue()
 c.infiniteYield:setScale(e)
 end
-}end a.aq=function()local c=a.cache.aq if not c then c={c=b()}a.cache.aq=c end return c.c end end do local b=function()
+}end a.az=function()local c=a.cache.az if not c then c={c=b()}a.cache.az=c end return c.c end end do local b=function()
 return{
 {
 action="noprompts|nopurchaseprompts",
@@ -3028,7 +3140,7 @@ run=function(b)
 b.coreGui.PurchasePromptApp.Enabled=true
 end
 }
-}end a.ar=function()local c=a.cache.ar if not c then c={c=b()}a.cache.ar=c end return c.c end end do local b=function()
+}end a.aA=function()local c=a.cache.aA if not c then c={c=b()}a.cache.aA=c end return c.c end end do local b=function()
 local b={inventory=
 Enum.CoreGuiType.Backpack,leaderboard=
 Enum.CoreGuiType.PlayerList,emotes=
@@ -3068,7 +3180,7 @@ if g then
 c.starterGui:SetCoreGuiEnabled(g,f)
 end
 end
-}end a.as=function()local c=a.cache.as if not c then c={c=b()}a.cache.as=c end return c.c end end do local b=function()local b=function(
+}end a.aB=function()local c=a.cache.aB if not c then c={c=b()}a.cache.aB=c end return c.c end end do local b=function()local b=function(
 b, c)
 local d=b:collectGarbage(c)
 if not d then return end
@@ -3131,7 +3243,7 @@ run=function(d)
 b(d,"invisibleGuiObjects")
 end
 }
-}end a.at=function()local c=a.cache.at if not c then c={c=b()}a.cache.at=c end return c.c end end do local b=function()
+}end a.aC=function()local c=a.cache.aC if not c then c={c=b()}a.cache.aC=c end return c.c end end do local b=function()
 local b={
 connections={}
 }
@@ -3159,7 +3271,7 @@ table.insert(d.connections,g)
 return g end
 
 
-return b end a.au=function()local c=a.cache.au if not c then c={c=b()}a.cache.au=c end return c.c end end do local b=function()
+return b end a.aD=function()local c=a.cache.aD if not c then c={c=b()}a.cache.aD=c end return c.c end end do local b=function()
 
 
 
@@ -3220,7 +3332,7 @@ groups={
 {key="float",title="Float"},
 {key="freecam",title="Freecam"},
 },
-}end a.av=function()local c=a.cache.av if not c then c={c=b()}a.cache.av=c end return c.c end end do local b=function()local b=function(
+}end a.aE=function()local c=a.cache.aE if not c then c={c=b()}a.cache.aE=c end return c.c end end do local b=function()local b=function(
 
 b)
 local c={}
@@ -3278,7 +3390,7 @@ return b({Quote=
 "7",Eight=
 "8",Nine=
 "9"
-})end a.aw=function()local c=a.cache.aw if not c then c={c=b()}a.cache.aw=c end return c.c end end do local b=function()
+})end a.aF=function()local c=a.cache.aF if not c then c={c=b()}a.cache.aF=c end return c.c end end do local b=function()
 
 
 
@@ -3288,11 +3400,11 @@ return b({Quote=
 
 
 
-local b=a.P()
-local c=a.au()
-local d=a.al()
-local e=a.av()
-local f=a.aw()
+local b=a.f()
+local c=a.aD()
+local d=a.n()
+local e=a.aE()
+local f=a.aF()
 
 local g=b.UserInputService
 
@@ -3475,11 +3587,11 @@ h.getBindingName=function(s, t)
 return s:getKeyName(n(t))end
 
 
-return h end a.ax=function()local c=a.cache.ax if not c then c={c=b()}a.cache.ax=c end return c.c end end do local b=function()
+return h end a.aG=function()local c=a.cache.aG if not c then c={c=b()}a.cache.aG=c end return c.c end end do local b=function()
 
 
 
-local b=a.ax()local c=function(
+local b=a.aG()local c=function(
 
 c)
 local d=c:collectGarbage("hideiy")
@@ -3545,27 +3657,27 @@ run=function(g)
 f(g)
 end
 }
-}end a.ay=function()local c=a.cache.ay if not c then c={c=b()}a.cache.ay=c end return c.c end end do local b=function()
+}end a.aH=function()local c=a.cache.aH if not c then c={c=b()}a.cache.aH=c end return c.c end end do local b=function()
 
-return{a.aq()
+return{a.az()
 
 
-,a.ar()
-,a.as()
-,a.at()
-,a.ay()
+,a.aA()
+,a.aB()
+,a.aC()
+,a.aH()
 
 ,
 
-}end a.az=function()local c=a.cache.az if not c then c={c=b()}a.cache.az=c end return c.c end end do local b=function()
+}end a.aI=function()local c=a.cache.aI if not c then c={c=b()}a.cache.aI=c end return c.c end end do local b=function()
 
 
 
 
 
 
-local b=a.P()
-local c=a.ax()
+local b=a.f()
+local c=a.aG()
 
 local d=b.UserInputService
 
@@ -3672,9 +3784,9 @@ n.CFrame=workspace.CurrentCamera.CFrame
 end)end
 
 
-return e end a.aA=function()local c=a.cache.aA if not c then c={c=b()}a.cache.aA=c end return c.c end end do local b=function()
+return e end a.aJ=function()local c=a.cache.aJ if not c then c={c=b()}a.cache.aJ=c end return c.c end end do local b=function()
 
-local b=a.aA()
+local b=a.aJ()
 
 local c=100
 
@@ -3742,7 +3854,7 @@ run=function(d)
 b.stop(d,"fly")
 end
 }
-}end a.aB=function()local c=a.cache.aB if not c then c={c=b()}a.cache.aB=c end return c.c end end do local b=function()
+}end a.aK=function()local c=a.cache.aK if not c then c={c=b()}a.cache.aK=c end return c.c end end do local b=function()
 
 
 
@@ -3820,9 +3932,9 @@ run=function(f)
 f:run(if f:hasGarbage("noclip")then"unnoclip"else"noclip")
 end
 }
-}end a.aC=function()local c=a.cache.aC if not c then c={c=b()}a.cache.aC=c end return c.c end end do local b=function()
+}end a.aL=function()local c=a.cache.aL if not c then c={c=b()}a.cache.aL=c end return c.c end end do local b=function()
 
-local b=a.aA()
+local b=a.aJ()
 
 local c=100
 
@@ -3887,7 +3999,7 @@ run=function(d)
 b.stop(d,"fly")
 end
 }
-}end a.aD=function()local c=a.cache.aD if not c then c={c=b()}a.cache.aD=c end return c.c end end do local b=function()
+}end a.aM=function()local c=a.cache.aM if not c then c={c=b()}a.cache.aM=c end return c.c end end do local b=function()
 
 local b=50 local c=function(
 
@@ -3975,7 +4087,7 @@ run=function(e)
 c(e)
 end
 }
-}end a.aE=function()local c=a.cache.aE if not c then c={c=b()}a.cache.aE=c end return c.c end end do local b=function()
+}end a.aN=function()local c=a.cache.aN if not c then c={c=b()}a.cache.aN=c end return c.c end end do local b=function()
 
 return{
 action="qefly|flyqe",
@@ -3988,7 +4100,7 @@ run=function(b,c)
 
 b.privateEnv.qeFly=c:nextValue()~=false
 end
-}end a.aF=function()local c=a.cache.aF if not c then c={c=b()}a.cache.aF=c end return c.c end end do local b=function()local b=function(
+}end a.aO=function()local c=a.cache.aO if not c then c={c=b()}a.cache.aO=c end return c.c end end do local b=function()local b=function(
 
 
 b)
@@ -4048,9 +4160,9 @@ run=function(d)
 c(d)
 end
 },
-}end a.aG=function()local c=a.cache.aG if not c then c={c=b()}a.cache.aG=c end return c.c end end do local b=function()
+}end a.aP=function()local c=a.cache.aP if not c then c={c=b()}a.cache.aP=c end return c.c end end do local b=function()
 
-local b=a.ax()
+local b=a.aG()
 
 local c=-3.1 local d=function(
 
@@ -4148,7 +4260,7 @@ d(f)
 f:notify("Float","Disabled")
 end
 }
-}end a.aH=function()local c=a.cache.aH if not c then c={c=b()}a.cache.aH=c end return c.c end end do local b=function()local b=function()
+}end a.aQ=function()local c=a.cache.aQ if not c then c={c=b()}a.cache.aQ=c end return c.c end end do local b=function()local b=function()
 
 
 
@@ -4241,7 +4353,7 @@ d(e)
 end
 end
 }
-}end a.aI=function()local c=a.cache.aI if not c then c={c=b()}a.cache.aI=c end return c.c end end do local b=function()local b=function(
+}end a.aR=function()local c=a.cache.aR if not c then c={c=b()}a.cache.aR=c end return c.c end end do local b=function()local b=function(
 
 b, c, d)
 local e=b.playerService:getHumanoid()
@@ -4364,7 +4476,7 @@ end
 end
 end
 }
-}end a.aJ=function()local c=a.cache.aJ if not c then c={c=b()}a.cache.aJ=c end return c.c end end do local b=function()local b=function(
+}end a.aS=function()local c=a.cache.aS if not c then c={c=b()}a.cache.aS=c end return c.c end end do local b=function()local b=function(
 b, c, d)
 if b:hasGarbage(c)then
 b:notify(`{c} is already enabled`)
@@ -4527,7 +4639,7 @@ f.Parent=workspace
 end
 end
 }
-}end a.aK=function()local c=a.cache.aK if not c then c={c=b()}a.cache.aK=c end return c.c end end do local b=function()local b=function(
+}end a.aT=function()local c=a.cache.aT if not c then c={c=b()}a.cache.aT=c end return c.c end end do local b=function()local b=function(
 
 
 b, c)
@@ -4661,9 +4773,9 @@ j:Destroy()
 end
 end
 }
-}end a.aL=function()local c=a.cache.aL if not c then c={c=b()}a.cache.aL=c end return c.c end end do local b=function()
+}end a.aU=function()local c=a.cache.aU if not c then c={c=b()}a.cache.aU=c end return c.c end end do local b=function()
 
-local b=a.S()local c=function(
+local b=a.af()local c=function(
 
 c)
 return c:IsA("Tool")or c:IsA("HopperBin")end local d=function(
@@ -4764,7 +4876,7 @@ end
 end
 end
 }
-}end a.aM=function()local c=a.cache.aM if not c then c={c=b()}a.cache.aM=c end return c.c end end do local b=function()
+}end a.aV=function()local c=a.cache.aV if not c then c={c=b()}a.cache.aV=c end return c.c end end do local b=function()
 
 local b={
 "27789359","30196114","248263260","45834924","33796059","28488254","52155728"
@@ -4973,7 +5085,7 @@ run=function(i)
 g(i)
 end
 }
-}end a.aN=function()local c=a.cache.aN if not c then c={c=b()}a.cache.aN=c end return c.c end end do local b=function()local b=function(
+}end a.aW=function()local c=a.cache.aW if not c then c={c=b()}a.cache.aW=c end return c.c end end do local b=function()local b=function(
 
 b, c)
 local d=b.localPlayer.Character
@@ -5010,7 +5122,7 @@ run=function(c)
 b(c,0.7)
 end
 }
-}end a.aO=function()local c=a.cache.aO if not c then c={c=b()}a.cache.aO=c end return c.c end end do local b=function()
+}end a.aX=function()local c=a.cache.aX if not c then c={c=b()}a.cache.aX=c end return c.c end end do local b=function()
 
 
 local b=workspace.FallenPartsDestroyHeight
@@ -5047,7 +5159,7 @@ c:notify("antivoid","Disabled")
 end
 end
 }
-}end a.aP=function()local c=a.cache.aP if not c then c={c=b()}a.cache.aP=c end return c.c end end do local b=function()local b=function(
+}end a.aY=function()local c=a.cache.aY if not c then c={c=b()}a.cache.aY=c end return c.c end end do local b=function()local b=function(
 
 b)
 local c=b:collectGarbage("spasm")
@@ -5168,7 +5280,7 @@ c(e)
 end
 end
 }
-}end a.aQ=function()local c=a.cache.aQ if not c then c={c=b()}a.cache.aQ=c end return c.c end end do local b=function()local b=function(
+}end a.aZ=function()local c=a.cache.aZ if not c then c={c=b()}a.cache.aZ=c end return c.c end end do local b=function()local b=function(
 
 b)
 return b:IsA("BillboardGui")or b:IsA("SurfaceGui")end local c=function(
@@ -5280,7 +5392,7 @@ e.connection:Disconnect()
 end
 end
 }
-}end a.aR=function()local c=a.cache.aR if not c then c={c=b()}a.cache.aR=c end return c.c end end do local b=function()
+}end a.a_=function()local c=a.cache.a_ if not c then c={c=b()}a.cache.a_=c end return c.c end end do local b=function()
 
 return{
 {
@@ -5319,7 +5431,7 @@ g.CFrame=f
 c.Parent=e
 end
 }
-}end a.aS=function()local c=a.cache.aS if not c then c={c=b()}a.cache.aS=c end return c.c end end do local b=function()local b=function(
+}end a.a0=function()local c=a.cache.a0 if not c then c={c=b()}a.cache.a0=c end return c.c end end do local b=function()local b=function(
 
 
 
@@ -5379,9 +5491,9 @@ f:Disconnect()
 end
 end
 }
-}end a.aT=function()local c=a.cache.aT if not c then c={c=b()}a.cache.aT=c end return c.c end end do local b=function()
+}end a.a1=function()local c=a.cache.a1 if not c then c={c=b()}a.cache.a1=c end return c.c end end do local b=function()
 
-local b=a.S()
+local b=a.af()
 
 return{
 {
@@ -5431,7 +5543,7 @@ d.running=false
 end
 end
 }
-}end a.aU=function()local c=a.cache.aU if not c then c={c=b()}a.cache.aU=c end return c.c end end do local b=function()local b=function(
+}end a.a2=function()local c=a.cache.a2 if not c then c={c=b()}a.cache.a2=c end return c.c end end do local b=function()local b=function(
 
 b, c)
 b.WalkSpeed=c end local c=function(
@@ -5509,9 +5621,9 @@ run=function(f)
 d(f,"loopjumppower")
 end
 }
-}end a.aV=function()local c=a.cache.aV if not c then c={c=b()}a.cache.aV=c end return c.c end end do local b=function()
+}end a.a3=function()local c=a.cache.a3 if not c then c={c=b()}a.cache.a3=c end return c.c end end do local b=function()
 
-local b=a.F()
+local b=a.V()
 
 local c=PhysicalProperties.new(100,0.3,0.5)
 
@@ -5836,7 +5948,7 @@ o.connection:Disconnect()
 end
 end
 }
-}end a.aW=function()local c=a.cache.aW if not c then c={c=b()}a.cache.aW=c end return c.c end end do local b=function()local b=function(
+}end a.a4=function()local c=a.cache.a4 if not c then c={c=b()}a.cache.a4=c end return c.c end end do local b=function()local b=function(
 
 
 b, c)
@@ -5927,7 +6039,7 @@ run=function(e)
 c(e)
 end
 }
-}end a.aX=function()local c=a.cache.aX if not c then c={c=b()}a.cache.aX=c end return c.c end end do local b=function()local b=function(
+}end a.a5=function()local c=a.cache.a5 if not c then c={c=b()}a.cache.a5=c end return c.c end end do local b=function()local b=function(
 
 b, c)
 for d,e in c do
@@ -5976,7 +6088,7 @@ or{"Right Leg","Left Leg","Right Arm","Left Arm"})
 end
 end
 }
-}end a.aY=function()local c=a.cache.aY if not c then c={c=b()}a.cache.aY=c end return c.c end end do local b=function()local b=function(
+}end a.a6=function()local c=a.cache.a6 if not c then c={c=b()}a.cache.a6=c end return c.c end end do local b=function()local b=function(
 
 
 b)
@@ -6134,7 +6246,7 @@ end
 end)
 end
 }
-}end a.aZ=function()local c=a.cache.aZ if not c then c={c=b()}a.cache.aZ=c end return c.c end end do local b=function()
+}end a.a7=function()local c=a.cache.a7 if not c then c={c=b()}a.cache.a7=c end return c.c end end do local b=function()
 
 
 
@@ -6411,7 +6523,7 @@ end)
 end
 end
 }
-}end a.a_=function()local c=a.cache.a_ if not c then c={c=b()}a.cache.a_=c end return c.c end end do local b=function()local b=function(
+}end a.a8=function()local c=a.cache.a8 if not c then c={c=b()}a.cache.a8=c end return c.c end end do local b=function()local b=function(
 
 
 b, c)
@@ -6489,7 +6601,7 @@ run=function(d)
 b(d,"edgejump")
 end
 }
-}end a.a0=function()local c=a.cache.a0 if not c then c={c=b()}a.cache.a0=c end return c.c end end do local b=function()local b=function(
+}end a.a9=function()local c=a.cache.a9 if not c then c={c=b()}a.cache.a9=c end return c.c end end do local b=function()local b=function(
 
 
 
@@ -6570,9 +6682,9 @@ b(c,"JumpPower",e)
 end
 end
 }
-}end a.a1=function()local c=a.cache.a1 if not c then c={c=b()}a.cache.a1=c end return c.c end end do local b=function()
+}end a.ba=function()local c=a.cache.ba if not c then c={c=b()}a.cache.ba=c end return c.c end end do local b=function()
 
-local b=a.S()local c=function(
+local b=a.af()local c=function(
 
 
 c)
@@ -6643,9 +6755,9 @@ end
 end
 end
 }
-}end a.a2=function()local c=a.cache.a2 if not c then c={c=b()}a.cache.a2=c end return c.c end end do local b=function()
+}end a.bb=function()local c=a.cache.bb if not c then c={c=b()}a.cache.bb=c end return c.c end end do local b=function()
 
-local b=a.S()local c=function(
+local b=a.af()local c=function(
 
 c)
 local d=c:collectGarbage("orbit")
@@ -6735,9 +6847,9 @@ c(d)
 d:notify("Orbit","Stopped orbiting player")
 end
 }
-}end a.a3=function()local c=a.cache.a3 if not c then c={c=b()}a.cache.a3=c end return c.c end end do local b=function()
+}end a.bc=function()local c=a.cache.bc if not c then c={c=b()}a.cache.bc=c end return c.c end end do local b=function()
 
-local b=a.S()local c=function(
+local b=a.af()local c=function(
 
 c)
 local d=c:collectGarbage("headsit")
@@ -6778,7 +6890,7 @@ i.CFrame=k.CFrame*CFrame.new(0,1.6,0.4)
 end)
 end
 }
-}end a.a4=function()local c=a.cache.a4 if not c then c={c=b()}a.cache.a4=c end return c.c end end do local b=function()
+}end a.bd=function()local c=a.cache.bd if not c then c={c=b()}a.cache.bd=c end return c.c end end do local b=function()
 
 return{
 {
@@ -6821,9 +6933,9 @@ end
 h.Health=h.MaxHealth
 end
 }
-}end a.a5=function()local c=a.cache.a5 if not c then c={c=b()}a.cache.a5=c end return c.c end end do local b=function()
+}end a.be=function()local c=a.cache.be if not c then c={c=b()}a.cache.be=c end return c.c end end do local b=function()
 
-local b=a.S()
+local b=a.af()
 
 
 local c=workspace.FallenPartsDestroyHeight
@@ -6944,9 +7056,9 @@ end
 end)
 end
 }
-}end a.a6=function()local c=a.cache.a6 if not c then c={c=b()}a.cache.a6=c end return c.c end end do local b=function()
+}end a.bf=function()local c=a.cache.bf if not c then c={c=b()}a.cache.bf=c end return c.c end end do local b=function()
 
-local b=a.S()
+local b=a.af()
 
 local c="rbxassetid://148840371"
 local d="rbxassetid://5918726674"
@@ -7094,9 +7206,9 @@ run=function(j)
 i(j)
 end
 }
-}end a.a7=function()local c=a.cache.a7 if not c then c={c=b()}a.cache.a7=c end return c.c end end do local b=function()
+}end a.bg=function()local c=a.cache.bg if not c then c={c=b()}a.cache.bg=c end return c.c end end do local b=function()
 
-local b=a.S()
+local b=a.af()
 
 local c="507768375"
 local d="180435571"
@@ -7193,18 +7305,9 @@ g("Animations Copied\n\n"..table.concat(k,"\n\n"))
 e:notify("Animations","Copied to clipboard")
 end
 }
-}end a.a8=function()local c=a.cache.a8 if not c then c={c=b()}a.cache.a8=c end return c.c end end do local b=function()
+}end a.bh=function()local c=a.cache.bh if not c then c={c=b()}a.cache.bh=c end return c.c end end do local b=function()
 
-return{a.aB()
-,a.aC()
-,a.aD()
-,a.aE()
-,a.aF()
-,a.aG()
-,a.aH()
-,a.aI()
-,a.aJ()
-,a.aK()
+return{a.aK()
 ,a.aL()
 ,a.aM()
 ,a.aN()
@@ -7218,7 +7321,6 @@ return{a.aB()
 ,a.aV()
 ,a.aW()
 ,a.aX()
-
 ,a.aY()
 ,a.aZ()
 ,a.a_()
@@ -7228,13 +7330,22 @@ return{a.aB()
 ,a.a3()
 ,a.a4()
 ,a.a5()
+
 ,a.a6()
 ,a.a7()
 ,a.a8()
+,a.a9()
+,a.ba()
+,a.bb()
+,a.bc()
+,a.bd()
+,a.be()
+,a.bf()
+,a.bg()
+,a.bh()
 
-}end a.a9=function()local c=a.cache.a9 if not c then c={c=b()}a.cache.a9=c end return c.c end end do local b=function()
+}end a.bi=function()local c=a.cache.bi if not c then c={c=b()}a.cache.bi=c end return c.c end end do local b=function()
 
-return a.ak().new("storage/createdWaypoints")end a.ba=function()local c=a.cache.ba if not c then c={c=b()}a.cache.ba=c end return c.c end end do local b=function()
 local b={}
 
 local c={Vector3=
@@ -7271,7 +7382,7 @@ assert(h,"can't convert to value")
 return h(f)end
 
 
-return b end a.bb=function()local c=a.cache.bb if not c then c={c=b()}a.cache.bb=c end return c.c end end do local b=function()
+return b end a.bj=function()local c=a.cache.bj if not c then c={c=b()}a.cache.bj=c end return c.c end end do local b=function()
 
 
 
@@ -7283,10 +7394,10 @@ return b end a.bb=function()local c=a.cache.bb if not c then c={c=b()}a.cache.bb
 
 
 
-local b=a.ba()
+local b=a.l()
 local c=a.b()
-local d=a.R()
-local e=a.bb()
+local d=a.ae()
+local e=a.bj()
 
 local f="showingWaypoints"
 
@@ -7580,12 +7691,12 @@ h.show()
 end end
 
 
-return h end a.bc=function()local c=a.cache.bc if not c then c={c=b()}a.cache.bc=c end return c.c end end do local b=function()
+return h end a.bk=function()local c=a.cache.bk if not c then c={c=b()}a.cache.bk=c end return c.c end end do local b=function()
 
 
 
 
-local b=a.bc()
+local b=a.bk()
 
 local c="Waypoints"local d=function(
 
@@ -7754,7 +7865,7 @@ b.hide()
 f:notify(c,`deleted {i} waypoints from this game`)
 end
 }
-}end a.bd=function()local c=a.cache.bd if not c then c={c=b()}a.cache.bd=c end return c.c end end do local b=function()
+}end a.bl=function()local c=a.cache.bl if not c then c={c=b()}a.cache.bl=c end return c.c end end do local b=function()
 
 return{
 action="tweenspeed|tspeed",
@@ -7764,9 +7875,9 @@ run=function(b,c)
 
 b.privateEnv.tweenSpeed=c:nextValue()
 end
-}end a.be=function()local c=a.cache.be if not c then c={c=b()}a.cache.be=c end return c.c end end do local b=function()
+}end a.bm=function()local c=a.cache.bm if not c then c={c=b()}a.cache.bm=c end return c.c end end do local b=function()
 
-local b=a.S()local c=function(
+local b=a.af()local c=function(
 
 
 c)
@@ -7875,9 +7986,9 @@ run=function(f)
 c(f)
 end
 }
-}end a.bf=function()local c=a.cache.bf if not c then c={c=b()}a.cache.bf=c end return c.c end end do local b=function()
+}end a.bn=function()local c=a.cache.bn if not c then c={c=b()}a.cache.bn=c end return c.c end end do local b=function()
 
-local b=a.S()
+local b=a.af()
 
 return{
 action="vehiclegoto|vgoto|vehicletp|vtp",
@@ -7901,9 +8012,9 @@ if i then
 i:PivotTo(h:GetPivot())
 end
 end
-}end a.bg=function()local c=a.cache.bg if not c then c={c=b()}a.cache.bg=c end return c.c end end do local b=function()
+}end a.bo=function()local c=a.cache.bo if not c then c={c=b()}a.cache.bo=c end return c.c end end do local b=function()
 
-local b=a.S()
+local b=a.af()
 
 return{
 action="pulsetp|ptp",
@@ -7934,9 +8045,9 @@ task.wait(f)
 
 c.playerService:setRootCFrame(i)
 end
-}end a.bh=function()local c=a.cache.bh if not c then c={c=b()}a.cache.bh=c end return c.c end end do local b=function()
+}end a.bp=function()local c=a.cache.bp if not c then c={c=b()}a.cache.bp=c end return c.c end end do local b=function()
 
-local b=a.S()local c=function(
+local b=a.af()local c=function(
 
 
 c, d)
@@ -8054,9 +8165,9 @@ c(d,nil)
 end
 end
 }
-}end a.bi=function()local c=a.cache.bi if not c then c={c=b()}a.cache.bi=c end return c.c end end do local b=function()
+}end a.bq=function()local c=a.cache.bq if not c then c={c=b()}a.cache.bq=c end return c.c end end do local b=function()
 
-local b=a.S()
+local b=a.af()
 
 local c="IYFloatPlatform"
 
@@ -8097,7 +8208,7 @@ end
 end
 end
 }
-}end a.bj=function()local c=a.cache.bj if not c then c={c=b()}a.cache.bj=c end return c.c end end do local b=function()local b=function(
+}end a.br=function()local c=a.cache.br if not c then c={c=b()}a.cache.br=c end return c.c end end do local b=function()local b=function(
 
 
 b, c)
@@ -8127,7 +8238,7 @@ run=function(c)
 b(c,1)
 end
 }
-}end a.bk=function()local c=a.cache.bk if not c then c={c=b()}a.cache.bk=c end return c.c end end do local b=function()local b=function(
+}end a.bs=function()local c=a.cache.bs if not c then c={c=b()}a.cache.bs=c end return c.c end end do local b=function()local b=function(
 
 b, c)
 local d=b.playerService:getRootPart()
@@ -8151,7 +8262,7 @@ run=function(c)
 b(c,false)
 end
 }
-}end a.bl=function()local c=a.cache.bl if not c then c={c=b()}a.cache.bl=c end return c.c end end do local b=function()
+}end a.bt=function()local c=a.cache.bt if not c then c={c=b()}a.cache.bt=c end return c.c end end do local b=function()
 
 return{
 {
@@ -8239,9 +8350,9 @@ local g=e.CFrame.Position+f*d
 b.playerService:teleportTo(CFrame.new(g,g+f))
 end
 }
-}end a.bm=function()local c=a.cache.bm if not c then c={c=b()}a.cache.bm=c end return c.c end end do local b=function()
+}end a.bu=function()local c=a.cache.bu if not c then c={c=b()}a.cache.bu=c end return c.c end end do local b=function()
 
-local b=a.S()local c=function(
+local b=a.af()local c=function(
 
 
 c, d)
@@ -8307,7 +8418,7 @@ d:notify("Position","character is not loaded")
 end
 end
 }
-}end a.bn=function()local c=a.cache.bn if not c then c={c=b()}a.cache.bn=c end return c.c end end do local b=function()
+}end a.bv=function()local c=a.cache.bv if not c then c={c=b()}a.cache.bv=c end return c.c end end do local b=function()
 
 return{
 action="walktoposition|walktopos",
@@ -8327,7 +8438,7 @@ if e then
 e.WalkToPoint=d
 end
 end
-}end a.bo=function()local c=a.cache.bo if not c then c={c=b()}a.cache.bo=c end return c.c end end do local b=function()local b=function(
+}end a.bw=function()local c=a.cache.bw if not c then c={c=b()}a.cache.bw=c end return c.c end end do local b=function()local b=function(
 
 b)
 local c=b:collectGarbage("spawnpoint")
@@ -8377,10 +8488,10 @@ c:notify("Spawn Point","Removed spawn point")
 end
 end
 }
-}end a.bp=function()local c=a.cache.bp if not c then c={c=b()}a.cache.bp=c end return c.c end end do local b=function()
+}end a.bx=function()local c=a.cache.bx if not c then c={c=b()}a.cache.bx=c end return c.c end end do local b=function()
 
-local b=a.au()
-local c=a.Q()
+local b=a.aD()
+local c=a.g()
 
 local d local e=function(
 
@@ -8412,7 +8523,7 @@ end
 
 f.playerService:teleportTo(d)
 end
-}end a.bq=function()local c=a.cache.bq if not c then c={c=b()}a.cache.bq=c end return c.c end end do local b=function()local b=function(
+}end a.by=function()local c=a.cache.by if not c then c={c=b()}a.cache.by=c end return c.c end end do local b=function()local b=function(
 
 b)
 local c=b:collectGarbage("walltp")
@@ -8457,7 +8568,7 @@ run=function(c)
 b(c)
 end
 }
-}end a.br=function()local c=a.cache.br if not c then c={c=b()}a.cache.br=c end return c.c end end do local b=function()
+}end a.bz=function()local c=a.cache.bz if not c then c={c=b()}a.cache.bz=c end return c.c end end do local b=function()
 
 return{
 action="teleporttool|tptool",
@@ -8484,7 +8595,7 @@ local g=f.Hit.Position+Vector3.new(0,3,0)
 b.playerService:teleportTo(CFrame.new(g)*(e.CFrame-e.CFrame.Position))
 end)
 end
-}end a.bs=function()local c=a.cache.bs if not c then c={c=b()}a.cache.bs=c end return c.c end end do local b=function()local b=function(
+}end a.bA=function()local c=a.cache.bA if not c then c={c=b()}a.cache.bA=c end return c.c end end do local b=function()local b=function(
 
 
 
@@ -8605,7 +8716,7 @@ run=function(g,h)
 g.privateEnv.gotopartDelay=h:nextValue()or 0.1
 end
 }
-}end a.bt=function()local c=a.cache.bt if not c then c={c=b()}a.cache.bt=c end return c.c end end do local b=function()
+}end a.bB=function()local c=a.cache.bB if not c then c={c=b()}a.cache.bB=c end return c.c end end do local b=function()
 
 return{
 action="mouseteleport|mousetp",
@@ -8619,7 +8730,7 @@ if not(c and d.Hit)then return end
 local e=d.Hit.Position+Vector3.new(0,3,0)
 b.playerService:teleportTo(CFrame.new(e)*(c.CFrame-c.CFrame.Position))
 end
-}end a.bu=function()local c=a.cache.bu if not c then c={c=b()}a.cache.bu=c end return c.c end end do local b=function()local b=function(
+}end a.bC=function()local c=a.cache.bC if not c then c={c=b()}a.cache.bC=c end return c.c end end do local b=function()local b=function(
 
 b)
 local c=b:collectGarbage("tpwalk")
@@ -8745,12 +8856,12 @@ end
 d:notify("Wallwalk",if f then"disabled"else"it is not running")
 end
 }
-}end a.bv=function()local c=a.cache.bv if not c then c={c=b()}a.cache.bv=c end return c.c end end do local b=function()
+}end a.bD=function()local c=a.cache.bD if not c then c={c=b()}a.cache.bD=c end return c.c end end do local b=function()
 
 
 
-local b=a.S()
-local c=a.P()
+local b=a.af()
+local c=a.f()
 
 local d=c.PathfindingService
 
@@ -8973,17 +9084,9 @@ p:notify("Pathfind","nothing is walking right now")
 end
 end
 }
-}end a.bw=function()local c=a.cache.bw if not c then c={c=b()}a.cache.bw=c end return c.c end end do local b=function()
+}end a.bE=function()local c=a.cache.bE if not c then c={c=b()}a.cache.bE=c end return c.c end end do local b=function()
 
-return{a.be()
-,a.bf()
-,a.bg()
-,a.bh()
-,a.bi()
-,a.bj()
-,a.bk()
-,a.bl()
-,a.bm()
+return{a.bm()
 ,a.bn()
 ,a.bo()
 ,a.bp()
@@ -8994,31 +9097,21 @@ return{a.be()
 ,a.bu()
 ,a.bv()
 ,a.bw()
+,a.bx()
+,a.by()
+,a.bz()
+,a.bA()
+,a.bB()
+,a.bC()
+,a.bD()
+,a.bE()
 
-}end a.bx=function()local c=a.cache.bx if not c then c={c=b()}a.cache.bx=c end return c.c end end do local b=function()
-
-return a.ak().new("storage/installedPlugins")end a.by=function()local c=a.cache.by if not c then c={c=b()}a.cache.by=c end return c.c end end do local b=function()
-return a.ak().new("storage/.userData",{
-encrypt=true
-})end a.bz=function()local c=a.cache.bz if not c then c={c=b()}a.cache.bz=c end return c.c end end do local b=function()
-return a.ak().new("storage/aliases")end a.bA=function()local c=a.cache.bA if not c then c={c=b()}a.cache.bA=c end return c.c end end do local b=function()
-return a.ak().new("storage/totalUsedCommands")end a.bB=function()local c=a.cache.bB if not c then c={c=b()}a.cache.bB=c end return c.c end end do local b=function()
-return a.ak().new("storage/eventBinds")end a.bC=function()local c=a.cache.bC if not c then c={c=b()}a.cache.bC=c end return c.c end end do local b=function()
-
-return{
-waypoints=a.ba(),
-plugins=a.by(),
-settings=a.al(),
-user=a.bz(),
-aliases=a.bA(),
-usedCmds=a.bB(),
-eventBinds=a.bC()
-}end a.bD=function()local c=a.cache.bD if not c then c={c=b()}a.cache.bD=c end return c.c end end do local b=function()
+}end a.bF=function()local c=a.cache.bF if not c then c={c=b()}a.cache.bF=c end return c.c end end do local b=function()
 
 
 
 
-local b=a.P()
+local b=a.f()
 
 local c={}
 
@@ -9041,7 +9134,7 @@ end)
 return e,if e then nil else tostring(f)end
 
 
-return c end a.bE=function()local c=a.cache.bE if not c then c={c=b()}a.cache.bE=c end return c.c end end do local b=function()
+return c end a.bG=function()local c=a.cache.bG if not c then c={c=b()}a.cache.bG=c end return c.c end end do local b=function()
 
 
 
@@ -9106,21 +9199,21 @@ local g=if f then c else b
 return g[d.value(e.Name)%#g+1]end
 
 
-return d end a.bF=function()local c=a.cache.bF if not c then c={c=b()}a.cache.bF=c end return c.c end end do local b=function()
+return d end a.bH=function()local c=a.cache.bH if not c then c={c=b()}a.cache.bH=c end return c.c end end do local b=function()
 
 
 
 
 
 
-local b=a.P()
+local b=a.f()
 local c=a.a()
-local d=a.aj()
-local e=a.bD()
+local d=a.j()
+local e=a.t()
 local f=a.d()
-local g=a.au()
-local h=a.bE()
-local i=a.bF()
+local g=a.aD()
+local h=a.bG()
+local i=a.bH()
 
 local j=500
 local k="https://files.catbox.moe/i968v2.jpg"
@@ -9345,9 +9438,9 @@ end
 return false,tostring(y)end
 
 
-return m end a.bG=function()local c=a.cache.bG if not c then c={c=b()}a.cache.bG=c end return c.c end end do local b=function()
+return m end a.bI=function()local c=a.cache.bI if not c then c={c=b()}a.cache.bI=c end return c.c end end do local b=function()
 
-local b=a.bG()
+local b=a.bI()
 
 return{
 {
@@ -9401,10 +9494,10 @@ b.setWebhook(e)
 c:notify("Logs Webhook","chat logs will be sent to the webhook")
 end
 }
-}end a.bH=function()local c=a.cache.bH if not c then c={c=b()}a.cache.bH=c end return c.c end end do local b=function()
+}end a.bJ=function()local c=a.cache.bJ if not c then c={c=b()}a.cache.bJ=c end return c.c end end do local b=function()
 
-local b=a.bE()
-local c=a.S()
+local b=a.bG()
+local c=a.af()
 
 local d="spam"
 local e="pmspam:"local f=function(
@@ -9605,10 +9698,10 @@ run=function(n,o)
 n.privateEnv.spamSpeed=math.max(o:nextValue()or 1,0)
 end
 }
-}end a.bI=function()local c=a.cache.bI if not c then c={c=b()}a.cache.bI=c end return c.c end end do local b=function()
+}end a.bK=function()local c=a.cache.bK if not c then c={c=b()}a.cache.bK=c end return c.c end end do local b=function()
 
-local b=a.P()
-local c=a.bE()local d=function(
+local b=a.f()
+local c=a.bG()local d=function(
 
 
 d)
@@ -9636,10 +9729,10 @@ run=function()
 d(false)
 end
 }
-}end a.bJ=function()local c=a.cache.bJ if not c then c={c=b()}a.cache.bJ=c end return c.c end end do local b=function()
+}end a.bL=function()local c=a.cache.bL if not c then c={c=b()}a.cache.bL=c end return c.c end end do local b=function()
 
-local b=a.P()
-local c=a.bE()local d=function(
+local b=a.f()
+local c=a.bG()local d=function(
 
 d)
 if c.isLegacy()then
@@ -9718,10 +9811,10 @@ end
 e()
 end
 }
-}end a.bK=function()local c=a.cache.bK if not c then c={c=b()}a.cache.bK=c end return c.c end end do local b=function()
+}end a.bM=function()local c=a.cache.bM if not c then c={c=b()}a.cache.bM=c end return c.c end end do local b=function()
 
-local b=a.P()
-local c=a.S()local d=function()
+local b=a.f()
+local c=a.af()local d=function()
 
 
 
@@ -9869,7 +9962,7 @@ h:notify("Phonebook","It seems you're not able to call anyone. Sorry!")
 end
 end
 }
-}end a.bL=function()local c=a.cache.bL if not c then c={c=b()}a.cache.bL=c end return c.c end end do local b=function()
+}end a.bN=function()local c=a.cache.bN if not c then c={c=b()}a.cache.bN=c end return c.c end end do local b=function()
 
 return{
 {
@@ -9911,9 +10004,9 @@ c.running=false
 end
 end
 }
-}end a.bM=function()local c=a.cache.bM if not c then c={c=b()}a.cache.bM=c end return c.c end end do local b=function()
+}end a.bO=function()local c=a.cache.bO if not c then c={c=b()}a.cache.bO=c end return c.c end end do local b=function()
 
-local b=a.S()
+local b=a.af()
 
 return{
 {
@@ -9958,28 +10051,28 @@ end)
 end
 end
 }
-}end a.bN=function()local c=a.cache.bN if not c then c={c=b()}a.cache.bN=c end return c.c end end do local b=function()
+}end a.bP=function()local c=a.cache.bP if not c then c={c=b()}a.cache.bP=c end return c.c end end do local b=function()
 
-return{a.bH()
-,a.bI()
-,a.bJ()
+return{a.bJ()
 ,a.bK()
 ,a.bL()
 ,a.bM()
 ,a.bN()
+,a.bO()
+,a.bP()
 
-}end a.bO=function()local c=a.cache.bO if not c then c={c=b()}a.cache.bO=c end return c.c end end do local b=function()
-
-
-
-
+}end a.bQ=function()local c=a.cache.bQ if not c then c={c=b()}a.cache.bQ=c end return c.c end end do local b=function()
 
 
 
 
 
-local b=a.P()
-local c=a.R()
+
+
+
+
+local b=a.f()
+local c=a.ae()
 local d=a.b()
 local e=a.d()
 
@@ -10210,16 +10303,16 @@ end
 n.folder:Destroy()end
 
 
-return m end a.bP=function()local c=a.cache.bP if not c then c={c=b()}a.cache.bP=c end return c.c end end do local b=function()
+return m end a.bR=function()local c=a.cache.bR if not c then c={c=b()}a.cache.bR=c end return c.c end end do local b=function()
 
 
 
 
 
 
-local b=a.bP()
-local c=a.S()
-local d=a.P()
+local b=a.bR()
+local c=a.af()
+local d=a.f()
 local e=a.b()
 
 local f=d.Players
@@ -10526,7 +10619,7 @@ r(x,C)
 end
 end
 }
-}end a.bQ=function()local c=a.cache.bQ if not c then c={c=b()}a.cache.bQ=c end return c.c end end do local b=function()local b=function(
+}end a.bS=function()local c=a.cache.bS if not c then c={c=b()}a.cache.bS=c end return c.c end end do local b=function()local b=function(
 
 
 b)
@@ -10600,7 +10693,7 @@ d.privateEnv.xrayEnabled=not d.privateEnv.xrayEnabled
 b(d)
 end
 }
-}end a.bR=function()local c=a.cache.bR if not c then c={c=b()}a.cache.bR=c end return c.c end end do local b=function()local b=function(
+}end a.bT=function()local c=a.cache.bT if not c then c={c=b()}a.cache.bT=c end return c.c end end do local b=function()local b=function(
 
 
 
@@ -10681,7 +10774,7 @@ run=function(e)
 c(e)
 end
 }
-}end a.bS=function()local c=a.cache.bS if not c then c={c=b()}a.cache.bS=c end return c.c end end do local b=function()local b=function(
+}end a.bU=function()local c=a.cache.bU if not c then c={c=b()}a.cache.bU=c end return c.c end end do local b=function()local b=function(
 
 
 b, c)
@@ -10711,17 +10804,17 @@ run=function(c)
 b(c,false)
 end
 }
-}end a.bT=function()local c=a.cache.bT if not c then c={c=b()}a.cache.bT=c end return c.c end end do local b=function()
+}end a.bV=function()local c=a.cache.bV if not c then c={c=b()}a.cache.bV=c end return c.c end end do local b=function()
 
-return{a.bQ()
-,a.bR()
-,a.bS()
+return{a.bS()
 ,a.bT()
+,a.bU()
+,a.bV()
 
-}end a.bU=function()local c=a.cache.bU if not c then c={c=b()}a.cache.bU=c end return c.c end end do local b=function()
+}end a.bW=function()local c=a.cache.bW if not c then c={c=b()}a.cache.bW=c end return c.c end end do local b=function()
 
-return{}end a.bV=function()local c=a.cache.bV if not c then c={c=b()}a.cache.bV=c end return c.c end end do local b=function()
-local b=a.bV()
+return{}end a.bX=function()local c=a.cache.bX if not c then c={c=b()}a.cache.bX=c end return c.c end end do local b=function()
+local b=a.bX()
 local c=a.d()
 
 local d={}
@@ -10763,10 +10856,10 @@ local f=Instance.new(e)
 return d.setup(f,...)end
 
 
-return d end a.bW=function()local c=a.cache.bW if not c then c={c=b()}a.cache.bW=c end return c.c end end do local b=function()
+return d end a.bY=function()local c=a.cache.bY if not c then c={c=b()}a.cache.bY=c end return c.c end end do local b=function()
 
 
-local b=a.P()
+local b=a.f()
 local c=b.UserInputService
 
 local d=false
@@ -10786,8 +10879,8 @@ not c.KeyboardEnabled
 end
 )
 
-return d end a.bX=function()local c=a.cache.bX if not c then c={c=b()}a.cache.bX=c end return c.c end end do local b=function()
-local b=a.P()
+return d end a.bZ=function()local c=a.cache.bZ if not c then c={c=b()}a.cache.bZ=c end return c.c end end do local b=function()
+local b=a.f()
 local c=a.a()local d=function()
 
 
@@ -10810,7 +10903,7 @@ end
 return d end
 
 
-return d()end a.bY=function()local c=a.cache.bY if not c then c={c=b()}a.cache.bY=c end return c.c end end do local aa=function()
+return d()end a.b_=function()local c=a.cache.b_ if not c then c={c=b()}a.cache.b_=c end return c.c end end do local aa=function()
 
 
 
@@ -10825,14 +10918,14 @@ return d()end a.bY=function()local c=a.cache.bY if not c then c={c=b()}a.cache.b
 
 
 
-local b=a.P()
-local c=a.bW()
-local d=a.ax()
-local e=a.R()
-local f=a.Q()
+local b=a.f()
+local c=a.bY()
+local d=a.aG()
+local e=a.ae()
+local f=a.g()
 
-local g=a.bX()
-local h=a.bY()
+local g=a.bZ()
+local h=a.b_()
 
 local i=b.ContextActionService
 local j=b.UserInputService
@@ -11351,10 +11444,10 @@ local ag=af:getGarbage(m)
 return ag and ag.position end
 
 
-return k end a.bZ=function()local ab=a.cache.bZ if not ab then ab={c=aa()}a.cache.bZ=ab end return ab.c end end do local aa=function()
+return k end a.b0=function()local ab=a.cache.b0 if not ab then ab={c=aa()}a.cache.b0=ab end return ab.c end end do local aa=function()
 
-local aa=a.S()
-local ab=a.bZ()local ac=function(
+local aa=a.af()
+local ab=a.b0()local ac=function(
 
 
 ac)
@@ -11471,12 +11564,12 @@ ag:notify("Spectate","View turned off")
 end
 end
 }
-}end a.b_=function()local ab=a.cache.b_ if not ab then ab={c=aa()}a.cache.b_=ab end return ab.c end end do local aa=function()
+}end a.b1=function()local ab=a.cache.b1 if not ab then ab={c=aa()}a.cache.b1=ab end return ab.c end end do local aa=function()
 
 
 
-local aa=a.S()
-local ab=a.bZ()
+local aa=a.af()
+local ab=a.b0()
 
 local ac="Freecam"local ad=function(
 
@@ -11608,7 +11701,7 @@ local ai=ab.addBoost(af,ah)
 af:notify(ac,`freecam boost is now {ai}x`)
 end
 },
-}end a.b0=function()local ab=a.cache.b0 if not ab then ab={c=aa()}a.cache.b0=ab end return ab.c end end do local aa=function()
+}end a.b2=function()local ab=a.cache.b2 if not ab then ab={c=aa()}a.cache.b2=ab end return ab.c end end do local aa=function()
 
 return{
 {
@@ -11628,7 +11721,7 @@ speed=aa.privateEnv.tweenSpeed
 })
 end
 }
-}end a.b1=function()local ab=a.cache.b1 if not ab then ab={c=aa()}a.cache.b1=ab end return ab.c end end do local aa=function()
+}end a.b3=function()local ab=a.cache.b3 if not ab then ab={c=aa()}a.cache.b3=ab end return ab.c end end do local aa=function()
 
 return{
 {
@@ -11645,7 +11738,7 @@ run=function(aa)
 aa.localPlayer.CameraMode=Enum.CameraMode.Classic
 end
 }
-}end a.b2=function()local ab=a.cache.b2 if not ab then ab={c=aa()}a.cache.b2=ab end return ab.c end end do local aa=function()local aa=function(
+}end a.b4=function()local ab=a.cache.b4 if not ab then ab={c=aa()}a.cache.b4=ab end return ab.c end end do local aa=function()local aa=function(
 
 
 aa)
@@ -11685,7 +11778,7 @@ end
 end
 end
 end
-}end a.b3=function()local ab=a.cache.b3 if not ab then ab={c=aa()}a.cache.b3=ab end return ab.c end end do local aa=function()
+}end a.b5=function()local ab=a.cache.b5 if not ab then ab={c=aa()}a.cache.b5=ab end return ab.c end end do local aa=function()
 
 return{
 {
@@ -11725,7 +11818,7 @@ ad.CameraMaxZoomDistance=ae
 ad.CameraMinZoomDistance=af
 end
 }
-}end a.b4=function()local ab=a.cache.b4 if not ab then ab={c=aa()}a.cache.b4=ab end return ab.c end end do local aa=function()
+}end a.b6=function()local ab=a.cache.b6 if not ab then ab={c=aa()}a.cache.b6=ab end return ab.c end end do local aa=function()
 
 return{
 action="fov",
@@ -11735,9 +11828,9 @@ run=function(aa,ab)
 local ac=math.clamp(math.abs(ab:nextValue()or 70),1,120)
 workspace.CurrentCamera.FieldOfView=ac
 end
-}end a.b5=function()local ab=a.cache.b5 if not ab then ab={c=aa()}a.cache.b5=ab end return ab.c end end do local aa=function()
+}end a.b7=function()local ab=a.cache.b7 if not ab then ab={c=aa()}a.cache.b7=ab end return ab.c end end do local aa=function()
 
-local aa=a.bZ()
+local aa=a.b0()
 
 return{
 action="fixcam|restorecam",
@@ -11770,7 +11863,7 @@ ad.CameraMode=Enum.CameraMode.Classic
 ab:notify("camera has been reseted successfully")
 end
 end
-}end a.b6=function()local ab=a.cache.b6 if not ab then ab={c=aa()}a.cache.b6=ab end return ab.c end end do local aa=function()
+}end a.b8=function()local ab=a.cache.b8 if not ab then ab={c=aa()}a.cache.b8=ab end return ab.c end end do local aa=function()
 
 return{
 action="enableshiftlock|enablesl",
@@ -11789,9 +11882,9 @@ end)
 
 aa:notify("Shiftlock","Shift lock should now be available")
 end
-}end a.b7=function()local ab=a.cache.b7 if not ab then ab={c=aa()}a.cache.b7=ab end return ab.c end end do local aa=function()
+}end a.b9=function()local ab=a.cache.b9 if not ab then ab={c=aa()}a.cache.b9=ab end return ab.c end end do local aa=function()
 
-local aa=a.S()
+local aa=a.af()
 
 
 local ab={max=400,min=0.5}
@@ -11831,9 +11924,9 @@ task.wait(0.1)
 ag.CameraMaxZoomDistance=ai.max
 ag.CameraMinZoomDistance=ai.min
 end
-}end a.b8=function()local ab=a.cache.b8 if not ab then ab={c=aa()}a.cache.b8=ab end return ab.c end end do local aa=function()
+}end a.ca=function()local ab=a.cache.ca if not ab then ab={c=aa()}a.cache.ca=ab end return ab.c end end do local aa=function()
 
-local aa=a.S()local ab=function(
+local aa=a.af()local ab=function(
 
 ab)
 local ac=ab:collectGarbage("stareat")
@@ -11881,11 +11974,9 @@ run=function(ac)
 ab(ac)
 end
 }
-}end a.b9=function()local ab=a.cache.b9 if not ab then ab={c=aa()}a.cache.b9=ab end return ab.c end end do local aa=function()
+}end a.cb=function()local ab=a.cache.cb if not ab then ab={c=aa()}a.cache.cb=ab end return ab.c end end do local aa=function()
 
-return{a.b_()
-,a.b0()
-,a.b1()
+return{a.b1()
 ,a.b2()
 ,a.b3()
 ,a.b4()
@@ -11894,8 +11985,10 @@ return{a.b_()
 ,a.b7()
 ,a.b8()
 ,a.b9()
+,a.ca()
+,a.cb()
 
-}end a.ca=function()local ab=a.cache.ca if not ab then ab={c=aa()}a.cache.ca=ab end return ab.c end end do local aa=function()
+}end a.cc=function()local ab=a.cache.cc if not ab then ab={c=aa()}a.cache.cc=ab end return ab.c end end do local aa=function()
 
 
 local aa
@@ -11943,7 +12036,7 @@ ab:notify("F3X",`failed to load: {tostring(ae)}`)
 end
 end
 }
-}end a.cb=function()local ab=a.cache.cb if not ab then ab={c=aa()}a.cache.cb=ab end return ab.c end end do local aa=function()local aa=function(
+}end a.cd=function()local ab=a.cache.cd if not ab then ab={c=aa()}a.cache.cd=ab end return ab.c end end do local aa=function()local aa=function(
 
 
 
@@ -11992,7 +12085,7 @@ ac:notify("Modified Waypoints","Created waypoint: "..ae)
 end)
 end
 }
-}end a.cc=function()local ab=a.cache.cc if not ab then ab={c=aa()}a.cache.cc=ab end return ab.c end end do local aa=function()local aa=function(
+}end a.ce=function()local ab=a.cache.ce if not ab then ab={c=aa()}a.cache.ce=ab end return ab.c end end do local aa=function()local aa=function(
 
 
 aa, ab, ac)
@@ -12061,7 +12154,7 @@ end
 ab:notify("Item(s) Deleted","Deleted items with ClassName "..ad)
 end
 }
-}end a.cd=function()local ab=a.cache.cd if not ab then ab={c=aa()}a.cache.cd=ab end return ab.c end end do local aa=function()
+}end a.cf=function()local ab=a.cache.cf if not ab then ab={c=aa()}a.cache.cf=ab end return ab.c end end do local aa=function()
 
 
 
@@ -12105,7 +12198,7 @@ end
 aa:notify("Lock workspace","unlocked")
 end
 }
-}end a.ce=function()local ab=a.cache.ce if not ab then ab={c=aa()}a.cache.ce=ab end return ab.c end end do local aa=function()
+}end a.cg=function()local ab=a.cache.cg if not ab then ab={c=aa()}a.cache.cg=ab end return ab.c end end do local aa=function()
 
 return{
 {
@@ -12137,7 +12230,7 @@ end
 aa.privateEnv.shownParts={}
 end
 }
-}end a.cf=function()local ab=a.cache.cf if not ab then ab={c=aa()}a.cache.cf=ab end return ab.c end end do local aa=function()local aa=function(
+}end a.ch=function()local ab=a.cache.ch if not ab then ab={c=aa()}a.cache.ch=ab end return ab.c end end do local aa=function()local aa=function(
 
 aa, ab, ac)
 return{
@@ -12196,7 +12289,7 @@ ac.connection:Disconnect()
 end
 end
 }
-}end a.cg=function()local ab=a.cache.cg if not ab then ab={c=aa()}a.cache.cg=ab end return ab.c end end do local aa=function()
+}end a.ci=function()local ab=a.cache.ci if not ab then ab={c=aa()}a.cache.ci=ab end return ab.c end end do local aa=function()
 
 local aa=workspace.Gravity
 local ab=-500
@@ -12218,7 +12311,7 @@ run=function(ac,ad)
 workspace.FallenPartsDestroyHeight=ad:nextValue()or ab
 end
 }
-}end a.ch=function()local ab=a.cache.ch if not ab then ab={c=aa()}a.cache.ch=ab end return ab.c end end do local aa=function()
+}end a.cj=function()local ab=a.cache.cj if not ab then ab={c=aa()}a.cache.cj=ab end return ab.c end end do local aa=function()
 
 return{
 {
@@ -12242,7 +12335,7 @@ aa:Clear()
 end
 end
 }
-}end a.ci=function()local ab=a.cache.ci if not ab then ab={c=aa()}a.cache.ci=ab end return ab.c end end do local aa=function()local aa=function(
+}end a.ck=function()local ab=a.cache.ck if not ab then ab={c=aa()}a.cache.ck=ab end return ab.c end end do local aa=function()local aa=function(
 
 aa, ab)
 return ab==""
@@ -12390,8 +12483,8 @@ end
 end
 end
 }
-}end a.cj=function()local ab=a.cache.cj if not ab then ab={c=aa()}a.cache.cj=ab end return ab.c end end do local aa=function()
-local aa=a.S()local ab=function(
+}end a.cl=function()local ab=a.cache.cl if not ab then ab={c=aa()}a.cache.cl=ab end return ab.c end end do local aa=function()
+local aa=a.af()local ab=function(
 
 
 ab)
@@ -12484,11 +12577,9 @@ end
 end
 end
 }
-}end a.ck=function()local ab=a.cache.ck if not ab then ab={c=aa()}a.cache.ck=ab end return ab.c end end do local aa=function()
+}end a.cm=function()local ab=a.cache.cm if not ab then ab={c=aa()}a.cache.cm=ab end return ab.c end end do local aa=function()
 
-return{a.cb()
-,a.cc()
-,a.cd()
+return{a.cd()
 ,a.ce()
 ,a.cf()
 ,a.cg()
@@ -12496,8 +12587,10 @@ return{a.cb()
 ,a.ci()
 ,a.cj()
 ,a.ck()
+,a.cl()
+,a.cm()
 
-}end a.cl=function()local ab=a.cache.cl if not ab then ab={c=aa()}a.cache.cl=ab end return ab.c end end do local aa=function()local aa=function(
+}end a.cn=function()local ab=a.cache.cn if not ab then ab={c=aa()}a.cache.cn=ab end return ab.c end end do local aa=function()local aa=function(
 
 aa)
 local ab=aa.robloxServices.Lighting
@@ -12542,7 +12635,7 @@ run=function(ac)
 ab(ac)
 end
 }
-}end a.cm=function()local ab=a.cache.cm if not ab then ab={c=aa()}a.cache.cm=ab end return ab.c end end do local aa=function()
+}end a.co=function()local ab=a.cache.co if not ab then ab={c=aa()}a.cache.co=ab end return ab.c end end do local aa=function()
 
 return{
 client=true,
@@ -12556,7 +12649,7 @@ local ad=aa.robloxServices.Lighting
 ad.Ambient=ac
 ad.OutdoorAmbient=ac
 end
-}end a.cn=function()local ab=a.cache.cn if not ab then ab={c=aa()}a.cache.cn=ab end return ab.c end end do local aa=function()
+}end a.cp=function()local ab=a.cache.cp if not ab then ab={c=aa()}a.cache.cp=ab end return ab.c end end do local aa=function()
 
 return{
 {
@@ -12575,7 +12668,7 @@ run=function(aa)
 aa.robloxServices.Lighting.ClockTime=0
 end
 }
-}end a.co=function()local ab=a.cache.co if not ab then ab={c=aa()}a.cache.co=ab end return ab.c end end do local aa=function()
+}end a.cq=function()local ab=a.cache.cq if not ab then ab={c=aa()}a.cache.cq=ab end return ab.c end end do local aa=function()
 
 return{
 client=true,
@@ -12591,7 +12684,7 @@ ad:Destroy()
 end
 end
 end
-}end a.cp=function()local ab=a.cache.cp if not ab then ab={c=aa()}a.cache.cp=ab end return ab.c end end do local aa=function()
+}end a.cr=function()local ab=a.cache.cr if not ab then ab={c=aa()}a.cache.cr=ab end return ab.c end end do local aa=function()
 
 return{
 client=true,
@@ -12601,7 +12694,7 @@ args={kind="number"},
 run=function(aa,ab)
 aa.robloxServices.Lighting.Brightness=ab:nextValue()
 end
-}end a.cq=function()local ab=a.cache.cq if not ab then ab={c=aa()}a.cache.cq=ab end return ab.c end end do local aa=function()
+}end a.cs=function()local ab=a.cache.cs if not ab then ab={c=aa()}a.cache.cs=ab end return ab.c end end do local aa=function()
 
 return{
 {
@@ -12620,13 +12713,13 @@ run=function(aa)
 aa.robloxServices.Lighting.GlobalShadows=false
 end
 }
-}end a.cr=function()local ab=a.cache.cr if not ab then ab={c=aa()}a.cache.cr=ab end return ab.c end end do local aa=function()
+}end a.ct=function()local ab=a.cache.ct if not ab then ab={c=aa()}a.cache.ct=ab end return ab.c end end do local aa=function()
 
 local aa=a.b()
-local ab=a.S()
+local ab=a.af()
 
 
-local ac=a.P().Lighting
+local ac=a.f().Lighting
 
 local ad={"Ambient","OutdoorAmbient","Brightness","ClockTime","FogEnd","FogStart","GlobalShadows"}
 local ae={}local af=function()
@@ -12706,23 +12799,23 @@ end
 end
 end
 }
-}end a.cs=function()local ab=a.cache.cs if not ab then ab={c=aa()}a.cache.cs=ab end return ab.c end end do local aa=function()
+}end a.cu=function()local ab=a.cache.cu if not ab then ab={c=aa()}a.cache.cu=ab end return ab.c end end do local aa=function()
 
-return{a.cm()
-,a.cn()
-,a.co()
+return{a.co()
 ,a.cp()
 ,a.cq()
 ,a.cr()
 ,a.cs()
+,a.ct()
+,a.cu()
 
-}end a.ct=function()local ab=a.cache.ct if not ab then ab={c=aa()}a.cache.ct=ab end return ab.c end end do local aa=function()
+}end a.cv=function()local ab=a.cache.cv if not ab then ab={c=aa()}a.cache.cv=ab end return ab.c end end do local aa=function()
 
 
 
 
 
-local aa=a.bA()
+local aa=a.p()
 
 local ab={}local ac=function(
 
@@ -12802,9 +12895,9 @@ end
 end end
 
 
-return ab end a.cu=function()local ab=a.cache.cu if not ab then ab={c=aa()}a.cache.cu=ab end return ab.c end end do local aa=function()
+return ab end a.cw=function()local ab=a.cache.cw if not ab then ab={c=aa()}a.cache.cw=ab end return ab.c end end do local aa=function()
 
-local aa=a.cu()
+local aa=a.cw()
 
 return{
 {
@@ -12862,7 +12955,7 @@ local ad=aa.clear(ab.commandsList)
 ab:notify("Aliases Modified",`Removed {ad} custom alias(es)`)
 end
 }
-}end a.cv=function()local ab=a.cache.cv if not ab then ab={c=aa()}a.cache.cv=ab end return ab.c end end do local aa=function()
+}end a.cx=function()local ab=a.cache.cx if not ab then ab={c=aa()}a.cache.cx=ab end return ab.c end end do local aa=function()
 
 
 
@@ -12884,8 +12977,8 @@ end
 
 
 local aa=a.a()
-local ab=a.aj()
-local ac=a.by()
+local ab=a.j()
+local ac=a.m()
 
 local ad={}
 
@@ -13234,9 +13327,9 @@ end)
 return j end
 
 
-return ad end a.cw=function()local ab=a.cache.cw if not ab then ab={c=aa()}a.cache.cw=ab end return ab.c end end do local aa=function()
+return ad end a.cy=function()local ab=a.cache.cy if not ab then ab={c=aa()}a.cache.cy=ab end return ab.c end end do local aa=function()
 
-local aa=a.cw()
+local aa=a.cy()
 
 return{
 {
@@ -13308,7 +13401,7 @@ end
 ab:notify("Plugins",ae)
 end
 }
-}end a.cx=function()local ab=a.cache.cx if not ab then ab={c=aa()}a.cache.cx=ab end return ab.c end end do local aa=function()
+}end a.cz=function()local ab=a.cache.cz if not ab then ab={c=aa()}a.cache.cz=ab end return ab.c end end do local aa=function()
 
 local aa=a.d()local ab=function(
 
@@ -13381,53 +13474,53 @@ original=ac
 return ab({
 {
 name="general",
-commands=a.ag()
+commands=a.au()
 },
 {
 name="interface",
-commands=a.az()
+commands=a.aI()
 },
 {
 name="character",
-commands=a.a9()
+commands=a.bi()
 },
 {
 name="waypoints",
-commands=a.bd()
+commands=a.bl()
 },
 {
 name="teleport",
-commands=a.bx()
+commands=a.bF()
 },
 {
 name="communication",
-commands=a.bO()
+commands=a.bQ()
 },
 {
 name="visual",
-commands=a.bU()
+commands=a.bW()
 },
 {
 name="camera",
-commands=a.ca()
+commands=a.cc()
 },
 {
 name="workspace",
-commands=a.cl()
+commands=a.cn()
 },
 {
 name="lighting",
-commands=a.ct()
-},
-{
-name="aliases",
 commands=a.cv()
 },
 {
-name="plugins",
+name="aliases",
 commands=a.cx()
+},
+{
+name="plugins",
+commands=a.cz()
 }
-})end a.cy=function()local ab=a.cache.cy if not ab then ab={c=aa()}a.cache.cy=ab end return ab.c end end do local aa=function()
+})end a.cA=function()local ab=a.cache.cA if not ab then ab={c=aa()}a.cache.cA=ab end return ab.c end end do local aa=function()
 
 
 
@@ -14626,7 +14719,7 @@ Connections={}
 },ab)end
 
 
-return ab end a.cz=function()local ab=a.cache.cz if not ab then ab={c=aa()}a.cache.cz=ab end return ab.c end end do local aa=function()
+return ab end a.cB=function()local ab=a.cache.cB if not ab then ab={c=aa()}a.cache.cB=ab end return ab.c end end do local aa=function()
 local aa={}
 
 
@@ -14662,76 +14755,162 @@ end
 return ag end
 
 
-return aa end a.cA=function()local ab=a.cache.cA if not ab then ab={c=aa()}a.cache.cA=ab end return ab.c end end do local aa=function()
+return aa end a.cC=function()local ab=a.cache.cC if not ab then ab={c=aa()}a.cache.cC=ab end return ab.c end end do local aa=function()
 
-local aa=a.an()
-local ab=a.d()
 
-local ac=aa.owner
-local ad=aa.repository
 
-local ae=`https://raw.githubusercontent.com/{ac}/{ad}/refs/heads/main/`
-local af=`https://github.com/{ac}/{ad}/releases/latest/download/`
 
-local ag={}local ah=function(
 
-ah)
-return game:HttpGet(ah)end local ai=function(
 
+
+local aa=a.k()
+local ab=a.j()
+local ac=a.av()
+
+local ad={}
+
+
+ad.path=function(ae, af)
+return ab.downloadPath:format(ac,ae,af)end
+
+
+
+ad.has=function(ae, af)
+return aa:exist(ad.path(ae,af))end
+
+
+
+ad.read=function(ae, af)
+local ag=ad.path(ae,af)
+
+if not aa:exist(ag)then
+return nil
+end
+
+return aa:readFile(ag)end
+
+
+
+ad.write=function(ae, af, ag)
+local ah=ad.path(ae,af)
+local ai=ah:match("^(.*)/[^/]+$")
+
+if ai then
+aa:makeFolder(ai)
+end
+
+aa:writeFile(ah,ag)end
+
+
+return ad end a.cD=function()local ab=a.cache.cD if not ab then ab={c=aa()}a.cache.cD=ab end return ab.c end end do local aa=function()
+
+local aa=a.aw()
+local ab=a.cD()
+local ac=a.d()
+
+local ad=aa.owner
+local ae=aa.repository
+
+local af=`https://raw.githubusercontent.com/{ad}/{ae}/refs/heads/main/`
+local ag=`https://github.com/{ad}/{ae}/releases/latest/download/`
+
+local ah={}local ai=function(
 
 ai)
-if ai:sub(1,1)=="/"then
-return ai:sub(2)
+return game:HttpGet(ai)end local aj=function(
+
+
+aj)
+if aj:sub(1,1)=="/"then
+return aj:sub(2)
 end
 
-return ai end local aj=function(
+return aj end local ak=function(
 
 
-aj, ak)
-local b=aj..ai(ak)
-local c,d=pcall(ah,b)
+ak, b)
+local c=ak..aj(b)
+local d,e=pcall(ai,c)
 
-if not c then
-ab:warn(`failed to fetch http url '{b}':\n\t{d}`)
+if not d then
+ac:warn(`failed to fetch http url '{c}':\n\t{e}`)
 return nil
 end
 
-if type(d)~="string"or#d==0 then
-ab:warn(`empty response from '{b}'`)
+if type(e)~="string"or#e==0 then
+ac:warn(`empty response from '{c}'`)
 return nil
 end
 
-return d end
+return e end
 
 
-ag.download=function(ak)
-return aj(af,ak)end
+ah.download=function(b)
+return ak(ag,b)end
 
 
 
-ag.downloadUrl=function(ak)
-return af..ai(ak)end
+ah.downloadUrl=function(b)
+return ag..aj(b)end
 
 
-ag.fetch=function(ak)
-return aj(ae,ak)end
+
+ah.fetchUrl=function(b)
+return ak("",b)end
 
 
-ag.load=function(ak, b)
-local c=ag.fetch(ak)
-if c==nil then return nil end
+ah.fetch=function(b)
+return ak(af,b)end local b=function(
 
-local d,e=loadstring(c,b)
-if d==nil then
-ab:warn(`failed to compile '{ak}':\n\t{e}`)
+
+
+b)
+return(b:gsub("^backups/",""))end local c=function(
+
+
+
+c, d, e)
+local f,g=loadstring(c,e)
+
+if f==nil then
+ac:warn(`failed to compile '{d}':\n\t{g}`)
 return nil
 end
 
-return d end
+return f end
 
 
-return ag end a.cB=function()local ab=a.cache.cB if not ab then ab={c=aa()}a.cache.cB=ab end return ab.c end end do local aa=function()
-local aa=a.P()
+
+
+ah.load=function(d, e)
+local f=b(d)
+
+local g=ab.read("scripts",f)
+if g~=nil then
+local h=c(g,d,e)
+
+if h~=nil then
+return h
+end
+end
+
+local h=ah.fetch(d)
+if h==nil then
+return nil
+end
+
+local i=c(h,d,e)
+
+if i~=nil then
+ab.write("scripts",f,h)
+end
+
+return i end
+
+
+return ah end a.cE=function()local ab=a.cache.cE if not ab then ab={c=aa()}a.cache.cE=ab end return ab.c end end do local aa=function()
+
+local aa=a.f()
 local ab=aa.CoreGui
 
 local ac={}
@@ -14757,13 +14936,13 @@ message=Instance.new("Message")
 },ac)end
 
 
-return ac end a.cC=function()local ab=a.cache.cC if not ab then ab={c=aa()}a.cache.cC=ab end return ab.c end end do local aa=function()
+return ac end a.cF=function()local ab=a.cache.cF if not ab then ab={c=aa()}a.cache.cF=ab end return ab.c end end do local aa=function()
 return{
 isEnabled=true,
 animationScale=1,
 scrollSpeed=1
-}end a.cD=function()local ab=a.cache.cD if not ab then ab={c=aa()}a.cache.cD=ab end return ab.c end end do local aa=function()
-local aa=a.cD()
+}end a.cG=function()local ab=a.cache.cG if not ab then ab={c=aa()}a.cache.cG=ab end return ab.c end end do local aa=function()
+local aa=a.cG()
 
 local ab={}
 
@@ -14775,20 +14954,20 @@ ab.getScrollSpeed=function(ac, ad)
 return(ad*aa.scrollSpeed)end
 
 
-return ab end a.cE=function()local ab=a.cache.cE if not ab then ab={c=aa()}a.cache.cE=ab end return ab.c end end do local aa=function()
+return ab end a.cH=function()local ab=a.cache.cH if not ab then ab={c=aa()}a.cache.cH=ab end return ab.c end end do local aa=function()
 return{
-createService=a.bW(),
-specialProps=a.bV(),
+createService=a.bY(),
+specialProps=a.bX(),
 
-connectionService=a.au(),
-fetchService=a.cB(),
-keyboardService=a.ax(),
-localPlayer=a.Q(),
-messageService=a.cC(),
-playerService=a.R(),
-rbxServices=a.P(),
-tweenService=a.cE(),
-}end a.cF=function()local ab=a.cache.cF if not ab then ab={c=aa()}a.cache.cF=ab end return ab.c end end do local aa=function()
+connectionService=a.aD(),
+fetchService=a.cE(),
+keyboardService=a.aG(),
+localPlayer=a.g(),
+messageService=a.cF(),
+playerService=a.ae(),
+rbxServices=a.f(),
+tweenService=a.cH(),
+}end a.cI=function()local ab=a.cache.cI if not ab then ab={c=aa()}a.cache.cI=ab end return ab.c end end do local aa=function()
 
 return{
 DisplayName="Classic",
@@ -14837,7 +15016,7 @@ SliderBar=Color3.fromRGB(1,76,105),
 SliderNumber=Color3.fromRGB(232,233,235),
 },
 },
-}end a.cG=function()local ab=a.cache.cG if not ab then ab={c=aa()}a.cache.cG=ab end return ab.c end end do local aa=function()
+}end a.cJ=function()local ab=a.cache.cJ if not ab then ab={c=aa()}a.cache.cJ=ab end return ab.c end end do local aa=function()
 
 return{
 DisplayName="Dark",
@@ -14881,7 +15060,7 @@ SliderBar=Color3.fromRGB(1,76,105),
 SliderNumber=Color3.fromRGB(232,233,235),
 },
 }
-}end a.cH=function()local ab=a.cache.cH if not ab then ab={c=aa()}a.cache.cH=ab end return ab.c end end do local aa=function()
+}end a.cK=function()local ab=a.cache.cK if not ab then ab={c=aa()}a.cache.cK=ab end return ab.c end end do local aa=function()
 return{
 DisplayName="Light",
 
@@ -14924,11 +15103,11 @@ SliderBar=Color3.fromRGB(120,130,240),
 SliderNumber=Color3.fromRGB(40,40,48),
 },
 },
-}end a.cI=function()local ab=a.cache.cI if not ab then ab={c=aa()}a.cache.cI=ab end return ab.c end end do local aa=function()
+}end a.cL=function()local ab=a.cache.cL if not ab then ab={c=aa()}a.cache.cL=ab end return ab.c end end do local aa=function()
 
-local aa={a.cG()
-,a.cH()
-,a.cI()
+local aa={a.cJ()
+,a.cK()
+,a.cL()
 
 }
 
@@ -14939,7 +15118,7 @@ local ae=string.lower(ad.DisplayName)
 ab[ae]=ad
 end
 
-return ab end a.cJ=function()local ab=a.cache.cJ if not ab then ab={c=aa()}a.cache.cJ=ab end return ab.c end end do local aa=function()
+return ab end a.cM=function()local ab=a.cache.cM if not ab then ab={c=aa()}a.cache.cM=ab end return ab.c end end do local aa=function()
 
 
 
@@ -14954,10 +15133,9 @@ darken=0.31,
 options={
 {key="theme"},
 {key="darkGreen",color=Color3.fromRGB(34,110,62)},
-{key="pink",color=Color3.fromRGB(230,96,160)},
-{key="yellow",color=Color3.fromRGB(240,196,46)},
+{key="red",color=Color3.fromRGB(214,58,58)},
 },
-}end a.cK=function()local ab=a.cache.cK if not ab then ab={c=aa()}a.cache.cK=ab end return ab.c end end do local aa=function()
+}end a.cN=function()local ab=a.cache.cN if not ab then ab={c=aa()}a.cache.cN=ab end return ab.c end end do local aa=function()
 
 local aa={}
 
@@ -15057,13 +15235,13 @@ aa.richFontSize=function(ad, ae)
 return`<font size="{ae}">{ad}</font>`end
 
 
-return aa end a.cL=function()local ab=a.cache.cL if not ab then ab={c=aa()}a.cache.cL=ab end return ab.c end end do local aa=function()
-local aa=a.cJ()
-local ab=a.cK()
-local ac=a.al()
+return aa end a.cO=function()local ab=a.cache.cO if not ab then ab={c=aa()}a.cache.cO=ab end return ab.c end end do local aa=function()
+local aa=a.cM()
+local ab=a.cN()
+local ac=a.n()
 
 local ad=a.d()
-local ae=a.cL()
+local ae=a.cO()
 
 
 
@@ -15216,23 +15394,44 @@ af.removeObject=function(aj, ak)
 aj.objects[ak]=nil end
 
 
+
+
+af.resetRemovedPrimaries=function(aj)
+local ak=false
+
+for b in aa do
+local c=ac:getValue(ag..b)
+
+if c~=nil and not(type(c)=="string"and ah(c))then
+ac:setValue(ag..b,ab.defaultKey)
+ak=true
+end
+end
+
+if ak then
+ac:save()
+end end
+
+
 af.init=function(aj, ak)
 ad:expect(ak,{"table"},"'themeService:init' #1")
+
+aj:resetRemovedPrimaries()
 
 if ak.theme~=nil then
 aj:selectTheme(ak.theme)
 end end
 
 
-return af end a.cM=function()local ab=a.cache.cM if not ab then ab={c=aa()}a.cache.cM=ab end return ab.c end end do local aa=function()
+return af end a.cP=function()local ab=a.cache.cP if not ab then ab={c=aa()}a.cache.cP=ab end return ab.c end end do local aa=function()
 
 
 
-local aa=a.cF()
+local aa=a.cI()
 local ab=a.d()
 
 local ac=aa.specialProps
-local ad=a.cM()
+local ad=a.cP()
 
 ac.ThemeTag=function(ae, af)
 if type(af)~="table"then
@@ -15243,7 +15442,7 @@ end
 ad:addObject(ae,af)end
 
 
-return a.bW()end a.cN=function()local ab=a.cache.cN if not ab then ab={c=aa()}a.cache.cN=ab end return ab.c end end do local aa=function()return{logo=104371861083126,close=83276213460768,minimize=76683704146139,["lucide-chevron-left"]=116084397950605,["lucide-blocks"]=80329404661557,["lucide-terminal"]=138735373900955,["lucide-pin"]=85638424763987,["lucide-refresh-cw"]=127184558868486,["lucide-eraser"]=121383006814792,["lucide-tag"]=95367077436662,
+return a.bY()end a.cQ=function()local ab=a.cache.cQ if not ab then ab={c=aa()}a.cache.cQ=ab end return ab.c end end do local aa=function()return{logo=104371861083126,close=83276213460768,minimize=76683704146139,["lucide-chevron-left"]=116084397950605,["lucide-blocks"]=80329404661557,["lucide-terminal"]=138735373900955,["lucide-pin"]=85638424763987,["lucide-refresh-cw"]=127184558868486,["lucide-eraser"]=121383006814792,["lucide-tag"]=95367077436662,
 ["lucide-keyboard"]=102097005397654,
 ["lucide-palette"]=105784737972091,
 ["lucide-map-pin"]=132787420207871,
@@ -15255,112 +15454,117 @@ return a.bW()end a.cN=function()local ab=a.cache.cN if not ab then ab={c=aa()}a.
 
 ["lucide-send"]=80218825031596,
 ["lucide-sliders-horizontal"]=116738462591690,
-["lucide-arrow-down-up"]=121401768678469,reference=
+["lucide-arrow-down-up"]=121401768678469,
+["lucide-calendar-clock"]=121068586159290,
+["lucide-chart-column"]=102316903470982,
+["lucide-trash"]=126160659084333,reference=
 
 
 116342494079103,settings=
 102340652201372,
-}end a.cO=function()local ab=a.cache.cO if not ab then ab={c=aa()}a.cache.cO=ab end return ab.c end end do local aa=function()
+}end a.cR=function()local ab=a.cache.cR if not ab then ab={c=aa()}a.cache.cR=ab end return ab.c end end do local aa=function()
 
 
 
 local aa=a.a()
-local ab=a.ap()
+local ab=a.ay()
 
 local ac=ab.storage.imagePath
 
-local ad=a.ak()
-local ae=a.cB()
-local af=a.d()
+local ad=a.k()
+local ae=a.cD()
+local af=a.cE()
+local ag=a.d()
 
-local ag=a.cO()
+local ah=a.cR()
 
-local ah={}
 local ai={}
+local aj={}
 
-local aj=aa.getcustomasset
+local ak=aa.getcustomasset
 
-local ak={}
+local b={}
 
-ak.newCustomAsset=function(b, c, d)
-af:assert(not ah[c],"asset is already loaded")
+b.newCustomAsset=function(c, d, e)
+ag:assert(not ai[d],"asset is already loaded")
 
-local e=ad:getCustomAsset(d)
+local f=ad:getCustomAsset(e)
 
-if e==nil then
-e=ag[c]
-ah[c]=e
-return e
-end
-
-af:log(`new custom asset to '{d}': '{e}'`)
-return e end
-
-
-ak.get=function(b, c)
-
-if ah[c]then
-return ah[c]
-end
-
-if type(aj)~="function"then
-return ag[c]
-end
-
-local d=ac:format(c)
-af:log(`loading asset: '{d}'`)
-
-if ad:exist(d)then
-return b:newCustomAsset(c,d)
-end
-
-local e=ae.fetch(d)
-
-if e==nil then
-local f=ag[c]
-f=if type(f)=="number"then`rbxassetid://{f}`else f
-
-ah[c]=f
+if f==nil then
+f=ah[d]
+ai[d]=f
 return f
 end
 
-ad:writeFile(d,e)
-af:log(`created a file to asset: '{d}'`)
-
-return b:newCustomAsset(c,d)end
+ag:log(`new custom asset to '{e}': '{f}'`)
+return f end
 
 
-ak.loadImage=function(b, c, d)
-af:assert(ag[d],`invalid asset name: {d}`)
-
-local e=ah[d]
-if e~=nil then
-c.Image=e
-return
-end
-
-c.Image=""
+b.get=function(c, d)
 
 if ai[d]then
-table.insert(ai[d],c)
+return ai[d]
+end
+
+if type(ak)~="function"then
+return ah[d]
+end
+
+local e=`{d}.png`
+local f=ae.path("assets",e)
+ag:log(`loading asset: '{f}'`)
+
+if ae.has("assets",e)then
+return c:newCustomAsset(d,f)
+end
+
+local g=af.fetch(ac:format(d))
+
+if g==nil then
+local h=ah[d]
+h=if type(h)=="number"then`rbxassetid://{h}`else h
+
+ai[d]=h
+return h
+end
+
+ae.write("assets",e,g)
+ag:log(`created a file to asset: '{f}'`)
+
+return c:newCustomAsset(d,f)end
+
+
+b.loadImage=function(c, d, e)
+ag:assert(ah[e],`invalid asset name: {e}`)
+
+local f=ai[e]
+if f~=nil then
+d.Image=f
 return
 end
 
-ai[d]={c}
+d.Image=""
 
-task.defer(function()
-local f=b:get(d)
-if not f then return end
-
-for g,h in ai[d]do
-h.Image=f
+if aj[e]then
+table.insert(aj[e],d)
+return
 end
 
-ai[d]=nil
+aj[e]={d}
+
+task.defer(function()
+local g=c:get(e)
+if not g then return end
+
+for h,i in aj[e]do
+i.Image=g
+end
+
+aj[e]=nil
 end)end
 
 
-return ak end a.cP=function()local ab=a.cache.cP if not ab then ab={c=aa()}a.cache.cP=ab end return ab.c end end do local aa=function()
+return b end a.cS=function()local ab=a.cache.cS if not ab then ab={c=aa()}a.cache.cS=ab end return ab.c end end do local aa=function()
 return{
 uiScale=Instance.new("UIScale"),
 getScale=function(aa)
@@ -15375,7 +15579,7 @@ ac.Scale=ab
 ac:SetAttribute("REAL_SCALE",ab)
 end
 end
-}end a.cQ=function()local ab=a.cache.cQ if not ab then ab={c=aa()}a.cache.cQ=ab end return ab.c end end do local aa=function()
+}end a.cT=function()local ab=a.cache.cT if not ab then ab={c=aa()}a.cache.cT=ab end return ab.c end end do local aa=function()
 
 
 
@@ -15412,7 +15616,7 @@ actionsTopGap=4,
 
 tweenTime=0.5,
 flashTime=0.5,
-}end a.cR=function()local ab=a.cache.cR if not ab then ab={c=aa()}a.cache.cR=ab end return ab.c end end do local aa=function()
+}end a.cU=function()local ab=a.cache.cU if not ab then ab={c=aa()}a.cache.cU=ab end return ab.c end end do local aa=function()
 
 local aa=Color3.fromRGB(248,109,115)
 local ab=Color3.fromRGB(223,215,136)
@@ -15444,7 +15648,7 @@ ah,client=
 ab,deprecated=
 ae
 }
-}end a.cS=function()local ab=a.cache.cS if not ab then ab={c=aa()}a.cache.cS=ab end return ab.c end end do local aa=function()
+}end a.cV=function()local ab=a.cache.cV if not ab then ab={c=aa()}a.cache.cV=ab end return ab.c end end do local aa=function()
 
 
 
@@ -15453,8 +15657,8 @@ ae
 
 
 
-local aa=a.cS().args
-local ab=a.cL()
+local aa=a.cV().args
+local ab=a.cO()
 
 local ac={}
 
@@ -15574,20 +15778,20 @@ end
 return table.concat(c)end
 
 
-return ac end a.cT=function()local ab=a.cache.cT if not ab then ab={c=aa()}a.cache.cT=ab end return ab.c end end do local aa=function()
+return ac end a.cW=function()local ab=a.cache.cW if not ab then ab={c=aa()}a.cache.cW=ab end return ab.c end end do local aa=function()
 
 
 
-local aa=a.cN()
-local ab=a.cP()
-local ac=a.cM()
-local ad=a.cQ()
+local aa=a.cQ()
+local ab=a.cS()
+local ac=a.cP()
+local ad=a.cT()
 
-local ae=a.au()
-local af=a.P()
-local ag=a.cR()
+local ae=a.aD()
+local af=a.f()
+local ag=a.cU()
 
-local ah=a.cT()
+local ah=a.cW()
 
 local ai=4
 local aj=8
@@ -16109,7 +16313,7 @@ table.clear(h.queue)
 h.container=nil end
 
 
-return d end a.cU=function()local ab=a.cache.cU if not ab then ab={c=aa()}a.cache.cU=ab end return ab.c end end do local aa=function()
+return d end a.cX=function()local ab=a.cache.cX if not ab then ab={c=aa()}a.cache.cX=ab end return ab.c end end do local aa=function()
 
 
 
@@ -16188,23 +16392,23 @@ ab:expect(af,{"number"},"'loopService:remove' #1")
 ae._callbacks[af]=nil end
 
 
-return ac end a.cV=function()local ab=a.cache.cV if not ab then ab={c=aa()}a.cache.cV=ab end return ab.c end end do local aa=function()
+return ac end a.cY=function()local ab=a.cache.cY if not ab then ab={c=aa()}a.cache.cY=ab end return ab.c end end do local aa=function()
 local aa=a.b()
 local ab=a.a()
 
-local ac=a.cy()
-local ad=a.cz()
+local ac=a.cA()
+local ad=a.cB()
 local ae=a.d()
 
-local af=a.bD().usedCmds
-local ag=a.aj()
-local ah=a.P()
-local ai=a.ap()
+local af=a.t().usedCmds
+local ag=a.j()
+local ah=a.f()
+local ai=a.ay()
 
-local aj=a.cA()
-local ak=a.F()
-local b=a.cu()
-local c=a.cw()
+local aj=a.cC()
+local ak=a.V()
+local b=a.cw()
+local c=a.cy()
 
 local d=ai.commands.cmdsRank
 local e=d.maxTimesUsed
@@ -16444,9 +16648,9 @@ return u end
 i.init=function(o, p)
 ae:assert(p,"'commandsController:init' #1 expected a config to init")
 
-local q=a.au()
-local r=a.bb()
-local s=a.cU()
+local q=a.aD()
+local r=a.bj()
+local s=a.cX()
 
 
 o.notify=function(t, ...)
@@ -16488,12 +16692,12 @@ o.getRootPart=o.getRoot
 o.Connect=o.connect
 
 
-local t=a.bX()
+local t=a.bZ()
 o.isMobile=t
 o.isPC=not t
 
 
-o.localPlayer=a.Q()
+o.localPlayer=a.g()
 o.executorEnv=ab
 o.privateEnv=aa
 
@@ -16520,10 +16724,10 @@ o.userGameSettings=o.userSettings:GetService("UserGameSettings")
 o.gameNetworkSettings=o.gameSettings:GetService("NetworkSettings")
 
 
-o.loopService=a.cV()
+o.loopService=a.cY()
 
 
-o.storage=a.bD()
+o.storage=a.t()
 
 
 o.robloxServices=ah
@@ -16549,7 +16753,7 @@ ae:warn(`plugin '{u}' could not be loaded: {v}`)
 end end
 
 
-return i end a.cW=function()local ab=a.cache.cW if not ab then ab={c=aa()}a.cache.cW=ab end return ab.c end end do local aa=function()
+return i end a.cZ=function()local ab=a.cache.cZ if not ab then ab={c=aa()}a.cache.cZ=ab end return ab.c end end do local aa=function()
 
 
 return{
@@ -16561,16 +16765,16 @@ bundleName="compiled.luau",
 
 
 localBundlePath="iy-remake/compiled.luau",
-}end a.cX=function()local ab=a.cache.cX if not ab then ab={c=aa()}a.cache.cX=ab end return ab.c end end do local aa=function()
+}end a.c_=function()local ab=a.cache.c_ if not ab then ab={c=aa()}a.cache.c_=ab end return ab.c end end do local aa=function()
 
 
 
 local aa=a.a()
-local ab=a.au()
-local ac=a.P()
-local ad=a.cB()
-local ae=a.cX()
-local af=a.al()
+local ab=a.aD()
+local ac=a.f()
+local ad=a.cE()
+local ae=a.c_()
+local af=a.n()
 local ag=a.d()
 
 local ah={}
@@ -16636,7 +16840,7 @@ ah.enable(d)
 end end
 
 
-return ah end a.cY=function()local ab=a.cache.cY if not ab then ab={c=aa()}a.cache.cY=ab end return ab.c end end do local aa=function()
+return ah end a.c0=function()local ab=a.cache.c0 if not ab then ab={c=aa()}a.cache.c0=ab end return ab.c end end do local aa=function()
 
 
 
@@ -16712,15 +16916,15 @@ conditions={
 },
 },
 },
-}end a.cZ=function()local ab=a.cache.cZ if not ab then ab={c=aa()}a.cache.cZ=ab end return ab.c end end do local aa=function()
+}end a.c1=function()local ab=a.cache.c1 if not ab then ab={c=aa()}a.cache.c1=ab end return ab.c end end do local aa=function()
 
-local aa=a.P()
-local ab=a.S()
-local ac=a.cy()
-local ad=a.ba()
-local ae=a.bA()
-local af=a.by()
-local ag=a.cL()
+local aa=a.f()
+local ab=a.af()
+local ac=a.cA()
+local ad=a.l()
+local ae=a.p()
+local af=a.m()
+local ag=a.cO()
 
 
 
@@ -17123,16 +17327,16 @@ end
 return w(v,u)end
 
 
-return ah end a.c_=function()local ab=a.cache.c_ if not ab then ab={c=aa()}a.cache.c_=ab end return ab.c end end do local aa=function()
+return ah end a.c2=function()local ab=a.cache.c2 if not ab then ab={c=aa()}a.cache.c2=ab end return ab.c end end do local aa=function()
 
-local aa=a.cW()
-local ab=a.cA()
+local aa=a.cZ()
+local ab=a.cC()
 
-local ac=a.cy()
-local ad=a.cS()
+local ac=a.cA()
+local ad=a.cV()
 
-local ae=a.cL()
-local af=a.c_()
+local ae=a.cO()
+local af=a.c2()
 
 local ag=ae.colorFromRGB
 local ah=ae.escapeRichText
@@ -17781,17 +17985,17 @@ setCommentCallback=t
 },r)end
 
 
-return r end a.c0=function()local ab=a.cache.c0 if not ab then ab={c=aa()}a.cache.c0=ab end return ab.c end end do local aa=function()
+return r end a.c3=function()local ab=a.cache.c3 if not ab then ab={c=aa()}a.cache.c3=ab end return ab.c end end do local aa=function()
 
 
 
 
 
 
-local aa=a.cW()
-local ab=a.c0()
-local ac=a.F()
-local ad=a.cV()
+local aa=a.cZ()
+local ab=a.c3()
+local ac=a.V()
+local ad=a.cY()
 local ae=a.d()
 
 local af={}
@@ -17902,7 +18106,7 @@ end
 return true end
 
 
-return af end a.c1=function()local ab=a.cache.c1 if not ab then ab={c=aa()}a.cache.c1=ab end return ab.c end end do local aa=function()
+return af end a.c4=function()local ab=a.cache.c4 if not ab then ab={c=aa()}a.cache.c4=ab end return ab.c end end do local aa=function()
 
 
 
@@ -17911,11 +18115,11 @@ return af end a.c1=function()local ab=a.cache.c1 if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.cZ()
-local ab=a.bC()
-local ac=a.c1()
-local ad=a.cW()
-local ae=a.S()
+local aa=a.c1()
+local ab=a.r()
+local ac=a.c4()
+local ad=a.cZ()
+local ae=a.af()
 
 local af=aa.ANY
 
@@ -18176,7 +18380,7 @@ end
 end end
 
 
-return ag end a.c2=function()local ab=a.cache.c2 if not ab then ab={c=aa()}a.cache.c2=ab end return ab.c end end do local aa=function()
+return ag end a.c5=function()local ab=a.cache.c5 if not ab then ab={c=aa()}a.cache.c5=ab end return ab.c end end do local aa=function()
 
 
 
@@ -18185,9 +18389,9 @@ return ag end a.c2=function()local ab=a.cache.c2 if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.P()
-local ab=a.au()
-local ac=a.c2()
+local aa=a.f()
+local ab=a.aD()
+local ac=a.c5()
 
 local ad=aa.Players
 local ae=aa.TextChatService
@@ -18324,7 +18528,715 @@ end
 ac.fire("OnExecute")end
 
 
-return af end a.c3=function()local ab=a.cache.c3 if not ab then ab={c=aa()}a.cache.c3=ab end return ab.c end end do local aa=function()
+return af end a.c6=function()local ab=a.cache.c6 if not ab then ab={c=aa()}a.cache.c6=ab end return ab.c end end do local aa=function()
+
+
+
+return{
+
+keys={
+url="background.url",
+file="background.file",
+opacity="background.opacity",
+},
+
+
+folder="background",
+
+
+extensions={
+png="png",
+jpg="jpg",
+jpeg="jpg",
+},
+defaultExtension="png",
+
+defaultOpacity=0.5,
+
+
+slowSeconds=10,
+}end a.c7=function()local ab=a.cache.c7 if not ab then ab={c=aa()}a.cache.c7=ab end return ab.c end end do local aa=function()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local aa=a.c_()
+
+return{
+
+keys={
+keepMenuOpen="interface.keepMenuOpen",
+keepIY=aa.settingKey,
+clearOnEnter="clearOnEnter",
+theme="selectedTheme",
+},
+
+
+panel={
+shownY=0,
+hiddenY=1,
+tweenTime=0.5,
+padding=5,
+rowHeight=25,
+rowGap=4,
+headerHeight=16,
+stripeTransparency=0.5,
+scrollBarThickness=4,
+floatBackSize=25,
+floatBackMargin=6,
+floatBackFlat=0.3,
+floatBackOut=0.5,
+floatBackTime=0.35,
+},
+
+row={
+labelInset=28,
+iconInset=5,
+iconSize=16,
+chevronSize=14,
+},
+
+box={
+size=16,
+inset=4,
+cornerRadius=3,
+fillCornerRadius=2,
+},
+
+value={
+width=20,
+height=16,
+cornerRadius=4,
+keybindWidth=88,
+aliasWidth=110,
+inputWidth=110,
+formDelayWidth=46,
+addWidth=44,
+delayWidth=44,
+buttonWidth=36,
+reloadWidth=52,
+positionWidth=92,
+userWidth=150,
+},
+
+
+badge={
+height=12,
+overhang=3,
+},
+
+
+slider={
+width=90,
+valueWidth=36,
+barHeight=4,
+hitHeight=20,
+knobSize=12,
+},
+
+
+userData={
+missing="-",
+dateFormat="%Y-%m-%d %H:%M:%S",
+},
+
+textSizes={
+header=12,
+label=14,
+value=12,
+footer=11,
+badge=10,
+},
+
+
+footer="{name} {version}",
+
+
+pages={
+back="Back",
+backIcon="lucide-chevron-left",
+
+theme={
+title="#theme",
+incomplete="(incomplete)",
+primary="primary",
+},
+background={
+title="#background",
+urlHint="image URL, like https://...",
+apply="Set image from URL",
+refresh="Refresh image",
+remove="Remove image",
+opacity="Opacity",
+
+icons={
+apply="lucide-palette",
+refresh="lucide-refresh-cw",
+remove="lucide-trash",
+opacity="lucide-sliders-horizontal",
+},
+notifyTitle="Background",
+downloading="downloading the image...",
+set="background set",
+refreshed="background refreshed",
+removed="background removed",
+removedKeptFile="background removed, but its file stays: your exploit can't delete files",
+nothingToRefresh="there is no background to refresh",
+nothingToRemove="there is no background to remove",
+alreadyDownloading="this image is already being downloaded",
+downloadReplaced="the previous download was cancelled, downloading the new image...",
+slow="the image is taking a long time to download...",
+empty="write the URL of an image first",
+badUrl="the URL must start with http:// or https://",
+noCustomAsset="your exploit does not support getcustomasset, so the background can't be shown",
+downloadFailed="could not download an image from that URL",
+loadFailed="the image was downloaded, but it could not be loaded",
+},
+keybinds={
+title="#keybinds",
+reset="Reset to defaults",
+alwaysWorks="%s also works as the %s",
+},
+commands={
+title="#command settings",
+reset="Reset command keys to defaults",
+},
+importExport={
+title="#import / export",
+exportTitle="#export",
+exportRow="Copy settings",
+exportHint="copies your settings, keybinds, aliases, event binds and waypoints as text",
+importTitle="#import",
+importRow="Import settings",
+importHint="paste a copied text in the box, then import it. It replaces the settings it holds",
+placeholder="paste the copied text here",
+copied="settings copied to the clipboard",
+copyFailed="your exploit can't copy: the text is in the box, copy it from there",
+empty="paste a copied text first",
+notAnExport="that text is not an export of IY",
+imported="imported %s",
+restartNote="aliases and plugins apply when IY is opened again",
+notifyTitle="Import / Export",
+},
+aliases={
+title="#aliases",
+addTitle="#add alias",
+aliasHint="alias",
+commandHint="command it runs",
+addButton="Add alias",
+listTitle="#custom aliases",
+listHint="tap an alias to remove it",
+empty="no custom aliases yet",
+missing="write the alias and the command it runs",
+spaces="an alias can't have spaces",
+badCharacters="an alias can't have \\ ^ ! , | & or quotes: the command bar reads them as something else",
+added="added '%s'",
+removed="removed '%s'",
+notifyTitle="Aliases",
+undoTitle="Alias Removed",
+undoMessage="'%s' ran '%s'",
+undo="Undo",
+undoTime=10,
+restored="restored '%s'",
+},
+waypoints={
+title="#waypoints",
+notifyTitle="Waypoints",
+newTitle="#new waypoint",
+nameHint="name",
+positionHint="x, y, z",
+addButton="Add",
+formHint="no position saves where you are standing",
+modeTitle="#tap a waypoint to",
+
+modes={
+{mode="teleport",label="Teleport"},
+{mode="tween",label="Tween"},
+{mode="walk",label="Walk"},
+},
+markers="Show markers in the world",
+listTitle="#waypoints of this game",
+listHint="tap one to go there, Del removes it",
+empty="no waypoints in this game yet",
+delete="Del",
+clearTitle="#clear",
+clearGame="Clear this game",
+clearAll="Clear every game",
+missingName="write a name for the waypoint",
+badPosition="the position needs 3 numbers, like 10, 5, -20",
+noCharacter="your character was not found",
+noMarkers="there are no waypoints to show",
+saved="saved '%s' at %s",
+updated="updated '%s' to %s",
+went="teleported to '%s' %s",
+wentTween="tweening to '%s' %s",
+wentWalk="walking to '%s' %s",
+cantGo="can't go there: your character was not found",
+removed="removed '%s'",
+restored="restored '%s'",
+nameTaken="there is already a waypoint named '%s'",
+undoTitle="Waypoint Removed",
+undoMessage="'%s' %s was removed",
+undo="Undo",
+undoTime=10,
+confirmTitle="Clear Waypoints",
+confirmGame="Delete the %d waypoint(s) of this game?",
+confirmAll="Delete the %d waypoint(s) of every game?",
+confirmClear="Delete",
+confirmCancel="Cancel",
+cleared="deleted %d waypoint(s)",
+nothingToClear="there are no waypoints to delete",
+},
+plugins={
+title="#plugins",
+notifyTitle="Plugins",
+errorTitle="Plugin Error",
+addTitle="#add plugin",
+fileHint="plugin file name",
+addButton="Add plugin",
+folderHint="plugins are .luau files in the %s folder",
+trustHint="a plugin runs code with full access: only add files you trust",
+installedTitle="#installed plugins",
+installedHint="tap a plugin to see its state, Reload reads its file again",
+noneInstalled="no plugins installed yet",
+folderTitle="#in the plugins folder",
+noneInFolder="no new plugins in the folder",
+add="Add",
+addAll="Add all (%d)",
+reload="Reload",
+remove="Del",
+failedLabel="%s (failed)",
+loadedLabel="%s (%d)",
+stateLoaded="'%s' is loaded with %d command(s)",
+stateFailed="'%s' did not load: %s",
+stateUnknown="'%s' is installed but not loaded",
+added="added '%s' (%d command(s))",
+reloaded="reloaded '%s' (%d command(s))",
+removed="removed '%s'",
+missingName="write the file name of the plugin",
+addedAll="added %d plugin(s)",
+failedAll=", %d failed (see the console)",
+},
+eventBinds={
+title="#event binds",
+notifyTitle="Event Binds",
+notAdded="the bind was not added",
+columns=4,
+commandHint="command (goto $1)",
+delayHint="delay",
+
+conditionHints={
+Player="any, me, friends...",
+String="any, or text",
+Number="any, or max",
+},
+addButton="Add",
+header="#%s - %s",
+listTitle="#binds of %s",
+listHint="tap a bind to remove it, or type a new delay in its box",
+empty="no binds for this event yet",
+badDelay="the delay must be a number",
+negativeDelay="the delay must be 0 or more",
+added="added a bind to %s",
+removed="removed '%s'",
+delayChanged="the delay of '%s' is now %s",
+restored="restored '%s'",
+undoTitle="Bind Removed",
+undoMessage="'%s' was removed from #%s",
+undoDelay="delay %s",
+undo="Undo",
+undoTime=10,
+},
+},
+
+sections={
+{
+title="#general",
+options={
+{kind="keybind",label="Prefix",icon="lucide-terminal",binding="prefix"},
+{kind="switch",label="Keep Menu Open",icon="lucide-pin",setting="keepMenuOpen"},
+{kind="switch",label="Keep Interface",icon="lucide-refresh-cw",setting="keepIY"},
+{kind="switch",label="Clear On Enter",icon="lucide-eraser",setting="clearOnEnter"},
+},
+},
+{
+title="#editors",
+options={
+{kind="button",label="Edit Theme",icon="lucide-palette",action="theme"},
+{kind="button",label="Edit Keybinds",icon="lucide-keyboard",action="keybinds"},
+{kind="button",label="Edit Aliases",icon="lucide-tag",action="aliases"},
+{kind="button",label="Edit/Goto Waypoints",icon="lucide-map-pin",action="waypoints"},
+{kind="button",label="Manage Plugins",icon="lucide-puzzle",action="plugins"},
+{kind="button",label="Edit Event Binds",icon="lucide-zap",action="eventBinds"},
+{kind="button",label="Command Settings",icon="lucide-sliders-horizontal",action="commands"},
+{kind="button",label="Import / Export",icon="lucide-arrow-down-up",action="importExport"},
+},
+},
+{
+title="#user",
+options={
+{
+kind="expand",
+label="Usage",
+icon="lucide-terminal",
+items={
+{label="First run",key="firstTimeExecuted",date=true},
+{label="This place",placeCounts="usedPlaces"},
+{label="Total",key="executionCount"},
+},
+},
+},
+},
+},
+}end a.c8=function()local ab=a.cache.c8 if not ab then ab={c=aa()}a.cache.c8=ab end return ab.c end end do local aa=function()
+
+
+
+
+
+
+
+
+
+
+
+
+
+local aa=a.a()
+local ab=a.cE()
+local ac=a.n()
+local ad=a.s()
+local ae=a.k()
+
+local af=a.c7()
+local ag=a.c8().pages.background
+
+local ah={
+frame=nil,
+topBar=nil,
+asset=nil,
+}
+
+
+local ai=0
+
+
+
+local aj local ak=function(
+
+ak)
+return ak:match("^%s*(.-)%s*$")or""end local b=function(
+
+
+
+b)
+local c=b:match("^[^?#]*")or b
+local d=(c:match("%.(%w+)$")or""):lower()
+
+return af.extensions[d]or af.defaultExtension end local c=function()
+
+
+
+local c=ac:getValue(af.keys.opacity)
+
+if type(c)~="number"then
+return af.defaultOpacity
+end
+
+return math.clamp(c,0,1)end local d=function(
+
+
+
+d)
+local e=ad:getEntry(d)
+
+if type(e)=="string"and ae:exist(e)then
+return e
+end
+
+return nil end local e=function(
+
+
+
+
+e)
+local f=ac:getValue(af.keys.file)
+
+if f==nil then
+return nil
+end
+
+ac:setValue(af.keys.file,nil)
+ac:save()
+
+if type(f)~="string"or not ae:exist(f)then
+return nil
+end
+
+ad:setEntry(e,f)
+ad:save()
+
+return f end local f=function(
+
+
+
+
+f, g)
+local h=ab.fetchUrl(f)
+
+if not g()then
+return nil,nil,nil
+end
+
+if h==nil then
+return nil,nil,ag.downloadFailed
+end
+
+
+ai=ai+1
+local i=`{af.folder}/image-{os.time()}-{ai}.{b(f)}`
+
+ae:makeFolder(af.folder)
+ae:writeFile(i,h)
+
+local j=ae:getCustomAsset(i)
+
+if j==nil then
+
+ae:delete(i)
+return nil,nil,ag.loadFailed
+end
+
+return i,j,nil end
+
+
+
+ah.getUrl=function(g)
+local h=ac:getValue(af.keys.url)
+
+if type(h)=="string"and h~=""then
+return h
+end
+
+return nil end
+
+
+ah.getOpacity=function(g)
+return c()end
+
+
+
+ah.checkUrl=function(g, h)
+local i=ak(h)
+
+if i==""then
+return ag.empty
+end
+
+if not i:match("^https?://")then
+return ag.badUrl
+end
+
+if aa.getcustomasset==nil then
+return ag.noCustomAsset
+end
+
+return nil end
+
+
+
+ah.paint=function(g)
+local h=g.frame
+if h==nil then return end
+
+local i=g.asset
+
+h.Image=i or""
+h.ImageTransparency=1-c()
+
+if g.topBar then
+g.topBar.BackgroundTransparency=if i~=nil then 1 else 0
+end end
+
+
+
+ah.attach=function(g, h)
+if g.frame~=nil then return end
+
+g.frame=h
+g.topBar=h:FindFirstChild("TopBar")
+
+local i=g:getUrl()
+
+if i~=nil and aa.getcustomasset~=nil then
+local j=d(i)or e(i)
+
+if j~=nil then
+g.asset=ae:getCustomAsset(j)
+end
+end
+
+g:paint()end
+
+
+
+
+
+ah.setFromUrl=function(g, h, i, j)
+local k=ak(h)
+local l=d(k)
+local m=j or function()return true end
+
+local n=l
+local o
+
+if l~=nil and not i then
+o=ae:getCustomAsset(l)
+end
+
+if o==nil then
+local p,q,r=f(k,m)
+
+if p==nil or q==nil then
+return false,r
+end
+
+n=p
+o=q
+
+if l~=nil and l~=p then
+ae:delete(l)
+end
+end
+
+ad:setEntry(k,n)
+ad:save()
+
+ac:setValue(af.keys.url,k)
+ac:save()
+
+g.asset=o
+g:paint()
+
+return true end
+
+
+
+
+ah.clear=function(g)
+
+g:cancelDownload()
+
+local h=g:getUrl()
+local i=true
+
+if h~=nil then
+local j=ad:getEntry(h)
+
+if type(j)=="string"then
+i=ae:delete(j)
+end
+
+ad:setEntry(h,nil)
+ad:save()
+end
+
+ac:setValue(af.keys.url,nil)
+ac:save()
+
+g.asset=nil
+g:paint()
+
+return i end
+
+
+
+ah.setOpacity=function(g, h)
+local i=math.round(math.clamp(h,0,1)*100)/100
+
+ac:setValue(af.keys.opacity,i)
+ac:save()
+
+g:paint()end
+
+
+
+ah.isDownloading=function(g, h)
+if aj==nil then return false end
+if h==nil then return true end
+
+return aj.url==ak(h)end
+
+
+
+
+ah.cancelDownload=function(g)
+local h=aj
+if h==nil then return end
+
+aj=nil
+
+if h.thread~=nil then
+pcall(task.cancel,h.thread)
+end end
+
+
+
+
+
+ah.startDownload=function(g, h, i, j)
+
+
+
+g:cancelDownload()
+
+local k={url=ak(h),thread=nil}
+aj=k
+
+task.delay(af.slowSeconds,function()
+if aj==k and j.onSlow then
+j.onSlow()
+end
+end)
+
+k.thread=task.spawn(function()
+
+local l,m,n=pcall(function()
+return g:setFromUrl(k.url,i,function()
+return aj==k
+end)
+end)
+
+if not l then
+m,n=false,ag.downloadFailed
+end
+
+
+if aj~=k then return end
+
+aj=nil
+
+if j.onDone then
+j.onDone(m,n)
+end
+end)end
+
+
+return ah end a.c9=function()local ab=a.cache.c9 if not ab then ab={c=aa()}a.cache.c9=ab end return ab.c end end do local aa=function()
 
 return{NEW_YEAR=
 "🎆",VALENTINE_DAYS=
@@ -18333,14 +19245,14 @@ return{NEW_YEAR=
 "🎃",CHRISTMAS=
 "🎄",EASTER=
 "🥚",
-}end a.c4=function()local ab=a.cache.c4 if not ab then ab={c=aa()}a.cache.c4=ab end return ab.c end end do local aa=function()
+}end a.da=function()local ab=a.cache.da if not ab then ab={c=aa()}a.cache.da=ab end return ab.c end end do local aa=function()
 
 
 
 local aa={}
 
-local ab=a.ap()
-local ac=a.c4()
+local ab=a.ay()
+local ac=a.da()
 
 aa.getEasterDate=function()
 local ad=tonumber(os.date("%Y"))
@@ -18398,7 +19310,7 @@ end
 return ad end
 
 
-return aa end a.c5=function()local ab=a.cache.c5 if not ab then ab={c=aa()}a.cache.c5=ab end return ab.c end end do local aa=function()
+return aa end a.db=function()local ab=a.cache.db if not ab then ab={c=aa()}a.cache.db=ab end return ab.c end end do local aa=function()
 
 
 
@@ -18479,18 +19391,20 @@ room=math.max(h,0),
 }end
 
 
-return aa end a.c6=function()local ab=a.cache.c6 if not ab then ab={c=aa()}a.cache.c6=ab end return ab.c end end do local aa=function()
+return aa end a.dc=function()local ab=a.cache.dc if not ab then ab={c=aa()}a.cache.dc=ab end return ab.c end end do local aa=function()
 
 
 
-local aa=a.cN()
+local aa=a.cQ()
 
 local ab={}
 
 ab.create=function(ac)
-local ad=aa.new("Frame","MainFrame",{
+local ad=aa.new("ImageLabel","MainFrame",{
 Active=true,
 BorderSizePixel=0,
+Image="",
+ScaleType=Enum.ScaleType.Crop,
 ThemeTag={
 BackgroundColor3="Colors.Background"
 },
@@ -18548,9 +19462,9 @@ reference=ah
 }end
 
 
-return ab end a.c7=function()local ab=a.cache.c7 if not ab then ab={c=aa()}a.cache.c7=ab end return ab.c end end do local aa=function()
+return ab end a.dd=function()local ab=a.cache.dd if not ab then ab={c=aa()}a.cache.dd=ab end return ab.c end end do local aa=function()
 
-local aa=a.cN()
+local aa=a.cQ()
 
 local ab={up=
 function(ab,ac)
@@ -18631,12 +19545,12 @@ BackgroundColor3="Colors.Icons"
 end
 
 return ag
-end end a.c8=function()local ab=a.cache.c8 if not ab then ab={c=aa()}a.cache.c8=ab end return ab.c end end do local aa=function()
+end end a.de=function()local ab=a.cache.de if not ab then ab={c=aa()}a.cache.de=ab end return ab.c end end do local aa=function()
 
 
 
-local aa=a.au()
-local ab=a.P()
+local aa=a.aD()
+local ab=a.f()
 
 local ac=ab.UserInputService
 
@@ -18685,18 +19599,18 @@ af.isMovingInput=function(ag)
 return ae[ag.UserInputType]~=nil end
 
 
-return af end a.c9=function()local ab=a.cache.c9 if not ab then ab={c=aa()}a.cache.c9=ab end return ab.c end end do local aa=function()
-local aa=a.au()
-local ab=a.cN()
-local ac=a.R()
-local ad=a.cM()
+return af end a.df=function()local ab=a.cache.df if not ab then ab={c=aa()}a.cache.df=ab end return ab.c end end do local aa=function()
+local aa=a.aD()
+local ab=a.cQ()
+local ac=a.ae()
+local ad=a.cP()
 
-local ae=a.c8()
-local af=a.cQ()
+local ae=a.de()
+local af=a.cT()
 
-local ag=a.cz()
+local ag=a.cB()
 
-local ah=a.c9()
+local ah=a.df()
 
 local ai={}
 ai.__index=ai
@@ -19183,7 +20097,7 @@ ak.downButtoName=ak.isHorizontal and"right"or"down"
 return ak end
 
 
-return ai end a.da=function()local ab=a.cache.da if not ab then ab={c=aa()}a.cache.da=ab end return ab.c end end do local aa=function()
+return ai end a.dg=function()local ab=a.cache.dg if not ab then ab={c=aa()}a.cache.dg=ab end return ab.c end end do local aa=function()
 local aa={}
 aa.__index=aa
 
@@ -19202,28 +20116,28 @@ description=ab.description
 },aa)end
 
 
-return aa end a.db=function()local ab=a.cache.db if not ab then ab={c=aa()}a.cache.db=ab end return ab.c end end do local aa=function()
-local aa=a.au()
-local ab=a.P()
-local ac=a.R()
-local ad=a.cN()
-local ae=a.db()
+return aa end a.dh=function()local ab=a.cache.dh if not ab then ab={c=aa()}a.cache.dh=ab end return ab.c end end do local aa=function()
+local aa=a.aD()
+local ab=a.f()
+local ac=a.ae()
+local ad=a.cQ()
+local ae=a.dh()
 
-local af=a.c0()
-local ag=a.c1()
+local af=a.c3()
+local ag=a.c4()
 
-local ah=a.c9()
-local ai=a.cP()
-local aj=a.cy()
+local ah=a.df()
+local ai=a.cS()
+local aj=a.cA()
 
-local ak=a.cz()
+local ak=a.cB()
 local b=a.d()
-local c=a.cL()
-local d=a.cQ()
+local c=a.cO()
+local d=a.cT()
 
-local e=a.al()
-local f=a.cS().commands
-local g=a.bX()
+local e=a.n()
+local f=a.cV().commands
+local g=a.bZ()
 
 local h=ab.UserInputService
 local i=ab.RunService
@@ -20412,7 +21326,7 @@ end)
 return F end
 
 
-return m end a.dc=function()local ab=a.cache.dc if not ab then ab={c=aa()}a.cache.dc=ab end return ab.c end end do local aa=function()
+return m end a.di=function()local ab=a.cache.di if not ab then ab={c=aa()}a.cache.di=ab end return ab.c end end do local aa=function()
 
 
 
@@ -20425,9 +21339,9 @@ return m end a.dc=function()local ab=a.cache.dc if not ab then ab={c=aa()}a.cach
 
 
 
-local aa=a.c9()
-local ab=a.P()
-local ac=a.cz()
+local aa=a.df()
+local ab=a.f()
+local ac=a.cB()
 
 local ad=ab.UserInputService
 
@@ -20632,14 +21546,14 @@ dragEnded=ac.new(),
 },ah)end
 
 
-return ah end a.dd=function()local ab=a.cache.dd if not ab then ab={c=aa()}a.cache.dd=ab end return ab.c end end do local aa=function()
+return ah end a.dj=function()local ab=a.cache.dj if not ab then ab={c=aa()}a.cache.dj=ab end return ab.c end end do local aa=function()
 
-local aa=a.cQ().uiScale
-return a.dd().new(aa)end a.de=function()local ab=a.cache.de if not ab then ab={c=aa()}a.cache.de=ab end return ab.c end end do local aa=function()
-local aa=a.cL().colorFromRGB
-local ab=a.cS().commands
+local aa=a.cT().uiScale
+return a.dj().new(aa)end a.dk=function()local ab=a.cache.dk if not ab then ab={c=aa()}a.cache.dk=ab end return ab.c end end do local aa=function()
+local aa=a.cO().colorFromRGB
+local ab=a.cV().commands
 
-local ac=a.cT()local ad=function(
+local ac=a.cW()local ad=function(
 
 ad)
 return ac:apply(ad)end
@@ -20737,19 +21651,19 @@ sections={
 {"invite"},
 },
 }
-}end a.df=function()local ab=a.cache.df if not ab then ab={c=aa()}a.cache.df=ab end return ab.c end end do local aa=function()
+}end a.dl=function()local ab=a.cache.dl if not ab then ab={c=aa()}a.cache.dl=ab end return ab.c end end do local aa=function()
 
 
-local aa=a.cN()
-local ab=a.de()
-local ac=a.da()
+local aa=a.cQ()
+local ab=a.dk()
+local ac=a.dg()
 
-local ad=a.cQ()
-local ae=a.au()
+local ad=a.cT()
+local ae=a.aD()
 local af=a.a()
-local ag=a.ap()
+local ag=a.ay()
 
-local ah=a.df()
+local ah=a.dl()
 
 local ai=500
 local aj=20
@@ -21081,7 +21995,7 @@ u.scrollBar=z
 return v end
 
 
-return m end a.dg=function()local ab=a.cache.dg if not ab then ab={c=aa()}a.cache.dg=ab end return ab.c end end do local aa=function()
+return m end a.dm=function()local ab=a.cache.dm if not ab then ab={c=aa()}a.cache.dm=ab end return ab.c end end do local aa=function()
 
 
 return{
@@ -21147,27 +22061,27 @@ unknownPlace="Unknown",
 alreadyEnabled="the info menu is already enabled",
 noClipboard="this executor doesn't support clipboard",
 },
-}end a.dh=function()local ab=a.cache.dh if not ab then ab={c=aa()}a.cache.dh=ab end return ab.c end end do local aa=function()
+}end a.dn=function()local ab=a.cache.dn if not ab then ab={c=aa()}a.cache.dn=ab end return ab.c end end do local aa=function()
 
 
-local aa=a.cN()
-local ab=a.cP()
-local ac=a.cM()
+local aa=a.cQ()
+local ab=a.cS()
+local ac=a.cP()
 
-local ad=a.de()
-local ae=a.cU()
+local ad=a.dk()
+local ae=a.cX()
 
-local af=a.cL()
+local af=a.cO()
 
-local ag=a.cQ()
-local ah=a.au()
+local ag=a.cT()
+local ah=a.aD()
 local ai=a.a()
-local aj=a.Q()
-local ak=a.P()
+local aj=a.g()
+local ak=a.f()
 local b=a.b()
 
-local c=a.dh()
-local d=a.cT()
+local c=a.dn()
+local d=a.cW()
 
 local e=UDim2.new(0.5,-c.window.width/2,0,c.window.shownY)
 local f=UDim2.new(0.5,-c.window.width/2,0,c.window.hiddenY)
@@ -21501,7 +22415,7 @@ t.frame:Destroy()
 end)end
 
 
-return g end a.di=function()local ab=a.cache.di if not ab then ab={c=aa()}a.cache.di=ab end return ab.c end end do local aa=function()
+return g end a.dp=function()local ab=a.cache.dp if not ab then ab={c=aa()}a.cache.dp=ab end return ab.c end end do local aa=function()
 
 
 return{
@@ -21561,28 +22475,28 @@ chatCopied="Message copied to the clipboard",
 joinCopied="User ID copied to the clipboard:",
 noClipboard="Your executor has no clipboard function",
 },
-}end a.dj=function()local ab=a.cache.dj if not ab then ab={c=aa()}a.cache.dj=ab end return ab.c end end do local aa=function()
+}end a.dq=function()local ab=a.cache.dq if not ab then ab={c=aa()}a.cache.dq=ab end return ab.c end end do local aa=function()
 
 
 
-local aa=a.cN()
-local ab=a.cP()
-local ac=a.cM()
-local ad=a.de()
-local ae=a.cQ()
-local af=a.da()
-local ag=a.cU()
+local aa=a.cQ()
+local ab=a.cS()
+local ac=a.cP()
+local ad=a.dk()
+local ae=a.cT()
+local af=a.dg()
+local ag=a.cX()
 
 local ah=a.b()
-local ai=a.dj()
-local aj=a.P()
+local ai=a.dq()
+local aj=a.f()
 local ak=a.a()
-local b=a.cE()
-local c=a.bG()
-local d=a.cS().args
-local e=a.cT()
-local f=a.cL()
-local g=a.al()
+local b=a.cH()
+local c=a.bI()
+local d=a.cV().args
+local e=a.cW()
+local f=a.cO()
+local g=a.n()
 
 local h=ai.window
 local i=h.topBarHeight
@@ -22143,7 +23057,7 @@ end
 an.window=nil end
 
 
-return z end a.dk=function()local ab=a.cache.dk if not ab then ab={c=aa()}a.cache.dk=ab end return ab.c end end do local aa=function()
+return z end a.dr=function()local ab=a.cache.dr if not ab then ab={c=aa()}a.cache.dr=ab end return ab.c end end do local aa=function()
 
 
 
@@ -22151,391 +23065,116 @@ return z end a.dk=function()local ab=a.cache.dk if not ab then ab={c=aa()}a.cach
 
 
 
+local aa=a.cQ()
+local ab=a.cS()
+local ac=a.cP()
+local ad=a.aG()
+local ae=a.f()
+local af=a.df()
+local ag=a.cT()
+local ah=a.c8()
+
+local ai=ah.panel
+local aj=ah.row
+local ak=ah.box
+local al=ah.value
+local am=ah.textSizes
+local an=ah.badge
+local ao=ah.slider
+
+local ap={}local aq=function(
 
 
-
-
-
-local aa=a.cX()
-
-return{
-
-keys={
-keepMenuOpen="interface.keepMenuOpen",
-keepIY=aa.settingKey,
-clearOnEnter="clearOnEnter",
-theme="selectedTheme",
-},
-
-
-panel={
-shownY=0,
-hiddenY=1,
-tweenTime=0.5,
-padding=5,
-rowHeight=25,
-rowGap=4,
-headerHeight=16,
-stripeTransparency=0.5,
-scrollBarThickness=4,
-floatBackSize=25,
-floatBackMargin=6,
-floatBackFlat=0.3,
-floatBackOut=0.5,
-floatBackTime=0.35,
-},
-
-row={
-labelInset=28,
-iconInset=5,
-iconSize=16,
-chevronSize=14,
-},
-
-box={
-size=16,
-inset=4,
-cornerRadius=3,
-fillCornerRadius=2,
-},
-
-value={
-width=20,
-height=16,
-cornerRadius=4,
-keybindWidth=88,
-aliasWidth=110,
-inputWidth=110,
-formDelayWidth=46,
-addWidth=44,
-delayWidth=44,
-buttonWidth=36,
-reloadWidth=52,
-positionWidth=92,
-},
-
-
-badge={
-height=12,
-overhang=3,
-},
-
-textSizes={
-header=12,
-label=14,
-value=12,
-footer=11,
-badge=10,
-},
-
-
-footer="{name} {version}",
-
-
-pages={
-back="Back",
-backIcon="lucide-chevron-left",
-
-theme={
-title="#theme",
-incomplete="(incomplete)",
-primary="primary",
-},
-keybinds={
-title="#keybinds",
-reset="Reset to defaults",
-alwaysWorks="%s also works as the %s",
-},
-commands={
-title="#command settings",
-reset="Reset command keys to defaults",
-},
-importExport={
-title="#import / export",
-exportTitle="#export",
-exportRow="Copy settings",
-exportHint="copies your settings, keybinds, aliases, event binds and waypoints as text",
-importTitle="#import",
-importRow="Import settings",
-importHint="paste a copied text in the box, then import it. It replaces the settings it holds",
-placeholder="paste the copied text here",
-copied="settings copied to the clipboard",
-copyFailed="your exploit can't copy: the text is in the box, copy it from there",
-empty="paste a copied text first",
-notAnExport="that text is not an export of IY",
-imported="imported %s",
-restartNote="aliases and plugins apply when IY is opened again",
-notifyTitle="Import / Export",
-},
-aliases={
-title="#aliases",
-addTitle="#add alias",
-aliasHint="alias",
-commandHint="command it runs",
-addButton="Add alias",
-listTitle="#custom aliases",
-listHint="tap an alias to remove it",
-empty="no custom aliases yet",
-missing="write the alias and the command it runs",
-spaces="an alias can't have spaces",
-badCharacters="an alias can't have \\ ^ ! , | & or quotes: the command bar reads them as something else",
-added="added '%s'",
-removed="removed '%s'",
-notifyTitle="Aliases",
-undoTitle="Alias Removed",
-undoMessage="'%s' ran '%s'",
-undo="Undo",
-undoTime=10,
-restored="restored '%s'",
-},
-waypoints={
-title="#waypoints",
-notifyTitle="Waypoints",
-newTitle="#new waypoint",
-nameHint="name",
-positionHint="x, y, z",
-addButton="Add",
-formHint="no position saves where you are standing",
-modeTitle="#tap a waypoint to",
-
-modes={
-{mode="teleport",label="Teleport"},
-{mode="tween",label="Tween"},
-{mode="walk",label="Walk"},
-},
-markers="Show markers in the world",
-listTitle="#waypoints of this game",
-listHint="tap one to go there, Del removes it",
-empty="no waypoints in this game yet",
-delete="Del",
-clearTitle="#clear",
-clearGame="Clear this game",
-clearAll="Clear every game",
-missingName="write a name for the waypoint",
-badPosition="the position needs 3 numbers, like 10, 5, -20",
-noCharacter="your character was not found",
-noMarkers="there are no waypoints to show",
-saved="saved '%s' at %s",
-updated="updated '%s' to %s",
-went="teleported to '%s' %s",
-wentTween="tweening to '%s' %s",
-wentWalk="walking to '%s' %s",
-cantGo="can't go there: your character was not found",
-removed="removed '%s'",
-restored="restored '%s'",
-nameTaken="there is already a waypoint named '%s'",
-undoTitle="Waypoint Removed",
-undoMessage="'%s' %s was removed",
-undo="Undo",
-undoTime=10,
-confirmTitle="Clear Waypoints",
-confirmGame="Delete the %d waypoint(s) of this game?",
-confirmAll="Delete the %d waypoint(s) of every game?",
-confirmClear="Delete",
-confirmCancel="Cancel",
-cleared="deleted %d waypoint(s)",
-nothingToClear="there are no waypoints to delete",
-},
-plugins={
-title="#plugins",
-notifyTitle="Plugins",
-errorTitle="Plugin Error",
-addTitle="#add plugin",
-fileHint="plugin file name",
-addButton="Add plugin",
-folderHint="plugins are .luau files in the %s folder",
-trustHint="a plugin runs code with full access: only add files you trust",
-installedTitle="#installed plugins",
-installedHint="tap a plugin to see its state, Reload reads its file again",
-noneInstalled="no plugins installed yet",
-folderTitle="#in the plugins folder",
-noneInFolder="no new plugins in the folder",
-add="Add",
-addAll="Add all (%d)",
-reload="Reload",
-remove="Del",
-failedLabel="%s (failed)",
-loadedLabel="%s (%d)",
-stateLoaded="'%s' is loaded with %d command(s)",
-stateFailed="'%s' did not load: %s",
-stateUnknown="'%s' is installed but not loaded",
-added="added '%s' (%d command(s))",
-reloaded="reloaded '%s' (%d command(s))",
-removed="removed '%s'",
-missingName="write the file name of the plugin",
-addedAll="added %d plugin(s)",
-failedAll=", %d failed (see the console)",
-},
-eventBinds={
-title="#event binds",
-notifyTitle="Event Binds",
-notAdded="the bind was not added",
-columns=4,
-commandHint="command (goto $1)",
-delayHint="delay",
-
-conditionHints={
-Player="any, me, friends...",
-String="any, or text",
-Number="any, or max",
-},
-addButton="Add",
-header="#%s - %s",
-listTitle="#binds of %s",
-listHint="tap a bind to remove it, or type a new delay in its box",
-empty="no binds for this event yet",
-badDelay="the delay must be a number",
-negativeDelay="the delay must be 0 or more",
-added="added a bind to %s",
-removed="removed '%s'",
-delayChanged="the delay of '%s' is now %s",
-restored="restored '%s'",
-undoTitle="Bind Removed",
-undoMessage="'%s' was removed from #%s",
-undoDelay="delay %s",
-undo="Undo",
-undoTime=10,
-},
-},
-
-sections={
-{
-title="#general",
-options={
-{kind="keybind",label="Prefix",icon="lucide-terminal",binding="prefix"},
-{kind="switch",label="Keep Menu Open",icon="lucide-pin",setting="keepMenuOpen"},
-{kind="switch",label="Keep Interface",icon="lucide-refresh-cw",setting="keepIY"},
-{kind="switch",label="Clear On Enter",icon="lucide-eraser",setting="clearOnEnter"},
-},
-},
-{
-title="#editors",
-options={
-{kind="button",label="Edit Theme",icon="lucide-palette",action="theme"},
-{kind="button",label="Edit Keybinds",icon="lucide-keyboard",action="keybinds"},
-{kind="button",label="Edit Aliases",icon="lucide-tag",action="aliases"},
-{kind="button",label="Edit/Goto Waypoints",icon="lucide-map-pin",action="waypoints"},
-{kind="button",label="Manage Plugins",icon="lucide-puzzle",action="plugins"},
-{kind="button",label="Edit Event Binds",icon="lucide-zap",action="eventBinds"},
-{kind="button",label="Command Settings",icon="lucide-sliders-horizontal",action="commands"},
-{kind="button",label="Import / Export",icon="lucide-arrow-down-up",action="importExport"},
-},
-},
-},
-}end a.dl=function()local ab=a.cache.dl if not ab then ab={c=aa()}a.cache.dl=ab end return ab.c end end do local aa=function()
-
-
-
-
-
-
-
-
-local aa=a.cN()
-local ab=a.cP()
-local ac=a.cM()
-local ad=a.ax()
-local ae=a.dl()
-
-local af=ae.panel
-local ag=ae.row
-local ah=ae.box
-local ai=ae.value
-local aj=ae.textSizes
-local ak=ae.badge
-
-local al={}local am=function(
-
-
-am, an, ao)
-ac:updateObjectProperties(am,{
-BackgroundColor3=if ao then"Colors.Buttons.Holding"else"Colors.Buttons.Default",
+aq, ar, as)
+ac:updateObjectProperties(aq,{
+BackgroundColor3=if as then"Colors.Buttons.Holding"else"Colors.Buttons.Default",
 })
-am.BackgroundTransparency=if ao then 0 else an end
+aq.BackgroundTransparency=if as then 0 else ar end
 
 
 
-al.page=function(an, ao, ap)
-return aa.new("ScrollingFrame",ao,an,{
+
+ap.page=function(ar, as, at)
+return aa.new("ScrollingFrame",as,ar,{
 Active=true,
 AutomaticCanvasSize=Enum.AutomaticSize.Y,
+BackgroundTransparency=1,
 BorderSizePixel=0,
 CanvasSize=UDim2.new(),
 ElasticBehavior=Enum.ElasticBehavior.Never,
-Position=ap,
-ScrollBarThickness=af.scrollBarThickness,
+Position=at,
+ScrollBarThickness=ai.scrollBarThickness,
 ScrollingDirection=Enum.ScrollingDirection.Y,
 Size=UDim2.fromScale(1,1),
 ThemeTag={
-BackgroundColor3="Colors.Background",
-ScrollBarImageColor3="Colors.ScrollBar.Thumb",
+ScrollBarImageColor3="Colors.Primary",
 },
 
 aa.new("UIPadding",{
-PaddingLeft=UDim.new(0,af.padding),
-PaddingRight=UDim.new(0,af.padding),
-PaddingTop=UDim.new(0,af.padding),
-PaddingBottom=UDim.new(0,af.padding),
+PaddingLeft=UDim.new(0,ai.padding),
+PaddingRight=UDim.new(0,ai.padding),
+PaddingTop=UDim.new(0,ai.padding),
+PaddingBottom=UDim.new(0,ai.padding),
 }),
 aa.new("UIListLayout",{
-Padding=UDim.new(0,af.rowGap),
+Padding=UDim.new(0,ai.rowGap),
 SortOrder=Enum.SortOrder.LayoutOrder,
 }),
-})end local an=function(
+})end local ar=function(
 
 
 
-an)
-ac:removeObject(an)
+ar)
+ac:removeObject(ar)
 
-for ao,ap in an:GetDescendants()do
-ac:removeObject(ap)
+for as,at in ar:GetDescendants()do
+ac:removeObject(at)
 end end
 
 
 
-al.clear=function(ao)
-for ap,aq in ao:GetChildren()do
-if not(aq:IsA("UIListLayout")or aq:IsA("UIPadding"))then
-an(aq)
-aq:Destroy()
+ap.clear=function(as)
+for at,au in as:GetChildren()do
+if not(au:IsA("UIListLayout")or au:IsA("UIPadding"))then
+ar(au)
+au:Destroy()
 end
 end end
 
 
 
-al.list=function(ao)
-return{parent=ao,order=0,index=0}end
+ap.list=function(as)
+return{parent=as,order=0,index=0}end
 
 
 
-al.group=function(ao)
-ao.order=ao.order+1
+ap.group=function(as)
+as.order=as.order+1
 
-return aa.new("Frame","Group",ao.parent,{
+return aa.new("Frame","Group",as.parent,{
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundTransparency=1,
 BorderSizePixel=0,
-LayoutOrder=ao.order,
+LayoutOrder=as.order,
 Size=UDim2.new(1,0,0,0),
 
 aa.new("UIListLayout",{
-Padding=UDim.new(0,af.rowGap),
+Padding=UDim.new(0,ai.rowGap),
 SortOrder=Enum.SortOrder.LayoutOrder,
 }),
 })end
 
 
-al.header=function(ao, ap)
-ao.order=ao.order+1
-ao.index=0
+ap.header=function(as, at)
+as.order=as.order+1
+as.index=0
 
-return aa.new("TextLabel","Header",ao.parent,{
+return aa.new("TextLabel","Header",as.parent,{
 BackgroundTransparency=1,
-LayoutOrder=ao.order,
-Size=UDim2.new(1,0,0,af.headerHeight),
-Text=ap,
-TextSize=aj.header,
+LayoutOrder=as.order,
+Size=UDim2.new(1,0,0,ai.headerHeight),
+Text=at,
+TextSize=am.header,
 TextXAlignment=Enum.TextXAlignment.Left,
 ThemeTag={
 Font="Font.MonoSpace",
@@ -22545,18 +23184,18 @@ TextColor3="Colors.Text.Darker",
 
 
 
-al.row=function(ao)
-ao.order=ao.order+1
-ao.index=ao.index+1
+ap.row=function(as)
+as.order=as.order+1
+as.index=as.index+1
 
-local ap=if ao.index%2==1 then af.stripeTransparency else 1
+local at=if as.index%2==1 then ai.stripeTransparency else 1
 
-local aq=aa.new("TextButton","Option",ao.parent,{
+local au=aa.new("TextButton","Option",as.parent,{
 AutoButtonColor=false,
-BackgroundTransparency=ap,
+BackgroundTransparency=at,
 BorderSizePixel=0,
-LayoutOrder=ao.order,
-Size=UDim2.new(1,0,0,af.rowHeight),
+LayoutOrder=as.order,
+Size=UDim2.new(1,0,0,ai.rowHeight),
 Text="",
 ThemeTag={
 BackgroundColor3="Colors.Buttons.Default",
@@ -22564,92 +23203,92 @@ BackgroundColor3="Colors.Buttons.Default",
 })
 
 
-aq.MouseEnter:Connect(function()
-am(aq,ap,true)
+au.MouseEnter:Connect(function()
+aq(au,at,true)
 end)
 
-aq.MouseLeave:Connect(function()
-am(aq,ap,false)
+au.MouseLeave:Connect(function()
+aq(au,at,false)
 end)
 
-return aq end
+return au end
 
 
 
-al.pageTop=function(ao, ap, aq)
-local ar=al.row(ao)
-ar.Name="BackRow"
-al.icon(ar,ae.pages.backIcon)
-al.label(ar,ae.pages.back,0)
-ar.Activated:Connect(aq)
+ap.pageTop=function(as, at, au)
+local av=ap.row(as)
+av.Name="BackRow"
+ap.icon(av,ah.pages.backIcon)
+ap.label(av,ah.pages.back,0)
+av.Activated:Connect(au)
 
-if ap then
-al.header(ao,ap)
+if at then
+ap.header(as,at)
 end end
 
 
 
-al.label=function(ao, ap, aq, ar)
-return aa.new("TextLabel","Label",ao,{
+ap.label=function(as, at, au, av)
+return aa.new("TextLabel","Label",as,{
 BackgroundTransparency=1,
-Position=UDim2.fromOffset(ag.labelInset,0),
-Size=UDim2.new(1,-(ag.labelInset+aq),1,0),
-Text=ap,
-TextSize=aj.label,
+Position=UDim2.fromOffset(aj.labelInset,0),
+Size=UDim2.new(1,-(aj.labelInset+au),1,0),
+Text=at,
+TextSize=am.label,
 TextTruncate=Enum.TextTruncate.AtEnd,
 TextXAlignment=Enum.TextXAlignment.Left,
 ThemeTag={
 Font="Font.Normal",
-TextColor3=ar or"Colors.Text.Default",
+TextColor3=av or"Colors.Text.Default",
 },
 })end
 
 
-al.icon=function(ao, ap)
-local aq=aa.new("ImageLabel","Icon",ao,{
+ap.icon=function(as, at)
+local au=aa.new("ImageLabel","Icon",as,{
 AnchorPoint=Vector2.new(0,0.5),
 BackgroundTransparency=1,
-Position=UDim2.new(0,ag.iconInset,0.5,0),
-Size=UDim2.fromOffset(ag.iconSize,ag.iconSize),
+Position=UDim2.new(0,aj.iconInset,0.5,0),
+Size=UDim2.fromOffset(aj.iconSize,aj.iconSize),
 ThemeTag={
 ImageColor3="Colors.Icons",
 },
 })
 
-ab:loadImage(aq,ap)
-return aq end
+ab:loadImage(au,at)
+return au end
 
 
 
-al.chevron=function(ao)
-local ap=aa.new("ImageLabel","Chevron",ao,{
+ap.chevron=function(as)
+local at=aa.new("ImageLabel","Chevron",as,{
 AnchorPoint=Vector2.new(1,0.5),
 BackgroundTransparency=1,
-Position=UDim2.new(1,-af.padding,0.5,0),
+Position=UDim2.new(1,-ai.padding,0.5,0),
 Rotation=180,
-Size=UDim2.fromOffset(ag.chevronSize,ag.chevronSize),
+Size=UDim2.fromOffset(aj.chevronSize,aj.chevronSize),
 ThemeTag={
 ImageColor3="Colors.Text.Darker",
 },
 })
 
-ab:loadImage(ap,ae.pages.backIcon)
-return ap end
+ab:loadImage(at,ah.pages.backIcon)
+return at end
 
 
 
 
 
 
-al.rowButton=function(ao, ap, aq, ar)
-local as=aa.new("TextButton","RowButton",ao,{
+ap.rowButton=function(as, at, au, av)
+local aw=aa.new("TextButton","RowButton",as,{
 AnchorPoint=Vector2.new(1,0.5),
 AutoButtonColor=false,
 BorderSizePixel=0,
-Position=UDim2.new(1,-aq,0.5,0),
-Size=UDim2.fromOffset(ar,ai.height+4),
-Text=ap,
-TextSize=aj.value,
+Position=UDim2.new(1,-au,0.5,0),
+Size=UDim2.fromOffset(av,al.height+4),
+Text=at,
+TextSize=am.value,
 ThemeTag={
 BackgroundColor3="Colors.Background",
 Font="Font.MonoSpace",
@@ -22657,38 +23296,38 @@ TextColor3="Colors.Text.Default",
 },
 
 aa.new("UICorner",{
-CornerRadius=UDim.new(0,ai.cornerRadius),
+CornerRadius=UDim.new(0,al.cornerRadius),
 }),
 })
 
-as.MouseEnter:Connect(function()
-ac:updateObjectProperties(as,{
+aw.MouseEnter:Connect(function()
+ac:updateObjectProperties(aw,{
 BackgroundColor3="Colors.Primary",
 })
 end)
 
-as.MouseLeave:Connect(function()
-ac:updateObjectProperties(as,{
+aw.MouseLeave:Connect(function()
+ac:updateObjectProperties(aw,{
 BackgroundColor3="Colors.Background",
 })
 end)
 
-return as end
+return aw end
 
 
 
-al.box=function(ao)
-local ap=aa.new("Frame","Box",ao,{
+ap.box=function(as)
+local at=aa.new("Frame","Box",as,{
 AnchorPoint=Vector2.new(1,0.5),
 BorderSizePixel=0,
-Position=UDim2.new(1,-af.padding,0.5,0),
-Size=UDim2.fromOffset(ah.size,ah.size),
+Position=UDim2.new(1,-ai.padding,0.5,0),
+Size=UDim2.fromOffset(ak.size,ak.size),
 ThemeTag={
 BackgroundColor3="Colors.Buttons.Default",
 },
 
 aa.new("UICorner",{
-CornerRadius=UDim.new(0,ah.cornerRadius),
+CornerRadius=UDim.new(0,ak.cornerRadius),
 }),
 aa.new("UIStroke",{
 ApplyStrokeMode=Enum.ApplyStrokeMode.Border,
@@ -22699,43 +23338,43 @@ Color="Colors.Border.Default",
 }),
 })
 
-local aq=aa.new("Frame","Fill",ap,{
+local au=aa.new("Frame","Fill",at,{
 BorderSizePixel=0,
-Position=UDim2.fromOffset(ah.inset,ah.inset),
-Size=UDim2.new(1,-2*ah.inset,1,-2*ah.inset),
+Position=UDim2.fromOffset(ak.inset,ak.inset),
+Size=UDim2.new(1,-2*ak.inset,1,-2*ak.inset),
 ThemeTag={
 BackgroundColor3="Colors.Primary",
 },
 
 aa.new("UICorner",{
-CornerRadius=UDim.new(0,ah.fillCornerRadius),
+CornerRadius=UDim.new(0,ak.fillCornerRadius),
 }),
 })
 
-return ap,aq end
+return at,au end
 
 
 
-al.value=function(ao, ap, aq)
-local ar=aa.new("Frame","Value",ao,{
+ap.value=function(as, at, au)
+local av=aa.new("Frame","Value",as,{
 AnchorPoint=Vector2.new(1,0.5),
 BorderSizePixel=0,
-Position=UDim2.new(1,-af.padding,0.5,0),
-Size=UDim2.fromOffset(aq,ai.height),
+Position=UDim2.new(1,-ai.padding,0.5,0),
+Size=UDim2.fromOffset(au,al.height),
 ThemeTag={
 BackgroundColor3="Colors.Buttons.Default",
 },
 
 aa.new("UICorner",{
-CornerRadius=UDim.new(0,ai.cornerRadius),
+CornerRadius=UDim.new(0,al.cornerRadius),
 }),
 })
 
-local as=aa.new("TextLabel","Text",ar,{
+local aw=aa.new("TextLabel","Text",av,{
 BackgroundTransparency=1,
 Size=UDim2.fromScale(1,1),
-Text=ap,
-TextSize=aj.value,
+Text=at,
+TextSize=am.value,
 TextTruncate=Enum.TextTruncate.AtEnd,
 ThemeTag={
 Font="Font.MonoSpace",
@@ -22743,19 +23382,19 @@ TextColor3="Colors.Text.Default",
 },
 })
 
-return ar,as end
+return av,aw end
 
 
 
-al.valueInput=function(ao, ap, aq)
-return aa.new("TextBox","ValueInput",ao,{
+ap.valueInput=function(as, at, au)
+return aa.new("TextBox","ValueInput",as,{
 AnchorPoint=Vector2.new(1,0.5),
 BorderSizePixel=0,
 ClearTextOnFocus=false,
-Position=UDim2.new(1,-af.padding,0.5,0),
-Size=UDim2.fromOffset(aq,ai.height),
-Text=ap,
-TextSize=aj.value,
+Position=UDim2.new(1,-ai.padding,0.5,0),
+Size=UDim2.fromOffset(au,al.height),
+Text=at,
+TextSize=am.value,
 TextXAlignment=Enum.TextXAlignment.Center,
 ThemeTag={
 BackgroundColor3="Colors.Buttons.Default",
@@ -22764,7 +23403,7 @@ TextColor3="Colors.Text.Default",
 },
 
 aa.new("UICorner",{
-CornerRadius=UDim.new(0,ai.cornerRadius),
+CornerRadius=UDim.new(0,al.cornerRadius),
 }),
 })end
 
@@ -22772,68 +23411,218 @@ CornerRadius=UDim.new(0,ai.cornerRadius),
 
 
 
-al.keybind=function(ao, ap, aq)
-local ar,as=al.value(ao,"",ai.keybindWidth)
-local at local au=function()
+
+ap.slider=function(as, at, au, av)
+ap.label(as,at,ao.width+ao.valueWidth+ai.rowGap+ai.padding)
+
+local aw=aa.new("TextButton","Track",as,{
+AnchorPoint=Vector2.new(1,0.5),
+AutoButtonColor=false,
+BackgroundTransparency=1,
+Position=UDim2.new(1,-ai.padding,0.5,0),
+Size=UDim2.fromOffset(ao.width,ao.hitHeight),
+Text="",
+})
+
+local ax=aa.new("Frame","Bar",aw,{
+AnchorPoint=Vector2.new(0,0.5),
+BorderSizePixel=0,
+Position=UDim2.fromScale(0,0.5),
+Size=UDim2.new(1,0,0,ao.barHeight),
+ThemeTag={
+BackgroundColor3="Colors.Buttons.Default",
+},
+
+aa.new("UICorner",{
+CornerRadius=UDim.new(0,ao.barHeight/2),
+}),
+})
+
+local ay=aa.new("Frame","Fill",ax,{
+BorderSizePixel=0,
+Size=UDim2.fromScale(0,1),
+ThemeTag={
+BackgroundColor3="Colors.Primary",
+},
+
+aa.new("UICorner",{
+CornerRadius=UDim.new(0,ao.barHeight/2),
+}),
+})
+
+local az=aa.new("Frame","Knob",aw,{
+AnchorPoint=Vector2.new(0.5,0.5),
+BorderSizePixel=0,
+Position=UDim2.fromScale(0,0.5),
+Size=UDim2.fromOffset(ao.knobSize,ao.knobSize),
+ThemeTag={
+BackgroundColor3="Colors.Icons",
+},
+
+aa.new("UICorner",{
+CornerRadius=UDim.new(1,0),
+}),
+})
+
+local b=aa.new("TextLabel","Value",as,{
+AnchorPoint=Vector2.new(1,0.5),
+BackgroundTransparency=1,
+Position=UDim2.new(1,-(ai.padding+ao.width+ai.rowGap),0.5,0),
+Size=UDim2.fromOffset(ao.valueWidth,al.height),
+Text="",
+TextSize=am.value,
+TextXAlignment=Enum.TextXAlignment.Right,
+ThemeTag={
+Font="Font.MonoSpace",
+TextColor3="Colors.Text.Darker",
+},
+})local c=function(
 
 
-local au=at~=nil
-
-as.Text=if au then"press a key"else ad:getBindingName(ap)
-ac:updateObjectProperties(ar,{
-BackgroundColor3=if au then"Colors.Primary"else"Colors.Buttons.Default",
-})end local av=function()
+c)
+ay.Size=UDim2.fromScale(c,1)
+az.Position=UDim2.fromScale(c,0.5)
+b.Text=`{math.round(c*100)}%`end
 
 
+c(math.clamp(au,0,1))
 
-if at then
-local av=at
-at=nil
-av()
+
+local d local e=function()
+
+
+local e=d
+if e==nil then return end
+
+d=nil
+e.moved:Disconnect()
+e.released:Disconnect()
+
+if e.scroller then
+e.scroller.ScrollingEnabled=e.wasScrolling
+end end local f=function(
+
+
+f)
+local g=d
+if g==nil or g.width<=0 then return end
+
+
+
+local h=(f-g.left)/g.scale
+local i=g.width/g.scale
+
+local j=math.clamp(h/i,0,1)
+
+c(j)
+av(j)end
+
+
+aw.InputBegan:Connect(function(g)
+if d~=nil or not af.isPressingInput(g)then return end
+
+
+local h=aw:FindFirstAncestorWhichIsA("ScrollingFrame")
+
+d={
+scale=ag:getScale(),
+left=aw.AbsolutePosition.X,
+width=aw.AbsoluteSize.X,
+scroller=h,
+wasScrolling=if h then h.ScrollingEnabled else false,
+}
+
+if h then
+h.ScrollingEnabled=false
 end
 
-au()end
+d.moved=ae.UserInputService.InputChanged:Connect(function(i)
+if not af.isMovingInput(i)then return end
 
 
-ao.Activated:Connect(function()
-if at then
-av()
+if aw.Parent==nil then
+e()
 return
 end
 
-at=ad:capture(function(aw)
-at=nil
-ad:setBinding(ap,aw)
-au()
+f(i.Position.X)
+end)
 
-if aq then
-aq()
+d.released=ae.UserInputService.InputEnded:Connect(function(i)
+if af.isPressingInput(i)then
+e()
+end
+end)
+
+f(g.Position.X)
+end)end
+
+
+
+
+
+ap.keybind=function(as, at, au)
+local av,aw=ap.value(as,"",al.keybindWidth)
+local ax local ay=function()
+
+
+local ay=ax~=nil
+
+aw.Text=if ay then"press a key"else ad:getBindingName(at)
+ac:updateObjectProperties(av,{
+BackgroundColor3=if ay then"Colors.Primary"else"Colors.Buttons.Default",
+})end local az=function()
+
+
+
+if ax then
+local az=ax
+ax=nil
+az()
+end
+
+ay()end
+
+
+as.Activated:Connect(function()
+if ax then
+az()
+return
+end
+
+ax=ad:capture(function(b)
+ax=nil
+ad:setBinding(at,b)
+ay()
+
+if au then
+au()
 end
 end,function()
 
-at=nil
-au()
+ax=nil
+ay()
 end)
 
-au()
+ay()
 end)
 
-au()
-return au,av end
+ay()
+return ay,az end
 
 
 
-al.textBox=function(ao, ap)
-ao.order=ao.order+1
+ap.textBox=function(as, at)
+as.order=as.order+1
 
-return aa.new("TextBox","Input",ao.parent,{
+return aa.new("TextBox","Input",as.parent,{
 BorderSizePixel=0,
 ClearTextOnFocus=false,
-LayoutOrder=ao.order,
-PlaceholderText=ap,
-Size=UDim2.new(1,0,0,af.rowHeight),
+LayoutOrder=as.order,
+PlaceholderText=at,
+Size=UDim2.new(1,0,0,ai.rowHeight),
 Text="",
-TextSize=aj.value,
+TextSize=am.value,
 TextXAlignment=Enum.TextXAlignment.Left,
 ThemeTag={
 BackgroundColor3="Colors.Buttons.Default",
@@ -22843,27 +23632,27 @@ TextColor3="Colors.Text.Default",
 },
 
 aa.new("UIPadding",{
-PaddingLeft=UDim.new(0,ag.labelInset/2),
-PaddingRight=UDim.new(0,af.padding),
+PaddingLeft=UDim.new(0,aj.labelInset/2),
+PaddingRight=UDim.new(0,ai.padding),
 }),
 aa.new("UICorner",{
-CornerRadius=UDim.new(0,ai.cornerRadius),
+CornerRadius=UDim.new(0,al.cornerRadius),
 }),
-})end local ao=function(
+})end local as=function(
 
 
 
-ao)
-return aa.new("TextLabel","Badge",ao,{
+as)
+return aa.new("TextLabel","Badge",as,{
 AnchorPoint=Vector2.new(1,0),
 AutomaticSize=Enum.AutomaticSize.X,
 BorderSizePixel=0,
-Position=UDim2.new(1,ak.overhang,0,-ak.overhang),
-Size=UDim2.fromOffset(0,ak.height),
+Position=UDim2.new(1,an.overhang,0,-an.overhang),
+Size=UDim2.fromOffset(0,an.height),
 Text="",
-TextSize=aj.badge,
+TextSize=am.badge,
 Visible=false,
-ZIndex=ao.ZIndex+1,
+ZIndex=as.ZIndex+1,
 ThemeTag={
 BackgroundColor3="Colors.Primary",
 Font="Font.MonoSpace",
@@ -22871,7 +23660,7 @@ TextColor3="Colors.Text.Default",
 },
 
 aa.new("UICorner",{
-CornerRadius=UDim.new(0,ak.height/2),
+CornerRadius=UDim.new(0,an.height/2),
 }),
 aa.new("UIPadding",{
 PaddingLeft=UDim.new(0,3),
@@ -22890,42 +23679,42 @@ Color="Colors.Background",
 
 
 
-al.choices=function(ap, aq, ar, as)
-ap.order=ap.order+1
+ap.choices=function(at, au, av, aw)
+at.order=at.order+1
 
-local at=af.rowGap
-local au=aa.new("Frame","Choices",ap.parent,{
+local ax=ai.rowGap
+local ay=aa.new("Frame","Choices",at.parent,{
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundTransparency=1,
 BorderSizePixel=0,
-LayoutOrder=ap.order,
+LayoutOrder=at.order,
 Size=UDim2.new(1,0,0,0),
 
 aa.new("UIGridLayout",{
-CellPadding=UDim2.fromOffset(at,at),
-CellSize=UDim2.new(1/as,-at*(as-1)/as-1,0,af.rowHeight-3),
+CellPadding=UDim2.fromOffset(ax,ax),
+CellSize=UDim2.new(1/aw,-ax*(aw-1)/aw-1,0,ai.rowHeight-3),
 SortOrder=Enum.SortOrder.LayoutOrder,
 }),
 })
 
-local av={}
-local aw={}local ax=function(
+local az={}
+local b={}local c=function(
 
-ax)
-for ay,az in av do
-ac:updateObjectProperties(az,{
-BackgroundColor3=if ay==ax then"Colors.Primary"else"Colors.Buttons.Default",
+c)
+for d,e in az do
+ac:updateObjectProperties(e,{
+BackgroundColor3=if d==c then"Colors.Primary"else"Colors.Buttons.Default",
 })
 end end
 
 
-for ay,az in aq do
-local b=aa.new("TextButton","Choice",au,{
+for d,e in au do
+local f=aa.new("TextButton","Choice",ay,{
 AutoButtonColor=false,
 BorderSizePixel=0,
-LayoutOrder=ay,
-Text=az,
-TextSize=aj.value,
+LayoutOrder=d,
+Text=e,
+TextSize=am.value,
 TextTruncate=Enum.TextTruncate.AtEnd,
 ThemeTag={
 BackgroundColor3="Colors.Buttons.Default",
@@ -22934,45 +23723,45 @@ TextColor3="Colors.Text.Default",
 },
 
 aa.new("UICorner",{
-CornerRadius=UDim.new(0,ai.cornerRadius),
+CornerRadius=UDim.new(0,al.cornerRadius),
 }),
 })
 
-av[ay]=b
-aw[ay]=ao(b)
+az[d]=f
+b[d]=as(f)
 
-b.Activated:Connect(function()
-ax(ay)
-ar(ay)
+f.Activated:Connect(function()
+c(d)
+av(d)
 end)
-end local ay=function(
+end local d=function(
 
 
-ay, az)
-local b=aw[ay]
-if not b then return end
+d, e)
+local f=b[d]
+if not f then return end
 
-b.Text=tostring(az)
-b.Visible=az>0 end
-
-
-return ax,ay end
+f.Text=tostring(e)
+f.Visible=e>0 end
 
 
+return c,d end
 
-al.inputRow=function(ap, aq, ar, as)
-local at=al.row(ap)
-al.label(at,aq,ai.inputWidth+2*af.padding)
 
-local au=aa.new("TextBox","Input",at,{
+
+ap.inputRow=function(at, au, av, aw)
+local ax=ap.row(at)
+ap.label(ax,au,al.inputWidth+2*ai.padding)
+
+local ay=aa.new("TextBox","Input",ax,{
 AnchorPoint=Vector2.new(1,0.5),
 BorderSizePixel=0,
 ClearTextOnFocus=false,
-PlaceholderText=ar,
-Position=UDim2.new(1,-af.padding,0.5,0),
-Size=UDim2.fromOffset(ai.inputWidth,ai.height),
-Text=as or"",
-TextSize=aj.value,
+PlaceholderText=av,
+Position=UDim2.new(1,-ai.padding,0.5,0),
+Size=UDim2.fromOffset(al.inputWidth,al.height),
+Text=aw or"",
+TextSize=am.value,
 TextTruncate=Enum.TextTruncate.AtEnd,
 ThemeTag={
 BackgroundColor3="Colors.Background",
@@ -22986,39 +23775,39 @@ PaddingLeft=UDim.new(0,4),
 PaddingRight=UDim.new(0,4),
 }),
 aa.new("UICorner",{
-CornerRadius=UDim.new(0,ai.cornerRadius),
+CornerRadius=UDim.new(0,al.cornerRadius),
 }),
 })
 
-return at,au end
+return ax,ay end
 
 
 
 
-al.formRow=function(ap, aq, ar, as, at)
-ap.order=ap.order+1
+ap.formRow=function(at, au, av, aw, ax)
+at.order=at.order+1
 
-local au=af.rowGap
-local av=ai.addWidth
-local aw=at or ai.formDelayWidth
+local ay=ai.rowGap
+local az=al.addWidth
+local b=ax or al.formDelayWidth
 
-local ax=aa.new("Frame","Form",ap.parent,{
+local c=aa.new("Frame","Form",at.parent,{
 BackgroundTransparency=1,
 BorderSizePixel=0,
-LayoutOrder=ap.order,
-Size=UDim2.new(1,0,0,af.rowHeight),
-})local ay=function(
+LayoutOrder=at.order,
+Size=UDim2.new(1,0,0,ai.rowHeight),
+})local d=function(
 
-ay, az, b, c, d)
-return aa.new("TextBox",ay,ax,{
-AnchorPoint=b,
+d, e, f, g, h)
+return aa.new("TextBox",d,c,{
+AnchorPoint=f,
 BorderSizePixel=0,
 ClearTextOnFocus=false,
-PlaceholderText=az,
-Position=c,
-Size=d,
+PlaceholderText=e,
+Position=g,
+Size=h,
 Text="",
-TextSize=aj.value,
+TextSize=am.value,
 TextTruncate=Enum.TextTruncate.AtEnd,
 TextXAlignment=Enum.TextXAlignment.Left,
 ThemeTag={
@@ -23033,24 +23822,24 @@ PaddingLeft=UDim.new(0,6),
 PaddingRight=UDim.new(0,4),
 }),
 aa.new("UICorner",{
-CornerRadius=UDim.new(0,ai.cornerRadius),
+CornerRadius=UDim.new(0,al.cornerRadius),
 }),
 })end
 
 
-local az=ay("Command",aq,Vector2.zero,UDim2.fromOffset(0,0),
-UDim2.new(1,-(av+aw+2*au),1,0))
-local b=ay("Delay",ar,Vector2.new(1,0),UDim2.new(1,-(av+au),0,0),
-UDim2.new(0,aw,1,0))
+local e=d("Command",au,Vector2.zero,UDim2.fromOffset(0,0),
+UDim2.new(1,-(az+b+2*ay),1,0))
+local f=d("Delay",av,Vector2.new(1,0),UDim2.new(1,-(az+ay),0,0),
+UDim2.new(0,b,1,0))
 
-local c=aa.new("TextButton","Add",ax,{
+local g=aa.new("TextButton","Add",c,{
 AnchorPoint=Vector2.new(1,0),
 AutoButtonColor=false,
 BorderSizePixel=0,
 Position=UDim2.fromScale(1,0),
-Size=UDim2.new(0,av,1,0),
-Text=as,
-TextSize=aj.label,
+Size=UDim2.new(0,az,1,0),
+Text=aw,
+TextSize=am.label,
 ThemeTag={
 BackgroundColor3="Colors.Primary",
 Font="Font.Normal",
@@ -23058,24 +23847,24 @@ TextColor3="Colors.Text.Default",
 },
 
 aa.new("UICorner",{
-CornerRadius=UDim.new(0,ai.cornerRadius),
+CornerRadius=UDim.new(0,al.cornerRadius),
 }),
 })
 
-return az,b,c end
+return e,f,g end
 
 
 
 
-al.footer=function(ap, aq)
-ap.order=ap.order+1
+ap.footer=function(at, au)
+at.order=at.order+1
 
-return aa.new("TextLabel","Footer",ap.parent,{
+return aa.new("TextLabel","Footer",at.parent,{
 BackgroundTransparency=1,
-LayoutOrder=ap.order,
-Size=UDim2.new(1,0,0,af.headerHeight),
-Text=aq,
-TextSize=aj.footer,
+LayoutOrder=at.order,
+Size=UDim2.new(1,0,0,ai.headerHeight),
+Text=au,
+TextSize=am.footer,
 TextXAlignment=Enum.TextXAlignment.Center,
 ThemeTag={
 Font="Font.MonoSpace",
@@ -23085,16 +23874,16 @@ TextColor3="Colors.Text.Darker",
 
 
 
-al.note=function(ap, aq)
-ap.order=ap.order+1
+ap.note=function(at, au)
+at.order=at.order+1
 
-return aa.new("TextLabel","Note",ap.parent,{
+return aa.new("TextLabel","Note",at.parent,{
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundTransparency=1,
-LayoutOrder=ap.order,
+LayoutOrder=at.order,
 Size=UDim2.new(1,0,0,0),
-Text=aq,
-TextSize=aj.value,
+Text=au,
+TextSize=am.value,
 TextWrapped=true,
 TextXAlignment=Enum.TextXAlignment.Left,
 TextYAlignment=Enum.TextYAlignment.Top,
@@ -23105,12 +23894,117 @@ TextColor3="Colors.Text.Darker",
 
 
 aa.new("UIPadding",{
-PaddingLeft=UDim.new(0,ag.labelInset),
+PaddingLeft=UDim.new(0,aj.labelInset),
 }),
 })end
 
 
-return al end a.dm=function()local ab=a.cache.dm if not ab then ab={c=aa()}a.cache.dm=ab end return ab.c end end do local aa=function()
+return ap end a.ds=function()local ab=a.cache.ds if not ab then ab={c=aa()}a.cache.ds=ab end return ab.c end end do local aa=function()
+
+
+
+
+
+
+
+local aa=a.c9()
+local ab=a.cX()
+local ac=a.ds()
+local ad=a.c8()
+
+local ae=ad.pages.background
+
+local af={}
+
+af.addSection=function(ag)
+ac.header(ag,ae.title)
+
+local ah=ac.textBox(ag,ae.urlHint)
+ah.Text=aa:getUrl()or""local ai=function(
+
+
+
+
+ai, aj)
+local ak=aa:checkUrl(ai)
+
+if ak then
+ab:notify(ae.notifyTitle,ak)
+return
+end
+
+if aa:isDownloading(ai)then
+ab:notify(ae.notifyTitle,ae.alreadyDownloading)
+return
+end
+
+local al=aa:isDownloading()
+
+ab:notify(ae.notifyTitle,if al then ae.downloadReplaced else ae.downloading)
+
+aa:startDownload(ai,aj,{
+onSlow=function()
+ab:notify(ae.notifyTitle,ae.slow)
+end,
+
+onDone=function(am,an)
+if am then
+ab:notify(ae.notifyTitle,if aj then ae.refreshed else ae.set)
+else
+ab:notify(ae.notifyTitle,an or ae.downloadFailed)
+end
+end,
+})end
+
+
+local aj=ac.row(ag)
+ac.icon(aj,ae.icons.apply)
+ac.label(aj,ae.apply,0)
+
+aj.Activated:Connect(function()
+ai(ah.Text,false)
+end)
+
+local ak=ac.row(ag)
+ac.icon(ak,ae.icons.refresh)
+ac.label(ak,ae.refresh,0)
+
+ak.Activated:Connect(function()
+local al=aa:getUrl()
+
+if al==nil then
+ab:notify(ae.notifyTitle,ae.nothingToRefresh)
+return
+end
+
+ai(al,true)
+end)
+
+local al=ac.row(ag)
+ac.icon(al,ae.icons.remove)
+ac.label(al,ae.remove,0)
+
+al.Activated:Connect(function()
+if aa:getUrl()==nil then
+ab:notify(ae.notifyTitle,ae.nothingToRemove)
+return
+end
+
+local am=aa:clear()
+ah.Text=""
+
+ab:notify(ae.notifyTitle,if am then ae.removed else ae.removedKeptFile)
+end)
+
+local am=ac.row(ag)
+ac.icon(am,ae.icons.opacity)
+
+ac.slider(am,ae.opacity,aa:getOpacity(),function(an)
+aa:setOpacity(an)
+end)end
+
+
+return af end a.dt=function()local ab=a.cache.dt if not ab then ab={c=aa()}a.cache.dt=ab end return ab.c end end do local aa=function()
 
 
 
@@ -23121,40 +24015,41 @@ return al end a.dm=function()local ab=a.cache.dm if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.cN()
-local ab=a.cM()
-local ac=a.al()
-local ad=a.dl()
-local ae=a.dm()
+local aa=a.cQ()
+local ab=a.cP()
+local ac=a.n()
+local ad=a.c8()
+local ae=a.ds()
+local af=a.dt()
 
-local af=ad.panel
-local ag=ad.box
-local ah=ad.textSizes
+local ag=ad.panel
+local ah=ad.box
+local ai=ad.textSizes
 
-local ai=14
-local aj=20
-local ak=4 local al=function(
+local aj=14
+local ak=20
+local al=4 local am=function(
 
 
-al, am, an)
-al.order=al.order+1
+am, an, ao)
+am.order=am.order+1
 
-local ao=ab:getPrimaryOptions()
+local ap=ab:getPrimaryOptions()
 
-local ap=aa.new("Frame","Primary",al.parent,{
+local aq=aa.new("Frame","Primary",am.parent,{
 BackgroundTransparency=1,
 BorderSizePixel=0,
-LayoutOrder=al.order,
-Size=UDim2.new(1,0,0,af.rowHeight),
+LayoutOrder=am.order,
+Size=UDim2.new(1,0,0,ag.rowHeight),
 Visible=false,
 })
 
-aa.new("TextLabel","Label",ap,{
+aa.new("TextLabel","Label",aq,{
 BackgroundTransparency=1,
 Position=UDim2.fromOffset(ad.row.labelInset,0),
 Size=UDim2.new(1,-ad.row.labelInset,1,0),
 Text=ad.pages.theme.primary,
-TextSize=ah.value,
+TextSize=ai.value,
 TextXAlignment=Enum.TextXAlignment.Left,
 ThemeTag={
 Font="Font.MonoSpace",
@@ -23162,142 +24057,144 @@ TextColor3="Colors.Text.Darker",
 },
 })
 
-local aq={}
+local ar={}
 
-for ar,as in ao do
+for as,at in ap do
 
-local at=#ao-ar
+local au=#ap-as
 
-local au=aa.new("TextButton","Pick",ap,{
+local av=aa.new("TextButton","Pick",aq,{
 AnchorPoint=Vector2.new(1,0.5),
 AutoButtonColor=false,
 BackgroundTransparency=1,
-Position=UDim2.new(1,-(af.padding+at*(aj+ak)),0.5,0),
-Size=UDim2.fromOffset(aj,aj),
+Position=UDim2.new(1,-(ag.padding+au*(ak+al)),0.5,0),
+Size=UDim2.fromOffset(ak,ak),
 Text="",
 })
 
-local av=aa.new("Frame","Check",au,{
+local aw=aa.new("Frame","Check",av,{
 AnchorPoint=Vector2.new(0.5,0.5),
-BackgroundColor3=ab:getPrimaryColor(am.theme,as.key),
+BackgroundColor3=ab:getPrimaryColor(an.theme,at.key),
 BackgroundTransparency=1,
 BorderSizePixel=0,
 Position=UDim2.fromScale(0.5,0.5),
-Size=UDim2.fromOffset(ai,ai),
+Size=UDim2.fromOffset(aj,aj),
 
 aa.new("UICorner",{
-CornerRadius=UDim.new(0,ag.cornerRadius),
+CornerRadius=UDim.new(0,ah.cornerRadius),
 }),
 aa.new("UIStroke",{
 ApplyStrokeMode=Enum.ApplyStrokeMode.Border,
-Color=ab:getPrimaryColor(am.theme,as.key),
+Color=ab:getPrimaryColor(an.theme,at.key),
 Thickness=1.5,
 }),
 })
 
-aq[as.key]=av
+ar[at.key]=aw
 
-au.Activated:Connect(function()
-an(as.key)
+av.Activated:Connect(function()
+ao(at.key)
 end)
-end local ar=function()
+end local as=function()
 
 
-local ar=ab:getPrimaryKey(am.key)
+local as=ab:getPrimaryKey(an.key)
 
-for as,at in aq do
-at.BackgroundTransparency=if as==ar then 0 else 1
+for at,au in ar do
+au.BackgroundTransparency=if at==as then 0 else 1
 end end
 
 
-return ap,ar end local am=function(
+return aq,as end local an=function(
 
 
-am, an)
-local ao=ae.list(am)
-ae.pageTop(ao,ad.pages.theme.title,an.back)
+an, ao)
+local ap=ae.list(an)
+ae.pageTop(ap,ad.pages.theme.title,ao.back)
 
-local ap={}local aq=function()
+local aq={}local ar=function()
 
 
-local aq=ab.selectedKey
+local ar=ab.selectedKey
 
-for ar,as in ap do
-local at=aq==as.entry.key
+for as,at in aq do
+local au=ar==at.entry.key
 
-as.fill.Visible=at
-as.swatchRow.Visible=at
+at.fill.Visible=au
+at.swatchRow.Visible=au
 
-if at and as.redrawSwatches then
-as.redrawSwatches()
+if au and at.redrawSwatches then
+at.redrawSwatches()
 end
-end end local ar=function(
+end end local as=function(
 
 
-ar)
-ab:selectTheme(ar.key)
+as)
+ab:selectTheme(as.key)
 
-ac:setValue(ad.keys.theme,ar.key)
+ac:setValue(ad.keys.theme,as.key)
 ac:save()
 
-aq()end
+ar()end
 
 
-for as,at in ab:getThemes()do
-local au=ae.row(ao)
+for at,au in ab:getThemes()do
+local av=ae.row(ap)
 
-if at.usable then
-ae.label(au,at.name,ag.size+2*af.padding)
-au.Activated:Connect(function()
-ar(at)
+if au.usable then
+ae.label(av,au.name,ah.size+2*ag.padding)
+av.Activated:Connect(function()
+as(au)
 end)
 else
-ae.label(au,`{at.name} {ad.pages.theme.incomplete}`,ag.size+2*af.padding,"Colors.Text.Darker")
+ae.label(av,`{au.name} {ad.pages.theme.incomplete}`,ah.size+2*ag.padding,"Colors.Text.Darker")
 end
 
-local av,aw=ae.box(au)
+local aw,ax=ae.box(av)
 
-local ax={entry=at,fill=aw}
+local ay={entry=au,fill=ax}
 
-if at.usable then
-local ay,az=al(ao,at,function(ay)
-ab:setPrimary(at.key,ay)
-aq()
+if au.usable then
+local az,b=am(ap,au,function(az)
+ab:setPrimary(au.key,az)
+ar()
 end)
 
-ax.swatchRow=ay
-ax.redrawSwatches=az
+ay.swatchRow=az
+ay.redrawSwatches=b
 else
 
-local ay=aa.new("Frame","Primary",ao.parent,{
+local az=aa.new("Frame","Primary",ap.parent,{
 Visible=false,
 Size=UDim2.new(1,0,0,0),
 BackgroundTransparency=1,
 })
 
-ax.swatchRow=ay
+ay.swatchRow=az
 end
 
-table.insert(ap,ax)
+table.insert(aq,ay)
 end
 
-aq()end
+af.addSection(ap)
+
+ar()end
 
 
-return am end a.dn=function()local ab=a.cache.dn if not ab then ab={c=aa()}a.cache.dn=ab end return ab.c end end do local aa=function()
-
-
-
-
-
+return an end a.du=function()local ab=a.cache.du if not ab then ab={c=aa()}a.cache.du=ab end return ab.c end end do local aa=function()
 
 
 
 
-local aa=a.ax()
-local ab=a.av()
-local ac=a.dl()
-local ad=a.dm()
+
+
+
+
+
+local aa=a.aG()
+local ab=a.aE()
+local ac=a.c8()
+local ad=a.ds()
 
 local ae=ac.panel
 local af=ac.value local ag=function(
@@ -23412,7 +24309,7 @@ title=ac.pages.commands.title,
 reset=ac.pages.commands.reset,
 groups=ab.groups,
 }),
-}end a.dp=function()local ab=a.cache.dp if not ab then ab={c=aa()}a.cache.dp=ab end return ab.c end end do local aa=function()
+}end a.dv=function()local ab=a.cache.dv if not ab then ab={c=aa()}a.cache.dv=ab end return ab.c end end do local aa=function()
 
 
 
@@ -23421,15 +24318,15 @@ groups=ab.groups,
 
 
 
-local aa=a.cM()
-local ab=a.cU()
-local ac=a.dm()
+local aa=a.cP()
+local ab=a.cX()
+local ac=a.ds()
 
-local ad=a.ap()
+local ad=a.ay()
 local ae=a.a()
-local af=a.dl()
-local ag=a.bD()
-local ah=a.ai()
+local af=a.c8()
+local ag=a.t()
+local ah=a.i()
 
 local ai=af.pages.importExport
 
@@ -23542,7 +24439,7 @@ end
 end)end
 
 
-return an end a.dq=function()local ab=a.cache.dq if not ab then ab={c=aa()}a.cache.dq=ab end return ab.c end end do local aa=function()
+return an end a.dw=function()local ab=a.cache.dw if not ab then ab={c=aa()}a.cache.dw=ab end return ab.c end end do local aa=function()
 
 
 
@@ -23552,12 +24449,12 @@ return an end a.dq=function()local ab=a.cache.dq if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.bA()
-local ab=a.cu()
-local ac=a.cy()
-local ad=a.dl()
-local ae=a.cU()
-local af=a.dm()
+local aa=a.p()
+local ab=a.cw()
+local ac=a.cA()
+local ad=a.c8()
+local ae=a.cX()
+local af=a.ds()
 
 local ag=ad.panel
 local ah=ad.value
@@ -23704,7 +24601,7 @@ end)
 at()end
 
 
-return al end a.dr=function()local ab=a.cache.dr if not ab then ab={c=aa()}a.cache.dr=ab end return ab.c end end do local aa=function()
+return al end a.dx=function()local ab=a.cache.dx if not ab then ab={c=aa()}a.cache.dx=ab end return ab.c end end do local aa=function()
 
 
 
@@ -23718,11 +24615,11 @@ return al end a.dr=function()local ab=a.cache.dr if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.bc()
-local ab=a.R()
-local ac=a.dl()
-local ad=a.cU()
-local ae=a.dm()
+local aa=a.bk()
+local ab=a.ae()
+local ac=a.c8()
+local ad=a.cX()
+local ae=a.ds()
 
 local af=ac.panel
 local ag=ac.box
@@ -23974,7 +24871,7 @@ end)
 e()end
 
 
-return al end a.ds=function()local ab=a.cache.ds if not ab then ab={c=aa()}a.cache.ds=ab end return ab.c end end do local aa=function()
+return al end a.dy=function()local ab=a.cache.dy if not ab then ab={c=aa()}a.cache.dy=ab end return ab.c end end do local aa=function()
 
 
 
@@ -23987,11 +24884,11 @@ return al end a.ds=function()local ab=a.cache.ds if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.cw()
-local ab=a.cy()
-local ac=a.dl()
-local ad=a.cU()
-local ae=a.dm()
+local aa=a.cy()
+local ab=a.cA()
+local ac=a.c8()
+local ad=a.cX()
+local ae=a.ds()
 
 local af=ac.panel
 local ag=ac.value
@@ -24212,7 +25109,7 @@ end)
 as()end
 
 
-return aj end a.dt=function()local ab=a.cache.dt if not ab then ab={c=aa()}a.cache.dt=ab end return ab.c end end do local aa=function()
+return aj end a.dz=function()local ab=a.cache.dz if not ab then ab={c=aa()}a.cache.dz=ab end return ab.c end end do local aa=function()
 
 
 
@@ -24225,10 +25122,10 @@ return aj end a.dt=function()local ab=a.cache.dt if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.c2()
-local ab=a.dl()
-local ac=a.cU()
-local ad=a.dm()
+local aa=a.c5()
+local ab=a.c8()
+local ac=a.cX()
+local ad=a.ds()
 
 local ae=ab.panel
 local af=ab.value
@@ -24492,7 +25389,7 @@ end
 av()end
 
 
-return am end a.du=function()local ab=a.cache.du if not ab then ab={c=aa()}a.cache.du=ab end return ab.c end end do local aa=function()
+return am end a.dA=function()local ab=a.cache.dA if not ab then ab={c=aa()}a.cache.dA=ab end return ab.c end end do local aa=function()
 
 
 
@@ -24502,191 +25399,276 @@ return am end a.du=function()local ab=a.cache.du if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.cN()
-local ab=a.au()
-local ac=a.al()
-local ad=a.dl()
-local ae=a.ap()
-local af=a.P()
-local ag=a.cE()
+local aa=a.cQ()
+local ab=a.aD()
+local ac=a.n()
+local ad=a.c8()
+local ae=a.ay()
+local af=a.f()
+local ag=a.cH()
+local ah=a.t()
 
-local ah=a.dm()
-local ai=a.dn()
-local aj=a.dp()
-local ak=a.dq()
-local al=a.dr()
-local am=a.ds()
-local an=a.dt()
-local ao=a.du()
+local ai=a.ds()
+local aj=a.du()
+local ak=a.dv()
+local al=a.dw()
+local am=a.dx()
+local an=a.dy()
+local ao=a.dz()
+local ap=a.dA()
 
-local ap=ad.panel
-local aq=ad.box
-local ar=ad.row
-local as=ad.value
+local aq=ad.panel
+local ar=ad.box
+local as=ad.row
+local at=ad.value
 
-local at=af.TweenService
+local au=af.TweenService
 
-local au=ap.shownY
-local av=ap.hiddenY
-
-
-
-local aw=ap.floatBackSize
-local ax=UDim2.new(1,-(ap.floatBackMargin+ap.scrollBarThickness),0,ap.floatBackMargin)
-local ay=UDim2.fromOffset(aw,aw)
-local az=UDim2.fromOffset(aw*ap.floatBackFlat,aw)
-local b=UDim2.new(1,0,0,-aw*ap.floatBackOut)
+local av=aq.shownY
+local aw=aq.hiddenY
 
 
-local c={
-theme=ai,
-keybinds=aj.interface,
-commands=aj.commands,
-importExport=ak,
-aliases=al,
-waypoints=am,
-plugins=an,
-eventBinds=ao,
+
+local ax=aq.floatBackSize
+local ay=UDim2.new(1,-(aq.floatBackMargin+aq.scrollBarThickness),0,aq.floatBackMargin)
+local az=UDim2.fromOffset(ax,ax)
+local b=UDim2.fromOffset(ax*aq.floatBackFlat,ax)
+local c=UDim2.new(1,0,0,-ax*aq.floatBackOut)
+
+
+local d={
+theme=aj,
+keybinds=ak.interface,
+commands=ak.commands,
+importExport=al,
+aliases=am,
+waypoints=an,
+plugins=ao,
+eventBinds=ap,
 }
 
-local d={}
-d.__index=d local e=function(
+local e={}
+e.__index=e local f=function(
 
-e, f)
-ac:setValue(e,f==true)
-ac:save()end local f=function(
-
-
-f)
-return ac:getValue(f)==true end local g=function(
+f, g)
+ac:setValue(f,g==true)
+ac:save()end local g=function(
 
 
-g, h, i)
-g:TweenPosition(h,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,ap.tweenTime,true,i)end
+g)
+return ac:getValue(g)==true end local h=function(
 
 
-d.isKeepMenuOpen=function()
-return f(ad.keys.keepMenuOpen)end
-
-
-d.setKeepMenuOpen=function(h)
-e(ad.keys.keepMenuOpen,h)end
-
-
-d.isKeepIY=function()
-return f(ad.keys.keepIY)end
-
-
-d.setKeepIY=function(h)
-e(ad.keys.keepIY,h)end
+h, i, j)
+h:TweenPosition(i,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,aq.tweenTime,true,j)end local i=function(
 
 
 
-d.createOption=function(h, i, j)
-local k=ah.row(i)
 
-if j.icon then
-ah.icon(k,j.icon)
+i, j)
+if type(i)~="number"then
+return ad.userData.missing
 end
 
-if j.kind=="switch"then
-local l=ad.keys[j.setting]
-ah.label(k,j.label,aq.size+2*ap.padding)
+if j.date then
+return os.date(ad.userData.dateFormat,i)
+end
 
-local m,n=ah.box(k)local o=function()
-
-
-n.Visible=f(l)end
+return tostring(i)end local j=function(
 
 
-k.Activated:Connect(function()
-local p=not f(l)
-e(l,p)
-o()
 
-if h.onSwitch then
-h.onSwitch(j.setting,p)
+
+j)
+if j.placeCounts then
+local k=ah.user:getValue(j.placeCounts)
+
+if type(k)~="table"then
+return nil
+end
+
+return k[tostring(game.GameId)]
+end
+
+return ah.user:getValue(j.key)end
+
+
+e.isKeepMenuOpen=function()
+return g(ad.keys.keepMenuOpen)end
+
+
+e.setKeepMenuOpen=function(k)
+f(ad.keys.keepMenuOpen,k)end
+
+
+e.isKeepIY=function()
+return g(ad.keys.keepIY)end
+
+
+e.setKeepIY=function(k)
+f(ad.keys.keepIY,k)end
+
+
+
+e.createOption=function(k, l, m)
+if m.kind=="expand"then
+k:createExpandOption(l,m)
+return nil
+end
+
+local n=ai.row(l)
+
+if m.icon then
+ai.icon(n,m.icon)
+end
+
+if m.kind=="switch"then
+local o=ad.keys[m.setting]
+ai.label(n,m.label,ar.size+2*aq.padding)
+
+local p,q=ai.box(n)local r=function()
+
+
+q.Visible=g(o)end
+
+
+n.Activated:Connect(function()
+local s=not g(o)
+f(o,s)
+r()
+
+if k.onSwitch then
+k.onSwitch(m.setting,s)
 end
 end)
 
-o()
+r()
+return r
+end
+
+if m.kind=="keybind"then
+ai.label(n,m.label,at.keybindWidth+2*aq.padding)
+
+local o,p=ai.keybind(n,m.binding)
+table.insert(k.stoppers,p)
+
 return o
 end
 
-if j.kind=="keybind"then
-ah.label(k,j.label,as.keybindWidth+2*ap.padding)
 
-local l,m=ah.keybind(k,j.binding)
-table.insert(h.stoppers,m)
+local o=d[m.action]~=nil
 
-return l
+if o then
+ai.chevron(n)
 end
 
+ai.label(n,m.label,if o then as.chevronSize+2*aq.padding else 0)
 
-local l=c[j.action]~=nil
-
-if l then
-ah.chevron(k)
-end
-
-ah.label(k,j.label,if l then ar.chevronSize+2*ap.padding else 0)
-
-k.Activated:Connect(function()
-if c[j.action]then
-h:openPage(j.action)
-elseif h.onButton then
-h.onButton(j.action)
+n.Activated:Connect(function()
+if d[m.action]then
+k:openPage(m.action)
+elseif k.onButton then
+k.onButton(m.action)
 end
 end)
 
 return nil end
 
 
-d.createOptions=function(h)
-local i=ah.list(h.panel)
 
-for j,k in ad.sections do
-ah.header(i,k.title)
 
-for l,m in k.options do
-local n=h:createOption(i,m)
+e.createExpandOption=function(k, l, m)
+local n=ai.row(l)
 
-if n then
-table.insert(h.refreshers,n)
+if m.icon then
+ai.icon(n,m.icon)
+end
+
+ai.label(n,m.label,as.chevronSize+2*aq.padding)
+local o=ai.chevron(n)
+
+local p=ai.group(l)
+p.Visible=false
+
+local q=ai.list(p)
+local r={}
+
+for s,t in m.items do
+local u=ai.row(q)
+ai.label(u,t.label,at.userWidth+2*aq.padding)
+
+local v,w=ai.value(u,"",at.userWidth)
+table.insert(r,{item=t,text=w})
+end local s=function()
+
+
+for s,t in r do
+t.text.Text=i(j(t.item),t.item)
+end end
+
+
+local t=false
+
+n.Activated:Connect(function()
+t=not t
+
+
+o.Rotation=if t then 270 else 180
+p.Visible=t
+
+if t then
+s()
+end
+end)end
+
+
+e.createOptions=function(k)
+local l=ai.list(k.panel)
+
+for m,n in ad.sections do
+ai.header(l,n.title)
+
+for o,p in n.options do
+local q=k:createOption(l,p)
+
+if q then
+table.insert(k.refreshers,q)
 end
 end
 end
 
 
-local j=ad.footer
+local m=ad.footer
 :gsub("{name}",ae.applicationName)
 :gsub("{version}",ae.version)
 
-ah.footer(i,j)end
+ai.footer(l,m)end
 
 
-d.createPages=function(h)
-for i,j in c do
-local k=ah.page(h.holder,`{i}Page`,UDim2.fromScale(1,av))
+e.createPages=function(k)
+for l,m in d do
+local n=ai.page(k.holder,`{l}Page`,UDim2.fromScale(1,aw))
 
 
-k.Visible=false
+n.Visible=false
 
-h.pages[i]={
-frame=k,
-build=j,
+k.pages[l]={
+frame=n,
+build=m,
 }
 end end
 
 
-d.new=function(h)
+e.new=function(k)
 return setmetatable({
-onSwitch=h.onSwitch,
-onButton=h.onButton,
-onOpenChanged=h.onOpenChanged,
+onSwitch=k.onSwitch,
+onButton=k.onButton,
+onOpenChanged=k.onOpenChanged,
 isOpen=false,
 isShown=false,
 holder=nil,
+listArea=nil,
+listParts=nil,
 panel=nil,
 current=nil,
 pages={},
@@ -24700,39 +25682,45 @@ floatingIcon=nil,
 floatingShown=false,
 floatingTween=nil,
 backIcon=nil,
-},d)end
+},e)end
 
 
-d.create=function(h, i, j)
-local k=aa.new("Frame","SettingsHolder",i,{
-AnchorPoint=j.AnchorPoint,
+
+e.create=function(k, l, m, n)
+local o=aa.new("Frame","SettingsHolder",l,{
+AnchorPoint=m.AnchorPoint,
 BackgroundTransparency=1,
 ClipsDescendants=true,
-Position=j.Position,
-Size=j.Size,
+Position=m.Position,
+Size=m.Size,
+
+
+ZIndex=0,
 Visible=false,
 })
 
-h.holder=k
-h.panel=ah.page(k,"Settings",UDim2.fromScale(0,av))
-h.current=h.panel
+k.holder=o
+k.listArea=m
+k.listParts=n or{}
+k.panel=ai.page(o,"Settings",UDim2.fromScale(0,aw))
+k.current=k.panel
 
-h:createOptions()
-h:createPages()
-h:createFloatingBack(k)
+k:createOptions()
+k:createPages()
+k:createFloatingBack(o)
 
-return k end
-
-
+return o end
 
 
-d.createFloatingBack=function(h, i)
-local j=aa.new("TextButton","FloatingBack",i,{
+
+
+e.createFloatingBack=function(k, l)
+local m=aa.new("TextButton","FloatingBack",l,{
 AnchorPoint=Vector2.new(1,0),
 AutoButtonColor=false,
 BorderSizePixel=0,
-Position=ax,
-Size=ay,
+Position=ay,
+Size=az,
 Text="",
 Visible=false,
 ZIndex=2,
@@ -24741,7 +25729,7 @@ BackgroundColor3="Colors.Buttons.Holding",
 },
 
 aa.new("UICorner",{
-CornerRadius=UDim.new(0,as.cornerRadius),
+CornerRadius=UDim.new(0,at.cornerRadius),
 }),
 aa.new("UIStroke",{
 ApplyStrokeMode=Enum.ApplyStrokeMode.Border,
@@ -24753,292 +25741,308 @@ Color="Colors.Border.Default",
 })
 
 
-local k=ah.icon(j,ad.pages.backIcon)
-k.AnchorPoint=Vector2.new(0.5,0.5)
-k.Position=UDim2.fromScale(0.5,0.5)
-k.Size=UDim2.fromScale(ar.iconSize/ap.floatBackSize,ar.iconSize/ap.floatBackSize)
-k.ZIndex=j.ZIndex+1
+local n=ai.icon(m,ad.pages.backIcon)
+n.AnchorPoint=Vector2.new(0.5,0.5)
+n.Position=UDim2.fromScale(0.5,0.5)
+n.Size=UDim2.fromScale(as.iconSize/aq.floatBackSize,as.iconSize/aq.floatBackSize)
+n.ZIndex=m.ZIndex+1
 
-j.Activated:Connect(function()
-h:back()
+m.Activated:Connect(function()
+k:back()
 end)
 
-h.floatingBack=j
-h.floatingIcon=k end
+k.floatingBack=m
+k.floatingIcon=n end
 
 
 
-d.syncFloatingIcon=function(h)
-local i,j=h.floatingIcon,h.backIcon
+e.syncFloatingIcon=function(k)
+local l,m=k.floatingIcon,k.backIcon
 
-if i and j and j.Image~=""and i.Image~=j.Image then
-i.Image=j.Image
+if l and m and m.Image~=""and l.Image~=m.Image then
+l.Image=m.Image
 end end
 
 
 
 
-d.updateFloatingBack=function(h)
-local i=h.floatingBack
-if not i then return end
+e.updateFloatingBack=function(k)
+local l=k.floatingBack
+if not l then return end
 
-local j=h.current
-local k=h.backRow
-local l=false
+local m=k.current
+local n=k.backRow
+local o=false
 
-if h.isShown and j~=h.panel and k and k.Parent then
-l=k.AbsolutePosition.Y+k.AbsoluteSize.Y<=j.AbsolutePosition.Y
+if k.isShown and m~=k.panel and n and n.Parent then
+o=n.AbsolutePosition.Y+n.AbsoluteSize.Y<=m.AbsolutePosition.Y
 end
 
-if l then
-h:syncFloatingIcon()
+if o then
+k:syncFloatingIcon()
 end
 
-if l==h.floatingShown then return end
+if o==k.floatingShown then return end
 
-h.floatingShown=l
+k.floatingShown=o
 
-if l then
-h:showFloatingBack()
+if o then
+k:showFloatingBack()
 else
-h:hideFloatingBack()
+k:hideFloatingBack()
 end end
 
 
 
-d.showFloatingBack=function(h)
-local i=h.floatingBack
+e.showFloatingBack=function(k)
+local l=k.floatingBack
 
 
-if not i.Visible then
-i.Position=b
-i.Size=az
-i.Visible=true
+if not l.Visible then
+l.Position=c
+l.Size=b
+l.Visible=true
 end
 
-h:tweenFloatingBack(ax,ay,Enum.EasingStyle.Back,Enum.EasingDirection.Out)end
+k:tweenFloatingBack(ay,az,Enum.EasingStyle.Back,Enum.EasingDirection.Out)end
 
 
 
-d.hideFloatingBack=function(h)
-local i=h.floatingBack
-if not i.Visible then return end
+e.hideFloatingBack=function(k)
+local l=k.floatingBack
+if not l.Visible then return end
 
-h:tweenFloatingBack(b,az,Enum.EasingStyle.Quart,Enum.EasingDirection.In,function()
-i.Visible=false
+k:tweenFloatingBack(c,b,Enum.EasingStyle.Quart,Enum.EasingDirection.In,function()
+l.Visible=false
 end)end
 
 
 
 
-d.tweenFloatingBack=function(h, i, j, k, l, m)
-local n=h.floatingBack
-h:stopFloatingTween()
+e.tweenFloatingBack=function(k, l, m, n, o, p)
+local q=k.floatingBack
+k:stopFloatingTween()
 
-local o=ag:getScale(ap.floatBackTime)
+local r=ag:getScale(aq.floatBackTime)
 
-if o<=0 then
-n.Position=i
-n.Size=j
+if r<=0 then
+q.Position=l
+q.Size=m
 
-if m then
-m()
+if p then
+p()
 end
 
 return
 end
 
-local p=at:Create(n,TweenInfo.new(o,k,l),{
-Position=i,
-Size=j,
+local s=au:Create(q,TweenInfo.new(r,n,o),{
+Position=l,
+Size=m,
 })
 
-h.floatingTween=p
+k.floatingTween=s
 
-p.Completed:Connect(function(q)
+s.Completed:Connect(function(t)
 
-if q~=Enum.PlaybackState.Completed then return end
+if t~=Enum.PlaybackState.Completed then return end
 
-if h.floatingTween==p then
-h.floatingTween=nil
+if k.floatingTween==s then
+k.floatingTween=nil
 end
 
-if m then
-m()
+if p then
+p()
 end
 end)
 
-p:Play()end
+s:Play()end
 
 
-d.stopFloatingTween=function(h)
-local i=h.floatingTween
-if not i then return end
+e.stopFloatingTween=function(k)
+local l=k.floatingTween
+if not l then return end
 
-h.floatingTween=nil
-i:Cancel()end
+k.floatingTween=nil
+l:Cancel()end
 
 
-d.refresh=function(h)
-for i,j in h.refreshers do
-j()
+e.refresh=function(k)
+for l,m in k.refreshers do
+m()
 end end
 
 
 
-d.stopWaiting=function(h)
-for i,j in h.stoppers do
-j()
+e.stopWaiting=function(k)
+for l,m in k.stoppers do
+m()
 end
 
-for i,j in h.pageStoppers do
-j()
+for l,m in k.pageStoppers do
+m()
 end end
 
 
 
-d.buildPage=function(h, i)
-ah.clear(i.frame)
-h.pageStoppers={}
+e.buildPage=function(k, l)
+ai.clear(l.frame)
+k.pageStoppers={}
 
-for j,k in h.pageConnections do
-k:Disconnect()
+for m,n in k.pageConnections do
+n:Disconnect()
 end
-table.clear(h.pageConnections)
+table.clear(k.pageConnections)
 
-i.build(i.frame,{
+l.build(l.frame,{
 back=function()
-h:back()
+k:back()
 end,
-stoppers=h.pageStoppers,
+stoppers=k.pageStoppers,
 })
 
-h.backRow=i.frame:FindFirstChild("BackRow")
-h.backIcon=if h.backRow then h.backRow:FindFirstChild("Icon")else nil
+k.backRow=l.frame:FindFirstChild("BackRow")
+k.backIcon=if k.backRow then k.backRow:FindFirstChild("Icon")else nil
 
-if h.backIcon then
+if k.backIcon then
 
-table.insert(h.pageConnections,h.backIcon:GetPropertyChangedSignal("Image"):Connect(function()
-h:syncFloatingIcon()
+table.insert(k.pageConnections,k.backIcon:GetPropertyChangedSignal("Image"):Connect(function()
+k:syncFloatingIcon()
 end))
 
-h:syncFloatingIcon()
+k:syncFloatingIcon()
 end
 
-table.insert(h.pageConnections,i.frame:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
-h:updateFloatingBack()
+table.insert(k.pageConnections,l.frame:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
+k:updateFloatingBack()
 end))end
 
 
 
 
 
-d.hideWhenGone=function(h, i)
-return function(j)
-if j and i~=h.current then
-i.Visible=false
+e.hideWhenGone=function(k, l)
+return function(m)
+if m and l~=k.current then
+l.Visible=false
 end
 end end
 
 
 
-d.openPage=function(h, i)
-local j=h.pages[i]
-if not j or not h.isShown or h.current~=h.panel then return end
+e.openPage=function(k, l)
+local m=k.pages[l]
+if not m or not k.isShown or k.current~=k.panel then return end
 
-h:stopWaiting()
-
-
-j.frame.Visible=true
-h:buildPage(j)
-
-j.frame.CanvasPosition=Vector2.zero
-j.frame.Position=UDim2.fromScale(1,au)
-h.current=j.frame
-
-g(h.panel,UDim2.fromScale(-1,au),h:hideWhenGone(h.panel))
-g(j.frame,UDim2.fromScale(0,au))
-
-h:updateFloatingBack()end
+k:stopWaiting()
 
 
+m.frame.Visible=true
+k:buildPage(m)
 
-d.back=function(h)
-if h.current==h.panel then return end
+m.frame.CanvasPosition=Vector2.zero
+m.frame.Position=UDim2.fromScale(1,av)
+k.current=m.frame
 
-h:stopWaiting()
+h(k.panel,UDim2.fromScale(-1,av),k:hideWhenGone(k.panel))
+h(m.frame,UDim2.fromScale(0,av))
 
-local i=h.current
-h.panel.Visible=true
-
-g(i,UDim2.fromScale(1,au),h:hideWhenGone(i))
-g(h.panel,UDim2.fromScale(0,au))
-h.current=h.panel
-
-h:updateFloatingBack()end
+k:updateFloatingBack()end
 
 
 
-d.reset=function(h)
-h.current=h.panel
-h.panel.Visible=true
-h.panel.Position=UDim2.fromScale(0,av)
+e.back=function(k)
+if k.current==k.panel then return end
 
-for i,j in h.pages do
-j.frame.Visible=false
-j.frame.Position=UDim2.fromScale(1,av)
+k:stopWaiting()
+
+local l=k.current
+k.panel.Visible=true
+
+h(l,UDim2.fromScale(1,av),k:hideWhenGone(l))
+h(k.panel,UDim2.fromScale(0,av))
+k.current=k.panel
+
+k:updateFloatingBack()end
+
+
+
+e.reset=function(k)
+k.current=k.panel
+k.panel.Visible=true
+k.panel.Position=UDim2.fromScale(0,aw)
+
+for l,m in k.pages do
+m.frame.Visible=false
+m.frame.Position=UDim2.fromScale(1,aw)
 end end
 
 
-d.toggle=function(h)
-h.isOpen=not h.isOpen
-h:setShown(h.isOpen)
+e.toggle=function(k)
+k.isOpen=not k.isOpen
+k:setShown(k.isOpen)
 
 
-if h.onOpenChanged then
-h.onOpenChanged(h.isOpen)
+if k.onOpenChanged then
+k.onOpenChanged(k.isOpen)
 end end
 
 
-d.setShown=function(h, i)
-if not h.panel or h.isShown==i then return end
 
-h.isShown=i
-local j=h.current
 
-h:updateFloatingBack()
+e.setListShown=function(k, l)
+for m,n in k.listParts do
+n.Visible=l
+end
 
-if i then
-h.holder.Visible=true
-g(j,UDim2.fromScale(0,au))
+k.listArea.Active=l end
+
+
+e.setShown=function(k, l)
+if not k.panel or k.isShown==l then return end
+
+k.isShown=l
+local m=k.current
+
+k:updateFloatingBack()
+
+if l then
+k.holder.Visible=true
+
+
+k:setListShown(false)
+h(m,UDim2.fromScale(0,av))
 return
 end
 
-h:stopWaiting()
+k:stopWaiting()
 
-g(j,UDim2.fromScale(0,av),function(k)
-if k and not h.isShown then
-h.holder.Visible=false
+h(m,UDim2.fromScale(0,aw),function(n)
+if n and not k.isShown then
+k.holder.Visible=false
 
 
-if not h.isOpen then
-h:reset()
+k:setListShown(true)
+
+
+if not k.isOpen then
+k:reset()
 end
 end
 end)end
 
 
-d.watchCommandBar=function(h, i)
-ab:Connect(i.Focused,function()
-h:setShown(false)
+e.watchCommandBar=function(k, l)
+ab:Connect(l.Focused,function()
+k:setShown(false)
 end)
 
-ab:Connect(i.FocusLost,function()
-h:setShown(h.isOpen)
+ab:Connect(l.FocusLost,function()
+k:setShown(k.isOpen)
 end)end
 
 
-return d end a.dv=function()local ab=a.cache.dv if not ab then ab={c=aa()}a.cache.dv=ab end return ab.c end end do local aa=function()
+return e end a.dB=function()local ab=a.cache.dB if not ab then ab={c=aa()}a.cache.dB=ab end return ab.c end end do local aa=function()
 
 
 
@@ -25097,7 +26101,7 @@ noPart="select a part first",
 noPath="select a part to copy its path",
 noClipboard="this executor doesn't support clipboard",
 },
-}end a.dw=function()local ab=a.cache.dw if not ab then ab={c=aa()}a.cache.dw=ab end return ab.c end end do local aa=function()
+}end a.dC=function()local ab=a.cache.dC if not ab then ab={c=aa()}a.cache.dC=ab end return ab.c end end do local aa=function()
 
 
 
@@ -25169,7 +26173,7 @@ end
 return ah end
 
 
-return ae end a.dx=function()local ab=a.cache.dx if not ab then ab={c=aa()}a.cache.dx=ab end return ab.c end end do local aa=function()
+return ae end a.dD=function()local ab=a.cache.dD if not ab then ab={c=aa()}a.cache.dD=ab end return ab.c end end do local aa=function()
 
 
 
@@ -25177,21 +26181,21 @@ return ae end a.dx=function()local ab=a.cache.dx if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.cN()
-local ab=a.cP()
-local ac=a.cM()
-local ad=a.cU()
-local ae=a.de()
-local af=a.bY()
+local aa=a.cQ()
+local ab=a.cS()
+local ac=a.cP()
+local ad=a.cX()
+local ae=a.dk()
+local af=a.b_()
 
-local ag=a.au()
-local ah=a.R()
+local ag=a.aD()
+local ah=a.ae()
 local ai=a.a()
-local aj=a.dw()
+local aj=a.dC()
 
-local ak=a.dx()
-local al=a.cT()
-local am=a.cL()
+local ak=a.dD()
+local al=a.cW()
+local am=a.cO()
 
 local an=aj.window
 local ao=aj.textSizes
@@ -25669,7 +26673,7 @@ b.pathLabel=nil
 b.copyButton=nil end
 
 
-return au end a.dy=function()local ab=a.cache.dy if not ab then ab={c=aa()}a.cache.dy=ab end return ab.c end end do local aa=function()
+return au end a.dE=function()local ab=a.cache.dE if not ab then ab={c=aa()}a.cache.dE=ab end return ab.c end end do local aa=function()
 
 
 
@@ -25709,9 +26713,9 @@ return au end a.dy=function()local ab=a.cache.dy if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.P()
-local ab=a.au()
-local ac=a.cE()
+local aa=a.f()
+local ab=a.aD()
+local ac=a.cH()
 
 local ad=aa.TweenService
 local ae=aa.UserInputService
@@ -26309,283 +27313,288 @@ table.clear(au.touches)
 table.clear(au.outsideTouches)end
 
 
-return as end a.dz=function()local ab=a.cache.dz if not ab then ab={c=aa()}a.cache.dz=ab end return ab.c end end do local aa=function()
+return as end a.dF=function()local ab=a.cache.dF if not ab then ab={c=aa()}a.cache.dF=ab end return ab.c end end do local aa=function()
 
 
 
-local aa=a.ap()
-local ab=a.cR()
+local aa=a.ay()
+local ab=a.cU()
 local ac=a.b()
 local ad=a.a()
-local ae=a.au()
-local af=a.P()
-local ag=a.bX()
+local ae=a.aD()
+local af=a.f()
+local ag=a.bZ()
 
-local ah=a.R()
+local ah=a.ae()
 
-local ai=a.al()
+local ai=a.n()
 local aj=a.d()
-local ak=a.cL()
+local ak=a.cO()
 
-local al=a.cN()
-local am=a.cP()
-local an=a.cM()
+local al=a.cQ()
+local am=a.cS()
+local an=a.cP()
+local ao=a.c9()
 
-local ao=a.cJ()
-local ap=a.bY()
-local aq=a.cU()
+local ap=a.cM()
+local aq=a.b_()
+local ar=a.cX()
 
-local ar=a.c5()
-local as=a.cQ()
-local at=a.c6()
+local as=a.db()
+local at=a.cT()
+local au=a.dc()
 
-local au=a.c7()
-local av=a.da()
-local aw=a.dc()
-local ax=a.dg()
-local ay=a.di()
-local az=a.dk()
-local b=a.dv()
-local c=a.dy()
+local av=a.dd()
+local aw=a.dg()
+local ax=a.di()
+local ay=a.dm()
+local az=a.dp()
+local b=a.dr()
+local c=a.dB()
+local d=a.dE()
 
-local d=a.de()
-local e=a.dz()
+local e=a.dk()
+local f=a.dF()
 
-local f=450
-local h=as.uiScale
+local h=450
+local i=at.uiScale
 
-local i={
+local j={
 awoken=false,
-}local j=function(
+}local k=function(
 
-j)
-local k=type(j)=="string"and ao[j:lower()]
+k)
+local l=type(k)=="string"and ap[k:lower()]
 
-if k and k.Colors and k.Font then
-return j
+if l and l.Colors and l.Font then
+return k
 end
 
-return aa.theme.defaultTheme end local k=function(
+return aa.theme.defaultTheme end local l=function(
 
 
-k, l, m, n)
-local o=(k.Scale*m)/n+k.Offset
-local p=math.floor(m/n-l)
+l, m, n, o)
+local p=(l.Scale*n)/o+l.Offset
+local q=math.floor(n/o-m)
 
-if math.floor(o)>=p then
-return 1,-l
+if math.floor(p)>=q then
+return 1,-m
 end
 
-return 0,math.clamp(math.floor(o),0,math.max(p,0))end
+return 0,math.clamp(math.floor(p),0,math.max(q,0))end
 
 
-i.awake=function(l)
-if l.awoken then
-return l.screenGui
+j.awake=function(m)
+if m.awoken then
+return m.screenGui
 end
 
-l.awoken=true
+m.awoken=true
 
-l:setupTheme()
-l:setupScreenGui()
-l:setupScale()
-l:setupMainFrame()
-l:createQuickCapture()
-l:createReference()
-l:createPartPath()
-l:createNotifications()
-l:setupListeners()
-l:updateNotificationsPosition()
+m:setupTheme()
+m:setupScreenGui()
+m:setupScale()
+m:setupMainFrame()
+m:createQuickCapture()
+m:createReference()
+m:createPartPath()
+m:createNotifications()
+m:setupListeners()
+m:updateNotificationsPosition()
 
 aj:log("interface started")
-return l.screenGui end
+return m.screenGui end
 
 
-i.setupTheme=function(l)
+j.setupTheme=function(m)
 aj:debug("interface: initializing theme service")
 
 an:init({
-theme=j(aa.theme.selectedTheme),
+theme=k(aa.theme.selectedTheme),
 })end
 
 
-i.setupScreenGui=function(l)
-local m=l:createScreenGui()
+j.setupScreenGui=function(m)
+local n=m:createScreenGui()
 
-m.Parent=ap
-ac.screenGui=m
+n.Parent=aq
+ac.screenGui=n
 
-h.Parent=m end
-
-
-i.setupScale=function(l)
-l:setScale(ai:getValue("interface.uiScale")or 1)end
+i.Parent=n end
 
 
-i.setupMainFrame=function(l)
-local m=l:createMainFrame()
-
-l:createCommands()
-l:dragMainFrame(m)
-l.commands:enable()
-
-m.Parent=l.screenGui end
+j.setupScale=function(m)
+m:setScale(ai:getValue("interface.uiScale")or 1)end
 
 
-i.setupListeners=function(l)
-ae:Connect(l.screenGui:GetPropertyChangedSignal("AbsoluteSize"),function()
-l:updateMainFramePosition()
+j.setupMainFrame=function(m)
+local n=m:createMainFrame()
+
+m:createCommands()
+m:dragMainFrame(n)
+m.commands:enable()
+
+n.Parent=m.screenGui end
+
+
+j.setupListeners=function(m)
+ae:Connect(m.screenGui:GetPropertyChangedSignal("AbsoluteSize"),function()
+m:updateMainFramePosition()
 end)
 
-ae:Connect(l.mainFrame:GetPropertyChangedSignal("AbsolutePosition"),function()
-l:updateNotificationsPosition()
+ae:Connect(m.mainFrame:GetPropertyChangedSignal("AbsolutePosition"),function()
+m:updateNotificationsPosition()
 end)
 
-ae:Connect(l.mainFrame:GetPropertyChangedSignal("AbsoluteSize"),function()
-l:updateNotificationsPosition()
+ae:Connect(m.mainFrame:GetPropertyChangedSignal("AbsoluteSize"),function()
+m:updateNotificationsPosition()
 end)
 
 ae:Connect(af.RunService.RenderStepped,function()
-l:updateNotificationsPosition()
+m:updateNotificationsPosition()
 end)end
 
 
-i.createScreenGui=function(l)
-local m=al.new("ScreenGui",{
+j.createScreenGui=function(m)
+local n=al.new("ScreenGui",{
 IgnoreGuiInset=true,
 Name=ak.randomString(math.random(30,50)),
 DisplayOrder=2147483647,
 })
 
-l.screenGui=m
-return m end
+m.screenGui=n
+return n end
 
 
-i.calculateScale=function(l, m)
-return(l.screenGui.AbsoluteSize.Y/f)*m end
+j.calculateScale=function(m, n)
+return(m.screenGui.AbsoluteSize.Y/h)*n end
 
 
-i.setScale=function(l, m)
-m=math.abs(m)
+j.setScale=function(m, n)
+n=math.abs(n)
 
-if m>=3 then
-m=l:calculateScale(m)
+if n>=3 then
+n=m:calculateScale(n)
 end
 
-if ai:getValue("interface.uiScale")~=m then
-ai:setValue("interface.uiScale",m)
+if ai:getValue("interface.uiScale")~=n then
+ai:setValue("interface.uiScale",n)
 ai:save()
 end
 
-as:setScale(m)
-l:updateMainFramePosition()end
+at:setScale(n)
+m:updateMainFramePosition()end
 
 
-i.calculateMainFramePosition=function(l, m)
-local n=l.mainFrame
-local o=l.screenGui
-local p=as:getScale()
-local q=n.Size
+j.calculateMainFramePosition=function(m, n)
+local o=m.mainFrame
+local p=m.screenGui
+local q=at:getScale()
+local r=o.Size
 
-m=m or n.Position
+n=n or o.Position
 
-local r,s=k(m.X,q.X.Offset,o.AbsoluteSize.X,p)
-local t,u=k(m.Y,q.Y.Offset,o.AbsoluteSize.Y,p)
+local s,t=l(n.X,r.X.Offset,p.AbsoluteSize.X,q)
+local u,v=l(n.Y,r.Y.Offset,p.AbsoluteSize.Y,q)
 
-return UDim2.new(r,s,t,u)end
+return UDim2.new(s,t,u,v)end
 
 
-i.updateMainFramePosition=function(l)
-if not l.mainFrame then return end
+j.updateMainFramePosition=function(m)
+if not m.mainFrame then return end
 
-if l.dock then
-l.dock:reflow()
+if m.dock then
+m.dock:reflow()
 else
-l.mainFrame.Position=l:calculateMainFramePosition()
+m.mainFrame.Position=m:calculateMainFramePosition()
 end
 
-l:updateNotificationsPosition()end
+m:updateNotificationsPosition()end
 
 
-i.createMainScroll=function(l, m)
-local n=av.new({
+j.createMainScroll=function(m, n)
+local o=aw.new({
 isHorizontal=false,
 barThickness=12,
 })
 
-local o=n:create()
-local p=n.container
+local p=o:create()
+local q=o.container
 
-local q=al.new("Frame","ScrollHolder",m,{
+local r=al.new("Frame","ScrollHolder",n,{
 Size=UDim2.new(1,0,0,180),
 Position=UDim2.fromScale(0.5,1),
 AnchorPoint=Vector2.new(0.5,1),
 BackgroundTransparency=1,
 Active=true,
 
-o,
 p,
+q,
 })
 
-l.scrollHolder=q
-l.scrollBar=n
-l.scrollContainer=p
+m.scrollHolder=r
+m.scrollBar=o
+m.scrollContainer=q
+m.scrollBarFrame=p
 
-return n end
+return o end
 
 
-i.createMainFrame=function(l)
-local m=au:create()
-local n=m.mainFrame
+j.createMainFrame=function(m)
+local n=av:create()
+local o=n.mainFrame
 
-m.titleLabel.Text=ar.getDisplayName()
+n.titleLabel.Text=as.getDisplayName()
 
-l.mainFrame=n
-l.topBar=m.topBar
-l.buttons=m.buttons
+m.mainFrame=o
+m.topBar=n.topBar
+m.buttons=n.buttons
 
-am:loadImage(l.buttons.settings,"settings")
-am:loadImage(l.buttons.reference,"reference")
 
-l:createMainScroll(n)
+ao:attach(o)
 
-l.settings=b.new({
+am:loadImage(m.buttons.settings,"settings")
+am:loadImage(m.buttons.reference,"reference")
 
-onOpenChanged=function(o)
-l:paintTopButton(l.buttons.settings,o)
+m:createMainScroll(o)
+
+m.settings=c.new({
+
+onOpenChanged=function(p)
+m:paintTopButton(m.buttons.settings,p)
 end,
 
 
-onSwitch=function(o,p)
-if o=="keepMenuOpen"and l.dock then
-l.dock:setKeepOpen(p)
+onSwitch=function(p,q)
+if p=="keepMenuOpen"and m.dock then
+m.dock:setKeepOpen(q)
 end
 
 
-if o=="keepIY"and p and ad.queueteleport==nil then
-l:setKeepIY(false)
-aq:notify("Keepiy","your exploit does not support queueteleport")
+if p=="keepIY"and q and ad.queueteleport==nil then
+m:setKeepIY(false)
+ar:notify("Keepiy","your exploit does not support queueteleport")
 end
 end,
 })
-l.settings:create(n,l.scrollHolder)
+m.settings:create(o,m.scrollHolder,{m.scrollContainer,m.scrollBarFrame})
 
-ae:Connect(l.buttons.settings.Activated,function()
-l.settings:toggle()
+ae:Connect(m.buttons.settings.Activated,function()
+m.settings:toggle()
 end)
 
-return n end
+return o end
 
 
-i.createCommands=function(l)
-local m=l.scrollBar
+j.createCommands=function(m)
+local n=m.scrollBar
 
-local n=aw.new({
-scrolledSignal=m.scrolledSignal,
-scrollContainer=l.scrollContainer,
-scrollHolder=l.scrollHolder,
-screenGui=l.screenGui,
-scrollBar=m,
+local o=ax.new({
+scrolledSignal=n.scrolledSignal,
+scrollContainer=m.scrollContainer,
+scrollHolder=m.scrollHolder,
+screenGui=m.screenGui,
+scrollBar=n,
 
 configs={
 placeholderText=aa.ui.commands.placeholderText,
@@ -26596,232 +27605,232 @@ textSize=aa.ui.commands.textSize,
 })
 
 aj:log("created commands interface")
-n:create()
+o:create()
 
 aj:log("initialized commands")
-n:createCommandsData()
+o:createCommandsData()
 
 aj:log("awaked commands module")
-n:awake()
+o:awake()
 
-l.commands=n
+m.commands=o
 
 
-n.onCommandSent=function()
-if l.dock then
-l.dock:unlockSwipe()
+o.onCommandSent=function()
+if m.dock then
+m.dock:unlockSwipe()
 end
 end
 
 
-n.onInteraction=function()
-if l.dock then
-l.dock:noteInteraction()
+o.onInteraction=function()
+if m.dock then
+m.dock:noteInteraction()
 end
 end
 
-l.settings:watchCommandBar(n.searchBox)
+m.settings:watchCommandBar(o.searchBox)
 
 if ag then
 
-n.onSwipeDown=function()
-if l.dock then
-l.dock:onListSwipeDown()
+o.onSwipeDown=function()
+if m.dock then
+m.dock:onListSwipeDown()
 end
 end
 
-ae:Connect(n.searchBox.Focused,function()
-l.commandBarUsedAt=os.clock()
+ae:Connect(o.searchBox.Focused,function()
+m.commandBarUsedAt=os.clock()
 end)
 
-ae:Connect(n.searchBox.FocusLost,function(o)
-l.commandBarUsedAt=os.clock()
+ae:Connect(o.searchBox.FocusLost,function(p)
+m.commandBarUsedAt=os.clock()
 
 
-if o and l.dock then
-l.dock:onMobileEnter(function()
-return n.searchBox:IsFocused()
+if p and m.dock then
+m.dock:onMobileEnter(function()
+return o.searchBox:IsFocused()
 end)
 end
 end)
 else
 
-ae:Connect(n.searchBox.FocusLost,function(o)
-if l.dock then
-l.dock:onCommandBarClosed(o)
+ae:Connect(o.searchBox.FocusLost,function(p)
+if m.dock then
+m.dock:onCommandBarClosed(p)
 end
 end)
 end
 
-return n end
+return o end
 
 
-i.createInfoMenu=function(l)
-return ay:create()end
+j.createInfoMenu=function(m)
+return az:create()end
 
 
-i.chatLogs=function(l, m)
-return az:open(m or"chat")end
+j.chatLogs=function(m, n)
+return b:open(n or"chat")end
 
 
-i.dragMainFrame=function(l, m)
-m.Size=aa.ui.window.windowSize
+j.dragMainFrame=function(m, n)
+n.Size=aa.ui.window.windowSize
 
-m.Position=UDim2.fromOffset(1e5,1e5)
-m.Position=l:calculateMainFramePosition()
+n.Position=UDim2.fromOffset(1e5,1e5)
+n.Position=m:calculateMainFramePosition()
 
-l.dock=e.new({
-frame=m,
-screenGui=l.screenGui,
-topBarHeight=l.topBar.Size.Y.Offset,
-keepOpen=b.isKeepMenuOpen(),
-clampPosition=function(n)
-return l:calculateMainFramePosition(n)
+m.dock=f.new({
+frame=n,
+screenGui=m.screenGui,
+topBarHeight=m.topBar.Size.Y.Offset,
+keepOpen=c.isKeepMenuOpen(),
+clampPosition=function(o)
+return m:calculateMainFramePosition(o)
 end,
 getScale=function()
-return as:getScale()
+return at:getScale()
 end,
 commandBarInUse=function()
-return l:isCommandBarInUse()
+return m:isCommandBarInUse()
 end,
 isMoving=function()
-return l:isCharacterMoving()
+return m:isCharacterMoving()
 end,
-onInteractive=function(n)
-if l.commands then
-l.commands:setInteractive(n)
+onInteractive=function(o)
+if m.commands then
+m.commands:setInteractive(o)
 end
 end,
 hoverToOpen=not ag,
 onMinimize=function()
-l:releaseCommandFocus()
+m:releaseCommandFocus()
 
 
-if l.hidden then
-l:hideWindow()
+if m.hidden then
+m:hideWindow()
 end
 end,
 })
 
-d:addGuiObject(m)
+e:addGuiObject(n)
 
-d:setFilter(m,function(n)
-return l.dock:clampDrag(n)
+e:setFilter(n,function(o)
+return m.dock:clampDrag(o)
 end)
 
-d.dragStarted:Connect(function(n)
-if n~=m then return end
+e.dragStarted:Connect(function(o)
+if o~=n then return end
 
-l.dock:cancel()
-l.dock:setDragging(true)
-l.scrollBar:disableScroll()
+m.dock:cancel()
+m.dock:setDragging(true)
+m.scrollBar:disableScroll()
 end)
 
-d.dragEnded:Connect(function(n,o)
-if n~=m then return end
+e.dragEnded:Connect(function(o,p)
+if o~=n then return end
 
-l.scrollBar:enableScroll()
-l.dock:setDragging(false)
-l.dock:onDragEnded(o)
+m.scrollBar:enableScroll()
+m.dock:setDragging(false)
+m.dock:onDragEnded(p)
 end)end
 
 
 
-local l=0.3
+local m=0.3
 
-i.isCommandBarInUse=function(m)
-local n=m.commands and m.commands.searchBox
-if n and n:IsFocused()then
+j.isCommandBarInUse=function(n)
+local o=n.commands and n.commands.searchBox
+if o and o:IsFocused()then
 return true
 end
 
-return os.clock()-(m.commandBarUsedAt or 0)<l end
+return os.clock()-(n.commandBarUsedAt or 0)<m end
 
 
 
 
-i.isCharacterMoving=function(m)
-local n=ah:getHumanoid()
-if not n then return false end
-
-if n.MoveDirection.Magnitude>0.05 then
-return true
-end
-
-local o=n.RootPart
+j.isCharacterMoving=function(n)
+local o=ah:getHumanoid()
 if not o then return false end
 
-local p=o.AssemblyLinearVelocity
-return Vector3.new(p.X,0,p.Z).Magnitude>1 end
-
-
-i.releaseCommandFocus=function(m)
-local n=m.commands and m.commands.searchBox
-
-if n and n:IsFocused()then
-n:ReleaseFocus()
-end end
-
-
-
-i.showWindow=function(m)
-m.hidden=false
-m:revealWindow()end
-
-
-
-
-i.revealWindow=function(m)
-if not m.mainFrame then return end
-
-m.mainFrame.Visible=true
-if m.dock then
-m.dock:reveal()
-end end
-
-
-
-i.hideWindow=function(m)
-if not m.mainFrame then return end
-
-m.hidden=true
-m.mainFrame.Visible=false
-
-if m.dock then
-m.dock:sleep()
+if o.MoveDirection.Magnitude>0.05 then
+return true
 end
 
-m:releaseCommandFocus()end
+local p=o.RootPart
+if not p then return false end
+
+local q=p.AssemblyLinearVelocity
+return Vector3.new(q.X,0,q.Z).Magnitude>1 end
 
 
-i.showCommandBar=function(m)
-local n=m.commands and m.commands.searchBox
-if not n then return end
+j.releaseCommandFocus=function(n)
+local o=n.commands and n.commands.searchBox
 
-m:revealWindow()
+if o and o:IsFocused()then
+o:ReleaseFocus()
+end end
 
 
 
-m.dock:onSettled(function()
-if m.dock.state=="minimized"then return end
+j.showWindow=function(n)
+n.hidden=false
+n:revealWindow()end
 
-m.commands:ensureFocus()
+
+
+
+j.revealWindow=function(n)
+if not n.mainFrame then return end
+
+n.mainFrame.Visible=true
+if n.dock then
+n.dock:reveal()
+end end
+
+
+
+j.hideWindow=function(n)
+if not n.mainFrame then return end
+
+n.hidden=true
+n.mainFrame.Visible=false
+
+if n.dock then
+n.dock:sleep()
+end
+
+n:releaseCommandFocus()end
+
+
+j.showCommandBar=function(n)
+local o=n.commands and n.commands.searchBox
+if not o then return end
+
+n:revealWindow()
+
+
+
+n.dock:onSettled(function()
+if n.dock.state=="minimized"then return end
+
+n.commands:ensureFocus()
 end)end
 
 
 
-i.setKeepIY=function(m, n)
-b.setKeepIY(n)
+j.setKeepIY=function(n, o)
+c.setKeepIY(o)
 
-if m.settings then
-m.settings:refresh()
+if n.settings then
+n.settings:refresh()
 end end
 
 
-i.createQuickCapture=function(m)
+j.createQuickCapture=function(n)
 if not ag then return end
 
-local n=al.new("TextButton",ak.randomString(math.random(30,50)),m.screenGui,{
+local o=al.new("TextButton",ak.randomString(math.random(30,50)),n.screenGui,{
 BackgroundTransparency=0.14,
 Position=UDim2.fromScale(0.5,0.15),
 AnchorPoint=Vector2.new(0.5,0.5),
@@ -26839,144 +27848,148 @@ CornerRadius=UDim.new(0.5,0)
 }),
 })
 
-m.dock:addWindowPart(n)
-d:addGuiObject(n)
+n.dock:addWindowPart(o)
+e:addGuiObject(o)
 
-ae:Connect(n.Activated,function()
-m:showCommandBar()
+ae:Connect(o.Activated,function()
+n:showCommandBar()
 end)
 
-m.quickCapture=n
-return n end
+n.quickCapture=o
+return o end
 
 
 
 
-i.paintTopButton=function(m, n, o)
-if not n then return end
+j.paintTopButton=function(n, o, p)
+if not o then return end
 
-an:addObject(n,{
-ImageColor3=if o then"Colors.Primary"else"Colors.Icons",
+an:addObject(o,{
+ImageColor3=if p then"Colors.Primary"else"Colors.Icons",
 })end
 
 
-i.createReference=function(m)
-local n=ax.new()
-local o=n:create()
+j.createReference=function(n)
+local o=ay.new()
+local p=o:create()
 
-n.onOpenChanged=function(p)
-m:paintTopButton(m.buttons.reference,p)
+o.onOpenChanged=function(q)
+n:paintTopButton(n.buttons.reference,q)
 end
 
-am:loadImage(n.closeIcon,"close")
+am:loadImage(o.closeIcon,"close")
 
-o.Parent=m.screenGui
-m.reference=n
+p.Parent=n.screenGui
+n.reference=o
 
-ae:Connect(m.buttons.reference.Activated,function()
-n:open()
+ae:Connect(n.buttons.reference.Activated,function()
+o:open()
 end)
 
-return n end
+return o end
 
 
-i.createPartPath=function(m)
-local n=c.new()
-local o=n:create()
+j.createPartPath=function(n)
+local o=d.new()
+local p=o:create()
 
-o.Parent=m.screenGui
-m.partPathWindow=n
+p.Parent=n.screenGui
+n.partPathWindow=o
 
-return n end
-
-
+return o end
 
 
-i.openPartPath=function(m, n)
-if not m.partPathWindow then return end
-
-m.partPathWindow:open(n)end
 
 
-i.createNotifications=function(m)
-local n=aq:getContainer(m.screenGui)
-m.notificationsContainer=n
+j.openPartPath=function(n, o)
+if not n.partPathWindow then return end
 
-aq.onLayoutChanged=function()
-m:updateNotificationsPosition()
+n.partPathWindow:open(o)end
+
+
+j.createNotifications=function(n)
+local o=ar:getContainer(n.screenGui)
+n.notificationsContainer=o
+
+ar.onLayoutChanged=function()
+n:updateNotificationsPosition()
 end
 
-m:updateNotificationsPosition()
-return n end
+n:updateNotificationsPosition()
+return o end
 
 
-i.updateNotificationsPosition=function(m)
-local n=m.notificationsContainer
-local o=m.mainFrame
-local p=m.screenGui
-if not(n and o and p)then return end
+j.updateNotificationsPosition=function(n)
+local o=n.notificationsContainer
+local p=n.mainFrame
+local q=n.screenGui
+if not(o and p and q)then return end
 
 
 
-local q=as:getScale()
-local r=p.AbsoluteSize/q
+local r=at:getScale()
+local s=q.AbsoluteSize/r
 
-local s=o.Position
-local t=at.compute({
-x={scale=s.X.Scale,offset=s.X.Offset},
-y={scale=s.Y.Scale,offset=s.Y.Offset},
+local t=p.Position
+local u=au.compute({
+x={scale=t.X.Scale,offset=t.X.Offset},
+y={scale=t.Y.Scale,offset=t.Y.Offset},
+width=p.Size.X.Offset,
+height=p.Size.Y.Offset,
+},{
+width=s.X,
+height=s.Y,
+},{
 width=o.Size.X.Offset,
-height=o.Size.Y.Offset,
-},{
-width=r.X,
-height=r.Y,
-},{
-width=n.Size.X.Offset,
 },ab.gapToWindow)
 
 
-aq:setRoom(t.room)
+ar:setRoom(u.room)
 
-n.AnchorPoint=Vector2.new(t.anchorX,t.anchorY)
-n.Position=UDim2.new(t.x.scale,t.x.offset,t.y.scale,t.y.offset)end
+o.AnchorPoint=Vector2.new(u.anchorX,u.anchorY)
+o.Position=UDim2.new(u.x.scale,u.x.offset,u.y.scale,u.y.offset)end
 
 
-i.destroy=function(m)
-aq:destroy()
-if m.dock then
-m.dock:destroy()
-m.dock=nil
+j.destroy=function(n)
+ar:destroy()
+if n.dock then
+n.dock:destroy()
+n.dock=nil
 end
 
-az:reset()
+b:reset()
 
-if m.partPathWindow then
-m.partPathWindow:destroy()
-m.partPathWindow=nil
+if n.partPathWindow then
+n.partPathWindow:destroy()
+n.partPathWindow=nil
 end
 
-if m.screenGui then
-m.screenGui:Destroy()
+if n.screenGui then
+n.screenGui:Destroy()
 end
 
-m.screenGui=nil
-m.awoken=false end
+n.screenGui=nil
+n.awoken=false end
 
 
-return i end a.dA=function()local ab=a.cache.dA if not ab then ab={c=aa()}a.cache.dA=ab end return ab.c end end do local aa=function()a.e()
+return j end a.dG=function()local ab=a.cache.dG if not ab then ab={c=aa()}a.cache.dG=ab end return ab.c end end do local aa=function()a.e()
 
 
-:init()
-
-local aa=a.cW()
-local ab=a.cY()
-local ac=a.R()
-local ad=a.cB()
-local ae=a.c3()
+:init()a.u()
 
 
 
-local af=a.dA()
+
+
+local aa=a.cZ()
+local ab=a.c0()
+local ac=a.ae()
+local ad=a.cE()
+local ae=a.c6()
+
+
+
+local af=a.dG()
 
 local ag={}
 
@@ -26998,7 +28011,7 @@ af:awake()
 ae.start()end
 
 
-return ag end a.dB=function()local ab=a.cache.dB if not ab then ab={c=aa()}a.cache.dB=ab end return ab.c end end end
+return ag end a.dH=function()local ab=a.cache.dH if not ab then ab={c=aa()}a.cache.dH=ab end return ab.c end end end
 
 
 
@@ -27018,4 +28031,4 @@ return ag end a.dB=function()local ab=a.cache.dB if not ab then ab={c=aa()}a.cac
 
 
 
-return a.dB():boot()
+return a.dH():boot()
