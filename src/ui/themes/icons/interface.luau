@@ -28,6 +28,9 @@ return {
 	["lucide-send"]               = 80218825031596, -- send command
 	["lucide-sliders-horizontal"] = 116738462591690, -- command settings
 	["lucide-arrow-down-up"]      = 121401768678469, -- import / export
+	["lucide-calendar-clock"]     = 121068586159290, -- dates
+	["lucide-chart-column"]       = 102316903470982,
+	["lucide-trash"]              = 126160659084333,
 	
 	-- top bar
 	["reference"] = 116342494079103, -- lucide-book-open

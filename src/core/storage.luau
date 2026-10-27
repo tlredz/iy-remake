@@ -9,6 +9,12 @@ local function registerSettings()
 	settingsData:save()
 end
 
+-- the time of this run, in seconds since 1970. It is asked of the engine each run. A date written as text in the code is the
+-- same in every run: a build can work it out once and keep it as a constant
+local function nowSeconds(): number
+	return DateTime.now().UnixTimestamp
+end
+
 local function registerUserData()
 	local userData = datas.user
 	local usedPlaces = userData:register("usedPlaces", {})
@@ -16,15 +22,18 @@ local function registerUserData()
 	userData:register("totalUsedCommands", {})
 	userData:register("usedAccounts", {})
 	
-	userData:register("firstTimeExecuted", os.date("%Y-%m-%d %H:%M:%S"))
-	userData:register("lastTimeExecuted", "")
+	-- a date kept as text by an older version is not a number, so it is replaced by the time of this run
+	userData:register("firstTimeExecuted", nowSeconds())
+	userData:register("lastTimeExecuted", 0)
 	userData:register("executionCount", 0)
 	
 	userData:add("usedAccounts", localPlayer.UserId)
 	userData:increment("executionCount", 1)
-	userData:setValue("lastTimeExecuted", os.date("%Y-%m-%d %H:%M:%S"))
+	userData:setValue("lastTimeExecuted", nowSeconds())
 	
-	usedPlaces[game.GameId] = (usedPlaces[game.GameId] or 0) + 1
+	-- text keys, like the rest of the saved data: a numeric key can't be written as JSON, so the file would never save
+	local gameKey = tostring(game.GameId)
+	usedPlaces[gameKey] = (usedPlaces[gameKey] or 0) + 1
 	
 	userData:save()
 end

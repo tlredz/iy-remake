@@ -151,6 +151,43 @@ function fileSystem:exist(filePath)
 	return isfile(filePath)
 end
 
+-- reads a file of the IY folder. The file must exist (see fileSystem:exist)
+function fileSystem:readFile(filePath)
+	return readfile(self:getRealPath(filePath))
+end
+
+-- makes a folder of the IY folder, and the folders above it, when they are missing
+function fileSystem:makeFolder(folderPath)
+	makefolder(self:getRealPath(folderPath))
+end
+
+-- the value of an exact key. Unlike getValue, the key is not cut at its dots, so a URL can be a key
+function fileSystem:getEntry(key: string): any
+	return self.object[key]
+end
+
+-- sets the value of an exact key (nil removes it). See getEntry
+function fileSystem:setEntry(key: string, value: any)
+	self.object[key] = value
+end
+
+-- deletes a file of the IY folder. Returns true when it is gone (or was never there). An exploit without delfile
+-- can't delete, so the file stays and false is returned
+function fileSystem:delete(filePath: string): boolean
+	local path = self:getRealPath(filePath)
+
+	if not isfile(path) then
+		return true
+	end
+
+	if executorEnv.delfile == nil then
+		return false
+	end
+
+	pcall(executorEnv.delfile, path)
+	return not isfile(path)
+end
+
 function fileSystem:writeFile(filePath, raw)
 	if self.filePath ~= nil then
 		filePath, raw = self.filePath, filePath
@@ -189,12 +226,15 @@ function fileSystem:save()
 	
 	task.delay(1, function()
 		local content = json.encode(self.object, self.filePath)
-		
+		self.isSaving = false
+
+		-- json.encode warns about a value it can't write: nothing is written then, and the file keeps what it had
+		if content == nil then return end
+
 		if self.encryptData then
 			content = encryptor:encrypt(content)
 		end
-		
-		self.isSaving = false
+
 		self:writeFile(content)
 	end)
 end

@@ -9,6 +9,9 @@ local createService = require("../../services/createService")
 local assetsService = require("../../services/assetsService")
 local themeService = require("../../services/themeService")
 local keyboardService = require("../../../framework/services/keyboardService")
+local robloxServices = require("../../../framework/services/rbxServices")
+local inputUtils = require("../../utils/inputUtils")
+local scaleObject = require("../../utils/scaleObject")
 local config = require("../../../framework/config/ui/settings")
 
 local PANEL = config.panel
@@ -17,6 +20,7 @@ local BOX = config.box
 local VALUE = config.value
 local TEXT = config.textSizes
 local BADGE = config.badge
+local SLIDER = config.slider
 
 local widgets = {}
 
@@ -28,11 +32,13 @@ local function paintRow(row: GuiObject, stripe: number, hovered: boolean)
 	row.BackgroundTransparency = if hovered then 0 else stripe
 end
 
--- a scrolling page. The main panel and every editor page is one of these, placed at `position`
+-- a scrolling page. The main panel and every editor page is one of these, placed at `position`. It is see-through, so
+-- the image of the window (ui/services/backgroundService) shows behind it, the same as it does behind the command list
 function widgets.page(holder: Frame, name: string, position: UDim2): ScrollingFrame
 	return createService.new("ScrollingFrame", name, holder, {
 		Active = true,
 		AutomaticCanvasSize = Enum.AutomaticSize.Y,
+		BackgroundTransparency = 1,
 		BorderSizePixel = 0,
 		CanvasSize = UDim2.new(),
 		ElasticBehavior = Enum.ElasticBehavior.Never,
@@ -41,8 +47,7 @@ function widgets.page(holder: Frame, name: string, position: UDim2): ScrollingFr
 		ScrollingDirection = Enum.ScrollingDirection.Y,
 		Size = UDim2.fromScale(1, 1),
 		ThemeTag = {
-			BackgroundColor3 = "Colors.Background",
-			ScrollBarImageColor3 = "Colors.ScrollBar.Thumb",
+			ScrollBarImageColor3 = "Colors.Primary",
 		},
 
 		createService.new("UIPadding", {
@@ -341,6 +346,156 @@ function widgets.valueInput(row: GuiObject, text: string, width: number): TextBo
 			CornerRadius = UDim.new(0, VALUE.cornerRadius),
 		}),
 	})
+end
+
+-- a slider at the right of a row, with the percent it is at on the left of its bar. Press or drag the bar to move the
+-- knob. value is from 0 to 1, and onChanged(value) runs each time it moves. The UIScale is read when a press starts and
+-- used for that whole press: the pointer and the bar are divided by it, so the knob stays under the pointer even when
+-- the scale changes while it is held
+function widgets.slider(row: GuiObject, label: string, value: number, onChanged: (number) -> ())
+	widgets.label(row, label, SLIDER.width + SLIDER.valueWidth + PANEL.rowGap + PANEL.padding)
+
+	local track = createService.new("TextButton", "Track", row, {
+		AnchorPoint = Vector2.new(1, 0.5),
+		AutoButtonColor = false,
+		BackgroundTransparency = 1,
+		Position = UDim2.new(1, -PANEL.padding, 0.5, 0),
+		Size = UDim2.fromOffset(SLIDER.width, SLIDER.hitHeight),
+		Text = "",
+	})
+
+	local bar = createService.new("Frame", "Bar", track, {
+		AnchorPoint = Vector2.new(0, 0.5),
+		BorderSizePixel = 0,
+		Position = UDim2.fromScale(0, 0.5),
+		Size = UDim2.new(1, 0, 0, SLIDER.barHeight),
+		ThemeTag = {
+			BackgroundColor3 = "Colors.Buttons.Default",
+		},
+
+		createService.new("UICorner", {
+			CornerRadius = UDim.new(0, SLIDER.barHeight / 2),
+		}),
+	})
+
+	local fill = createService.new("Frame", "Fill", bar, {
+		BorderSizePixel = 0,
+		Size = UDim2.fromScale(0, 1),
+		ThemeTag = {
+			BackgroundColor3 = "Colors.Primary",
+		},
+
+		createService.new("UICorner", {
+			CornerRadius = UDim.new(0, SLIDER.barHeight / 2),
+		}),
+	})
+
+	local knob = createService.new("Frame", "Knob", track, {
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		BorderSizePixel = 0,
+		Position = UDim2.fromScale(0, 0.5),
+		Size = UDim2.fromOffset(SLIDER.knobSize, SLIDER.knobSize),
+		ThemeTag = {
+			BackgroundColor3 = "Colors.Icons",
+		},
+
+		createService.new("UICorner", {
+			CornerRadius = UDim.new(1, 0),
+		}),
+	})
+
+	local text = createService.new("TextLabel", "Value", row, {
+		AnchorPoint = Vector2.new(1, 0.5),
+		BackgroundTransparency = 1,
+		Position = UDim2.new(1, -(PANEL.padding + SLIDER.width + PANEL.rowGap), 0.5, 0),
+		Size = UDim2.fromOffset(SLIDER.valueWidth, VALUE.height),
+		Text = "",
+		TextSize = TEXT.value,
+		TextXAlignment = Enum.TextXAlignment.Right,
+		ThemeTag = {
+			Font = "Font.MonoSpace",
+			TextColor3 = "Colors.Text.Darker",
+		},
+	})
+
+	-- moves the fill and the knob to an amount, and writes the percent
+	local function show(amount: number)
+		fill.Size = UDim2.fromScale(amount, 1)
+		knob.Position = UDim2.fromScale(amount, 0.5)
+		text.Text = `{math.round(amount * 100)}%`
+	end
+
+	show(math.clamp(value, 0, 1))
+
+	-- the press in progress: where the bar is, the UIScale it began with, the page it scrolls in, and its connections
+	local press = nil
+
+	local function stopPress()
+		local ended = press
+		if ended == nil then return end
+
+		press = nil
+		ended.moved:Disconnect()
+		ended.released:Disconnect()
+
+		if ended.scroller then
+			ended.scroller.ScrollingEnabled = ended.wasScrolling
+		end
+	end
+
+	local function moveTo(pointerX: number)
+		local current = press
+		if current == nil or current.width <= 0 then return end
+
+		-- the pointer and the bar are in pixels. Both are divided by the UIScale of the press, so the amount is read in
+		-- the units the bar is laid out in
+		local along = (pointerX - current.left) / current.scale
+		local length = current.width / current.scale
+
+		local amount = math.clamp(along / length, 0, 1)
+
+		show(amount)
+		onChanged(amount)
+	end
+
+	track.InputBegan:Connect(function(input: InputObject)
+		if press ~= nil or not inputUtils.isPressingInput(input) then return end
+
+		-- a page scrolls with a finger: it stops scrolling while the knob is held
+		local scroller = track:FindFirstAncestorWhichIsA("ScrollingFrame")
+
+		press = {
+			scale = scaleObject:getScale(),
+			left = track.AbsolutePosition.X,
+			width = track.AbsoluteSize.X,
+			scroller = scroller,
+			wasScrolling = if scroller then scroller.ScrollingEnabled else false,
+		}
+
+		if scroller then
+			scroller.ScrollingEnabled = false
+		end
+
+		press.moved = robloxServices.UserInputService.InputChanged:Connect(function(changed: InputObject)
+			if not inputUtils.isMovingInput(changed) then return end
+
+			-- the page was cleared while the knob was held: the press ends with it
+			if track.Parent == nil then
+				stopPress()
+				return
+			end
+
+			moveTo(changed.Position.X)
+		end)
+
+		press.released = robloxServices.UserInputService.InputEnded:Connect(function(ended: InputObject)
+			if inputUtils.isPressingInput(ended) then
+				stopPress()
+			end
+		end)
+
+		moveTo(input.Position.X)
+	end)
 end
 
 -- a box that shows the key of a binding. Tapping it waits for the next key press to become the new key;

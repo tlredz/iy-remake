@@ -6,13 +6,13 @@
 
 > [!IMPORTANT]
 > **Infinite Yield RV** was built using a modular structure.
-> To compile the code, you must use a Lua/Luau bundler, or run it locally by placing the project inside your executor's folder.
+> To compile the code, you must use a Lua/Luau bundler (darklua recommended), or run it locally by placing the project inside your executor's folder.
 
 > [!TIP]
 > Suggestions and pull requests are highly welcome! Feel free to contribute to improve and fix the project.
 
 > [!WARNING]
-> **AI Use** AI was used to fix, reorganize, and rebuild some code. (This does not mean that the entire project was scrutinized by AI.) 
+> **AI Use** AI was used to fix, reorganize, and rebuild some code. (This does not mean that the entire project was scrutinized by AI.)
 
 > [!NOTE]
 > Models used: Claude (Sonnet 5.5, Haiku 5.5)

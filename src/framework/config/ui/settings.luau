@@ -8,6 +8,11 @@
 --   "button"   `action` is the name of a page in `pages` below, and the button opens that page. An action without a
 --              page is reported to the component (onButton)
 --
+--   "expand"   a row that opens a group of rows under it. `items` are the rows: a label and the key of a value in the user
+--              data (storage/data/user), or `placeCounts`, the name of a table of the user data that counts by place
+--              (the count of this place is shown). `date = true` shows the number, a time in seconds, as a date.
+--              The values are read each time the row opens
+--
 -- `icon` is a name from ui/themes/icons/interface.luau.
 
 local keepiy = require("../commands/keepiy")
@@ -66,12 +71,28 @@ return {
 		buttonWidth = 36, -- the small buttons at the right of a row ("Del", "Add")
 		reloadWidth = 52, -- the "Reload" button of a plugin
 		positionWidth = 92, -- the position box in the line that adds a waypoint
+		userWidth = 150, -- the box that shows a number or a date of the user section
 	},
 
 	-- the count of binds on an event button (widgets.choices): a small pill at the top right corner, shown when it has binds
 	badge = {
 		height = 12,
 		overhang = 3, -- how far it sticks out past the corner of the button
+	},
+
+	-- a slider in a row (widgets.slider): its bar, its knob, and the percent on the left of the bar
+	slider = {
+		width = 90,
+		valueWidth = 36,
+		barHeight = 4,
+		hitHeight = 20, -- the area a finger or the pointer can press
+		knobSize = 12,
+	},
+
+	-- what a date of the user shows when there is none yet (see the user section)
+	userData = {
+		missing = "-", -- shown while the user data has no such number yet
+		dateFormat = "%Y-%m-%d %H:%M:%S",
 	},
 
 	textSizes = {
@@ -94,6 +115,37 @@ return {
 			title = "#theme",
 			incomplete = "(incomplete)",
 			primary = "primary", -- the label of the row of primary colors under the theme in use
+		},
+		background = {
+			title = "#background",
+			urlHint = "image URL, like https://...",
+			apply = "Set image from URL",
+			refresh = "Refresh image",
+			remove = "Remove image",
+			opacity = "Opacity",
+			-- the icons of the rows, by the names in ui/themes/icons/interface
+			icons = {
+				apply = "lucide-palette",
+				refresh = "lucide-refresh-cw",
+				remove = "lucide-trash",
+				opacity = "lucide-sliders-horizontal",
+			},
+			notifyTitle = "Background",
+			downloading = "downloading the image...",
+			set = "background set",
+			refreshed = "background refreshed",
+			removed = "background removed",
+			removedKeptFile = "background removed, but its file stays: your exploit can't delete files",
+			nothingToRefresh = "there is no background to refresh",
+			nothingToRemove = "there is no background to remove",
+			alreadyDownloading = "this image is already being downloaded",
+			downloadReplaced = "the previous download was cancelled, downloading the new image...",
+			slow = "the image is taking a long time to download...",
+			empty = "write the URL of an image first",
+			badUrl = "the URL must start with http:// or https://",
+			noCustomAsset = "your exploit does not support getcustomasset, so the background can't be shown",
+			downloadFailed = "could not download an image from that URL",
+			loadFailed = "the image was downloaded, but it could not be loaded",
 		},
 		keybinds = {
 			title = "#keybinds",
@@ -273,6 +325,21 @@ return {
 				{ kind = "button", label = "Edit Event Binds", icon = "lucide-zap", action = "eventBinds" },
 				{ kind = "button", label = "Command Settings", icon = "lucide-sliders-horizontal", action = "commands" },
 				{ kind = "button", label = "Import / Export", icon = "lucide-arrow-down-up", action = "importExport" },
+			},
+		},
+		{
+			title = "#user",
+			options = {
+				{
+					kind = "expand",
+					label = "Usage",
+					icon = "lucide-terminal",
+					items = {
+						{ label = "First run", key = "firstTimeExecuted", date = true },
+						{ label = "This place", placeCounts = "usedPlaces" },
+						{ label = "Total", key = "executionCount" },
+					},
+				},
 			},
 		},
 	},

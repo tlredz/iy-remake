@@ -2,6 +2,10 @@
 
 require("./cleanup"):init()
 
+-- registers the defaults and this run's data (the dates, the execution count). It runs before the modules below, which
+-- read the saved data as they load
+require("./storage")
+
 local commandsController = require("../commands/controllers/commandsController")
 local keepiy = require("../commands/systems/keepiy")
 local playerService = require("../framework/services/playerService")

@@ -156,8 +156,29 @@ function themeService:removeObject(object: Instance): (nil)
 	self.objects[object] = nil
 end
 
+-- a saved primary color that is not offered any more (pink and yellow were removed) goes back to the default, so the
+-- saved setting and the picker show the same thing
+function themeService:resetRemovedPrimaries()
+	local changed = false
+
+	for themeName in themes do
+		local saved = settingsData:getValue(PRIMARY_PREFIX .. themeName)
+
+		if saved ~= nil and not (type(saved) == "string" and findOption(saved)) then
+			settingsData:setValue(PRIMARY_PREFIX .. themeName, themeConfig.defaultKey)
+			changed = true
+		end
+	end
+
+	if changed then
+		settingsData:save()
+	end
+end
+
 function themeService:init(config)
 	logger:expect(config, {"table"}, "'themeService:init' #1")
+
+	self:resetRemovedPrimaries()
 
 	if config.theme ~= nil then
 		self:selectTheme(config.theme)

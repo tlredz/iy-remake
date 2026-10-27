@@ -5,5 +5,6 @@ return {
 	user = require("./data/user"),
 	aliases = require("./data/aliases"),
 	usedCmds = require("./data/usedCmds"),
-	eventBinds = require("./data/eventBinds")
+	eventBinds = require("./data/eventBinds"),
+	backgrounds = require("./data/backgrounds"),
 }

@@ -7,6 +7,7 @@ local frameworkSettings = require("../../framework/settings")
 local assetsPath = frameworkSettings.storage.imagePath
 
 local fileSystem = require("../../storage/fileSystem")
+local downloads = require("../../storage/downloads")
 local fetchService = require("../../framework/services/fetchService")
 local logger = require("../../utils/logger")
 
@@ -44,14 +45,15 @@ function assetsService:get(assetName: string): string
 		return assets[assetName]
 	end
 	
-	local assetPath = assetsPath:format(assetName)
-	logger:log(`loading asset: '{assetPath}'`)
+	local fileName = `{assetName}.png`
+	local keptPath = downloads.path("assets", fileName)
+	logger:log(`loading asset: '{keptPath}'`)
 	
-	if fileSystem:exist(assetPath) then
-		return self:newCustomAsset(assetName, assetPath)
+	if downloads.has("assets", fileName) then
+		return self:newCustomAsset(assetName, keptPath)
 	end
 	
-	local imageRaw = fetchService.fetch(assetPath)
+	local imageRaw = fetchService.fetch(assetsPath:format(assetName))
 	
 	if imageRaw == nil then
 		local assetid = assets[assetName]
@@ -61,10 +63,10 @@ function assetsService:get(assetName: string): string
 		return assetid
 	end
 	
-	fileSystem:writeFile(assetPath, imageRaw)
-	logger:log(`created a file to asset: '{assetPath}'`)
+	downloads.write("assets", fileName, imageRaw)
+	logger:log(`created a file to asset: '{keptPath}'`)
 	
-	return self:newCustomAsset(assetName, assetPath)
+	return self:newCustomAsset(assetName, keptPath)
 end
 
 function assetsService:loadImage(object: any, assetName: string)

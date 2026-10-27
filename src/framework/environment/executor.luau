@@ -95,6 +95,7 @@ return setmetatable({
 		get_signal_cons
 	),
 	writefile = register("function", writefile),
+	delfile = register("function", delfile),
 	readfile = register("function", readfile),
 	listfiles = register("function", listfiles),
 	loadstring = register("function", loadstring),

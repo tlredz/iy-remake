@@ -5,9 +5,11 @@ local createService = require("../services/createService")
 local mainFrame = {}
 
 function mainFrame:create()
-	local frame = createService.new("Frame", "MainFrame", {
+	local frame = createService.new("ImageLabel", "MainFrame", {
 		Active = true,
 		BorderSizePixel = 0,
+		Image = "", -- the custom background of the window (ui/services/backgroundService), when there is one
+		ScaleType = Enum.ScaleType.Crop,
 		ThemeTag = {
 			BackgroundColor3 = "Colors.Background"
 		},

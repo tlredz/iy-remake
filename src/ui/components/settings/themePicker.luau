@@ -12,6 +12,7 @@ local themeService = require("../../services/themeService")
 local settingsData = require("../../../storage/data/settings")
 local config = require("../../../framework/config/ui/settings")
 local widgets = require("./widgets")
+local backgroundEditor = require("./backgroundEditor")
 
 local PANEL = config.panel
 local BOX = config.box
@@ -166,6 +167,8 @@ local function build(page: ScrollingFrame, ctx)
 
 		table.insert(items, item)
 	end
+
+	backgroundEditor.addSection(list)
 
 	redraw()
 end

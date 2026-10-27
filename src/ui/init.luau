@@ -17,6 +17,7 @@ local tools = require("../utils/tools")
 local createService = require("./services/createService")
 local assetsService = require("./services/assetsService")
 local themeService = require("./services/themeService")
+local backgroundService = require("./services/backgroundService")
 
 local themes = require("./themes")
 local coreGui = require("./coreGui")
@@ -217,6 +218,7 @@ function interface:createMainScroll(mainFrame)
 	self.scrollHolder = scrollHolder
 	self.scrollBar = scrollBar
 	self.scrollContainer = container
+	self.scrollBarFrame = scrollBarFrame
 
 	return scrollBar
 end
@@ -230,6 +232,9 @@ function interface:createMainFrame()
 	self.mainFrame = mainFrame
 	self.topBar = elements.topBar
 	self.buttons = elements.buttons
+
+	-- the custom background sits behind the window's contents (see ui/services/backgroundService)
+	backgroundService:attach(mainFrame)
 
 	assetsService:loadImage(self.buttons.settings, "settings")
 	assetsService:loadImage(self.buttons.reference, "reference")
@@ -255,7 +260,7 @@ function interface:createMainFrame()
 			end
 		end,
 	})
-	self.settings:create(mainFrame, self.scrollHolder)
+	self.settings:create(mainFrame, self.scrollHolder, { self.scrollContainer, self.scrollBarFrame })
 
 	connectionService:Connect(self.buttons.settings.Activated, function()
 		self.settings:toggle()

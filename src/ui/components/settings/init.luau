@@ -13,6 +13,7 @@ local config = require("../../../framework/config/ui/settings")
 local frameworkSettings = require("../../../framework/settings")
 local robloxServices = require("../../../framework/services/rbxServices")
 local uiTweens = require("../../../framework/services/tweenService")
+local datas = require("../../../storage")
 
 local widgets = require("./widgets")
 local buildThemePicker = require("./themePicker")
@@ -69,6 +70,36 @@ local function slide(frame: GuiObject, position: UDim2, onDone: ((boolean) -> ()
 	frame:TweenPosition(position, Enum.EasingDirection.InOut, Enum.EasingStyle.Quart, PANEL.tweenTime, true, onDone)
 end
 
+-- the text of a value of the user data: a date when the item is one (a time in seconds), otherwise the number itself.
+-- The missing text stands in while there is no value yet
+local function formatValue(value: any, item: { [string]: any }): string
+	if type(value) ~= "number" then
+		return config.userData.missing
+	end
+
+	if item.date then
+		return os.date(config.userData.dateFormat, value)
+	end
+
+	return tostring(value)
+end
+
+-- the number an item of an expand group shows: the count of this place (a table of the user data, by game id), or the
+-- number kept under its key
+local function readCount(item: { [string]: any }): any
+	if item.placeCounts then
+		local counts = datas.user:getValue(item.placeCounts)
+
+		if type(counts) ~= "table" then
+			return nil
+		end
+
+		return counts[tostring(game.GameId)]
+	end
+
+	return datas.user:getValue(item.key)
+end
+
 function settings.isKeepMenuOpen(): boolean
 	return readFlag(config.keys.keepMenuOpen)
 end
@@ -87,6 +118,11 @@ end
 
 -- builds one option row. Returns a function that redraws it, when the option has a state to show
 function settings:createOption(list, option): (() -> ())?
+	if option.kind == "expand" then
+		self:createExpandOption(list, option)
+		return nil
+	end
+
 	local row = widgets.row(list)
 
 	if option.icon then
@@ -146,6 +182,53 @@ function settings:createOption(list, option): (() -> ())?
 	return nil
 end
 
+-- an option that opens a group of rows under it: option.items, each a label and a value of the user data (see readCount).
+-- The group is hidden until the row is tapped, and its numbers are read each time it opens
+function settings:createExpandOption(list, option)
+	local row = widgets.row(list)
+
+	if option.icon then
+		widgets.icon(row, option.icon)
+	end
+
+	widgets.label(row, option.label, ROW.chevronSize + 2 * PANEL.padding)
+	local arrow = widgets.chevron(row)
+
+	local group = widgets.group(list)
+	group.Visible = false
+
+	local groupList = widgets.list(group)
+	local values = {} -- { item, text } of each number in the group
+
+	for _, item in option.items do
+		local infoRow = widgets.row(groupList)
+		widgets.label(infoRow, item.label, VALUE.userWidth + 2 * PANEL.padding)
+
+		local _, text = widgets.value(infoRow, "", VALUE.userWidth)
+		table.insert(values, { item = item, text = text })
+	end
+
+	local function readValues()
+		for _, value in values do
+			value.text.Text = formatValue(readCount(value.item), value.item)
+		end
+	end
+
+	local expanded = false
+
+	row.Activated:Connect(function()
+		expanded = not expanded
+
+		-- the arrow points down while the group is open, and to the right when it is shut
+		arrow.Rotation = if expanded then 270 else 180
+		group.Visible = expanded
+
+		if expanded then
+			readValues()
+		end
+	end)
+end
+
 function settings:createOptions()
 	local list = widgets.list(self.panel)
 
@@ -191,6 +274,8 @@ function settings.new(options)
 		isOpen = false,
 		isShown = false,
 		holder = nil,
+		listArea = nil, -- the area of the command list, under the panel
+		listParts = nil, -- the parts of the command list that the panel covers: hidden while the panel is shown
 		panel = nil, -- the list of options
 		current = nil, -- the frame on screen: the list, or an editor page
 		pages = {},
@@ -207,17 +292,23 @@ function settings.new(options)
 	}, settings)
 end
 
-function settings:create(parent: Instance, listArea: GuiObject): Frame
+-- the panel fills the area of the command list. listParts are the parts of the list that are hidden while the panel is shown
+function settings:create(parent: Instance, listArea: GuiObject, listParts: { GuiObject }?): Frame
 	local holder = createService.new("Frame", "SettingsHolder", parent, {
 		AnchorPoint = listArea.AnchorPoint,
 		BackgroundTransparency = 1,
 		ClipsDescendants = true,
 		Position = listArea.Position,
 		Size = listArea.Size,
+
+		-- drawn under the area of the list, so the command bar, which is in that area, stays on top of the panel
+		ZIndex = 0,
 		Visible = false,
 	})
 
 	self.holder = holder
+	self.listArea = listArea
+	self.listParts = listParts or {}
 	self.panel = widgets.page(holder, "Settings", UDim2.fromScale(0, HIDDEN_Y))
 	self.current = self.panel
 
@@ -504,6 +595,16 @@ function settings:toggle()
 	end
 end
 
+-- shows or hides the command list under the panel. While the panel is shown, the list's area takes no taps, so the panel
+-- gets them. The command bar is a button of its own, so it keeps its taps
+function settings:setListShown(shown: boolean)
+	for _, part in self.listParts do
+		part.Visible = shown
+	end
+
+	self.listArea.Active = shown
+end
+
 function settings:setShown(shown: boolean)
 	if not self.panel or self.isShown == shown then return end
 
@@ -514,6 +615,9 @@ function settings:setShown(shown: boolean)
 
 	if shown then
 		self.holder.Visible = true
+
+		-- the panel is see-through, so the list under it is hidden: it would show through the panel
+		self:setListShown(false)
 		slide(current, UDim2.fromScale(0, SHOWN_Y))
 		return
 	end
@@ -523,6 +627,9 @@ function settings:setShown(shown: boolean)
 	slide(current, UDim2.fromScale(0, HIDDEN_Y), function(completed)
 		if completed and not self.isShown then
 			self.holder.Visible = false
+
+			-- the list comes back once the panel is gone, so the two never show together
+			self:setListShown(true)
 
 			-- closed with the button: the next time it opens, it shows the list. A command bar focus keeps the page
 			if not self.isOpen then
