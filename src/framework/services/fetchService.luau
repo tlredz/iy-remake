@@ -57,6 +57,24 @@ function fetchService.fetch(path: string): string?
 	return get(repoPath, path)
 end
 
+-- the text of a reference file of the plugin docs (plugins/...). The copy kept for this version is used first; when
+-- there is none, the repo is asked and the text is kept for this version once it arrives
+function fetchService.fetchReference(path: string): string?
+	local name = cleanPath(path)
+
+	local kept = downloads.read("reference", name)
+	if kept ~= nil then
+		return kept
+	end
+
+	local source = fetchService.fetch(path)
+	if source ~= nil then
+		downloads.write("reference", name, source)
+	end
+
+	return source
+end
+
 -- the name a script is kept under: its path in the repo, without the backups folder it is in
 local function scriptName(path: string): string
 	return (path:gsub("^backups/", ""))

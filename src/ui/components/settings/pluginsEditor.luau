@@ -1,6 +1,6 @@
 -- src/ui/components/settings/pluginsEditor.luau
 -- The Manage Plugins page. From the top: a box to type the file name of a plugin and add it, the plugins that are
--- installed, and the .luau files in the plugins folder that are not installed yet (tap one, or Add all).
+-- installed, and supported files in the plugins folder that are not installed yet (tap one, or Add all).
 --
 -- A plugin shows how many commands it gave, or "(failed)" when it could not load. Tapping a plugin tells its state in
 -- the line under the box (the reason, when it failed). Reload reads its file again, so changes to it take effect, and
@@ -12,6 +12,7 @@
 local plugins = require("../../../commands/systems/plugins")
 local commandsList = require("../../../commands/list")
 local config = require("../../../framework/config/ui/settings")
+local pluginsConfig = require("../../../framework/config/commands/plugins")
 local notifier = require("../../notifier")
 local widgets = require("./widgets")
 
@@ -34,7 +35,7 @@ local function build(page: ScrollingFrame, ctx)
 	local addRow = widgets.row(list)
 	widgets.label(addRow, TEXT.addButton, 0)
 
-	local note = widgets.note(list, string.format(TEXT.folderHint, plugins.FOLDER))
+	local note = widgets.note(list, string.format(TEXT.folderHint, table.concat(pluginsConfig.extensions, ", "), plugins.FOLDER))
 	widgets.note(list, TEXT.trustHint)
 
 	-- the installed plugins, and the files in the folder

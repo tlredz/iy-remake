@@ -14,6 +14,7 @@ local searchController = require("./searchController")
 local argsManager = require("../systems/argsManager")
 local customAliases = require("../systems/customAliases")
 local pluginsSystem = require("../systems/plugins")
+local resolvePlayers = require("../systems/resolvePlayers")
 
 local rankConfig = frameworkSettings.commands.cmdsRank
 local MAX_TIMES_USED = rankConfig.maxTimesUsed
@@ -248,6 +249,11 @@ function commandsController:search(query: string, onlyBests: boolean): { string 
 	end
 	
 	return bestMatches
+end
+
+-- Turns the text of a "player" argument into a list of Players: names, selectors, commas, + and -
+function commandsController:resolvePlayers(text: string?): { Player }
+	return resolvePlayers(text)
 end
 
 function commandsController:init(config)

@@ -320,8 +320,16 @@ end
 function commandParser:highlightArgs(info, cmdData, statement, hasSpaces, buffer, isLast: boolean)
 	local tokens = statement.tokens
 	local args = cmdData.args
-	local argCount = #args
 	local typedCount = #tokens - 1
+	local lastArg = args[#args]
+	if lastArg and lastArg.variadic then
+		args = table.clone(args)
+		local count = typedCount + (if hasSpaces then 1 else 0)
+		while #args < count do
+			table.insert(args, lastArg)
+		end
+	end
+	local argCount = #args
 
 	local lastProcessed = 1 -- index in `tokens` of the last token that was validated
 	local failure = nil     -- the first invalid argument

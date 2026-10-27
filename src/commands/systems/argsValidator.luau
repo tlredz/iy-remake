@@ -4,6 +4,7 @@ local commandsList   = require("../list")
 local waypointsData  = require("../../storage/data/waypoints")
 local aliasesData    = require("../../storage/data/aliases")
 local pluginsData    = require("../../storage/data/plugins")
+local pluginsSystem  = require("./plugins")
 local tools          = require("../../utils/tools")
 
 --[[
@@ -376,7 +377,7 @@ local function validateAlias(text)
 end
 
 local function validatePlugin(text)
-	return validateStoredName(pluginsData, text, " - no plugins installed", " - invalid plugin")
+	return validateStoredName(pluginsData, pluginsSystem.normalizeName(text) or text, " - no plugins installed", " - invalid plugin")
 end
 
 local validators = {

@@ -249,7 +249,7 @@ return {
 			addTitle = "#add plugin",
 			fileHint = "plugin file name",
 			addButton = "Add plugin",
-			folderHint = "plugins are .luau files in the %s folder", -- the folder
+			folderHint = "plugins are %s files in the %s folder", -- configured extensions, folder
 			trustHint = "a plugin runs code with full access: only add files you trust",
 			installedTitle = "#installed plugins",
 			installedHint = "tap a plugin to see its state, Reload reads its file again",

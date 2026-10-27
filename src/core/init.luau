@@ -11,6 +11,8 @@ local keepiy = require("../commands/systems/keepiy")
 local playerService = require("../framework/services/playerService")
 local fetchService = require("../framework/services/fetchService")
 local eventListeners = require("../commands/services/eventListeners")
+local classicPlugins = require("../commands/systems/classicPlugins")
+local commandRunner = require("../commands/systems/commandRunner")
 
 -- local checkStubs = require("./checkStubs")
 
@@ -20,6 +22,7 @@ local infiniteYield = {}
 
 function infiniteYield:boot()
 	self.boot = nil
+	classicPlugins.configure(commandsController, commandRunner.runText)
 	
 	commandsController:init({
 		infiniteYield = interface,

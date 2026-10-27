@@ -270,6 +270,7 @@ export type commandsController = {
 	reportError: (self: commandsController, name: string, err: unknown, trace: string?) -> (),
 	getRoot: (self: commandsController) -> BasePart?,
 	getRootPart: (self: commandsController) -> BasePart?,
+	resolvePlayers: (self: commandsController, text: string?) -> { Player },
 	connect: (self: commandsController, event: RBXScriptSignal | signal, callback: (...any) -> ()) -> (RBXScriptConnection | connection),
 	Connect: (self: commandsController, event: RBXScriptSignal | signal, callback: (...any) -> ()) -> (RBXScriptConnection | connection),
 	expectExploit: (self: commandsController, name: string) -> any,

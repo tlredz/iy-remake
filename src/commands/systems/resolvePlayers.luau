@@ -75,8 +75,8 @@ end
 
 -- The nearest or farthest player, not counting you
 local function byDistance(players: { Player }, farthest: boolean): { Player }
-	local best = nil
-	local bestDistance = nil
+	local best: Player | nil = nil
+	local bestDistance: number | nil = nil
 
 	for _, player in withoutLocal(players) do
 		local distance = distanceFromLocal(player)
@@ -128,7 +128,7 @@ local KEYWORDS = {
 		end)
 	end,
 	friends = function(players)
-		return filter(withoutLocal(players), function(player)
+		return filter(withoutLocal(players), function(player): boolean
 			return localPlayer:IsFriendsWith(player.UserId)
 		end)
 	end,
@@ -210,8 +210,8 @@ local PATTERNS = {
 		pattern = "^group(%d+)$",
 		handler = function(players, captured)
 			local groupId = tonumber(captured)
-			return filter(players, function(player)
-				return player:IsInGroup(groupId)
+			return filter(players, function(player: Player)
+				return (groupId and player:IsInGroup(groupId)) or false
 			end)
 		end,
 	},
@@ -366,22 +366,22 @@ local function resolvePlayers(text: string?): { Player }
 	local input = text or "me"
 	local players = robloxServices.Players:GetPlayers()
 	local whole = resolveTerm(trim(input), players)
-
+	
 	if #whole > 0 then
 		return whole
 	end
-
+	
 	if not hasOperators(input) then
 		-- a selector that matches nobody can still be a player name (group1, age20, rad5...)
 		return playerService:getPlayersByName(trim(input))
 	end
-
+	
 	local result = {}
-
+	
 	for _, part in parts(input) do
 		result = union(result, resolveChain(part, players))
 	end
-
+	
 	return result
 end
 

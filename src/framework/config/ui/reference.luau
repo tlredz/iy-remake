@@ -7,7 +7,7 @@ local function h(text: string): string
 	return textHighlight:apply(text)
 end
 
-return {
+local config = {
 	cases = {
 		{ "all", "- includes everyone" },
 		{ "others", "- includes everyone except you" },
@@ -100,3 +100,22 @@ return {
 		},
 	}
 }
+
+-- the Plugins tab is paged: each section is one page, moved with BACK and NEXT at the bottom of the window
+config.pages = {
+	{ id = "types", title = "Types", sections = config.sections },
+	{ id = "plugins", title = "Plugins", sections = require("./pluginReference"), paged = true },
+}
+
+config.navigation = {
+	back = "Back",
+	next = "Next",
+}
+
+-- shown in a code block while its text is read from the repo (plugins/...), or when that read fails
+config.labels = {
+	loading = "Loading...",
+	failed = "Could not load this code. Open this page again to retry.",
+}
+
+return config

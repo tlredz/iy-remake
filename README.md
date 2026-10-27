@@ -15,7 +15,7 @@
 > **AI Use** AI was used to fix, reorganize, and rebuild some code. (This does not mean that the entire project was scrutinized by AI.)
 
 > [!NOTE]
-> Models used: Claude (Sonnet 5.5, Haiku 5.5)
+> Models used: Claude (Sonnet 5.5, Haiku 5.5), Chat GPT (6.1 Sol)
 
 ## 📌 About
 - **Infinite Yield** is a feature-rich admin command panel designed for Roblox games.

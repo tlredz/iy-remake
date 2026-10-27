@@ -8,6 +8,7 @@ local warnColor        = Color3.fromRGB(254, 193, 7)
 local errorColor       = Color3.fromRGB(244, 66,  54)
 local validColor       = Color3.fromRGB(166, 227, 45)
 local tagColor         = Color3.fromRGB(255, 149, 75)
+local funcColor        = Color3.fromRGB(166, 227, 45) -- function names in Luau code (defined or called)
 
 return {
 	args = {
@@ -22,6 +23,8 @@ return {
 		["error"]   = errorColor,
 		["valid"]   = validColor,
 		["tag"]     = tagColor,
+		["func"]    = funcColor,
+		["field"]   = identifierColor, -- fields and table keys in Luau code
 	},
 	commands = {
 		["undefined"]  = errorColor,

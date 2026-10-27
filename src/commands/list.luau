@@ -1,4 +1,5 @@
 local logger = require("../utils/logger")
+local signal = require("../utils/signal")
 -- local register = require("./register")
 
 local function createCommands(commandsInfo)
@@ -62,7 +63,9 @@ local function createCommands(commandsInfo)
 	return {
 		array = array,
 		lookup = lookup,
-		original = cmdsInfo
+		original = cmdsInfo,
+		revision = 0,
+		changed = signal.new(),
 	}
 end
 

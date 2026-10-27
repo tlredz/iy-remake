@@ -1,7 +1,8 @@
 local themes = {
 	require("./classic"),
 	require("./dark"),
-	require("./light")
+	require("./light"),
+	require("./m3dark")
 }
 
 local lookup = {}

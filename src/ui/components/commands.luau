@@ -60,6 +60,7 @@ local function cleanInput(text)
 end
 
 function commands:refresh(text: string, debounce: boolean?)
+	self:syncCommandsData()
 	local statements = self.parser:parse(text)
 	self.parser:highlight(statements)
 
@@ -219,6 +220,12 @@ function commands:awake()
 	local marker       = self.inputMarker
 	
 	local placeholder = searchHolder.Placeholder
+
+	connectionService:Connect(commandsList.changed, function()
+		if self:syncCommandsData() then
+			self:refresh(cleanInput(searchBox.Text))
+		end
+	end)
 	
 	local textChangedSignal = searchBox:GetPropertyChangedSignal("Text")
 	
@@ -630,12 +637,35 @@ function commands:createSendButton()
 end
 
 function commands:createCommandsData()
+	local present = {}
+	local data = {}
 	for pos, command in commandsList.original do
-		local cmdData = commandData.new(command)
+		local cmdData = command.commandData or commandData.new(command)
 		command.commandData  = cmdData
 		cmdData.position     = pos - 1
-		table.insert(self.commandsData, cmdData)
+		present[command] = true
+		table.insert(data, cmdData)
 	end
+	for _, command in self.renderedCommands or {} do
+		if not present[command] then
+			local cmdData = command.commandData
+			if cmdData and cmdData.element then cmdData.element:Destroy() end
+			command.commandData = nil
+		end
+	end
+	self.commandsData = data
+	self.renderedCommands = table.clone(commandsList.original)
+	self.commandsRevision = commandsList.revision or 0
+	self.hoveredCommand = nil
+	self:clearHoverDescription()
+end
+
+function commands:syncCommandsData(): boolean
+	if self.commandsRevision == (commandsList.revision or 0) then return false end
+	self:createCommandsData()
+	self.scrollBar:setTotalSpace(self:calculateTotalSpace())
+	if self.isEnabled then self:updateElements() end
+	return true
 end
 
 function commands:updateSearchBoxHighlight()
@@ -706,6 +736,7 @@ function commands:updateSearchBoxPosition()
 end
 
 function commands:updateSearchedCommand()
+	self:syncCommandsData()
 	local bestMatch   = self.commandInput.bestMatch
 	local commandName = self.commandInput.commandName
 	if commandName == "" then return end
@@ -713,7 +744,7 @@ function commands:updateSearchedCommand()
 	local command = getCommand(commandName)
 		or (bestMatch and getCommand(bestMatch))
 
-	if command then
+	if command and command.commandData then
 		self.scrollBar:scrollTo(command.commandData.position)
 	end
 end
@@ -867,6 +898,7 @@ end
 
 function commands:getCommandColor(cmdName, cmdData)
 	local command = getCommand(cmdName)
+	if not command then return cmdName end
 	
 	local colorName =
 		if type(command.run) ~= "function" then "undefined"
@@ -1097,6 +1129,7 @@ function commands:startedHoldingContainer(input)
 end
 
 function commands:update()
+	self:syncCommandsData()
 	self.scrollBar:setVisibleSpace(self:calculateVisibleSpace())
 	self.scrollBar:setTotalSpace(self:calculateTotalSpace())
 	self:updateElements()

@@ -30,6 +30,12 @@ return {
 			Holding = Color3.fromRGB(180, 180, 192),
 			Default = Color3.fromRGB(208, 208, 216),
 		},
+		Tonal = {
+			Default = Color3.fromRGB(214, 218, 253),
+			Text = Color3.fromRGB(20, 20, 24),
+			Disabled = Color3.fromRGB(218, 218, 226),
+			DisabledText = Color3.fromRGB(150, 150, 160),
+		},
 		Text = {
 			Default = Color3.fromRGB(20, 20, 24),
 			Dark = Color3.fromRGB(62, 62, 70),

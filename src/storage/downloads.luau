@@ -1,7 +1,8 @@
 -- src/storage/downloads.luau
--- What IY downloads from the repo, assets and scripts, is kept in the IY folder, in a folder for the version:
+-- What IY downloads from the repo, assets, scripts and reference files, is kept in the IY folder, in a folder for the version:
 --   backups/<version>/assets/<name>.png
 --   backups/<version>/scripts/<path>
+--   backups/<version>/reference/<path>  (the plugin docs: plugins/...)
 -- A copy is only made when the version has none, so each version downloads a file once. A new version gets its own folder.
 
 local fileSystem = require("./fileSystem")
@@ -31,13 +32,18 @@ function downloads.read(kind: string, name: string): string?
 	return fileSystem:readFile(path)
 end
 
--- keeps the copy of this version. The folders it is in are made first
+-- keeps the copy of this version. The folders it is in are made first, one level at a time (backups, then the version,
+-- and so on), so a nested name like plugins/examples/... works on every executor
 function downloads.write(kind: string, name: string, content: string)
 	local path = downloads.path(kind, name)
 	local folder = path:match("^(.*)/[^/]+$")
 
 	if folder then
-		fileSystem:makeFolder(folder)
+		local built = nil
+		for segment in folder:gmatch("[^/]+") do
+			built = if built then `{built}/{segment}` else segment
+			fileSystem:makeFolder(built)
+		end
 	end
 
 	fileSystem:writeFile(path, content)

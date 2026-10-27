@@ -34,6 +34,12 @@ return {
 			Default = Color3.fromRGB(38, 38, 38),
 		},
 
+		Tonal = {
+			Default = Color3.fromRGB(61, 67, 135),
+			Text = Color3.fromRGB(232, 233, 235),
+			Disabled = Color3.fromRGB(78, 78, 79),
+			DisabledText = Color3.fromRGB(120, 120, 120),
+		},
 		Text = {
 			Default = Color3.new(1, 1, 1),
 			Dark = Color3.fromRGB(200, 200, 200),
