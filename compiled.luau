@@ -3133,7 +3133,7 @@ return{a.w()
 
 }end a.av=function()local c=a.cache.av if not c then c={c=b()}a.cache.av=c end return c.c end end do local b=function()
 
-return"v0.9.0"end a.aw=function()local c=a.cache.aw if not c then c={c=b()}a.cache.aw=c end return c.c end end do local b=function()
+return"v0.9.1"end a.aw=function()local c=a.cache.aw if not c then c={c=b()}a.cache.aw=c end return c.c end end do local b=function()
 return{
 owner="tlredz",
 repository="iy-remake"
@@ -15764,26 +15764,26 @@ end
 ad:addObject(ae,af)end
 
 
-return a.bZ()end a.cT=function()local ab=a.cache.cT if not ab then ab={c=aa()}a.cache.cT=ab end return ab.c end end do local aa=function()return{logo=104371861083126,close=83276213460768,minimize=76683704146139,["lucide-chevron-left"]=116084397950605,["lucide-blocks"]=80329404661557,["lucide-terminal"]=138735373900955,["lucide-pin"]=85638424763987,["lucide-refresh-cw"]=127184558868486,["lucide-eraser"]=121383006814792,["lucide-tag"]=95367077436662,
+return a.bZ()end a.cT=function()local ab=a.cache.cT if not ab then ab={c=aa()}a.cache.cT=ab end return ab.c end end do local aa=function()return{["infinite-yield-logo"]=104371861083126,["lucide-custom-x"]=83276213460768,["lucide-chevron-down"]=76683704146139,["lucide-chevron-left"]=116084397950605,["lucide-blocks"]=80329404661557,["lucide-terminal"]=138735373900955,["lucide-pin"]=85638424763987,["lucide-refresh-cw"]=127184558868486,["lucide-eraser"]=121383006814792,["lucide-tag"]=95367077436662,
 ["lucide-keyboard"]=102097005397654,
 ["lucide-palette"]=105784737972091,
 ["lucide-map-pin"]=132787420207871,
 ["lucide-puzzle"]=139412930697283,
-["lucide-zap"]=124181719324437,imgstudiopluginlogo=
+["lucide-zap"]=124181719324437,
 
-4113050383,pin=
-6234691350,
+
+
 
 ["lucide-send"]=80218825031596,
 ["lucide-sliders-horizontal"]=116738462591690,
 ["lucide-arrow-down-up"]=121401768678469,
 ["lucide-calendar-clock"]=121068586159290,
 ["lucide-chart-column"]=102316903470982,
-["lucide-trash"]=126160659084333,reference=
+["lucide-trash"]=126160659084333,
 
 
-116342494079103,settings=
-102340652201372,
+["lucide-book-open"]=116342494079103,
+["lucide-settings"]=102340652201372,
 
 ["lucide-clipboard-copy"]=103811515822314,
 ["lucide-arrow-left"]=88403839941496,
