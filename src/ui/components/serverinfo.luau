@@ -223,7 +223,7 @@ local function createWindow()
 		},
 	})
 
-	assetsService:loadImage(closeButton, "close")
+	assetsService:loadImage(closeButton, "lucide-custom-x")
 
 	connectionService:Connect(closeButton.Activated, function()
 		info:close()

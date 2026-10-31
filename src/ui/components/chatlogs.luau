@@ -357,7 +357,7 @@ local function createWindow(tab: string)
 			ImageColor3 = "Colors.Icons",
 		},
 	})
-	assetsService:loadImage(closeIcon, "close")
+	assetsService:loadImage(closeIcon, "lucide-custom-x")
 
 	-- one row for every button; the switch on the right is placed by refreshPaint() for the selected tab
 	local row = createService.new("Frame", "Controls", frame, {

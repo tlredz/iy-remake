@@ -782,7 +782,7 @@ local function createWindow(tab: string)
 			ImageColor3 = "Colors.Icons",
 		},
 	})
-	assetsService:loadImage(closeButton, "close")
+	assetsService:loadImage(closeButton, "lucide-custom-x")
 
 	local tabRow = createService.new("Frame", "Tabs", frame, {
 		BackgroundTransparency = 1,

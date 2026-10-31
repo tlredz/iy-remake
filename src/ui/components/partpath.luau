@@ -242,7 +242,7 @@ function partPath:create()
 		},
 	})
 
-	assetsService:loadImage(exitButton, "close")
+	assetsService:loadImage(exitButton, "lucide-custom-x")
 
 	local body = createService.new("Frame", "Body", frame, {
 		Active = true,

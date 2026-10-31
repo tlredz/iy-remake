@@ -16222,8 +16222,8 @@ ImageColor3="Colors.Icons",
 },
 })
 
-ab:loadImage(l,"pin")
-ab:loadImage(m,"close")
+ab:loadImage(l,"lucide-pin")
+ab:loadImage(m,"lucide-custom-x")
 
 return g,i,k,l,m,j end local f=function(
 
@@ -23710,7 +23710,7 @@ ImageColor3="Colors.Icons",
 },
 })
 
-ab:loadImage(aE,"close")
+ab:loadImage(aE,"lucide-custom-x")
 
 ah:Connect(aE.Activated,function()
 aq:close()
@@ -24259,7 +24259,7 @@ ThemeTag={
 ImageColor3="Colors.Icons",
 },
 })
-ab:loadImage(k,"close")
+ab:loadImage(k,"lucide-custom-x")
 
 
 local l=aa.new("Frame","Controls",h,{
@@ -27843,7 +27843,7 @@ ImageColor3="Colors.Icons",
 },
 })
 
-ab:loadImage(aD,"close")
+ab:loadImage(aD,"lucide-custom-x")
 
 local aE=aa.new("Frame","Body",aB,{
 Active=true,
@@ -28977,8 +28977,8 @@ aL.buttons=aM.buttons
 
 ao:attach(aN)
 
-am:loadImage(aL.buttons.settings,"settings")
-am:loadImage(aL.buttons.reference,"reference")
+am:loadImage(aL.buttons.settings,"lucide-settings")
+am:loadImage(aL.buttons.reference,"lucide-book-open")
 
 aL:createMainScroll(aN)
 
@@ -29301,7 +29301,7 @@ aN.onOpenChanged=function(aP)
 aM:paintTopButton(aM.buttons.reference,aP)
 end
 
-am:loadImage(aN.closeIcon,"close")
+am:loadImage(aN.closeIcon,"lucide-custom-x")
 
 aO.Parent=aM.screenGui
 aM.reference=aN

@@ -111,9 +111,9 @@ local function createPopup(parent, order)
 		},
 	})
 
-	assetsService:loadImage(pinButton, "pin")
-	assetsService:loadImage(closeButton, "close")
-
+	assetsService:loadImage(pinButton, "lucide-pin")
+	assetsService:loadImage(closeButton, "lucide-custom-x")
+	
 	return popup, titleLabel, textLabel, pinButton, closeButton, descHolder
 end
 

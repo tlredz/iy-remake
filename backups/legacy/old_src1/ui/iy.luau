@@ -245,8 +245,8 @@ function infiniteYield:createMainFrame()
 		}
 	})
 	
-	assetsController:loadImage(settingsButton, "settings")
-	assetsController:loadImage(referenceButton, "reference")
+	assetsController:loadImage(settingsButton, "lucide-settings")
+	assetsController:loadImage(referenceButton, "lucide-book-open")
 	
 	connectionService:Connect(settingsButton.Activated, function()
 		print("clicked settings")

@@ -236,9 +236,9 @@ function interface:createMainFrame()
 	-- the custom background sits behind the window's contents (see ui/services/backgroundService)
 	backgroundService:attach(mainFrame)
 
-	assetsService:loadImage(self.buttons.settings, "settings")
-	assetsService:loadImage(self.buttons.reference, "reference")
-
+	assetsService:loadImage(self.buttons.settings, "lucide-settings")
+	assetsService:loadImage(self.buttons.reference, "lucide-book-open")
+	
 	self:createMainScroll(mainFrame)
 
 	self.settings = settingsComponent.new({
@@ -560,7 +560,7 @@ function interface:createReference()
 		self:paintTopButton(self.buttons.reference, open)
 	end
 
-	assetsService:loadImage(reference.closeIcon, "close")
+	assetsService:loadImage(reference.closeIcon, "lucide-custom-x")
 
 	referenceFrame.Parent = self.screenGui
 	self.reference = reference

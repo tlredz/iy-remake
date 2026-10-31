@@ -957,7 +957,7 @@ local function createWindow(tab: string)
 			ImageColor3 = "Colors.Icons",
 		},
 	})
-	assetsService:loadImage(closeIcon, "close")
+	assetsService:loadImage(closeIcon, "lucide-custom-x")
 
 	-- one row for every button; refresh() places the two tabs for the selected one
 	local row = createService.new("Frame", "Controls", frame, {
