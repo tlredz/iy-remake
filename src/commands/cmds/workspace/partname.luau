@@ -36,6 +36,7 @@ end
 
 return {
 	{
+		client = true,
 		action = "partname|partpath",
 		description = "Opens a window: click a part to see its path & name, then Select Part saves it as a waypoint",
 		run = function(self)

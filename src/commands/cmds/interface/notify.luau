@@ -1,4 +1,5 @@
 return {
+	client = true,
 	action = "notify",
 	description = "Sends you a notification with the provided text",
 	args = {

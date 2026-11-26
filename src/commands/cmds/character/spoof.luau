@@ -52,6 +52,7 @@ end
 
 return {
 	{
+		client = true,
 		action = "spoofspeed|spoofws",
 		description = "Spoofs your WalkSpeed on the Client",
 		args = {
@@ -65,6 +66,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "spoofjumppower|spoofjp",
 		description = "Spoofs your JumpPower on the Client",
 		args = {

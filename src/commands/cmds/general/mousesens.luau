@@ -1,4 +1,5 @@
 return {
+	client = true,
 	action = "mousesensitivity|ms",
 	description = "Sets your mouse delta sensitivity",
 	args = { kind = "number", name = "sensitivity" },

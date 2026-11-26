@@ -6,6 +6,7 @@
 --   default     the key used until the player picks one (in Settings)
 --   also        keys that always work for the binding too, whatever key it is set to
 --   group       the page of Settings it is listed on: "interface" is Edit Keybinds, the others are Command Settings
+--   icon        optional: a name from ui/themes/icons/interface.luau, shown at the left of the row
 --
 -- groups lists the headers of the Command Settings page, in order (key = the group, title = its header)
 
@@ -17,6 +18,7 @@ return {
 			default = "Semicolon",
 			also = { "RightControl" },
 			group = "interface",
+			icon = "lucide-terminal",
 		},
 
 		flyUp = {

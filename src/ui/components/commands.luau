@@ -1076,7 +1076,7 @@ function commands:startedHoldingContainer(input)
 		-- let go after a swipe down: the window minimizes, and the press is not a click on a command
 		if swipeFromTop and self.scrollAxis == "y" and downTravel >= SWIPE_DOWN_MIN and self.onSwipeDown then
 			swiped = true
-			self.onSwipeDown()
+			self.onSwipeDown(downTravel)
 		end
 		
 		if cmdData then

@@ -1,4 +1,5 @@
 return {
+	client = true,
 	action = "clientantiteleport|antiteleport",
 	description = "Prevents localscripts from teleporting you (CLIENT)",
 	run = function(self)

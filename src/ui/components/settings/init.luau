@@ -23,6 +23,7 @@ local buildAliasesEditor = require("./aliasesEditor")
 local buildWaypointsEditor = require("./waypointsEditor")
 local buildPluginsEditor = require("./pluginsEditor")
 local buildEventBindsEditor = require("./eventBindsEditor")
+local buildInterfaceEditor = require("./interfaceEditor")
 
 local PANEL = config.panel
 local BOX = config.box
@@ -44,6 +45,7 @@ local FLOAT_START = UDim2.new(1, 0, 0, -FLOAT_SIZE * PANEL.floatBackOut)
 
 -- the editor pages, by the action of the button that opens them
 local PAGES = {
+	interface = buildInterfaceEditor,
 	theme = buildThemePicker,
 	keybinds = keybindPages.interface,
 	commands = keybindPages.commands,
@@ -102,6 +104,10 @@ end
 
 function settings.isKeepMenuOpen(): boolean
 	return readFlag(config.keys.keepMenuOpen)
+end
+
+function settings.isTransparentWhenMinimized(): boolean
+	return readFlag(config.keys.transparentMinimized)
 end
 
 function settings.setKeepMenuOpen(enabled: boolean)
@@ -271,6 +277,7 @@ function settings.new(options)
 		onSwitch = options.onSwitch,
 		onButton = options.onButton,
 		onOpenChanged = options.onOpenChanged,
+		actions = options.interface or {}, -- the window's functions, for the Interface page
 		isOpen = false,
 		isShown = false,
 		holder = nil,
@@ -506,6 +513,8 @@ function settings:buildPage(page)
 			self:back()
 		end,
 		stoppers = self.pageStoppers,
+		actions = self.actions,
+		onSwitch = self.onSwitch,
 	})
 
 	self.backRow = page.frame:FindFirstChild("BackRow")

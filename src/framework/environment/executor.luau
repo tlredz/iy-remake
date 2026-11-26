@@ -74,6 +74,13 @@ return setmetatable({
 	),
 	hookfunction = register("function", hookfunction),
 	hookmetamethod = register("function", hookmetamethod),
+	getrawmetatable = register("function", getrawmetatable),
+	setreadonly = register("function",
+		setreadonly or
+		(make_readonly and make_writeable and function(tbl, readonly)
+			if readonly then make_readonly(tbl) else make_writeable(tbl) end
+		end)
+	),
 	getnamecallmethod = register("function",
 		getnamecallmethod or
 		get_namecall_method

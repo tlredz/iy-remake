@@ -39,4 +39,11 @@ return {
 	["lucide-clipboard-copy"] = 103811515822314,
 	["lucide-arrow-left"]     = 88403839941496,
 	["lucide-arrow-right"]    = 97590643131532,
+
+	-- new icons: no id until they are uploaded to Roblox, so they come from assets/remake (see assetsService)
+	["lucide-app-window"] = 87639344154535, -- interface (Settings > Interface)
+	["lucide-scaling"]    = 102084193088943, -- UI scale
+	["lucide-blend"]      = 138161723939087, -- transparent when minimized
+	["lucide-eye-off"]    = 122453588278564, -- hide IY
+	["lucide-rotate-ccw-clock"] = 94201058681961, -- use legacy icons
 }

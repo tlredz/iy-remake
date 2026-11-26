@@ -74,6 +74,7 @@ local function optimizeGame(self)
 end
 
 return {
+	client = true,
 	action = "antilag|boostfps|lowgraphics",
 	description = "Lowers game quality to boost FPS",
 	run = function(self)

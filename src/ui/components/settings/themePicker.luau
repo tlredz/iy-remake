@@ -1,5 +1,5 @@
 -- src/ui/components/settings/themePicker.luau
--- The Edit Theme page: lists the themes, and the one in use has its box filled. Tapping a theme uses it at once,
+-- The Edit Theme page: first the icons (the legacy icons box), then the themes. The theme in use has its box filled. Tapping a theme uses it at once,
 -- and it is kept for the next start. A theme without its Colors or Font is listed, but can't be picked yet.
 --
 -- The theme in use also shows a row of mini checkboxes, one per primary color (framework/config/ui/themes). The
@@ -13,6 +13,9 @@ local settingsData = require("../../../storage/data/settings")
 local config = require("../../../framework/config/ui/settings")
 local widgets = require("./widgets")
 local backgroundEditor = require("./backgroundEditor")
+local executorEnv = require("../../../framework/environment/executor")
+local assetsService = require("../../services/assetsService")
+local notifier = require("../../notifier")
 
 local PANEL = config.panel
 local BOX = config.box
@@ -102,7 +105,41 @@ end
 
 local function build(page: ScrollingFrame, ctx)
 	local list = widgets.list(page)
-	widgets.pageTop(list, config.pages.theme.title, ctx.back)
+	-- no title header here: the icons section comes first, and the themes have their own below it
+	widgets.pageTop(list, nil, ctx.back)
+
+	widgets.header(list, config.pages.theme.iconsTitle)
+
+	-- the legacy icons: the icons of the original IY, or the new ones (ui/services/assetsService). The box is saved, and
+	-- the icons on screen are drawn again at once
+	local legacyRow = widgets.row(list)
+	widgets.icon(legacyRow, config.pages.theme.legacyIcon)
+	widgets.label(legacyRow, config.pages.theme.legacyIcons, BOX.size + 2 * PANEL.padding)
+
+	local _, legacyFill = widgets.box(legacyRow)
+
+	local function redrawLegacy()
+		legacyFill.Visible = settingsData:getValue(config.keys.legacyIcons) == true
+	end
+
+	legacyRow.Activated:Connect(function()
+		local enabled = settingsData:getValue(config.keys.legacyIcons) ~= true
+
+		-- without getcustomasset the icons can't be read from files, so the box can't show them
+		if enabled and executorEnv.getcustomasset == nil then
+			notifier:notify(config.pages.theme.legacyTitle, config.pages.theme.legacyNoCustomAsset)
+		end
+
+		settingsData:setValue(config.keys.legacyIcons, enabled)
+		settingsData:save()
+
+		assetsService:refresh()
+		redrawLegacy()
+	end)
+
+	redrawLegacy()
+
+	widgets.header(list, config.pages.theme.title)
 
 	local items = {} -- { entry, fill, swatchRow, redrawSwatches }
 

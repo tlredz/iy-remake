@@ -16,6 +16,7 @@
 -- `icon` is a name from ui/themes/icons/interface.luau.
 
 local keepiy = require("../commands/keepiy")
+local frameworkSettings = require("../../settings")
 
 return {
 	-- settings keys (saved in storage/data/settings)
@@ -24,6 +25,8 @@ return {
 		keepIY = keepiy.settingKey,
 		clearOnEnter = "clearOnEnter",
 		theme = "selectedTheme",
+		legacyIcons = frameworkSettings.ui.legacyIconsKey,
+		transparentMinimized = "interface.transparentWhenMinimized",
 	},
 
 	-- the panel that slides over the command list: where it rests, how fast it moves, its spacing
@@ -115,6 +118,25 @@ return {
 			title = "#theme",
 			incomplete = "(incomplete)",
 			primary = "primary", -- the label of the row of primary colors under the theme in use
+			iconsTitle = "#icons", -- the header of the legacy icons, above the themes
+			legacyIcons = "Use legacy icons",
+			legacyIcon = "lucide-rotate-ccw-clock",
+			legacyTitle = "Legacy Icons",
+			legacyNoCustomAsset = "your exploit does not support getcustomasset, so the legacy icons can't be shown",
+		},
+		-- the Interface page (settings/interfaceEditor): its rows, and the icons of the rows
+		interface = {
+			title = "#interface",
+			keepMenuOpen = "Keep Menu Open",
+			uiScale = "UI Scale",
+			transparent = "Transparent When Minimized",
+			hide = "Hide IY",
+			icons = {
+				keepMenuOpen = "lucide-pin",
+				uiScale = "lucide-scaling",
+				transparent = "lucide-blend",
+				hide = "lucide-eye-off",
+			},
 		},
 		background = {
 			title = "#background",
@@ -150,25 +172,31 @@ return {
 		keybinds = {
 			title = "#keybinds",
 			reset = "Reset to defaults",
+			resetIcon = "lucide-refresh-cw", -- the icon of the reset row, by its name in ui/themes/icons/interface
 			alwaysWorks = "%s also works as the %s", -- a fixed key and the label of its binding
 		},
 		commands = {
 			title = "#command settings",
 			reset = "Reset command keys to defaults",
+			resetIcon = "lucide-refresh-cw",
 		},
 		importExport = {
 			title = "#import / export",
-			exportTitle = "#export",
-			exportRow = "Copy settings",
-			exportHint = "copies your settings, keybinds, aliases, event binds and waypoints as text",
-			importTitle = "#import",
-			importRow = "Import settings",
-			importHint = "paste a copied text in the box, then import it. It replaces the settings it holds",
+			exportRow = "Export",
+			exportIcon = "lucide-clipboard-copy",
+			importRow = "Import",
+			importIcon = "lucide-arrow-down-up",
+			hint = "paste a copied text in the box to import it. Import asks first, and replaces only the parts the text holds",
 			placeholder = "paste the copied text here",
-			copied = "settings copied to the clipboard",
+			copied = "settings copied to the clipboard. The copy button copies them again",
 			copyFailed = "your exploit can't copy: the text is in the box, copy it from there",
 			empty = "paste a copied text first",
 			notAnExport = "that text is not an export of IY",
+			confirmTitle = "Import",
+			confirmMessage = "replace %s with the ones in the text? The current ones are lost", -- the parts the text holds
+			confirmButton = "Import",
+			cancel = "Cancel",
+			confirmTime = 15, -- seconds the question stays open
 			imported = "imported %s", -- the parts that were in the text, like "settings, aliases"
 			restartNote = "aliases and plugins apply when IY is opened again",
 			notifyTitle = "Import / Export",
@@ -309,7 +337,6 @@ return {
 			title = "#general",
 			options = {
 				{ kind = "keybind", label = "Prefix", icon = "lucide-terminal", binding = "prefix" },
-				{ kind = "switch", label = "Keep Menu Open", icon = "lucide-pin", setting = "keepMenuOpen" },
 				{ kind = "switch", label = "Keep Interface", icon = "lucide-refresh-cw", setting = "keepIY" },
 				{ kind = "switch", label = "Clear On Enter", icon = "lucide-eraser", setting = "clearOnEnter" },
 			},
@@ -317,6 +344,7 @@ return {
 		{
 			title = "#editors",
 			options = {
+				{ kind = "button", label = "Interface", icon = "lucide-app-window", action = "interface" },
 				{ kind = "button", label = "Edit Theme", icon = "lucide-palette", action = "theme" },
 				{ kind = "button", label = "Edit Keybinds", icon = "lucide-keyboard", action = "keybinds" },
 				{ kind = "button", label = "Edit Aliases", icon = "lucide-tag", action = "aliases" },

@@ -12,16 +12,11 @@ end
 return {
 	{
 		action = "creatorid",
-		description = "Notify, or copies the creators ID to your clipboard",
-		args = { kind = "boolean", name = "copy", optional = true },
-		run = function(self, args)
+		description = "Notifies the creator's ID. Its copy button copies the ID",
+		run = function(self)
 			local ownerId = tostring(getOwnerId(self))
 
-			if args:nextValue() then
-				self.executorEnv.setclipboard(ownerId)
-			end
-
-			self:notify("Creator Id", `the OwnerId is '{ownerId}'`)
+			self:notify("Creator Id", `the OwnerId is '{ownerId}'`, nil, { copy = true, copyText = ownerId })
 		end
 	},
 	{

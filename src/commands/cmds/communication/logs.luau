@@ -2,6 +2,7 @@ local chatLogs = require("../../systems/chatLogs")
 
 return {
 	{
+		client = true,
 		action = "logs",
 		description = "Opens the chat logs window with chat and join logs turned on",
 		run = function(self)
@@ -11,6 +12,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "chatlogs|clogs",
 		description = "Turns on chat logs and opens the chat tab",
 		run = function(self)
@@ -19,6 +21,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "joinlogs|jlogs",
 		description = "Turns on join logs and opens the joins tab",
 		run = function(self)
@@ -27,6 +30,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "chatlogswebhook|logswebhook",
 		description = "Set a discord webhook for chatlogs to go to (provide no url to disable this)",
 		args = {

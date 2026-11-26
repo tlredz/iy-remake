@@ -17,6 +17,7 @@ local function splitButton(text: string): (string, string?)
 end
 
 return {
+	client = true,
 	action = "dialog",
 	description = "Shows a dialog in the notifications with up to three buttons. \"Label>command\" runs a command when the button is tapped",
 	args = {

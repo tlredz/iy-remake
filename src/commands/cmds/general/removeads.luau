@@ -11,6 +11,7 @@ local function tryDelete(object)
 end
 
 return {
+	client = true,
 	action = "removeads|adblock",
 	description = "Automatically removes ad billboards",
 	run = function(self)

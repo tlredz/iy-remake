@@ -1,4 +1,5 @@
 return {
+	client = true,
 	action = "inviteprompt",
 	description = "Prompts the game invite window, so you can invite friends",
 	run = function(self)

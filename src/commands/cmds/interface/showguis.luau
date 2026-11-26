@@ -33,6 +33,7 @@ end
 
 return {
 	{
+		client = true,
 		action = "showguis",
 		description = "Shows any invisible GUIs",
 		run = function(self)
@@ -40,6 +41,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "unshowguis",
 		description = "Undoes showguis",
 		run = function(self)
@@ -47,6 +49,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "hideguis",
 		description = "Hides any GUIs in PlayerGui",
 		run = function(self)
@@ -54,6 +57,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "unhideguis",
 		description = "Undoes hideguis",
 		run = function(self)

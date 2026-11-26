@@ -47,6 +47,7 @@ end
 
 return {
 	{
+		client = true,
 		action = "hovername",
 		description = "Shows a players username when your mouse is hovered over them",
 		run = function(self)
@@ -71,6 +72,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "unhovername|nohovername",
 		description = "Turns off hovername",
 		run = function(self)

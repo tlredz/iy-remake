@@ -358,10 +358,13 @@ function commandsController:init(config)
 	-- custom aliases from 'addalias' (the alias commands reach the list through self.commandsList)
 	customAliases.restore(commandsList)
 	
-	-- installed plugins; a plugin that fails stays installed and is logged
-	for name, reason in pluginsSystem.restore(commandsList) do
+	-- installed plugins load in their own threads, so a plugin that waits for something missing cannot hold up the
+	-- interface. A plugin that fails stays installed and is logged; one still loading after a while is reported
+	pluginsSystem.restore(commandsList, function(name, reason)
 		logger:warn(`plugin '{name}' could not be loaded: {reason}`)
-	end
+	end, function(name)
+		self:notify("Plugins", `'{name}' is still loading. It may be waiting for something that is missing, like PlayerScripts.PlayerModule`)
+	end)
 end
 
 return commandsController

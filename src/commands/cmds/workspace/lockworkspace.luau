@@ -3,6 +3,7 @@
 
 return {
 	{
+		client = true,
 		action = "lockworkspace|lockws",
 		description = "Locks the whole workspace",
 		run = function(self)
@@ -25,6 +26,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "unlockworkspace|unlockws",
 		description = "Unlocks the whole workspace",
 		run = function(self)

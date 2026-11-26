@@ -1,4 +1,5 @@
 return {
+	client = true,
 	action = "console",
 	description = "Opens the Roblox console",
 	run = function(self)

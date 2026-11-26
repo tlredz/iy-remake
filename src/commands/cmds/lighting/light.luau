@@ -30,11 +30,13 @@ storeOriginalLighting()
 
 return {
 	{
+		client = true,
 		action = "restorelighting|rlighting",
 		description = "Restores Lighting properties",
 		run = restoreLighting
 	},
 	{
+		client = true,
 		action = "light",
 		description = "Gives your player dynamic light (CLIENT)",
 		args = {
@@ -65,6 +67,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "nolight|unlight",
 		description = "Removes dynamic light from your player",
 		run = function(self)

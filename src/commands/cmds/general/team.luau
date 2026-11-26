@@ -1,5 +1,6 @@
 return {
 	{
+		client = true,
 		action = "team",
 		description = "Changes your team. Sometimes fools localscripts. (CLIENT)",
 		args = {

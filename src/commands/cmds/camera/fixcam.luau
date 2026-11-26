@@ -1,6 +1,7 @@
 local freecam = require("../../systems/freecam")
 
 return {
+	client = true,
 	action = "fixcam|restorecam",
 	description = "Fixes camera",
 	run = function(self)

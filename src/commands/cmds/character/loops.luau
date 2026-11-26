@@ -1,13 +1,12 @@
+local objectDecoy = require("../../systems/objectDecoy")
+
 local function applyWalkSpeed(humanoid: Humanoid, speed: number)
-	humanoid.WalkSpeed = speed
+	objectDecoy.setProperty(humanoid, "WalkSpeed", speed)
 end
 
 local function applyJumpPower(humanoid: Humanoid, power: number)
-	if humanoid.UseJumpPower then
-		humanoid.JumpPower = power
-	else
-		humanoid.JumpHeight = power
-	end
+	local property = if humanoid.UseJumpPower then "JumpPower" else "JumpHeight"
+	objectDecoy.setProperty(humanoid, property, power)
 end
 
 local function stopLoop(self, garbageName: string)

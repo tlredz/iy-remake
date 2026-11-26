@@ -61,6 +61,7 @@ local COLOR_TWEEN_TIME = 0.2 -- a BACK or NEXT half changes color
 local HOVER_TWEEN_TIME = 0.12
 local FADE_IN_TIME = 0.3 -- a code block's text, once it has been read
 local COPY_TWEEN_TIME = 0.15
+local LEAVE_GRACE = 0.1 -- seconds after a page's leave ends before it is hidden, in case its own tween was replaced
 local SLIDE_DISTANCE = 36
 local EASE_STYLE = Enum.EasingStyle.Quart
 local EASE_DIRECTION = Enum.EasingDirection.Out
@@ -146,6 +147,21 @@ local function repaint(object, tags, duration: number)
 	end
 
 	tween(object, "color", duration, to)
+end
+
+-- fades the code blocks in a slide: each box, and its copy icon (named Copy, see createCode). They fade with the text of
+-- the page, so a box does not stay on screen after its text has gone (see transitionTo)
+local function fadeCodeBoxes(root, duration: number, transparency: number)
+	for _, object in root:GetDescendants() do
+		if object.Name == "Code" and object:IsA("Frame") then
+			tween(object, "fade", duration, { BackgroundTransparency = transparency })
+
+			local copy = object:FindFirstChild("Copy")
+			if copy and copy:IsA("ImageButton") then
+				tween(copy, "fade", duration, { ImageTransparency = transparency })
+			end
+		end
+	end
 end
 
 -- every text label and button inside an object, for fading their text
@@ -558,6 +574,7 @@ function reference:transitionTo(page, index: number, direction: number)
 
 	self.activeEntry = entry
 	page.index = index
+	entry.leaving = nil -- on screen again, so the timer of an earlier leave does nothing to it
 
 	entry.slide.Visible = true
 	self:loadEntry(entry)
@@ -565,24 +582,39 @@ function reference:transitionTo(page, index: number, direction: number)
 		self:updateNavigation(page, duration > 0)
 	end
 
-	-- the new entry comes in from its side, and its text fades in
+	-- the new entry comes in from its side, and its text fades in. Its code boxes fade in with it
 	tween(entry.slide, "position", 0, { Position = UDim2.new(0, direction * SLIDE_DISTANCE, 0, 0) })
 	tween(entry.slide, "position", duration, { Position = UDim2.new(0, 0, 0, 0) })
 	for _, text in textObjects(entry.slide) do
 		tween(text, "text", 0, { TextTransparency = 1 })
 		tween(text, "text", duration, { TextTransparency = 0 })
 	end
+	fadeCodeBoxes(entry.slide, 0, 1)
+	fadeCodeBoxes(entry.slide, duration, 0)
 
-	-- the old entry leaves the other way, and is hidden once it is gone (unless it came back meanwhile)
+	-- the old entry leaves the other way, and is hidden once it is gone (unless it came back meanwhile). Its code boxes
+	-- leave with its text, so no empty box is left on screen after the text has gone
 	if previous then
+		local leave = {}
+		previous.leaving = leave
+
 		tween(previous.slide, "position", duration, { Position = UDim2.new(0, -direction * SLIDE_DISTANCE, 0, 0) }, function()
 			if self.activeEntry ~= previous then
 				previous.slide.Visible = false
 			end
 		end)
+
 		for _, text in textObjects(previous.slide) do
 			tween(text, "text", duration, { TextTransparency = 1 })
 		end
+		fadeCodeBoxes(previous.slide, duration, 1)
+
+		-- a tween that a newer tween replaces never finishes, so its hiding can be lost: this timer hides it as well
+		task.delay(duration + LEAVE_GRACE, function()
+			if previous.leaving == leave and self.activeEntry ~= previous then
+				previous.slide.Visible = false
+			end
+		end)
 	end
 
 	self.scrollBar:scrollTo(0)

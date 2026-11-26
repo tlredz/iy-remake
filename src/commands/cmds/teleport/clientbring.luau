@@ -23,6 +23,7 @@ end
 
 return {
 	{
+		client = true,
 		action = "clientbring|cbring",
 		description = "Bring a player (CLIENT)",
 		args = {
@@ -48,6 +49,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "loopbring",
 		description = "Loop brings a player to you (useful for killing) (CLIENT)",
 		args = {
@@ -101,6 +103,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "unloopbring|noloopbring",
 		description = "Undoes loopbring",
 		args = {

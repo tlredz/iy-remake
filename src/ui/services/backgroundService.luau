@@ -6,7 +6,7 @@
 -- from its file, so it is not downloaded again. Refresh downloads the image again. Removing the image deletes its file
 -- and takes its link out of the map. The URL that is shown and the opacity (0 to 1) are saved in the settings.
 --
--- The main frame is an ImageLabel (see components/mainFrame), so the image is its own background: the window's color is
+-- The image of the window is an ImageLabel that fills the main frame (see components/mainFrame), so the window's color is
 -- under it, and the opacity decides how much of the image covers that color. While an image shows, the top bar is
 -- see-through, so the image is seen there too.
 
@@ -168,10 +168,11 @@ function backgroundService:paint()
 end
 
 -- gives the main frame its image, and shows the image of the URL that is saved, when there is one
-function backgroundService:attach(frame: GuiObject)
+function backgroundService:attach(frame: GuiObject, imageFrame: GuiObject?)
 	if self.frame ~= nil then return end
 
-	self.frame = frame
+	-- the image goes on imageFrame (the background child); the top bar is still found in the main frame
+	self.frame = imageFrame or frame
 	self.topBar = frame:FindFirstChild("TopBar")
 
 	local url = self:getUrl()

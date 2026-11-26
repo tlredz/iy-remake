@@ -9,6 +9,7 @@ end
 
 return {
 	{
+		client = true,
 		action = "stareat|stare",
 		description = "Stare / look at a player",
 		args = {
@@ -40,6 +41,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "unstareat|unstare",
 		description = "Disables stareat",
 		run = function(self)

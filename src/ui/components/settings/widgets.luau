@@ -123,13 +123,9 @@ function widgets.header(list, title: string): TextLabel
 	})
 end
 
--- adds a row: a button that holds a label, a box or a value box
-function widgets.row(list): TextButton
-	list.order += 1
-	list.index += 1
-
-	local stripe = if list.index % 2 == 1 then PANEL.stripeTransparency else 1
-
+-- makes the button of a row. stripe is its background transparency when it is idle: 0 is solid, which is how an
+-- action row looks like a button, not like a faded line of text
+local function newRow(list, stripe: number): TextButton
 	local row = createService.new("TextButton", "Option", list.parent, {
 		AutoButtonColor = false,
 		BackgroundTransparency = stripe,
@@ -152,6 +148,75 @@ function widgets.row(list): TextButton
 	end)
 
 	return row
+end
+
+-- adds a row: a button that holds a label, a box or a value box. Rows alternate stripes
+function widgets.row(list): TextButton
+	list.order += 1
+	list.index += 1
+
+	return newRow(list, if list.index % 2 == 1 then PANEL.stripeTransparency else 1)
+end
+
+-- adds an action row, such as Reset to defaults. It is solid, so it reads as a button
+function widgets.actionRow(list): TextButton
+	list.order += 1
+	list.index += 1
+
+	return newRow(list, 0)
+end
+
+-- a row of buttons side by side, sharing the width of the page with a gap between them. Each one has an icon and a
+-- text, and its onTap runs when it is tapped. buttons is a list of { icon = name, text = string, onTap = function }.
+-- Returns the buttons, in order
+function widgets.buttonRow(list, buttons: { { icon: string, text: string, onTap: () -> () } }): { TextButton }
+	list.order += 1
+
+	local holder = createService.new("Frame", "Buttons", list.parent, {
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		LayoutOrder = list.order,
+		Size = UDim2.new(1, 0, 0, PANEL.rowHeight),
+	})
+
+	local count = #buttons
+	local gap = PANEL.rowGap
+	local made = {}
+
+	for index, data in buttons do
+		local button = createService.new("TextButton", "Button", holder, {
+			AutoButtonColor = false,
+			BorderSizePixel = 0,
+			-- equal widths, and the gap between two buttons is the same everywhere
+			Position = UDim2.new((index - 1) / count, (index - 1) * gap / count),
+			Size = UDim2.new(1 / count, -gap * (count - 1) / count, 1, 0),
+			Text = "",
+			ThemeTag = {
+				BackgroundColor3 = "Colors.Buttons.Default",
+			},
+
+			createService.new("UICorner", {
+				CornerRadius = UDim.new(0, VALUE.cornerRadius),
+			}),
+		})
+
+		widgets.icon(button, data.icon)
+		widgets.label(button, data.text, PANEL.padding)
+
+		button.MouseEnter:Connect(function()
+			themeService:updateObjectProperties(button, { BackgroundColor3 = "Colors.Buttons.Holding" })
+		end)
+
+		button.MouseLeave:Connect(function()
+			themeService:updateObjectProperties(button, { BackgroundColor3 = "Colors.Buttons.Default" })
+		end)
+
+		button.Activated:Connect(data.onTap)
+
+		table.insert(made, button)
+	end
+
+	return made
 end
 
 -- a row that goes back to the page before it (the back icon and text), with the header of the page under it
@@ -349,10 +414,11 @@ function widgets.valueInput(row: GuiObject, text: string, width: number): TextBo
 end
 
 -- a slider at the right of a row, with the percent it is at on the left of its bar. Press or drag the bar to move the
--- knob. value is from 0 to 1, and onChanged(value) runs each time it moves. The UIScale is read when a press starts and
+-- knob. value is from 0 to 1, and onChanged(value) runs each time it moves. format(value) gives the text on the left of
+-- the bar (a percent of the value when there is no format). The UIScale is read when a press starts and
 -- used for that whole press: the pointer and the bar are divided by it, so the knob stays under the pointer even when
 -- the scale changes while it is held
-function widgets.slider(row: GuiObject, label: string, value: number, onChanged: (number) -> ())
+function widgets.slider(row: GuiObject, label: string, value: number, onChanged: (number) -> (), format: ((number) -> string)?)
 	widgets.label(row, label, SLIDER.width + SLIDER.valueWidth + PANEL.rowGap + PANEL.padding)
 
 	local track = createService.new("TextButton", "Track", row, {
@@ -422,7 +488,7 @@ function widgets.slider(row: GuiObject, label: string, value: number, onChanged:
 	local function show(amount: number)
 		fill.Size = UDim2.fromScale(amount, 1)
 		knob.Position = UDim2.fromScale(amount, 0.5)
-		text.Text = `{math.round(amount * 100)}%`
+		text.Text = if format then format(amount) else `{math.round(amount * 100)}%`
 	end
 
 	show(math.clamp(value, 0, 1))

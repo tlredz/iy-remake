@@ -34,4 +34,7 @@ return {
 	-- time (seconds) to grow a popup in and collapse it out, and the title blink when pinned
 	tweenTime = 0.5,
 	flashTime = 0.5,
+
+	-- the copy button of a popup (see notifier:notify, options.copy): how long it stays lit after a copy (seconds)
+	copyFeedbackTime = 1.5,
 }

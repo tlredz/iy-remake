@@ -13,6 +13,7 @@ end
 
 return {
 	{
+		client = true,
 		action = "ctrllock",
 		description = "Binds Shiftlock to LeftControl",
 		run = function(self)
@@ -20,6 +21,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "unctrllock",
 		description = "Re-binds Shiftlock to LeftShift",
 		run = function(self)

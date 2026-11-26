@@ -1,3 +1,4 @@
+local objectDecoy = require("../../systems/objectDecoy")
 -- /src/commands/cmds/character/noclip.luau
 
 local NOTIFY_TITLE = "Noclip"
@@ -11,7 +12,7 @@ local function stopNoclip(self): boolean
 	
 	for part in garbage.parts do
 		if part.Parent then
-			part.CanCollide = true
+			objectDecoy.setProperty(part, "CanCollide", true)
 		end
 	end
 	
@@ -31,7 +32,7 @@ local function startNoclip(self)
 		
 		for _, part in character:GetDescendants() do
 			if part:IsA("BasePart") and part.CanCollide and part ~= platform then
-				part.CanCollide = false
+				objectDecoy.setProperty(part, "CanCollide", false)
 				garbage.parts[part] = true
 			end
 		end

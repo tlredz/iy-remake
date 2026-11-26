@@ -1,18 +1,25 @@
 -- src/ui/components/mainFrame.luau
+-- The main window. It is a CanvasGroup, so the whole window can be faded at once (GroupTransparency, see
+-- utils/mainFrameDock). A CanvasGroup has no image of its own, so the custom background is an ImageLabel that fills it:
+-- the first child, so the top bar is drawn over it (see services/backgroundService).
 
 local createService = require("../services/createService")
 
 local mainFrame = {}
 
 function mainFrame:create()
-	local frame = createService.new("ImageLabel", "MainFrame", {
+	local frame = createService.new("CanvasGroup", "MainFrame", {
 		Active = true,
 		BorderSizePixel = 0,
-		Image = "", -- the custom background of the window (ui/services/backgroundService), when there is one
-		ScaleType = Enum.ScaleType.Crop,
 		ThemeTag = {
 			BackgroundColor3 = "Colors.Background"
 		},
+		createService.new("ImageLabel", "Background", {
+			BackgroundTransparency = 1,
+			Image = "", -- the custom background of the window (ui/services/backgroundService), when there is one
+			ScaleType = Enum.ScaleType.Crop,
+			Size = UDim2.fromScale(1, 1),
+		}),
 		createService.new("Frame", "TopBar", {
 			Size = UDim2.fromOffset(250, 20),
 			BorderSizePixel = 0,
@@ -22,6 +29,7 @@ function mainFrame:create()
 		})
 	})
 
+	local background = frame.Background
 	local topBar = frame.TopBar
 
 	local titleLabel = createService.new("TextLabel", "Title", topBar, {
@@ -58,6 +66,7 @@ function mainFrame:create()
 
 	return {
 		mainFrame = frame,
+		background = background,
 		topBar = topBar,
 		titleLabel = titleLabel,
 		buttons = {

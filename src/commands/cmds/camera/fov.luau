@@ -1,4 +1,5 @@
 return {
+	client = true,
 	action = "fov",
 	description = "Adjusts field of view (default is 70)",
 	args = { kind = "number", default = 70 },

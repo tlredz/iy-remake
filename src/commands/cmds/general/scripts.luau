@@ -80,17 +80,20 @@ end
 
 return {
 	{
+		client = true,
 		action = "oldconsole",
 		description = "Loads an old-themed Roblox console",
 		run = function(self) task.spawn(oldConsole, self) end
 	},
 	{
+		client = true,
 		action = "explorer|dex",
 		description = "Opens the dex Explorer",
 		args = { name = "load dex by moon", kind = "boolean", optional = true },
 		run = function(self, args) task.spawn(dexExplorer, self, args:nextValue()) end
 	},
 	{
+		client = true,
 		action = "emotemenu|7yd7",
 		description = "Opens animations/emotes menu By 7yd7",
 		run = function(self, args) task.spawn(emoteMenu, self, args) end,
@@ -100,16 +103,19 @@ return {
 		}
 	},
 	{
+		client = true,
 		action = "cobalt|remotespy|rspy|cspy",
 		description = "Opens Cobalt to intercept incoming and outgoing network traffic",
 		run = function(self) task.spawn(cobaltSpy, self) end
 	},
 	{
+		client = true,
 		action = "simplespy|simplespy|sspy",
 		description = "Opens Simple Spy V3 to intercept remote calls from the client to the server",
 		run = function(self) task.spawn(remoteSpy, self) end
 	},
 	{
+		client = true,
 		action = "audiologger|alogger",
 		description = "Opens Edges audio logger",
 		run = function(self) task.spawn(audioLogger, self) end

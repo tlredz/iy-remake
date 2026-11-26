@@ -17,7 +17,7 @@ return {
 		args = { kind = "player", optional = true },
 		run = function(self, args)
 			for _, player in resolvePlayers(args:nextValue()) do
-				self:notify("Appearance ID", tostring(player.CharacterAppearanceId))
+				self:notify("Appearance ID", tostring(player.CharacterAppearanceId), nil, { copy = true })
 			end
 		end
 	},

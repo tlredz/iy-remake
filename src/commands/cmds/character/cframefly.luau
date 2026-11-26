@@ -1,3 +1,4 @@
+local objectDecoy = require("../../systems/objectDecoy")
 local DEFAULT_SPEED = 50
 
 -- Stops the cframe fly and gives the character back.
@@ -6,7 +7,7 @@ local function stopCFrameFly(self)
 	if not garbage then return end
 
 	garbage.connection:Disconnect()
-	garbage.humanoid.PlatformStand = false
+	objectDecoy.setProperty(garbage.humanoid, "PlatformStand", false)
 	garbage.head.Anchored = false
 end
 
@@ -22,7 +23,7 @@ local function startCFrameFly(self)
 		return
 	end
 
-	humanoid.PlatformStand = true
+	objectDecoy.setProperty(humanoid, "PlatformStand", true)
 	head.Anchored = true
 
 	local garbage = self:createGarbage("cframefly")
@@ -35,8 +36,8 @@ local function startCFrameFly(self)
 		end
 
 		local speed = self.privateEnv.cframeFlySpeed or DEFAULT_SPEED
-		local moveDirection = humanoid.MoveDirection * (speed * deltaTime)
-
+		local moveDirection = humanoid.MoveDirection :: Vector3 * (speed * deltaTime)
+		
 		local headCFrame = head.CFrame
 		local cameraCFrame = workspace.CurrentCamera.CFrame
 		local cameraOffset = headCFrame:ToObjectSpace(cameraCFrame).Position

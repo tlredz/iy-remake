@@ -144,6 +144,7 @@ end
 
 return {
 	{
+		client = true,
 		action = "esp",
 		description = "View all players and their status",
 		run = function(self)
@@ -151,6 +152,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "espteam",
 		description = "ESP but teammates are green and bad guys are red",
 		run = function(self)
@@ -158,6 +160,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "noesp|unesp|unespteam",
 		description = "Removes ESP",
 		run = function(self)
@@ -165,6 +168,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "esptransparency",
 		description = "Changes the transparency of ESP related commands",
 		args = { kind = "number" },
@@ -174,6 +178,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "partesp",
 		description = "Highlights a part",
 		args = {
@@ -203,6 +208,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "unpartesp|nopartesp",
 		description = "removes partesp",
 		args = {
@@ -226,6 +232,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "chams",
 		description = "ESP but without text in the way",
 		run = function(self)
@@ -243,6 +250,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "nochams|unchams",
 		description = "Removes chams",
 		run = function(self)
@@ -250,6 +258,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "locate",
 		description = "View a single player and their status",
 		args = { kind = "player" },
@@ -267,6 +276,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "unlocate|nolocate",
 		description = "Removes locate",
 		args = { kind = "player" },

@@ -28,6 +28,8 @@ return {
 			maxScale = 2.0,
 			current = settingsData:register("interface.uiScale", 1)
 		},
+		-- the saved flag of the Use legacy icons box (Edit Theme), read by ui/services/assetsService
+		legacyIconsKey = "interface.legacyIcons",
 		commands = {
 			padding = 0,
 			labelSize = 17,

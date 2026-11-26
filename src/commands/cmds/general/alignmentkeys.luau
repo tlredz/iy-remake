@@ -5,6 +5,7 @@ local MOVE_KEYS = {
 
 return {
 	{
+		client = true,
 		action = "alignmentkeys",
 		description = "Enables the left and right alignment keys (comma and period)",
 		run = function(self)
@@ -28,6 +29,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "unalignmentkeys|noalignmentkeys",
 		description = "Disables the alignment keys",
 		run = function(self)

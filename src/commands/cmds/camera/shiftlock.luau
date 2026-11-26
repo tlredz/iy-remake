@@ -1,4 +1,5 @@
 return {
+	client = true,
 	action = "enableshiftlock|enablesl",
 	description = "Enables the shift lock option",
 	run = function(self)

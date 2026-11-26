@@ -1,7 +1,9 @@
+local objectDecoy = require("../../systems/objectDecoy")
+
 local function setRootAnchored(self, anchored: boolean)
 	local root = self.playerService:getRootPart()
 	if root then
-		root.Anchored = anchored
+		objectDecoy.setProperty(root, "Anchored", anchored)
 	end
 end
 

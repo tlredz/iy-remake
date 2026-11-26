@@ -1,5 +1,6 @@
 return {
 	{
+		client = true,
 		action = "maxzoom",
 		description = "Maximum camera zoom",
 		args = { kind = "number" },
@@ -8,6 +9,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "minzoom",
 		description = "Minimum camera zoom",
 		args = { kind = "number" },
@@ -16,6 +18,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "camdistance",
 		description = "Changes camera distance from your player",
 		args = { kind = "number" },

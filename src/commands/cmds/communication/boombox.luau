@@ -2,6 +2,7 @@ local resolvePlayers = require("../../systems/resolvePlayers")
 
 return {
 	{
+		client = true,
 		action = "muteboombox",
 		description = "Mutes someones boombox",
 		args = {
@@ -9,20 +10,18 @@ return {
 		},
 		run = function(self, args)
 			for _, player in resolvePlayers(args:nextValue()) do
-				task.spawn(function()
-					local containers = { player.Character, player:FindFirstChildOfClass("Backpack") }
-					for _, container in containers do
-						for _, sound in container:GetDescendants() do
-							if sound:IsA("Sound") then
-								sound.Playing = false
-							end
+				for _, container in { player.Character, player:FindFirstChildOfClass("Backpack") } do
+					for _, sound in container:GetDescendants() do
+						if sound:IsA("Sound") then
+							sound.Playing = false
 						end
 					end
-				end)
+				end
 			end
 		end
 	},
 	{
+		client = true,
 		action = "unmuteboombox",
 		description = "Unmutes someones boombox",
 		args = {
@@ -30,16 +29,14 @@ return {
 		},
 		run = function(self, args)
 			for _, player in resolvePlayers(args:nextValue()) do
-				task.spawn(function()
-					local character = player.Character
-					if not character then return end
-					
-					for _, sound in character:GetDescendants() do
-						if sound:IsA("Sound") and not sound.Playing then
-							sound.Playing = true
-						end
+				local character = player.Character
+				if not character then return end
+				
+				for _, sound in character:GetDescendants() do
+					if sound:IsA("Sound") and not sound.Playing then
+						sound.Playing = true
 					end
-				end)
+				end
 			end
 		end
 	}

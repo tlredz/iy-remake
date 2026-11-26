@@ -1,7 +1,9 @@
+local objectDecoy = require("../../systems/objectDecoy")
+
 local function setHumanoidProperty(self, property: string, value: any)
 	local humanoid = self.playerService:getHumanoid()
 	if humanoid then
-		humanoid[property] = value
+		objectDecoy.setProperty(humanoid, property, value)
 	end
 end
 
@@ -33,11 +35,8 @@ return {
 			if not humanoid then return end
 			
 			local power = args:nextValue() or 50
-			if humanoid.UseJumpPower then
-				humanoid.JumpPower = power
-			else
-				humanoid.JumpHeight = power
-			end
+			local property = if humanoid.UseJumpPower then "JumpPower" else "JumpHeight"
+			objectDecoy.setProperty(humanoid, property, power)
 		end
 	},
 	{
@@ -57,7 +56,7 @@ return {
 			if not humanoid then return end
 			
 			local isR15 = humanoid.RigType == Enum.HumanoidRigType.R15
-			humanoid.HipHeight = args:nextValue() or (isR15 and 2.1 or 0)
+			objectDecoy.setProperty(humanoid, "HipHeight", args:nextValue() or (isR15 and 2.1 or 0))
 		end
 	},
 	humanoidToggle("stun|platformstand", "Makes your character stiff (PlatformStand)", "PlatformStand", true),
@@ -112,7 +111,7 @@ return {
 			for _, object in character:GetDescendants() do
 				for _, className in forceClasses do
 					if object:IsA(className) then
-						object:Destroy()
+						objectDecoy.destroy(object)
 						break
 					end
 				end

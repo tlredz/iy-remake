@@ -141,6 +141,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "nilchar",
 		description = "Removes your character from the workspace (client side)",
 		run = function(self)
@@ -151,6 +152,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "unnilchar|nonilchar",
 		description = "Puts your character back into the workspace",
 		run = function(self)

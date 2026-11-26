@@ -4,6 +4,7 @@ local resolvePlayers = require("../../systems/resolvePlayers")
 local DEFAULT_ZOOM = { max = 400, min = 0.5 }
 
 return {
+	client = true,
 	action = "lookat",
 	description = "Moves your camera view to a player",
 	args = { kind = "player" },

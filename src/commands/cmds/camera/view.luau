@@ -35,6 +35,7 @@ end
 
 return {
 	{
+		client = true,
 		action = "spectate|view",
 		description = "View a player",
 		args = { kind = "player" },
@@ -78,6 +79,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "viewpart|viewp",
 		description = "View a part",
 		args = {
@@ -103,6 +105,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "unspectate|unview",
 		description = "Stops viewing player, or part.",
 		run = function(self)

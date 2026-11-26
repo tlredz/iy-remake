@@ -5,6 +5,7 @@ local notificationsConfig = require("../framework/config/ui/notifier")
 local privateEnv = require("../framework/environment/private")
 local executorEnv = require("../framework/environment/executor")
 local connectionService = require("../framework/services/connectionService")
+local keyboardService = require("../framework/services/keyboardService")
 local robloxServices = require("../framework/services/rbxServices")
 local isMobile = require("../framework/environment/isMobile")
 
@@ -234,7 +235,7 @@ function interface:createMainFrame()
 	self.buttons = elements.buttons
 
 	-- the custom background sits behind the window's contents (see ui/services/backgroundService)
-	backgroundService:attach(mainFrame)
+	backgroundService:attach(mainFrame, elements.background)
 
 	assetsService:loadImage(self.buttons.settings, "lucide-settings")
 	assetsService:loadImage(self.buttons.reference, "lucide-book-open")
@@ -253,12 +254,35 @@ function interface:createMainFrame()
 				self.dock:setKeepOpen(enabled)
 			end
 
+			if setting == "transparentWhenMinimized" and self.dock then
+				self.dock:setTransparentWhenMinimized(enabled)
+			end
+
 			-- like the keepiy command: without queueteleport the switch can't do anything, so it goes back off
 			if setting == "keepIY" and enabled and executorEnv.queueteleport == nil then
 				self:setKeepIY(false)
 				notifier:notify("Keepiy", "your exploit does not support queueteleport")
 			end
 		end,
+
+		-- the window's own settings, for the Interface page (settings/interfaceEditor)
+		interface = {
+			getScale = function()
+				return scaleObject:getScale()
+			end,
+
+			setScale = function(scale: number)
+				self:setScale(scale)
+			end,
+
+			isHidden = function(): boolean
+				return self:isHidden()
+			end,
+
+			setHidden = function(hidden: boolean)
+				self:setHidden(hidden)
+			end,
+		},
 	})
 	self.settings:create(mainFrame, self.scrollHolder, { self.scrollContainer, self.scrollBarFrame })
 
@@ -316,9 +340,9 @@ function interface:createCommands()
 	
 	if isMobile then
 		-- a swipe down on the list, from its top, minimizes the window (the dock decides, see onListSwipeDown)
-		commands.onSwipeDown = function()
+		commands.onSwipeDown = function(travel: number)
 			if self.dock then
-				self.dock:onListSwipeDown()
+				self.dock:onListSwipeDown(travel)
 			end
 		end
 
@@ -367,6 +391,7 @@ function interface:dragMainFrame(mainFrame)
 		screenGui = self.screenGui,
 		topBarHeight = self.topBar.Size.Y.Offset,
 		keepOpen = settingsComponent.isKeepMenuOpen(),
+		transparentWhenMinimized = settingsComponent.isTransparentWhenMinimized(),
 		clampPosition = function(pos)
 			return self:calculateMainFramePosition(pos)
 		end,
@@ -458,6 +483,7 @@ end
 -- shows the window for good (showiy): it leaves the hidden state and stays up
 function interface:showWindow()
 	self.hidden = false
+	self:stopShowKeys()
 	self:revealWindow()
 end
 
@@ -484,6 +510,42 @@ function interface:hideWindow()
 	end
 
 	self:releaseCommandFocus()
+	self:listenForShowKeys()
+end
+
+-- whether the window is hidden (hideiy, or the Hide IY box of Settings > Interface)
+function interface:isHidden(): boolean
+	return self.hidden == true
+end
+
+-- hides or shows the window, the way hideiy and showiy do
+function interface:setHidden(hidden: boolean)
+	if hidden then
+		self:hideWindow()
+	else
+		self:showWindow()
+	end
+end
+
+-- while the window is hidden, the prefix key (picked in Settings > Prefix) opens the command bar. The listener stays on
+-- until the window is shown (showWindow), so the window can be hidden again after the command bar is used
+function interface:listenForShowKeys()
+	self:stopShowKeys()
+
+	self.showKeysConnection = keyboardService:onBindingPressed("prefix", function()
+		-- already shown (the command bar is open): the key is just typed
+		if self.mainFrame and self.mainFrame.Visible then return end
+
+		self:showCommandBar()
+	end)
+end
+
+function interface:stopShowKeys()
+	local connection = self.showKeysConnection
+	if connection == nil then return end
+
+	self.showKeysConnection = nil
+	connection:Disconnect()
 end
 
 function interface:showCommandBar()
@@ -634,6 +696,7 @@ function interface:updateNotificationsPosition()
 end
 
 function interface:destroy()
+	self:stopShowKeys()
 	notifier:destroy()
 	if self.dock then
 		self.dock:destroy()

@@ -25,6 +25,7 @@ end
 
 return {
 	{
+		client = true,
 		action = "xray",
 		description = "Makes all parts in workspace transparent",
 		run = function(self)
@@ -33,6 +34,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "unxray|noxray",
 		description = "Restores transparency to all parts in workspace",
 		run = function(self)
@@ -41,6 +43,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "loopxray",
 		description = "Makes all parts in workspace transparent but looped",
 		run = function(self)
@@ -54,6 +57,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "unloopxray",
 		description = "Unloops xray",
 		run = function(self)
@@ -63,6 +67,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "togglexray",
 		description = "Toggles xray",
 		run = function(self)

@@ -1,3 +1,4 @@
+local objectDecoy = require("../../systems/objectDecoy")
 local resolvePlayers = require("../../systems/resolvePlayers")
 
 -- Size 1 means the default size of the part, same as IY
@@ -29,8 +30,8 @@ return {
 			for _, target in targets do
 				local head = target ~= self.localPlayer and target.Character and target.Character:FindFirstChild("Head")
 				if head and head:IsA("BasePart") then
-					head.CanCollide = false
-					head.Size = getSize(size)
+					objectDecoy.setProperty(head, "CanCollide", false)
+					objectDecoy.setProperty(head, "Size", getSize(size))
 				end
 			end
 		end
@@ -62,9 +63,9 @@ return {
 			for _, target in targets do
 				local root = target ~= self.localPlayer and target.Character and target.Character:FindFirstChild("HumanoidRootPart")
 				if root and root:IsA("BasePart") then
-					root.CanCollide = false
-					root.Size = getSize(size)
-					root.Transparency = transparency
+					objectDecoy.setProperty(root, "CanCollide", false)
+					objectDecoy.setProperty(root, "Size", getSize(size))
+					objectDecoy.setProperty(root, "Transparency", transparency)
 				end
 			end
 		end

@@ -195,6 +195,13 @@ local create = { new = function(class, ...)
         end
         return found
     end
+    function object:IsA(class) return self.ClassName == class end
+    function object:FindFirstChild(name)
+        for _, other in objects do
+            if other.Name == name and isInside(other, self) then return other end
+        end
+        return nil
+    end
     for _, argument in {...} do
         if type(argument) == "string" then
             object.Name = argument
@@ -288,7 +295,12 @@ local reference = module("ui/components/reference", {
     TweenInfo = { new = function(duration, style, direction) return { duration = duration, style = style, direction = direction } end },
     tick = function() return os.clock() end,
     -- the client runs spawned work on its own schedule; here it runs at once, and waits do not stall the test
-    task = { spawn = function(callback, ...) callback(...) end, wait = function() end },
+    task = {
+        spawn = function(callback, ...) callback(...) end,
+        wait = function() end,
+        -- the hiding timer of a leaving page: the test does not wait for it
+        delay = function() end,
+    },
 })
 
 -- true when a tween of the object was started with a property that matches
@@ -402,6 +414,14 @@ check("invalid page ignored", not view:selectPage("missing") and view.pageId == 
 -- the code blocks: each file is read when its page is shown, and then kept by the component
 check("every code block is in the reference", countNamed(pluginsPage.entries[1].body, "Code") == 0
     and countNamed(pluginsPage.entries[6].body, "Code") == 1)
+-- the NEXT loop above leaves the page with the code block: its box must fade out with the text, not stay on screen
+local codeBox = nil
+for _, object in objects do
+    if object.Name == "Code" and isInside(object, pluginsPage.entries[6].slide) then codeBox = object end
+end
+check("a code box fades out when its page leaves", codeBox ~= nil and tweened(codeBox, function(properties)
+    return properties.BackgroundTransparency == 1
+end))
 local codeLabels = 0
 for _, object in objects do
     if object.Name == "Source" then

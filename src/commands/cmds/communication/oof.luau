@@ -1,5 +1,6 @@
 return {
 	{
+		client = true,
 		action = "loopoof",
 		description = "Makes every player's head play its sounds (oof) over and over",
 		run = function(self)
@@ -29,6 +30,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "unloopoof",
 		description = "Stops the oof loop",
 		run = function(self)

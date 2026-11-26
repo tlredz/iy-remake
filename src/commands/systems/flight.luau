@@ -5,6 +5,7 @@
 
 local robloxServices = require("../../framework/services/rbxServices")
 local keyboardService = require("../../framework/services/keyboardService")
+local objectDecoy = require("./objectDecoy")
 
 local UserInputService = robloxServices.UserInputService
 
@@ -46,6 +47,25 @@ local function getDirection(self, humanoid: Humanoid): Vector3
 	return direction
 end
 
+-- Any part of the character can hold a BodyVelocity or BodyGyro, since they move the whole character.
+-- Each one picks a random body part other than the root, so they are not all on the root.
+local function pickMountPart(root: BasePart): BasePart
+	local parts = {}
+	local character = root.Parent
+	if character then
+		for _, child in character:GetChildren() do
+			if child:IsA("BasePart") and child ~= root then
+				table.insert(parts, child)
+			end
+		end
+	end
+
+	if #parts == 0 then
+		return root
+	end
+	return parts[math.random(#parts)]
+end
+
 -- Stops the flight that was started with this garbage name.
 function flight.stop(self, garbageName: string)
 	local garbage = self:collectGarbage(garbageName)
@@ -55,13 +75,13 @@ function flight.stop(self, garbageName: string)
 		garbage.connection:Disconnect()
 	end
 	if garbage.velocity then
-		garbage.velocity:Destroy()
+		objectDecoy.destroy(garbage.velocity)
 	end
 	if garbage.gyro then
-		garbage.gyro:Destroy()
+		objectDecoy.destroy(garbage.gyro)
 	end
 	if garbage.humanoid then
-		garbage.humanoid.PlatformStand = false
+		objectDecoy.setProperty(garbage.humanoid, "PlatformStand", false)
 	end
 end
 
@@ -79,19 +99,21 @@ function flight.start(self, options)
 		return
 	end
 
-	local velocity = Instance.new("BodyVelocity")
-	velocity.MaxForce = MAX_FORCE
-	velocity.Velocity = Vector3.zero
-	velocity.Parent = root
+	local velocity = objectDecoy.createProtected("BodyVelocity", {
+		MaxForce = MAX_FORCE,
+		Velocity = Vector3.zero,
+		Parent = pickMountPart(root),
+	})
 
-	local gyro = Instance.new("BodyGyro")
-	gyro.MaxTorque = MAX_FORCE
-	gyro.P = 9e4
-	gyro.CFrame = root.CFrame
-	gyro.Parent = root
+	local gyro = objectDecoy.createProtected("BodyGyro", {
+		MaxTorque = MAX_FORCE,
+		P = 9e4,
+		CFrame = root.CFrame,
+		Parent = pickMountPart(root),
+	})
 
 	if options.platformStand then
-		humanoid.PlatformStand = true
+		objectDecoy.setProperty(humanoid, "PlatformStand", true)
 	end
 
 	local garbage = self:createGarbage(options.garbageName)
@@ -106,8 +128,8 @@ function flight.start(self, options)
 			return
 		end
 
-		velocity.Velocity = getDirection(self, humanoid) * options.getSpeed()
-		gyro.CFrame = workspace.CurrentCamera.CFrame
+		objectDecoy.setProperty(velocity, "Velocity", getDirection(self, humanoid) * options.getSpeed())
+		objectDecoy.setProperty(gyro, "CFrame", workspace.CurrentCamera.CFrame)
 	end)
 end
 

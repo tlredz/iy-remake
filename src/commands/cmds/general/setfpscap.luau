@@ -1,4 +1,5 @@
 return {
+	client = true,
 	action = "setfpscap|fpscap|maxfps",
 	description = "limits your FPS",
 	args = {

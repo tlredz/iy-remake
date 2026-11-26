@@ -1,5 +1,6 @@
 return {
 	{
+		client = true,
 		action = "noroot|removeroot|rroot",
 		description = "Removes your character's root part (client side)",
 		run = function(self)
@@ -17,6 +18,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "replaceroot|replacerootpart",
 		description = "Replaces your character's root part with a fresh copy",
 		run = function(self)

@@ -85,6 +85,13 @@ getsynasset
 ),
 hookfunction=c("function",hookfunction),
 hookmetamethod=c("function",hookmetamethod),
+getrawmetatable=c("function",getrawmetatable),
+setreadonly=c("function",
+setreadonly or
+(make_readonly and make_writeable and function(d,e)
+if e then make_readonly(d)else make_writeable(d)end
+end)
+),
 getnamecallmethod=c("function",
 getnamecallmethod or
 get_namecall_method
@@ -323,7 +330,7 @@ end
 return{
 privateFolder="infiniteYield",
 
-imagePath="assets/%s.png",
+imagePath="assets/%s/%s.png",
 
 downloadPath="backups/%s/%s/%s",
 encryptKey=676767
@@ -788,6 +795,7 @@ b.executorEnv.setclipboard(b.config.links.discord)
 end
 }end a.w=function()local c=a.cache.w if not c then c={c=b()}a.cache.w=c end return c.c end end do local b=function()
 return{
+client=true,
 action="console",
 description="Opens the Roblox console",
 run=function(b)
@@ -876,17 +884,20 @@ if j then j()end end
 
 return{
 {
+client=true,
 action="oldconsole",
 description="Loads an old-themed Roblox console",
 run=function(j)task.spawn(d,j)end
 },
 {
+client=true,
 action="explorer|dex",
 description="Opens the dex Explorer",
 args={name="load dex by moon",kind="boolean",optional=true},
 run=function(j,k)task.spawn(e,j,k:nextValue())end
 },
 {
+client=true,
 action="emotemenu|7yd7",
 description="Opens animations/emotes menu By 7yd7",
 run=function(j,k)task.spawn(f,j,k)end,
@@ -896,16 +907,19 @@ args={
 }
 },
 {
+client=true,
 action="cobalt|remotespy|rspy|cspy",
 description="Opens Cobalt to intercept incoming and outgoing network traffic",
 run=function(j)task.spawn(g,j)end
 },
 {
+client=true,
 action="simplespy|simplespy|sspy",
 description="Opens Simple Spy V3 to intercept remote calls from the client to the server",
 run=function(j)task.spawn(h,j)end
 },
 {
+client=true,
 action="audiologger|alogger",
 description="Opens Edges audio logger",
 run=function(j)task.spawn(i,j)end
@@ -997,16 +1011,11 @@ return c end
 return{
 {
 action="creatorid",
-description="Notify, or copies the creators ID to your clipboard",
-args={kind="boolean",name="copy",optional=true},
-run=function(c,d)
-local e=tostring(b(c))
+description="Notifies the creator's ID. Its copy button copies the ID",
+run=function(c)
+local d=tostring(b(c))
 
-if d:nextValue()then
-c.executorEnv.setclipboard(e)
-end
-
-c:notify("Creator Id",`the OwnerId is '{e}'`)
+c:notify("Creator Id",`the OwnerId is '{d}'`,nil,{copy=true,copyText=d})
 end
 },
 {
@@ -1150,6 +1159,7 @@ end
 }
 }end a.G=function()local c=a.cache.G if not c then c={c=b()}a.cache.G=c end return c.c end end do local b=function()
 return{
+client=true,
 action="antiafk|antiidle",
 description="Prevents the game from kicking you for being idle/afk",
 run=function(b)
@@ -1183,6 +1193,7 @@ b:notify("anti AFK is now enabled")
 end
 }end a.H=function()local c=a.cache.H if not c then c={c=b()}a.cache.H=c end return c.c end end do local b=function()
 return{
+client=true,
 action="datalimit",
 description="Set outgoing KBPS limit",
 args={kind="number",name="KB per second"},
@@ -1192,6 +1203,7 @@ b.networkClient:SetOutgoingKBPSLimit(d)
 end
 }end a.I=function()local c=a.cache.I if not c then c={c=b()}a.cache.I=c end return c.c end end do local b=function()
 return{
+client=true,
 action="replicationlag|backtrack",
 description="Set IncomingReplicationLag",
 args={kind="number"},
@@ -1200,6 +1212,7 @@ b.gameNetworkSettings.IncomingReplicationLag=c:nextValue()
 end
 }end a.J=function()local c=a.cache.J if not c then c={c=b()}a.cache.J=c end return c.c end end do local b=function()
 return{
+client=true,
 action="setfpscap|fpscap|maxfps",
 description="limits your FPS",
 args={
@@ -1225,6 +1238,7 @@ end end
 
 
 return{
+client=true,
 action="removeads|adblock",
 description="Automatically removes ad billboards",
 run=function(c)
@@ -1283,6 +1297,7 @@ end end
 
 return{
 {
+client=true,
 action="antigameplaypaused",
 description="Clears the annoying box shown when a game is loading assets due to network lag",
 run=function(d)
@@ -1308,6 +1323,7 @@ end
 end
 },
 {
+client=true,
 action="unantigameplaypaused",
 description="Disables antigameplaypaused",
 run=function(d)
@@ -1317,48 +1333,7 @@ end
 }end a.O=function()local c=a.cache.O if not c then c={c=b()}a.cache.O=c end return c.c end end do local b=function()
 
 return{
-action="clientantikick|antikick",
-description="Prevents localscripts from kicking you (CLIENT)",
-run=function(b)
-if b.privateEnv.clientAntiKick then
-b:notify("Client Antikick","already active")
-return
-end
-
-local c=b:expectExploit("hookmetamethod")
-local d=b:expectExploit("getnamecallmethod")
-if not(c and d)then return end
-
-local e=b.localPlayer
-
-
-local f=b.executorEnv.hookfunction
-if f then
-pcall(f,e.Kick,function()end)
-end
-
-local g
-g=c(game,"__index",function(h,i)
-if h==e and typeof(i)=="string"and i:lower()=="kick"then
-error("Expected ':' not '.' calling member function Kick",2)
-end
-return g(h,i)
-end)
-
-local h
-h=c(game,"__namecall",function(i,...)
-if i==e and d():lower()=="kick"then
-return
-end
-return h(i,...)
-end)
-
-b.privateEnv.clientAntiKick=true
-b:notify("Client Antikick","Client anti kick is now active (only effective on localscript kick)")
-end
-}end a.P=function()local c=a.cache.P if not c then c={c=b()}a.cache.P=c end return c.c end end do local b=function()
-
-return{
+client=true,
 action="clientantiteleport|antiteleport",
 description="Prevents localscripts from teleporting you (CLIENT)",
 run=function(b)
@@ -1405,7 +1380,7 @@ end)
 b.privateEnv.clientAntiTeleport=true
 b:notify("Client AntiTP","Client anti teleport is now active (only effective on localscript teleport)")
 end
-}end a.Q=function()local c=a.cache.Q if not c then c={c=b()}a.cache.Q=c end return c.c end end do local b=function()
+}end a.P=function()local c=a.cache.P if not c then c={c=b()}a.cache.P=c end return c.c end end do local b=function()
 
 return{
 client=true,
@@ -1423,7 +1398,7 @@ end
 b.storage.settings:setValue("allowRejoin",d)
 b:notify("Client AntiTP",`Scripts now {d and"may"or"may not"} make you rejoin the server`)
 end
-}end a.R=function()local c=a.cache.R if not c then c={c=b()}a.cache.R=c end return c.c end end do local b=function()
+}end a.Q=function()local c=a.cache.Q if not c then c={c=b()}a.cache.Q=c end return c.c end end do local b=function()
 
 return{
 action="cancelteleport|canceltp",
@@ -1432,9 +1407,10 @@ run=function(b)
 b.playerService:cancelTween()
 b.teleportService:TeleportCancel()
 end
-}end a.S=function()local c=a.cache.S if not c then c={c=b()}a.cache.S=c end return c.c end end do local b=function()
+}end a.R=function()local c=a.cache.R if not c then c={c=b()}a.cache.R=c end return c.c end end do local b=function()
 
 return{
+client=true,
 action="volume|vol",
 description="Adjusts your game volume on a scale of 0 to 10",
 args={
@@ -1445,7 +1421,7 @@ run=function(b,c)
 local d=1/c:nextValue()
 b.userGameSettings.MasterVolume=d
 end
-}end a.T=function()local c=a.cache.T if not c then c={c=b()}a.cache.T=c end return c.c end end do local b=function()
+}end a.S=function()local c=a.cache.S if not c then c={c=b()}a.cache.S=c end return c.c end end do local b=function()
 local b={
 BasePart={
 CastShadow=false,
@@ -1522,6 +1498,7 @@ end)end
 
 
 return{
+client=true,
 action="antilag|boostfps|lowgraphics",
 description="Lowers game quality to boost FPS",
 run=function(e)
@@ -1533,9 +1510,10 @@ end
 e.privateEnv.antiLagEnabled=true
 d(e)
 end
-}end a.U=function()local c=a.cache.U if not c then c={c=b()}a.cache.U=c end return c.c end end do local b=function()
+}end a.T=function()local c=a.cache.T if not c then c={c=b()}a.cache.T=c end return c.c end end do local b=function()
 return{
 {
+client=true,
 action="record|rec",
 description="Starts Roblox recorder",
 run=function(b)
@@ -1543,6 +1521,7 @@ b.coreGui:ToggleRecording()
 end
 },
 {
+client=true,
 action="screenshot|scrnshot",
 description="Takes a screenshot",
 run=function(b)
@@ -1550,13 +1529,14 @@ b.coreGui:TakeScreenshot()
 end
 },
 {
+client=true,
 action="togglefullscreen|togglefs",
 description="Toggles fullscreen",
 run=function(b)
 b.guiService:ToggleFullscreen()
 end
 }
-}end a.V=function()local c=a.cache.V if not c then c={c=b()}a.cache.V=c end return c.c end end do local b=function()
+}end a.U=function()local c=a.cache.U if not c then c={c=b()}a.cache.U=c end return c.c end end do local b=function()
 local b={}
 b.__index=b
 
@@ -1592,8 +1572,8 @@ index=1
 },b)end
 
 
-return b end a.W=function()local c=a.cache.W if not c then c={c=b()}a.cache.W=c end return c.c end end do local b=function()
-local b=a.W()
+return b end a.V=function()local c=a.cache.V if not c then c={c=b()}a.cache.V=c end return c.c end end do local b=function()
+local b=a.V()
 
 return{
 action="lastcommand|lastcmd",
@@ -1607,7 +1587,7 @@ end
 
 c:run(d.name,b.new(d.args),true)
 end
-}end a.X=function()local c=a.cache.X if not c then c={c=b()}a.cache.X=c end return c.c end end do local b=function()
+}end a.W=function()local c=a.cache.W if not c then c={c=b()}a.cache.W=c end return c.c end end do local b=function()
 
 return{
 action="notifyping|ping",
@@ -1616,9 +1596,10 @@ run=function(b)
 local c=b.localPlayer:GetNetworkPing()
 b:notify("Ping",`{math.round(c*1000)}ms`)
 end
-}end a.Y=function()local c=a.cache.Y if not c then c={c=b()}a.cache.Y=c end return c.c end end do local b=function()
+}end a.X=function()local c=a.cache.X if not c then c={c=b()}a.cache.X=c end return c.c end end do local b=function()
 return{
 {
+client=true,
 action="norender",
 description="Disable 3d Rendering to decrease the amount of CPU the client uses",
 run=function(b)
@@ -1626,15 +1607,17 @@ b.runService:Set3dRenderingEnabled(false)
 end
 },
 {
+client=true,
 action="render",
 description="Enable 3d Rendering",
 run=function(b)
 b.runService:Set3dRenderingEnabled(true)
 end
 }
-}end a.Z=function()local c=a.cache.Z if not c then c={c=b()}a.cache.Z=c end return c.c end end do local b=function()
+}end a.Y=function()local c=a.cache.Y if not c then c={c=b()}a.cache.Y=c end return c.c end end do local b=function()
 return{
 {
+client=true,
 action="use2022materials|2022materials",
 description="Enables 2022 material textures",
 run=function(b)
@@ -1642,13 +1625,14 @@ b.rbxServices.MaterialService.Use2022Materials=true
 end
 },
 {
+client=true,
 action="unuse2022materials|un2022materials",
 description="Disables 2022 material textures",
 run=function(b)
 b.rbxServices.MaterialService.Use2022Materials=false
 end
 }
-}end a._=function()local c=a.cache._ if not c then c={c=b()}a.cache._=c end return c.c end end do local b=function()
+}end a.Z=function()local c=a.cache.Z if not c then c={c=b()}a.cache.Z=c end return c.c end end do local b=function()
 local b={
 [Enum.KeyCode.Comma]=-1,
 [Enum.KeyCode.Period]=1,
@@ -1656,6 +1640,7 @@ local b={
 
 return{
 {
+client=true,
 action="alignmentkeys",
 description="Enables the left and right alignment keys (comma and period)",
 run=function(c)
@@ -1679,6 +1664,7 @@ c.starterGui:SetCoreGuiEnabled(Enum.CoreGuiType.EmotesMenu,false)
 end
 },
 {
+client=true,
 action="unalignmentkeys|noalignmentkeys",
 description="Disables the alignment keys",
 run=function(c)
@@ -1692,7 +1678,7 @@ end
 d.akConn:Disconnect()
 end
 }
-}end a.aa=function()local c=a.cache.aa if not c then c={c=b()}a.cache.aa=c end return c.c end end do local b=function()local b=function(
+}end a._=function()local c=a.cache._ if not c then c={c=b()}a.cache._=c end return c.c end end do local b=function()local b=function(
 b, c)
 local d=b.localPlayer.PlayerScripts
 local e=d.PlayerModule.CameraModule.MouseLockController
@@ -1708,6 +1694,7 @@ f.Value=c end
 
 return{
 {
+client=true,
 action="ctrllock",
 description="Binds Shiftlock to LeftControl",
 run=function(c)
@@ -1715,20 +1702,21 @@ b(c,"LeftControl")
 end
 },
 {
+client=true,
 action="unctrllock",
 description="Re-binds Shiftlock to LeftShift",
 run=function(c)
 b(c,"LeftShift")
 end
 }
-}end a.ab=function()local c=a.cache.ab if not c then c={c=b()}a.cache.ab=c end return c.c end end do local b=function()
+}end a.aa=function()local c=a.cache.aa if not c then c={c=b()}a.cache.aa=c end return c.c end end do local b=function()
 return{
 action="exit|shutdown|leave",
 description="Kills roblox process",
 run=function()
 game:shutdown()
 end
-}end a.ac=function()local c=a.cache.ac if not c then c={c=b()}a.cache.ac=c end return c.c end end do local b=function()
+}end a.ab=function()local c=a.cache.ab if not c then c={c=b()}a.cache.ab=c end return c.c end end do local b=function()
 
 
 return{
@@ -1737,14 +1725,14 @@ description="Stops any cmd loops (100^1^cmd)",
 run=function(b)
 b.loopService:stop()
 end
-}end a.ad=function()local c=a.cache.ad if not c then c={c=b()}a.cache.ad=c end return c.c end end do local b=function()
+}end a.ac=function()local c=a.cache.ac if not c then c={c=b()}a.cache.ac=c end return c.c end end do local b=function()
 return{
 action="notifyjobid",
-description="Notifies the JobId and PlaceId of the current server",
+description="Notifies the JobId and PlaceId of the current server. Its copy button copies them",
 run=function(b)
-b:notify("JobId / PlaceId",`{game.JobId} / {game.PlaceId}`)
+b:notify("JobId / PlaceId",`{game.JobId} / {game.PlaceId}`,nil,{copy=true})
 end
-}end a.ae=function()local c=a.cache.ae if not c then c={c=b()}a.cache.ae=c end return c.c end end do local b=function()
+}end a.ad=function()local c=a.cache.ad if not c then c={c=b()}a.cache.ad=c end return c.c end end do local b=function()
 
 local b=a.f()
 local c=a.g()
@@ -1980,10 +1968,10 @@ task.spawn(c.RequestStreamAroundAsync,c,q,p)
 o:WaitForChild("HumanoidRootPart",p)end
 
 
-return h end a.af=function()local c=a.cache.af if not c then c={c=b()}a.cache.af=c end return c.c end end do local b=function()
+return h end a.ae=function()local c=a.cache.ae if not c then c={c=b()}a.cache.ae=c end return c.c end end do local b=function()
 
 local b=a.f()
-local c=a.af()
+local c=a.ae()
 local d=a.g()local e=function(
 
 
@@ -2378,9 +2366,9 @@ parts=x,
 __call=function(A,B)
 return z(B)
 end,
-})end a.ag=function()local c=a.cache.ag if not c then c={c=b()}a.cache.ag=c end return c.c end end do local b=function()
+})end a.af=function()local c=a.cache.af if not c then c={c=b()}a.cache.af=c end return c.c end end do local b=function()
 
-local b=a.ag()
+local b=a.af()
 
 return{
 {
@@ -2399,7 +2387,7 @@ description="Notifies a player's character appearance ID",
 args={kind="player",optional=true},
 run=function(c,d)
 for e,f in b(d:nextValue())do
-c:notify("Appearance ID",tostring(f.CharacterAppearanceId))
+c:notify("Appearance ID",tostring(f.CharacterAppearanceId),nil,{copy=true})
 end
 end
 },
@@ -2429,9 +2417,10 @@ c.executorEnv.setclipboard(tostring(d))
 c:notify("Copied ID","Copied creator ID to clipboard")
 end
 }
-}end a.ah=function()local c=a.cache.ah if not c then c={c=b()}a.cache.ah=c end return c.c end end do local b=function()
+}end a.ag=function()local c=a.cache.ag if not c then c={c=b()}a.cache.ag=c end return c.c end end do local b=function()
 
 return{
+client=true,
 action="inviteprompt",
 description="Prompts the game invite window, so you can invite friends",
 run=function(b)
@@ -2445,7 +2434,7 @@ if not d then
 b:notify("Invite Prompt","could not open the invite prompt: "..tostring(e))
 end
 end
-}end a.ai=function()local c=a.cache.ai if not c then c={c=b()}a.cache.ai=c end return c.c end end do local b=function()
+}end a.ah=function()local c=a.cache.ah if not c then c={c=b()}a.cache.ah=c end return c.c end end do local b=function()
 
 local b={inventory=
 Enum.CoreGuiType.Backpack,leaderboard=
@@ -2471,6 +2460,7 @@ end end
 
 return{
 {
+client=true,
 action="enable",
 description="Enables a CoreGui element (inventory, leaderboard, chat, reset, emotes...)",
 args={kind="string",name="gui name"},
@@ -2479,6 +2469,7 @@ c(d,e:nextValue():lower(),true)
 end
 },
 {
+client=true,
 action="disable",
 description="Disables a CoreGui element (inventory, leaderboard, chat, reset, emotes...)",
 args={kind="string",name="gui name"},
@@ -2486,7 +2477,7 @@ run=function(d,e)
 c(d,e:nextValue():lower(),false)
 end
 }
-}end a.aj=function()local c=a.cache.aj if not c then c={c=b()}a.cache.aj=c end return c.c end end do local b=function()
+}end a.ai=function()local c=a.cache.ai if not c then c={c=b()}a.cache.ai=c end return c.c end end do local b=function()
 
 return{
 action="clearnilinstances|nonilinstances|cni",
@@ -2501,18 +2492,19 @@ for c,d in getnilinstances()do
 d:Destroy()
 end
 end
-}end a.ak=function()local c=a.cache.ak if not c then c={c=b()}a.cache.ak=c end return c.c end end do local b=function()
+}end a.aj=function()local c=a.cache.aj if not c then c={c=b()}a.cache.aj=c end return c.c end end do local b=function()
 
 return{
+client=true,
 action="mousesensitivity|ms",
 description="Sets your mouse delta sensitivity",
 args={kind="number",name="sensitivity"},
 run=function(b,c)
 b.robloxServices.UserInputService.MouseDeltaSensitivity=c:nextValue()
 end
-}end a.al=function()local c=a.cache.al if not c then c={c=b()}a.cache.al=c end return c.c end end do local b=function()
+}end a.ak=function()local c=a.cache.ak if not c then c={c=b()}a.cache.ak=c end return c.c end end do local b=function()
 
-local b=a.ag()
+local b=a.af()
 
 return{
 {
@@ -2535,7 +2527,7 @@ c.localPlayer:RevokeFriendship(f)
 end
 end
 }
-}end a.am=function()local c=a.cache.am if not c then c={c=b()}a.cache.am=c end return c.c end end do local b=function()local b=function(
+}end a.al=function()local c=a.cache.al if not c then c={c=b()}a.cache.al=c end return c.c end end do local b=function()local b=function(
 
 
 b)
@@ -2562,6 +2554,7 @@ f:Destroy()end
 
 return{
 {
+client=true,
 action="respawn",
 description="Respawns your character in place (client side)",
 run=function(c)
@@ -2569,6 +2562,7 @@ b(c)
 end
 },
 {
+client=true,
 action="refresh|re",
 description="Respawns your character and puts you back where you were",
 run=function(c)
@@ -2592,13 +2586,14 @@ end)
 end
 },
 {
+client=true,
 action="reset",
 description="Resets your character",
 run=function(c)
 c.playerService:resetCharacter()
 end
 }
-}end a.an=function()local c=a.cache.an if not c then c={c=b()}a.cache.an=c end return c.c end end do local b=function()
+}end a.am=function()local c=a.cache.am if not c then c={c=b()}a.cache.am=c end return c.c end end do local b=function()
 
 local b=a.d()
 
@@ -2620,10 +2615,11 @@ end
 
 c:notify("debug",tostring(e))
 end
-}end a.ao=function()local c=a.cache.ao if not c then c={c=b()}a.cache.ao=c end return c.c end end do local b=function()
+}end a.an=function()local c=a.cache.an if not c then c={c=b()}a.cache.an=c end return c.c end end do local b=function()
 
 return{
 {
+client=true,
 action="team",
 description="Changes your team. Sometimes fools localscripts. (CLIENT)",
 args={
@@ -2654,9 +2650,9 @@ b.localPlayer.Team=e
 end
 end
 }
-}end a.ap=function()local c=a.cache.ap if not c then c={c=b()}a.cache.ap=c end return c.c end end do local b=function()
+}end a.ao=function()local c=a.cache.ao if not c then c={c=b()}a.cache.ao=c end return c.c end end do local b=function()
 
-local b=a.ag()
+local b=a.af()
 
 return{
 {
@@ -2723,7 +2719,7 @@ c:notify("Handle Kill","Stopped!")
 end)
 end
 }
-}end a.aq=function()local c=a.cache.aq if not c then c={c=b()}a.cache.aq=c end return c.c end end do local b=function()
+}end a.ap=function()local c=a.cache.ap if not c then c={c=b()}a.cache.ap=c end return c.c end end do local b=function()
 
 
 
@@ -2825,7 +2821,7 @@ run=function(f)
 d(f,"autokeypress")
 end
 }
-}end a.ar=function()local c=a.cache.ar if not c then c={c=b()}a.cache.ar=c end return c.c end end do local b=function()
+}end a.aq=function()local c=a.cache.aq if not c then c={c=b()}a.cache.aq=c end return c.c end end do local b=function()
 
 
 
@@ -3001,7 +2997,7 @@ k:notify("Friend groups",table.concat(m,", "))
 end
 end
 }
-}end a.as=function()local c=a.cache.as if not c then c={c=b()}a.cache.as=c end return c.c end end do local b=function()
+}end a.ar=function()local c=a.cache.ar if not c then c={c=b()}a.cache.ar=c end return c.c end end do local b=function()
 
 
 
@@ -3041,7 +3037,7 @@ run=function(b)
 b:run("mousetp")
 end
 }
-}end a.at=function()local c=a.cache.at if not c then c={c=b()}a.cache.at=c end return c.c end end do local b=function()local b=function(
+}end a.as=function()local c=a.cache.as if not c then c={c=b()}a.cache.as=c end return c.c end end do local b=function()local b=function(
 
 
 b, c)
@@ -3078,7 +3074,7 @@ run=function(c)
 b(c,"R15")
 end
 }
-}end a.au=function()local c=a.cache.au if not c then c={c=b()}a.cache.au=c end return c.c end end do local b=function()
+}end a.at=function()local c=a.cache.at if not c then c={c=b()}a.cache.at=c end return c.c end end do local b=function()
 
 return{a.w()
 ,a.x()
@@ -3105,7 +3101,7 @@ return{a.w()
 ,a.S()
 ,a.T()
 ,a.U()
-,a.V()
+,a.W()
 ,a.X()
 ,a.Y()
 ,a.Z()
@@ -3113,9 +3109,9 @@ return{a.w()
 ,a.aa()
 ,a.ab()
 ,a.ac()
-,a.ad()
 
-,a.ae()
+,a.ad()
+,a.ag()
 ,a.ah()
 ,a.ai()
 ,a.aj()
@@ -3129,21 +3125,485 @@ return{a.w()
 ,a.ar()
 ,a.as()
 ,a.at()
-,a.au()
 
-}end a.av=function()local c=a.cache.av if not c then c={c=b()}a.cache.av=c end return c.c end end do local b=function()
+}end a.au=function()local c=a.cache.au if not c then c={c=b()}a.cache.au=c end return c.c end end do local b=function()
 
-return"v0.9.1"end a.aw=function()local c=a.cache.aw if not c then c={c=b()}a.cache.aw=c end return c.c end end do local b=function()
+
+
+
+
+
+
+
+
+
+
+
+
+
+local b=a.a()
+local c=a.b()
+
+local d={"Folder","MeshPart","Decal","Attachment"}
+
+local e={}
+
+local f=c.objectDecoy
+if f==nil then
+f={
+enabled=false,
+method=nil,
+hooked=false,
+originals={},
+protectedObjects=setmetatable({},{__mode="k"}),
+spoofedFlags=setmetatable({},{__mode="k"}),
+spoofedValues=setmetatable({},{__mode="k"}),
+}
+c.objectDecoy=f
+end local g=function(
+
+g, h)
+local i=f.spoofedFlags[g]
+return i~=nil and i[h]==true end local h=function()
+
+
+
+return Instance.new(d[math.random(#d)])end local i=function(
+
+
+
+i, j)
+if f.hooked then
+return f.originals.index(i,j)
+end
+return i[j]end local j=function(
+
+
+j, k, l)
+if f.hooked then
+f.originals.newindex(j,k,l)
+return
+end
+j[k]=l end local k=function(
+
+
+k, l, m)
+if f.enabled then
+if g(k,l)then
+f.spoofedValues[k][l]=m
+return
+end
+
+
+local n=f.protectedObjects[k]
+if n and l~="Parent"and pcall(f.originals.newindex,n.decoy,l,m)then
+return
+end
+end
+
+return f.originals.newindex(k,l,m)end local l=function(
+
+
+l, m)
+if f.enabled then
+if g(l,m)then
+return f.spoofedValues[l][m]
+end
+
+local n=f.protectedObjects[l]
+if n then
+local o,p=pcall(f.originals.index,n.decoy,m)
+if o then
+return p
+end
+end
+end
+
+return f.originals.index(l,m)end local m=function(
+
+
+
+m, n, o)
+if m=="getrawmetatable"then
+local p=b.getrawmetatable(game)
+local q=p[n]
+b.setreadonly(p,false)
+p[n]=o
+b.setreadonly(p,true)
+return q
+end
+
+return b.hookmetamethod(game,n,o)end local n=function()
+
+
+
+if f.originals.newindex==nil then
+f.originals.newindex=m(f.method,"__newindex",k)
+end
+if f.originals.index==nil then
+f.originals.index=m(f.method,"__index",l)
+end
+f.hooked=true end local o=function(
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+o)
+local p=Instance.new("Folder")
+local q=false
+local r
+local s=false
+
+local t,u=pcall(function()
+r=m(o,"__index",function(t,u)
+if t==p then
+q=true
+end
+return r(t,u)
+end)
+s=true
+
+local t=p.Name
+return q
+end)
+
+if s then
+pcall(m,o,"__index",r)
+end
+
+return t and u==true end local p=function()
+
+
+
+if typeof(b.hookmetamethod)~="function"then
+return false
+end
+return o("hookmetamethod")end local q=function()
+
+
+
+if typeof(b.getrawmetatable)~="function"or typeof(b.setreadonly)~="function"then
+return false
+end
+return o("getrawmetatable")end
+
+
+
+
+e.test=function()
+local r={}
+
+r.hookmetamethod=p()
+if r.hookmetamethod then
+return"hookmetamethod",r
+end
+
+r.getrawmetatable=q()
+if r.getrawmetatable then
+return"getrawmetatable",r
+end
+
+return nil,r end
+
+
+
+e.runTest=function(r)
+local s,t=e.test()
+
+local u={}
+for v,w in{"hookmetamethod","getrawmetatable"}do
+if t[w]~=nil then
+local x=if t[w]then"works"else"does not work"
+table.insert(u,`{w} {x}`)
+end
+end
+local v=table.concat(u,", ")
+
+if s==nil then
+r:notify("Client bypass test",`{v}. Neither works, so the client bypass cannot be turned on here.`)
+else
+r:notify("Client bypass test",`{v}. Using {s}.`)
+end end
+
+
+e.enable=function(r)
+if f.enabled then
+r:notify("Client bypass","already on")
+return true
+end
+
+local s=f.method or e.test()
+if s==nil then
+r:notify("Client bypass","could not turn on: neither hookmetamethod nor getrawmetatable works in this executor")
+return false
+end
+
+f.method=s
+local t,u=pcall(n)
+if not t then
+r:notify("Client bypass",`could not turn on: {u}`)
+return false
+end
+
+f.enabled=true
+r:notify("Client bypass",`on, using {s}`)
+return true end
+
+
+e.disable=function(r)
+if not f.enabled then
+r:notify("Client bypass","already off")
+return false
+end
+
+f.enabled=false
+r:notify("Client bypass","off: hidden objects show their real values again")
+return true end
+
+
+e.isEnabled=function()
+return f.enabled end
+
+
+
+
+e.protect=function(r)
+assert(typeof(r)=="Instance","objectDecoy.protect: expected an Instance")
+
+if f.enabled and f.protectedObjects[r]==nil then
+f.protectedObjects[r]={decoy=h()}
+end
+
+return r end
+
+
+e.isProtected=function(r)
+return f.protectedObjects[r]~=nil end
+
+
+
+
+e.createProtected=function(r, s)
+local t=Instance.new(r)
+local u
+
+for v,w in s or{}do
+if v=="Parent"then
+u=w
+else
+t[v]=w
+end
+end
+
+
+e.protect(t)
+t.Parent=u
+return t end
+
+
+
+
+e.destroy=function(r)
+local s=i(r,"Destroy")
+s(r)end
+
+
+
+e.getProperty=function(r, s)
+return i(r,s)end
+
+
+
+e.setProperty=function(r, s, t)
+if not f.enabled then
+j(r,s,t)
+return
+end
+
+local u=f.spoofedFlags[r]
+if u==nil then
+u={}
+f.spoofedFlags[r]=u
+f.spoofedValues[r]={}
+end
+
+if not u[s]then
+u[s]=true
+f.spoofedValues[r][s]=i(r,s)
+end
+
+j(r,s,t)end
+
+
+return e end a.av=function()local c=a.cache.av if not c then c={c=b()}a.cache.av=c end return c.c end end do local b=function()
+
+
+
+local b=a.av()
+
+return{
+{
+client=true,
+action="clientbypass",
+description="Hides the objects that fly, vfly and float create from the game's scripts",
+run=function(c)
+b.enable(c)
+end
+},
+{
+client=true,
+action="unclientbypass",
+description="Turns the client bypass off, so the objects show their real values again",
+run=function(c)
+b.disable(c)
+end
+}
+}end a.aw=function()local c=a.cache.aw if not c then c={c=b()}a.cache.aw=c end return c.c end end do local b=function()
+
+
+
+local b=a.av()
+
+return{
+{
+client=true,
+action="testbypass",
+description="Tests which hook method works in this executor (hookmetamethod, or getrawmetatable as fallback)",
+run=function(c)
+b.runTest(c)
+end
+}
+}end a.ax=function()local c=a.cache.ax if not c then c={c=b()}a.cache.ax=c end return c.c end end do local b=function()
+
+return{
+client=true,
+action="clientantikick|antikick",
+description="Prevents localscripts from kicking you (CLIENT)",
+run=function(b)
+if b.privateEnv.clientAntiKick then
+b:notify("Client Antikick","already active")
+return
+end
+
+local c=b:expectExploit("hookmetamethod")
+local d=b:expectExploit("getnamecallmethod")
+if not(c and d)then return end
+
+local e=b.localPlayer
+
+
+local f=b.executorEnv.hookfunction
+if f then
+pcall(f,e.Kick,function()end)
+end
+
+local g
+g=c(game,"__index",function(h,i)
+if h==e and typeof(i)=="string"and i:lower()=="kick"then
+error("Expected ':' not '.' calling member function Kick",2)
+end
+return g(h,i)
+end)
+
+local h
+h=c(game,"__namecall",function(i,...)
+if i==e and d():lower()=="kick"then
+return
+end
+return h(i,...)
+end)
+
+b.privateEnv.clientAntiKick=true
+b:notify("Client Antikick","Client anti kick is now active (only effective on localscript kick)")
+end
+}end a.ay=function()local c=a.cache.ay if not c then c={c=b()}a.cache.ay=c end return c.c end end do local b=function()
+
+return{a.aw()
+,a.ax()
+,a.ay()
+,
+}end a.az=function()local c=a.cache.az if not c then c={c=b()}a.cache.az=c end return c.c end end do local b=function()
+
+return"v0.10.0"end a.aA=function()local c=a.cache.aA if not c then c={c=b()}a.cache.aA=c end return c.c end end do local b=function()
 return{
 owner="tlredz",
 repository="iy-remake"
-}end a.ax=function()local c=a.cache.ax if not c then c={c=b()}a.cache.ax=c end return c.c end end do local b=function()
-local b=a.ax()
+}end a.aB=function()local c=a.cache.aB if not c then c={c=b()}a.cache.aB=c end return c.c end end do local b=function()
+local b=a.aB()
 
 return{
 discord="https://discord.gg/78ZuWSq",
 github=`https://github.com/{b.owner}/{b.repository}`
-}end a.ay=function()local c=a.cache.ay if not c then c={c=b()}a.cache.ay=c end return c.c end end do local b=function()
+}end a.aC=function()local c=a.cache.aC if not c then c={c=b()}a.cache.aC=c end return c.c end end do local b=function()
 
 
 local b=a.n()
@@ -3151,7 +3611,7 @@ local b=a.n()
 return{
 applicationName="Infinite Yield RV",
 isRemakeVersion=true,
-version=a.aw(),
+version=a.aA(),
 newVersionMessage="You're using an old version of Infinite Yield RV",
 
 theme={
@@ -3174,6 +3634,8 @@ minScale=0.8,
 maxScale=2.0,
 current=b:register("interface.uiScale",1)
 },
+
+legacyIconsKey="interface.legacyIcons",
 commands={
 padding=0,
 labelSize=17,
@@ -3186,12 +3648,13 @@ draggable=true
 }
 },
 
-links=a.ay(),
+links=a.aC(),
 storage=a.j(),
-}end a.az=function()local c=a.cache.az if not c then c={c=b()}a.cache.az=c end return c.c end end do local b=function()
-local b=a.az().ui.scale
+}end a.aD=function()local c=a.cache.aD if not c then c={c=b()}a.cache.aD=c end return c.c end end do local b=function()
+local b=a.aD().ui.scale
 
 return{
+client=true,
 action="guiscale|uiscale",
 description="Changes the size of the gui. [number] accepts decimals and whole numbers.",
 args={
@@ -3202,9 +3665,10 @@ run=function(c,d)
 local e=d:nextValue()
 c.infiniteYield:setScale(e)
 end
-}end a.aA=function()local c=a.cache.aA if not c then c={c=b()}a.cache.aA=c end return c.c end end do local b=function()
+}end a.aE=function()local c=a.cache.aE if not c then c={c=b()}a.cache.aE=c end return c.c end end do local b=function()
 return{
 {
+client=true,
 action="noprompts|nopurchaseprompts",
 description="Prevents the game from showing you purchase/premium prompts",
 run=function(b)
@@ -3212,13 +3676,14 @@ b.coreGui.PurchasePromptApp.Enabled=false
 end
 },
 {
+client=true,
 action="showprompts|showpurchaseprompts",
 description="Allows the game to show purchase/premium prompts again",
 run=function(b)
 b.coreGui.PurchasePromptApp.Enabled=true
 end
 }
-}end a.aB=function()local c=a.cache.aB if not c then c={c=b()}a.cache.aB=c end return c.c end end do local b=function()
+}end a.aF=function()local c=a.cache.aF if not c then c={c=b()}a.cache.aF=c end return c.c end end do local b=function()
 local b={inventory=
 Enum.CoreGuiType.Backpack,leaderboard=
 Enum.CoreGuiType.PlayerList,emotes=
@@ -3230,6 +3695,7 @@ b[string.lower(d.Name)]=d
 end
 
 return{
+client=true,
 action="togglecoregui|togglegui|tcgui",
 description="Toggles visibility of coregui items",
 args={
@@ -3258,7 +3724,7 @@ if g then
 c.starterGui:SetCoreGuiEnabled(g,f)
 end
 end
-}end a.aC=function()local c=a.cache.aC if not c then c={c=b()}a.cache.aC=c end return c.c end end do local b=function()local b=function(
+}end a.aG=function()local c=a.cache.aG if not c then c={c=b()}a.cache.aG=c end return c.c end end do local b=function()local b=function(
 b, c)
 local d=b:collectGarbage(c)
 if not d then return end
@@ -3294,6 +3760,7 @@ end end
 
 return{
 {
+client=true,
 action="showguis",
 description="Shows any invisible GUIs",
 run=function(d)
@@ -3301,6 +3768,7 @@ c(d,"visibleGuiObjects",true)
 end
 },
 {
+client=true,
 action="unshowguis",
 description="Undoes showguis",
 run=function(d)
@@ -3308,6 +3776,7 @@ b(d,"visibleGuiObjects")
 end
 },
 {
+client=true,
 action="hideguis",
 description="Hides any GUIs in PlayerGui",
 run=function(d)
@@ -3315,13 +3784,14 @@ c(d,"invisibleGuiObjects",false)
 end
 },
 {
+client=true,
 action="unhideguis",
 description="Undoes hideguis",
 run=function(d)
 b(d,"invisibleGuiObjects")
 end
 }
-}end a.aD=function()local c=a.cache.aD if not c then c={c=b()}a.cache.aD=c end return c.c end end do local b=function()
+}end a.aH=function()local c=a.cache.aH if not c then c={c=b()}a.cache.aH=c end return c.c end end do local b=function()
 local b={
 connections={}
 }
@@ -3349,7 +3819,8 @@ table.insert(d.connections,g)
 return g end
 
 
-return b end a.aE=function()local c=a.cache.aE if not c then c={c=b()}a.cache.aE=c end return c.c end end do local b=function()
+return b end a.aI=function()local c=a.cache.aI if not c then c={c=b()}a.cache.aI=c end return c.c end end do local b=function()
+
 
 
 
@@ -3369,6 +3840,7 @@ settingKey="keybinds.prefix",
 default="Semicolon",
 also={"RightControl"},
 group="interface",
+icon="lucide-terminal",
 },
 
 flyUp={
@@ -3410,7 +3882,7 @@ groups={
 {key="float",title="Float"},
 {key="freecam",title="Freecam"},
 },
-}end a.aF=function()local c=a.cache.aF if not c then c={c=b()}a.cache.aF=c end return c.c end end do local b=function()local b=function(
+}end a.aJ=function()local c=a.cache.aJ if not c then c={c=b()}a.cache.aJ=c end return c.c end end do local b=function()local b=function(
 
 b)
 local c={}
@@ -3468,7 +3940,7 @@ return b({Quote=
 "7",Eight=
 "8",Nine=
 "9"
-})end a.aG=function()local c=a.cache.aG if not c then c={c=b()}a.cache.aG=c end return c.c end end do local b=function()
+})end a.aK=function()local c=a.cache.aK if not c then c={c=b()}a.cache.aK=c end return c.c end end do local b=function()
 
 
 
@@ -3479,10 +3951,10 @@ return b({Quote=
 
 
 local b=a.f()
-local c=a.aE()
+local c=a.aI()
 local d=a.n()
-local e=a.aF()
-local f=a.aG()
+local e=a.aJ()
+local f=a.aK()
 
 local g=b.UserInputService
 
@@ -3665,89 +4137,69 @@ h.getBindingName=function(s, t)
 return s:getKeyName(n(t))end
 
 
-return h end a.aH=function()local c=a.cache.aH if not c then c={c=b()}a.cache.aH=c end return c.c end end do local b=function()
+return h end a.aL=function()local c=a.cache.aL if not c then c={c=b()}a.cache.aL=c end return c.c end end do local b=function()
 
 
 
-local b=a.aH()local c=function(
+
+
+local b=a.aL()local c=function(
 
 c)
-local d=c:collectGarbage("hideiy")
-if d and d.connection then
-d.connection:Disconnect()
-end end local d=function(
-
-
-
-
-d, e)
-c(d)
-
-local f=d:registerGarbage("hideiy")
-f.connection=b:onBindingPressed("prefix",function()
-
-if e.mainFrame.Visible then return end
-
-e:showCommandBar()
-end)end local e=function(
-
-
-e)
-local f=e.infiniteYield
-if not f or not f.mainFrame then
-e:notify("IY","the main window is not created yet")
+local d=c.infiniteYield
+if not d or not d.mainFrame then
+c:notify("IY","the main window is not created yet")
 return
 end
 
-if not f.mainFrame.Visible then
-e:notify("IY","already hidden")
+if not d.mainFrame.Visible then
+c:notify("IY","already hidden")
 return
 end
 
-f:hideWindow()
-d(e,f)
+d:hideWindow()
 
-local g=b:getBindingName("prefix")
-e:notify("IY",`hidden. Press {g} or tap the IY button to type a command`)end local f=function(
+local e=b:getBindingName("prefix")
+c:notify("IY",`hidden. Press {e} or tap the IY button to type a command`)end local d=function(
 
 
-f)
-c(f)
-
-local g=f.infiniteYield
-if g then
-g:showWindow()
+d)
+local e=d.infiniteYield
+if e then
+e:showWindow()
 end end
 
 
 return{
 {
+client=true,
 action="hideiy|hideinterface",
 description="Hides the main IY GUI",
-run=function(g)
-e(g)
+run=function(e)
+c(e)
 end
 },
 {
+client=true,
 action="showiy|unhideiy|unhideinterface",
 description="Shows IY again",
-run=function(g)
-f(g)
+run=function(e)
+d(e)
 end
-}
-}end a.aI=function()local c=a.cache.aI if not c then c={c=b()}a.cache.aI=c end return c.c end end do local b=function()
+},
+}end a.aM=function()local c=a.cache.aM if not c then c={c=b()}a.cache.aM=c end return c.c end end do local b=function()
 
-return{a.aA()
+return{a.aE()
 
 
-,a.aB()
-,a.aC()
-,a.aD()
-,a.aI()
+,a.aF()
+,a.aG()
+,a.aH()
+,a.aM()
 
 ,
 
-}end a.aJ=function()local c=a.cache.aJ if not c then c={c=b()}a.cache.aJ=c end return c.c end end do local b=function()
+}end a.aN=function()local c=a.cache.aN if not c then c={c=b()}a.cache.aN=c end return c.c end end do local b=function()
 
 
 
@@ -3755,64 +4207,84 @@ return{a.aA()
 
 
 local b=a.f()
-local c=a.aH()
+local c=a.aL()
+local d=a.av()
 
-local d=b.UserInputService
+local e=b.UserInputService
 
-local e={}
+local f={}
 
-local f=Vector3.one*9e9 local g=function(
+local g=Vector3.one*9e9 local h=function(
 
 
-g)
-local h=Vector3.new(g.X,0,g.Z)
-if h.Magnitude==0 then
+h)
+local i=Vector3.new(h.X,0,h.Z)
+if i.Magnitude==0 then
 return Vector3.zero
 end
-return h.Unit end local h=function(
+return i.Unit end local i=function(
 
 
 
-h, i)
-local j=workspace.CurrentCamera.CFrame
-local k=i.MoveDirection
+i, j)
+local k=workspace.CurrentCamera.CFrame
+local l=j.MoveDirection
 
-local l=k:Dot(g(j.LookVector))
-local m=k:Dot(g(j.RightVector))
+local m=l:Dot(h(k.LookVector))
+local n=l:Dot(h(k.RightVector))
 
-local n=0
-if h.privateEnv.qeFly~=false then
-if d:IsKeyDown(c:getBinding("flyUp"))then
-n=n+1
+local o=0
+if i.privateEnv.qeFly~=false then
+if e:IsKeyDown(c:getBinding("flyUp"))then
+o=o+1
 end
-if d:IsKeyDown(c:getBinding("flyDown"))then
-n=n-1
+if e:IsKeyDown(c:getBinding("flyDown"))then
+o=o-1
 end
 end
 
-local o=j.LookVector*l+j.RightVector*m+Vector3.yAxis*n
-if o.Magnitude>1 then
-o=o.Unit
+local p=k.LookVector*m+k.RightVector*n+Vector3.yAxis*o
+if p.Magnitude>1 then
+p=p.Unit
 end
-return o end
+return p end local j=function(
 
 
 
-e.stop=function(i, j)
-local k=i:collectGarbage(j)
-if not k then return end
 
-if k.connection then
-k.connection:Disconnect()
+j)
+local k={}
+local l=j.Parent
+if l then
+for m,n in l:GetChildren()do
+if n:IsA("BasePart")and n~=j then
+table.insert(k,n)
 end
-if k.velocity then
-k.velocity:Destroy()
 end
-if k.gyro then
-k.gyro:Destroy()
 end
-if k.humanoid then
-k.humanoid.PlatformStand=false
+
+if#k==0 then
+return j
+end
+return k[math.random(#k)]end
+
+
+
+f.stop=function(k, l)
+local m=k:collectGarbage(l)
+if not m then return end
+
+if m.connection then
+m.connection:Disconnect()
+end
+if m.velocity then
+d.destroy(m.velocity)
+end
+if m.gyro then
+d.destroy(m.gyro)
+end
+if m.humanoid then
+d.setProperty(m.humanoid,"PlatformStand",false)
 end end
 
 
@@ -3820,51 +4292,53 @@ end end
 
 
 
-e.start=function(i, j)
-e.stop(i,j.garbageName)
+f.start=function(k, l)
+f.stop(k,l.garbageName)
 
-local k=i.playerService:getHumanoid()
-local l=i.playerService:getRootPart()
-if not(k and l)then
-i:notify("Fly","your character is not loaded")
+local m=k.playerService:getHumanoid()
+local n=k.playerService:getRootPart()
+if not(m and n)then
+k:notify("Fly","your character is not loaded")
 return
 end
 
-local m=Instance.new("BodyVelocity")
-m.MaxForce=f
-m.Velocity=Vector3.zero
-m.Parent=l
+local o=d.createProtected("BodyVelocity",{
+MaxForce=g,
+Velocity=Vector3.zero,
+Parent=j(n),
+})
 
-local n=Instance.new("BodyGyro")
-n.MaxTorque=f
-n.P=9e4
-n.CFrame=l.CFrame
-n.Parent=l
+local p=d.createProtected("BodyGyro",{
+MaxTorque=g,
+P=9e4,
+CFrame=n.CFrame,
+Parent=j(n),
+})
 
-if j.platformStand then
-k.PlatformStand=true
+if l.platformStand then
+d.setProperty(m,"PlatformStand",true)
 end
 
-local o=i:createGarbage(j.garbageName)
-o.velocity=m
-o.gyro=n
-o.humanoid=k
-o.kind=j.kind
+local q=k:createGarbage(l.garbageName)
+q.velocity=o
+q.gyro=p
+q.humanoid=m
+q.kind=l.kind
 
-o.connection=i:connect(i.runService.Heartbeat,function()
-if not l:IsDescendantOf(workspace)or k.Health<=0 then
-e.stop(i,j.garbageName)
+q.connection=k:connect(k.runService.Heartbeat,function()
+if not n:IsDescendantOf(workspace)or m.Health<=0 then
+f.stop(k,l.garbageName)
 return
 end
 
-m.Velocity=h(i,k)*j.getSpeed()
-n.CFrame=workspace.CurrentCamera.CFrame
+d.setProperty(o,"Velocity",i(k,m)*l.getSpeed())
+d.setProperty(p,"CFrame",workspace.CurrentCamera.CFrame)
 end)end
 
 
-return e end a.aK=function()local c=a.cache.aK if not c then c={c=b()}a.cache.aK=c end return c.c end end do local b=function()
+return f end a.aO=function()local c=a.cache.aO if not c then c={c=b()}a.cache.aO=c end return c.c end end do local b=function()
 
-local b=a.aK()
+local b=a.aO()
 
 local c=100
 
@@ -3932,43 +4406,44 @@ run=function(d)
 b.stop(d,"fly")
 end
 }
-}end a.aL=function()local c=a.cache.aL if not c then c={c=b()}a.cache.aL=c end return c.c end end do local b=function()
+}end a.aP=function()local c=a.cache.aP if not c then c={c=b()}a.cache.aP=c end return c.c end end do local b=function()
+
+local b=a.av()
 
 
-
-local b="Noclip"
-local c={kind="string",name="nonotify",optional=true}local d=function(
-
-d)
-local e=d:collectGarbage("noclip")
-if not e then return false end
-
-e.connection:Disconnect()
-
-for f in e.parts do
-if f.Parent then
-f.CanCollide=true
-end
-end
-
-return true end local e=function(
-
+local c="Noclip"
+local d={kind="string",name="nonotify",optional=true}local e=function(
 
 e)
-local f=e:createGarbage("noclip")
-f.parts=setmetatable({},{__mode="k"})
+local f=e:collectGarbage("noclip")
+if not f then return false end
 
-f.connection=e:connect(e.runService.Stepped,function()
-local g=e.playerService:getCharacter()
-if not g then return end
+f.connection:Disconnect()
 
-local h=e:getGarbage("float")
-local i=h and h.platform
+for g in f.parts do
+if g.Parent then
+b.setProperty(g,"CanCollide",true)
+end
+end
 
-for j,k in g:GetDescendants()do
-if k:IsA("BasePart")and k.CanCollide and k~=i then
-k.CanCollide=false
-f.parts[k]=true
+return true end local f=function(
+
+
+f)
+local g=f:createGarbage("noclip")
+g.parts=setmetatable({},{__mode="k"})
+
+g.connection=f:connect(f.runService.Stepped,function()
+local h=f.playerService:getCharacter()
+if not h then return end
+
+local i=f:getGarbage("float")
+local j=i and i.platform
+
+for k,l in h:GetDescendants()do
+if l:IsA("BasePart")and l.CanCollide and l~=j then
+b.setProperty(l,"CanCollide",false)
+g.parts[l]=true
 end
 end
 end)end
@@ -3978,41 +4453,41 @@ return{
 {
 action="noclip",
 description="Go through objects",
-args=c,
-run=function(f,g)
-local h=g:nextValue()=="nonotify"
+args=d,
+run=function(g,h)
+local i=h:nextValue()=="nonotify"
 
-d(f)
-e(f)
+e(g)
+f(g)
 
-if not h then
-f:notify(b,"Noclip Enabled")
+if not i then
+g:notify(c,"Noclip Enabled")
 end
 end
 },
 {
 action="unnoclip|clip",
 description="Disables noclip",
-args=c,
-run=function(f,g)
-local h=g:nextValue()=="nonotify"
-d(f)
+args=d,
+run=function(g,h)
+local i=h:nextValue()=="nonotify"
+e(g)
 
-if not h then
-f:notify(b,"Noclip Disabled")
+if not i then
+g:notify(c,"Noclip Disabled")
 end
 end
 },
 {
 action="togglenoclip",
 description="Toggles noclip",
-run=function(f)
-f:run(if f:hasGarbage("noclip")then"unnoclip"else"noclip")
+run=function(g)
+g:run(if g:hasGarbage("noclip")then"unnoclip"else"noclip")
 end
 }
-}end a.aM=function()local c=a.cache.aM if not c then c={c=b()}a.cache.aM=c end return c.c end end do local b=function()
+}end a.aQ=function()local c=a.cache.aQ if not c then c={c=b()}a.cache.aQ=c end return c.c end end do local b=function()
 
-local b=a.aK()
+local b=a.aO()
 
 local c=100
 
@@ -4077,57 +4552,58 @@ run=function(d)
 b.stop(d,"fly")
 end
 }
-}end a.aN=function()local c=a.cache.aN if not c then c={c=b()}a.cache.aN=c end return c.c end end do local b=function()
+}end a.aR=function()local c=a.cache.aR if not c then c={c=b()}a.cache.aR=c end return c.c end end do local b=function()
 
-local b=50 local c=function(
-
-
-c)
-local d=c:collectGarbage("cframefly")
-if not d then return end
-
-d.connection:Disconnect()
-d.humanoid.PlatformStand=false
-d.head.Anchored=false end local d=function(
-
+local b=a.av()
+local c=50 local d=function(
 
 
 d)
-c(d)
+local e=d:collectGarbage("cframefly")
+if not e then return end
 
-local e=d.playerService:getHumanoid()
-local f=d.playerService:getCharacter()
-local g=f and f:FindFirstChild("Head")
-if not(e and g)then
-d:notify("cframefly","your character is not loaded")
+e.connection:Disconnect()
+b.setProperty(e.humanoid,"PlatformStand",false)
+e.head.Anchored=false end local e=function(
+
+
+
+e)
+d(e)
+
+local f=e.playerService:getHumanoid()
+local g=e.playerService:getCharacter()
+local h=g and g:FindFirstChild("Head")
+if not(f and h)then
+e:notify("cframefly","your character is not loaded")
 return
 end
 
-e.PlatformStand=true
-g.Anchored=true
+b.setProperty(f,"PlatformStand",true)
+h.Anchored=true
 
-local h=d:createGarbage("cframefly")
-h.humanoid=e
-h.head=g
-h.connection=d:connect(d.runService.Heartbeat,function(i)
-if not g:IsDescendantOf(workspace)then
-c(d)
+local i=e:createGarbage("cframefly")
+i.humanoid=f
+i.head=h
+i.connection=e:connect(e.runService.Heartbeat,function(j)
+if not h:IsDescendantOf(workspace)then
+d(e)
 return
 end
 
-local j=d.privateEnv.cframeFlySpeed or b
-local k=e.MoveDirection*(j*i)
+local k=e.privateEnv.cframeFlySpeed or c
+local l=f.MoveDirection*(k*j)
 
-local l=g.CFrame
-local m=workspace.CurrentCamera.CFrame
-local n=l:ToObjectSpace(m).Position
-m=m*CFrame.new(-n.X,-n.Y,-n.Z+1)
+local m=h.CFrame
+local n=workspace.CurrentCamera.CFrame
+local o=m:ToObjectSpace(n).Position
+n=n*CFrame.new(-o.X,-o.Y,-o.Z+1)
 
-local o=m.Position
-local p=l.Position
-local q=CFrame.new(o,Vector3.new(p.X,o.Y,p.Z)):VectorToObjectSpace(k)
+local p=n.Position
+local q=m.Position
+local r=CFrame.new(p,Vector3.new(q.X,p.Y,q.Z)):VectorToObjectSpace(l)
 
-g.CFrame=CFrame.new(p)*(m-o)*CFrame.new(q)
+h.CFrame=CFrame.new(q)*(n-p)*CFrame.new(r)
 end)end
 
 
@@ -4140,12 +4616,12 @@ kind="number",
 name="speed",
 optional=true
 },
-run=function(e,f)
-local g=f:nextValue()
-if g then
-e.privateEnv.cframeFlySpeed=g
+run=function(f,g)
+local h=g:nextValue()
+if h then
+f.privateEnv.cframeFlySpeed=h
 end
-d(e)
+e(f)
 end
 },
 {
@@ -4154,18 +4630,18 @@ description="Sets cfly speed",
 args={
 kind="number"
 },
-run=function(e,f)
-e.privateEnv.cframeFlySpeed=f:nextValue()or b
+run=function(f,g)
+f.privateEnv.cframeFlySpeed=g:nextValue()or c
 end
 },
 {
 action="uncframefly|uncfly",
 description="Disables cfly",
-run=function(e)
-c(e)
+run=function(f)
+d(f)
 end
 }
-}end a.aO=function()local c=a.cache.aO if not c then c={c=b()}a.cache.aO=c end return c.c end end do local b=function()
+}end a.aS=function()local c=a.cache.aS if not c then c={c=b()}a.cache.aS=c end return c.c end end do local b=function()
 
 return{
 action="qefly|flyqe",
@@ -4178,7 +4654,7 @@ run=function(b,c)
 
 b.privateEnv.qeFly=c:nextValue()~=false
 end
-}end a.aP=function()local c=a.cache.aP if not c then c={c=b()}a.cache.aP=c end return c.c end end do local b=function()local b=function(
+}end a.aT=function()local c=a.cache.aT if not c then c={c=b()}a.cache.aT=c end return c.c end end do local b=function()local b=function(
 
 
 b)
@@ -4238,107 +4714,109 @@ run=function(d)
 c(d)
 end
 },
-}end a.aQ=function()local c=a.cache.aQ if not c then c={c=b()}a.cache.aQ=c end return c.c end end do local b=function()
+}end a.aU=function()local c=a.cache.aU if not c then c={c=b()}a.cache.aU=c end return c.c end end do local b=function()
 
-local b=a.aH()
+local b=a.aL()
+local c=a.av()
 
-local c=-3.1 local d=function(
-
-d)
-local e=d:collectGarbage("float")
-if not e then return end
-
-for f,g in e.connections do
-g:Disconnect()
-end
-e.platform:Destroy()end local e=function(
-
+local d=-3.1 local e=function(
 
 e)
-if e:hasGarbage("float")then
-e:notify("float is already enabled")
+local f=e:collectGarbage("float")
+if not f then return end
+
+for g,h in f.connections do
+h:Disconnect()
+end
+c.destroy(f.platform)end local f=function(
+
+
+f)
+if f:hasGarbage("float")then
+f:notify("float is already enabled")
 return
 end
 
-local f=e.playerService:getCharacter()
-local g=e.playerService:getRootPart()
-if not(f and g)then
-e:notify("Float","your character is not loaded")
+local g=f.playerService:getCharacter()
+local h=f.playerService:getRootPart()
+if not(g and h)then
+f:notify("Float","your character is not loaded")
 return
 end
 
-local h=Instance.new("Part")
-h.Name="IYFloatPlatform"
-h.Transparency=1
-h.Size=Vector3.new(2,0.2,1.5)
-h.Anchored=true
-h.CFrame=g.CFrame*CFrame.new(0,c,0)
-h.Parent=f
+local i=c.createProtected("Part",{
+Name="IYFloatPlatform",
+Transparency=1,
+Size=Vector3.new(2,0.2,1.5),
+Anchored=true,
+CFrame=h.CFrame*CFrame.new(0,d,0),
+Parent=g,
+})
 
-local i=e:createGarbage("float")
-i.platform=h
-i.offset=c
-i.connections={}
+local j=f:createGarbage("float")
+j.platform=i
+j.offset=d
+j.connections={}
 
-table.insert(i.connections,e:connect(e.runService.Heartbeat,function()
-local j=e.playerService:getRootPart()
-if not(j and h:IsDescendantOf(workspace))then
-d(e)
+table.insert(j.connections,f:connect(f.runService.Heartbeat,function()
+local k=f.playerService:getRootPart()
+if not(k and i:IsDescendantOf(workspace))then
+e(f)
 return
 end
 
-h.CFrame=j.CFrame*CFrame.new(0,i.offset,0)
+c.setProperty(i,"CFrame",k.CFrame*CFrame.new(0,j.offset,0))
 end))
 
 
 
-table.insert(i.connections,e:connect(e.robloxServices.UserInputService.InputBegan,function(j,k)
-if k then return end
+table.insert(j.connections,f:connect(f.robloxServices.UserInputService.InputBegan,function(k,l)
+if l then return end
 
-if j.KeyCode==b:getBinding("floatUp")then
-i.offset=i.offset+1.5
-elseif j.KeyCode==b:getBinding("floatDown")then
-i.offset=i.offset-0.5
+if k.KeyCode==b:getBinding("floatUp")then
+j.offset=j.offset+1.5
+elseif k.KeyCode==b:getBinding("floatDown")then
+j.offset=j.offset-0.5
 end
 end))
 
-table.insert(i.connections,e:connect(e.robloxServices.UserInputService.InputEnded,function(j)
-if j.KeyCode==b:getBinding("floatUp")then
-i.offset=i.offset-1.5
-elseif j.KeyCode==b:getBinding("floatDown")then
-i.offset=i.offset+0.5
+table.insert(j.connections,f:connect(f.robloxServices.UserInputService.InputEnded,function(k)
+if k.KeyCode==b:getBinding("floatUp")then
+j.offset=j.offset-1.5
+elseif k.KeyCode==b:getBinding("floatDown")then
+j.offset=j.offset+0.5
 end
 end))
 
-e:notify("Float",`Enabled ({b:getBindingName("floatDown")} = down & {b:getBindingName("floatUp")} = up)`)end
+f:notify("Float",`Enabled ({b:getBindingName("floatDown")} = down & {b:getBindingName("floatUp")} = up)`)end
 
 
 return{
 {
 action="float|platform",
 description="Spawns a platform beneath you causing you to float",
-run=function(f)
-e(f)
+run=function(g)
+f(g)
 end
 },
 {
 action="togglefloat",
 description="Toggles float",
-run=function(f)
-f:run(if f:hasGarbage("float")then"unfloat"else"float")
+run=function(g)
+g:run(if g:hasGarbage("float")then"unfloat"else"float")
 end
 },
 {
 action="unfloat|noplatform|nofloat|unplatform",
 description="Removes the platform",
-run=function(f)
-if not f:hasGarbage("float")then return end
+run=function(g)
+if not g:hasGarbage("float")then return end
 
-d(f)
-f:notify("Float","Disabled")
+e(g)
+g:notify("Float","Disabled")
 end
 }
-}end a.aR=function()local c=a.cache.aR if not c then c={c=b()}a.cache.aR=c end return c.c end end do local b=function()local b=function()
+}end a.aV=function()local c=a.cache.aV if not c then c={c=b()}a.cache.aV=c end return c.c end end do local b=function()local b=function()
 
 
 
@@ -4431,21 +4909,23 @@ d(e)
 end
 end
 }
-}end a.aS=function()local c=a.cache.aS if not c then c={c=b()}a.cache.aS=c end return c.c end end do local b=function()local b=function(
+}end a.aW=function()local c=a.cache.aW if not c then c={c=b()}a.cache.aW=c end return c.c end end do local b=function()
 
-b, c, d)
-local e=b.playerService:getHumanoid()
-if e then
-e[c]=d
-end end local c=function(
+local b=a.av()local c=function(
+
+c, d, e)
+local f=c.playerService:getHumanoid()
+if f then
+b.setProperty(f,d,e)
+end end local d=function(
 
 
-c, d, e, f)
+d, e, f, g)
 return{
-action=c,
-description=d,
-run=function(g)
-b(g,e,f)
+action=d,
+description=e,
+run=function(h)
+c(h,f,g)
 end
 }end
 
@@ -4455,76 +4935,73 @@ return{
 action="speed|ws|walkspeed",
 description="Sets your walk speed (default is 16)",
 args={kind="number",name="walk speed",optional=true},
-run=function(d,e)
-b(d,"WalkSpeed",e:nextValue()or 16)
+run=function(e,f)
+c(e,"WalkSpeed",f:nextValue()or 16)
 end
 },
 {
 action="jpower|jumppower|jp",
 description="Sets your jump power (default is 50)",
 args={kind="number",name="jump power",optional=true},
-run=function(d,e)
-local f=d.playerService:getHumanoid()
-if not f then return end
+run=function(e,f)
+local g=e.playerService:getHumanoid()
+if not g then return end
 
-local g=e:nextValue()or 50
-if f.UseJumpPower then
-f.JumpPower=g
-else
-f.JumpHeight=g
-end
+local h=f:nextValue()or 50
+local i=if g.UseJumpPower then"JumpPower"else"JumpHeight"
+b.setProperty(g,i,h)
 end
 },
 {
 action="maxslopeangle|msa",
 description="Sets the max slope angle your humanoid can walk up (default is 89)",
 args={kind="number",name="angle",optional=true},
-run=function(d,e)
-b(d,"MaxSlopeAngle",e:nextValue()or 89)
+run=function(e,f)
+c(e,"MaxSlopeAngle",f:nextValue()or 89)
 end
 },
 {
 action="hipheight|hheight",
 description="Sets your hip height (default depends on your rig)",
 args={kind="number",name="hip height",optional=true},
-run=function(d,e)
-local f=d.playerService:getHumanoid()
-if not f then return end
+run=function(e,f)
+local g=e.playerService:getHumanoid()
+if not g then return end
 
-local g=f.RigType==Enum.HumanoidRigType.R15
-f.HipHeight=e:nextValue()or(g and 2.1 or 0)
+local h=g.RigType==Enum.HumanoidRigType.R15
+b.setProperty(g,"HipHeight",f:nextValue()or(h and 2.1 or 0))
 end
 },
-c("stun|platformstand","Makes your character stiff (PlatformStand)","PlatformStand",true),
-c("unstun|nostun|unplatformstand|noplatformstand","Disables stun","PlatformStand",false),
-c("norotate|noautorotate","Stops your character from auto rotating","AutoRotate",false),
-c("unnorotate|autorotate","Lets your character auto rotate again","AutoRotate",true),
+d("stun|platformstand","Makes your character stiff (PlatformStand)","PlatformStand",true),
+d("unstun|nostun|unplatformstand|noplatformstand","Disables stun","PlatformStand",false),
+d("norotate|noautorotate","Stops your character from auto rotating","AutoRotate",false),
+d("unnorotate|autorotate","Lets your character auto rotate again","AutoRotate",true),
 {
 action="trip",
 description="Trips your character forward",
-run=function(d)
-local e=d.playerService:getHumanoid()
-local f=d.playerService:getRootPart()
-if not(e and f)then return end
+run=function(e)
+local f=e.playerService:getHumanoid()
+local g=e.playerService:getRootPart()
+if not(f and g)then return end
 
-e:ChangeState(Enum.HumanoidStateType.FallingDown)
-f.AssemblyLinearVelocity=f.CFrame.LookVector*30
+f:ChangeState(Enum.HumanoidStateType.FallingDown)
+g.AssemblyLinearVelocity=g.CFrame.LookVector*30
 end
 },
 {
 action="breakvelocity",
 description="Stops the character's movement for one second",
-run=function(d)
-local e=d.localPlayer.Character
-if not e then return end
+run=function(e)
+local f=e.localPlayer.Character
+if not f then return end
 
-local f=os.clock()
+local g=os.clock()
 task.spawn(function()
-while os.clock()-f<1 do
-for g,h in e:GetDescendants()do
-if h:IsA("BasePart")then
-h.AssemblyLinearVelocity=Vector3.zero
-h.AssemblyAngularVelocity=Vector3.zero
+while os.clock()-g<1 do
+for h,i in f:GetDescendants()do
+if i:IsA("BasePart")then
+i.AssemblyLinearVelocity=Vector3.zero
+i.AssemblyAngularVelocity=Vector3.zero
 end
 end
 task.wait()
@@ -4535,26 +5012,26 @@ end
 {
 action="deletevelocity|dv|removevelocity|removeforces",
 description="Deletes the force and velocity objects on your character",
-run=function(d)
-local e=d.localPlayer.Character
-if not e then return end
+run=function(e)
+local f=e.localPlayer.Character
+if not f then return end
 
-local f={
+local g={
 "BodyVelocity","BodyGyro","RocketPropulsion","BodyThrust",
 "BodyAngularVelocity","AngularVelocity","BodyForce","VectorForce","LineForce"
 }
 
-for g,h in e:GetDescendants()do
-for i,j in f do
-if h:IsA(j)then
-h:Destroy()
+for h,i in f:GetDescendants()do
+for j,k in g do
+if i:IsA(k)then
+b.destroy(i)
 break
 end
 end
 end
 end
 }
-}end a.aT=function()local c=a.cache.aT if not c then c={c=b()}a.cache.aT=c end return c.c end end do local b=function()local b=function(
+}end a.aX=function()local c=a.cache.aX if not c then c={c=b()}a.cache.aX=c end return c.c end end do local b=function()local b=function(
 b, c, d)
 if b:hasGarbage(c)then
 b:notify(`{c} is already enabled`)
@@ -4698,6 +5175,7 @@ c(e,"flyjump")
 end
 },
 {
+client=true,
 action="nilchar",
 description="Removes your character from the workspace (client side)",
 run=function(e)
@@ -4708,6 +5186,7 @@ end
 end
 },
 {
+client=true,
 action="unnilchar|nonilchar",
 description="Puts your character back into the workspace",
 run=function(e)
@@ -4717,7 +5196,7 @@ f.Parent=workspace
 end
 end
 }
-}end a.aU=function()local c=a.cache.aU if not c then c={c=b()}a.cache.aU=c end return c.c end end do local b=function()local b=function(
+}end a.aY=function()local c=a.cache.aY if not c then c={c=b()}a.cache.aY=c end return c.c end end do local b=function()local b=function(
 
 
 b, c)
@@ -4851,9 +5330,9 @@ j:Destroy()
 end
 end
 }
-}end a.aV=function()local c=a.cache.aV if not c then c={c=b()}a.cache.aV=c end return c.c end end do local b=function()
+}end a.aZ=function()local c=a.cache.aZ if not c then c={c=b()}a.cache.aZ=c end return c.c end end do local b=function()
 
-local b=a.ag()local c=function(
+local b=a.af()local c=function(
 
 c)
 return c:IsA("Tool")or c:IsA("HopperBin")end local d=function(
@@ -4954,7 +5433,7 @@ end
 end
 end
 }
-}end a.aW=function()local c=a.cache.aW if not c then c={c=b()}a.cache.aW=c end return c.c end end do local b=function()
+}end a.a_=function()local c=a.cache.a_ if not c then c={c=b()}a.cache.a_=c end return c.c end end do local b=function()
 
 local b={
 "27789359","30196114","248263260","45834924","33796059","28488254","52155728"
@@ -5163,7 +5642,7 @@ run=function(i)
 g(i)
 end
 }
-}end a.aX=function()local c=a.cache.aX if not c then c={c=b()}a.cache.aX=c end return c.c end end do local b=function()local b=function(
+}end a.a0=function()local c=a.cache.a0 if not c then c={c=b()}a.cache.a0=c end return c.c end end do local b=function()local b=function(
 
 b, c)
 local d=b.localPlayer.Character
@@ -5200,7 +5679,7 @@ run=function(c)
 b(c,0.7)
 end
 }
-}end a.aY=function()local c=a.cache.aY if not c then c={c=b()}a.cache.aY=c end return c.c end end do local b=function()
+}end a.a1=function()local c=a.cache.a1 if not c then c={c=b()}a.cache.a1=c end return c.c end end do local b=function()
 
 
 local b=workspace.FallenPartsDestroyHeight
@@ -5237,20 +5716,21 @@ c:notify("antivoid","Disabled")
 end
 end
 }
-}end a.aZ=function()local c=a.cache.aZ if not c then c={c=b()}a.cache.aZ=c end return c.c end end do local b=function()local b=function(
+}end a.a2=function()local c=a.cache.a2 if not c then c={c=b()}a.cache.a2=c end return c.c end end do local b=function()
 
-b)
-local c=b:collectGarbage("spasm")
-if c and c.track then
-c.track:Stop()
-c.track:Destroy()
-end end local c=function(
-
-
+local b=a.av()local c=function(
 c)
-for d,e in c:GetChildren()do
-if e.Name=="Spinning"then
-e:Destroy()
+local d=c:collectGarbage("spasm")
+if d and d.track then
+d.track:Stop()
+d.track:Destroy()
+end end local d=function(
+
+
+d)
+for e,f in d:GetChildren()do
+if f.Name=="Spinning"then
+f:Destroy()
 end
 end end
 
@@ -5259,106 +5739,106 @@ return{
 {
 action="spasm",
 description="Makes your R6 character spasm (uses an animation)",
-run=function(d)
-local e=d.playerService:getHumanoid()
-if not e then return end
+run=function(e)
+local f=e.playerService:getHumanoid()
+if not f then return end
 
-if e.RigType==Enum.HumanoidRigType.R15 then
-d:notify("R6 Required","This command requires the r6 rig type")
+if f.RigType==Enum.HumanoidRigType.R15 then
+e:notify("R6 Required","This command requires the r6 rig type")
 return
 end
 
-b(d)
+c(e)
 
-local f=Instance.new("Animation")
-f.AnimationId="rbxassetid://33796059"
+local g=Instance.new("Animation")
+g.AnimationId="rbxassetid://33796059"
 
-local g=e:LoadAnimation(f)
-g:Play()
-g:AdjustSpeed(99)
+local h=f:LoadAnimation(g)
+h:Play()
+h:AdjustSpeed(99)
 
-d:registerGarbage("spasm").track=g
+e:registerGarbage("spasm").track=h
 end
 },
 {
 action="unspasm|nospasm",
 description="Stops the spasm",
-run=function(d)
-b(d)
+run=function(e)
+c(e)
 end
 },
 {
 action="headthrow",
 description="Throws your R6 character's head (uses an animation)",
-run=function(d)
-local e=d.playerService:getHumanoid()
-if not e then return end
+run=function(e)
+local f=e.playerService:getHumanoid()
+if not f then return end
 
-if e.RigType==Enum.HumanoidRigType.R15 then
-d:notify("R6 Required","This command requires the r6 rig type")
+if f.RigType==Enum.HumanoidRigType.R15 then
+e:notify("R6 Required","This command requires the r6 rig type")
 return
 end
 
-local f=Instance.new("Animation")
-f.AnimationId="rbxassetid://35154961"
+local g=Instance.new("Animation")
+g.AnimationId="rbxassetid://35154961"
 
-local g=e:LoadAnimation(f)
-g:Play(0)
-g:AdjustSpeed(1)
+local h=f:LoadAnimation(g)
+h:Play(0)
+h:AdjustSpeed(1)
 end
 },
 {
 action="sitwalk",
 description="Uses the sit animation while walking, running and jumping",
-run=function(d)
-local e=d.localPlayer.Character
-local f=d.playerService:getHumanoid()
-local g=e and e:FindFirstChild("Animate")
-if not(f and g)then return end
+run=function(e)
+local f=e.localPlayer.Character
+local g=e.playerService:getHumanoid()
+local h=f and f:FindFirstChild("Animate")
+if not(g and h)then return end
 
-local h=g:FindFirstChild("sit")
-local i=h and h:FindFirstChildWhichIsA("Animation")
-if not i then return end
+local i=h:FindFirstChild("sit")
+local j=i and i:FindFirstChildWhichIsA("Animation")
+if not j then return end
 
-for j,k in{"idle","walk","run","jump"}do
-local l=g:FindFirstChild(k)
-local m=l and l:FindFirstChildWhichIsA("Animation")
-if m then
-m.AnimationId=i.AnimationId
+for k,l in{"idle","walk","run","jump"}do
+local m=h:FindFirstChild(l)
+local n=m and m:FindFirstChildWhichIsA("Animation")
+if n then
+n.AnimationId=j.AnimationId
 end
 end
 
-f.HipHeight=f.RigType==Enum.HumanoidRigType.R15 and 0.5 or-1.5
+b.setProperty(g,"HipHeight",g.RigType==Enum.HumanoidRigType.R15 and 0.5 or-1.5)
 end
 },
 {
 action="spin",
 description="Spins your character (default speed is 20)",
 args={kind="number",name="spin speed",optional=true},
-run=function(d,e)
-local f=d:getRoot()
-if not f then return end
+run=function(e,f)
+local g=e:getRoot()
+if not g then return end
 
-c(f)
+d(g)
 
-local g=Instance.new("BodyAngularVelocity")
-g.Name="Spinning"
-g.MaxTorque=Vector3.new(0,math.huge,0)
-g.AngularVelocity=Vector3.new(0,e:nextValue()or 20,0)
-g.Parent=f
+local h=Instance.new("BodyAngularVelocity")
+h.Name="Spinning"
+h.MaxTorque=Vector3.new(0,math.huge,0)
+h.AngularVelocity=Vector3.new(0,f:nextValue()or 20,0)
+h.Parent=g
 end
 },
 {
 action="unspin",
 description="Stops spinning your character",
-run=function(d)
-local e=d.playerService:getRootPart()
-if e then
-c(e)
+run=function(e)
+local f=e.playerService:getRootPart()
+if f then
+d(f)
 end
 end
 }
-}end a.a_=function()local c=a.cache.a_ if not c then c={c=b()}a.cache.a_=c end return c.c end end do local b=function()local b=function(
+}end a.a3=function()local c=a.cache.a3 if not c then c={c=b()}a.cache.a3=c end return c.c end end do local b=function()local b=function(
 
 b)
 return b:IsA("BillboardGui")or b:IsA("SurfaceGui")end local c=function(
@@ -5470,10 +5950,11 @@ e.connection:Disconnect()
 end
 end
 }
-}end a.a0=function()local c=a.cache.a0 if not c then c={c=b()}a.cache.a0=c end return c.c end end do local b=function()
+}end a.a4=function()local c=a.cache.a4 if not c then c={c=b()}a.cache.a4=c end return c.c end end do local b=function()
 
 return{
 {
+client=true,
 action="noroot|removeroot|rroot",
 description="Removes your character's root part (client side)",
 run=function(b)
@@ -5491,6 +5972,7 @@ c.Parent=workspace
 end
 },
 {
+client=true,
 action="replaceroot|replacerootpart",
 description="Replaces your character's root part with a fresh copy",
 run=function(b)
@@ -5509,7 +5991,7 @@ g.CFrame=f
 c.Parent=e
 end
 }
-}end a.a1=function()local c=a.cache.a1 if not c then c={c=b()}a.cache.a1=c end return c.c end end do local b=function()local b=function(
+}end a.a5=function()local c=a.cache.a5 if not c then c={c=b()}a.cache.a5=c end return c.c end end do local b=function()local b=function(
 
 
 
@@ -5569,9 +6051,9 @@ f:Disconnect()
 end
 end
 }
-}end a.a2=function()local c=a.cache.a2 if not c then c={c=b()}a.cache.a2=c end return c.c end end do local b=function()
+}end a.a6=function()local c=a.cache.a6 if not c then c={c=b()}a.cache.a6=c end return c.c end end do local b=function()
 
-local b=a.ag()
+local b=a.af()
 
 return{
 {
@@ -5621,50 +6103,49 @@ d.running=false
 end
 end
 }
-}end a.a3=function()local c=a.cache.a3 if not c then c={c=b()}a.cache.a3=c end return c.c end end do local b=function()local b=function(
+}end a.a7=function()local c=a.cache.a7 if not c then c={c=b()}a.cache.a7=c end return c.c end end do local b=function()
 
-b, c)
-b.WalkSpeed=c end local c=function(
-
+local b=a.av()local c=function(
 
 c, d)
-if c.UseJumpPower then
-c.JumpPower=d
-else
-c.JumpHeight=d
-end end local d=function(
+b.setProperty(c,"WalkSpeed",d)end local d=function(
 
 
 d, e)
-local f=d:collectGarbage(e)
-if f and f.connections then
-for g,h in f.connections do
-h:Disconnect()
+local f=if d.UseJumpPower then"JumpPower"else"JumpHeight"
+b.setProperty(d,f,e)end local e=function(
+
+
+e, f)
+local g=e:collectGarbage(f)
+if g and g.connections then
+for h,i in g.connections do
+i:Disconnect()
 end
-end end local e=function(
+end end local f=function(
 
 
 
-e, f, g, h, i)
-d(e,f)
+f, g, h, i, j)
+e(f,g)
 
-local j=e:createGarbage(f)
-j.connections={}local k=function(
+local k=f:createGarbage(g)
+k.connections={}local l=function(
 
-k)
-h(k,i)
-table.insert(j.connections,e:connect(k:GetPropertyChangedSignal(g),function()
-h(k,i)
+l)
+i(l,j)
+table.insert(k.connections,f:connect(l:GetPropertyChangedSignal(h),function()
+i(l,j)
 end))end
 
 
-local l=e.playerService:getHumanoid()
-if l then
-k(l)
+local m=f.playerService:getHumanoid()
+if m then
+l(m)
 end
 
-table.insert(j.connections,e:connect(e.localPlayer.CharacterAdded,function(m)
-k(m:WaitForChild("Humanoid"))
+table.insert(k.connections,f:connect(f.localPlayer.CharacterAdded,function(n)
+l(n:WaitForChild("Humanoid"))
 end))end
 
 
@@ -5673,35 +6154,35 @@ return{
 action="loopspeed|loopws",
 description="Keeps your walk speed set, even after respawning (default is 16)",
 args={kind="number",name="walk speed",optional=true},
-run=function(f,g)
-e(f,"loopspeed","WalkSpeed",b,g:nextValue()or 16)
+run=function(g,h)
+f(g,"loopspeed","WalkSpeed",c,h:nextValue()or 16)
 end
 },
 {
 action="unloopspeed|unloopws",
 description="Stops the walk speed loop",
-run=function(f)
-d(f,"loopspeed")
+run=function(g)
+e(g,"loopspeed")
 end
 },
 {
 action="loopjumppower|loopjp|loopjpower",
 description="Keeps your jump power set, even after respawning (default is 50)",
 args={kind="number",name="jump power",optional=true},
-run=function(f,g)
-e(f,"loopjumppower","JumpPower",c,g:nextValue()or 50)
+run=function(g,h)
+f(g,"loopjumppower","JumpPower",d,h:nextValue()or 50)
 end
 },
 {
 action="unloopjumppower|unloopjp|unloopjpower",
 description="Stops the jump power loop",
-run=function(f)
-d(f,"loopjumppower")
+run=function(g)
+e(g,"loopjumppower")
 end
 }
-}end a.a4=function()local c=a.cache.a4 if not c then c={c=b()}a.cache.a4=c end return c.c end end do local b=function()
+}end a.a8=function()local c=a.cache.a8 if not c then c={c=b()}a.cache.a8=c end return c.c end end do local b=function()
 
-local b=a.W()
+local b=a.V()
 
 local c=PhysicalProperties.new(100,0.3,0.5)
 
@@ -6026,7 +6507,7 @@ o.connection:Disconnect()
 end
 end
 }
-}end a.a5=function()local c=a.cache.a5 if not c then c={c=b()}a.cache.a5=c end return c.c end end do local b=function()local b=function(
+}end a.a9=function()local c=a.cache.a9 if not c then c={c=b()}a.cache.a9=c end return c.c end end do local b=function()local b=function(
 
 
 b, c)
@@ -6117,7 +6598,7 @@ run=function(e)
 c(e)
 end
 }
-}end a.a6=function()local c=a.cache.a6 if not c then c={c=b()}a.cache.a6=c end return c.c end end do local b=function()local b=function(
+}end a.ba=function()local c=a.cache.ba if not c then c={c=b()}a.cache.ba=c end return c.c end end do local b=function()local b=function(
 
 b, c)
 for d,e in c do
@@ -6166,7 +6647,7 @@ or{"Right Leg","Left Leg","Right Arm","Left Arm"})
 end
 end
 }
-}end a.a7=function()local c=a.cache.a7 if not c then c={c=b()}a.cache.a7=c end return c.c end end do local b=function()local b=function(
+}end a.bb=function()local c=a.cache.bb if not c then c={c=b()}a.cache.bb=c end return c.c end end do local b=function()local b=function(
 
 
 b)
@@ -6324,7 +6805,7 @@ end
 end)
 end
 }
-}end a.a8=function()local c=a.cache.a8 if not c then c={c=b()}a.cache.a8=c end return c.c end end do local b=function()
+}end a.bc=function()local c=a.cache.bc if not c then c={c=b()}a.cache.bc=c end return c.c end end do local b=function()
 
 
 
@@ -6601,39 +7082,41 @@ end)
 end
 end
 }
-}end a.a9=function()local c=a.cache.a9 if not c then c={c=b()}a.cache.a9=c end return c.c end end do local b=function()local b=function(
+}end a.bd=function()local c=a.cache.bd if not c then c={c=b()}a.cache.bd=c end return c.c end end do local b=function()
 
-
-b, c)
-local d=b:collectGarbage(c)
-if d then
-d.connection:Disconnect()
-end end local c=function(
-
+local b=a.av()local c=function(
 
 
 c, d)
-local e=c.CFrame.LookVector*3
-local f=Ray.new(c.Position-Vector3.new(0,1.5,0),e)
-local g=Ray.new(c.Position+Vector3.new(0,1.5,0),e)
+local e=c:collectGarbage(d)
+if e then
+e.connection:Disconnect()
+end end local d=function(
 
-return workspace:FindPartOnRay(f,d)~=nil or workspace:FindPartOnRay(g,d)~=nil end
+
+
+d, e)
+local f=d.CFrame.LookVector*3
+local g=Ray.new(d.Position-Vector3.new(0,1.5,0),f)
+local h=Ray.new(d.Position+Vector3.new(0,1.5,0),f)
+
+return workspace:FindPartOnRay(g,e)~=nil or workspace:FindPartOnRay(h,e)~=nil end
 
 
 return{
 {
 action="autojump|ajump",
 description="Automatically jumps when you run into an object",
-run=function(d)
-b(d,"autojump")
+run=function(e)
+c(e,"autojump")
 
-local e=d:createGarbage("autojump")
-e.connection=d:connect(d.runService.RenderStepped,function()
-local f=d.playerService:getCharacter()
-local g=d.playerService:getHumanoid()
-local h=d.playerService:getRootPart()
-if f and g and h and c(h,f)then
-g.Jump=true
+local f=e:createGarbage("autojump")
+f.connection=e:connect(e.runService.RenderStepped,function()
+local g=e.playerService:getCharacter()
+local h=e.playerService:getHumanoid()
+local i=e.playerService:getRootPart()
+if g and h and i and d(i,g)then
+h.Jump=true
 end
 end)
 end
@@ -6641,45 +7124,45 @@ end
 {
 action="unautojump|noautojump|noajump|unajump",
 description="Disables autojump",
-run=function(d)
-b(d,"autojump")
+run=function(e)
+c(e,"autojump")
 end
 },
 {
 action="edgejump|ejump",
 description="Automatically jumps when you get to the edge of an object",
-run=function(d)
-b(d,"edgejump")
+run=function(e)
+c(e,"edgejump")
 
-local e=d:createGarbage("edgejump")
-e.connection=d:connect(d.runService.RenderStepped,function()
-local f=d.playerService:getHumanoid()
-local g=d.playerService:getRootPart()
-if not(f and g)then return end
+local f=e:createGarbage("edgejump")
+f.connection=e:connect(e.runService.RenderStepped,function()
+local g=e.playerService:getHumanoid()
+local h=e.playerService:getRootPart()
+if not(g and h)then return end
 
-local h=e.state
-local i=f:GetState()
-e.state=i
+local i=f.state
+local j=g:GetState()
+f.state=j
 
 
-if h~=i and i==Enum.HumanoidStateType.Freefall and h~=Enum.HumanoidStateType.Jumping and e.lastCFrame then
-g.CFrame=e.lastCFrame
-local j=g.AssemblyLinearVelocity
-g.AssemblyLinearVelocity=Vector3.new(j.X,f.JumpPower,j.Z)
+if i~=j and j==Enum.HumanoidStateType.Freefall and i~=Enum.HumanoidStateType.Jumping and f.lastCFrame then
+h.CFrame=f.lastCFrame
+local k=h.AssemblyLinearVelocity
+h.AssemblyLinearVelocity=Vector3.new(k.X,b.getProperty(g,"JumpPower"),k.Z)
 end
 
-e.lastCFrame=g.CFrame
+f.lastCFrame=h.CFrame
 end)
 end
 },
 {
 action="unedgejump|noedgejump|noejump|unejump",
 description="Disables edgejump",
-run=function(d)
-b(d,"edgejump")
+run=function(e)
+c(e,"edgejump")
 end
 }
-}end a.ba=function()local c=a.cache.ba if not c then c={c=b()}a.cache.ba=c end return c.c end end do local b=function()local b=function(
+}end a.be=function()local c=a.cache.be if not c then c={c=b()}a.cache.be=c end return c.c end end do local b=function()local b=function(
 
 
 
@@ -6735,6 +7218,7 @@ end)end
 
 return{
 {
+client=true,
 action="spoofspeed|spoofws",
 description="Spoofs your WalkSpeed on the Client",
 args={
@@ -6748,6 +7232,7 @@ end
 end
 },
 {
+client=true,
 action="spoofjumppower|spoofjp",
 description="Spoofs your JumpPower on the Client",
 args={
@@ -6760,16 +7245,17 @@ b(c,"JumpPower",e)
 end
 end
 }
-}end a.bb=function()local c=a.cache.bb if not c then c={c=b()}a.cache.bb=c end return c.c end end do local b=function()
+}end a.bf=function()local c=a.cache.bf if not c then c={c=b()}a.cache.bf=c end return c.c end end do local b=function()
 
-local b=a.ag()local c=function(
+local b=a.av()
+local c=a.af()local d=function(
 
 
-c)
-if c==1 then
+d)
+if d==1 then
 return Vector3.new(2,1,1)
 end
-return Vector3.one*c end
+return Vector3.one*d end
 
 
 return{
@@ -6786,15 +7272,15 @@ name="head size",
 optional=true
 }
 },
-run=function(d,e)
-local f=b(e:nextValue())
-local g=e:nextValue()or 1
+run=function(e,f)
+local g=c(f:nextValue())
+local h=f:nextValue()or 1
 
-for h,i in f do
-local j=i~=d.localPlayer and i.Character and i.Character:FindFirstChild("Head")
-if j and j:IsA("BasePart")then
-j.CanCollide=false
-j.Size=c(g)
+for i,j in g do
+local k=j~=e.localPlayer and j.Character and j.Character:FindFirstChild("Head")
+if k and k:IsA("BasePart")then
+b.setProperty(k,"CanCollide",false)
+b.setProperty(k,"Size",d(h))
 end
 end
 end
@@ -6818,24 +7304,24 @@ optional=true,
 clamp={0,1}
 }
 },
-run=function(d,e)
-local f=b(e:nextValue())
-local g=e:nextValue()or 1
-local h=e:nextValue()or 0.4
+run=function(e,f)
+local g=c(f:nextValue())
+local h=f:nextValue()or 1
+local i=f:nextValue()or 0.4
 
-for i,j in f do
-local k=j~=d.localPlayer and j.Character and j.Character:FindFirstChild("HumanoidRootPart")
-if k and k:IsA("BasePart")then
-k.CanCollide=false
-k.Size=c(g)
-k.Transparency=h
+for j,k in g do
+local l=k~=e.localPlayer and k.Character and k.Character:FindFirstChild("HumanoidRootPart")
+if l and l:IsA("BasePart")then
+b.setProperty(l,"CanCollide",false)
+b.setProperty(l,"Size",d(h))
+b.setProperty(l,"Transparency",i)
 end
 end
 end
 }
-}end a.bc=function()local c=a.cache.bc if not c then c={c=b()}a.cache.bc=c end return c.c end end do local b=function()
+}end a.bg=function()local c=a.cache.bg if not c then c={c=b()}a.cache.bg=c end return c.c end end do local b=function()
 
-local b=a.ag()local c=function(
+local b=a.af()local c=function(
 
 c)
 local d=c:collectGarbage("orbit")
@@ -6925,9 +7411,9 @@ c(d)
 d:notify("Orbit","Stopped orbiting player")
 end
 }
-}end a.bd=function()local c=a.cache.bd if not c then c={c=b()}a.cache.bd=c end return c.c end end do local b=function()
+}end a.bh=function()local c=a.cache.bh if not c then c={c=b()}a.cache.bh=c end return c.c end end do local b=function()
 
-local b=a.ag()local c=function(
+local b=a.af()local c=function(
 
 c)
 local d=c:collectGarbage("headsit")
@@ -6968,7 +7454,7 @@ i.CFrame=k.CFrame*CFrame.new(0,1.6,0.4)
 end)
 end
 }
-}end a.be=function()local c=a.cache.be if not c then c={c=b()}a.cache.be=c end return c.c end end do local b=function()
+}end a.bi=function()local c=a.cache.bi if not c then c={c=b()}a.cache.bi=c end return c.c end end do local b=function()
 
 return{
 {
@@ -7011,9 +7497,9 @@ end
 h.Health=h.MaxHealth
 end
 }
-}end a.bf=function()local c=a.cache.bf if not c then c={c=b()}a.cache.bf=c end return c.c end end do local b=function()
+}end a.bj=function()local c=a.cache.bj if not c then c={c=b()}a.cache.bj=c end return c.c end end do local b=function()
 
-local b=a.ag()
+local b=a.af()
 
 
 local c=workspace.FallenPartsDestroyHeight
@@ -7134,9 +7620,9 @@ end
 end)
 end
 }
-}end a.bg=function()local c=a.cache.bg if not c then c={c=b()}a.cache.bg=c end return c.c end end do local b=function()
+}end a.bk=function()local c=a.cache.bk if not c then c={c=b()}a.cache.bk=c end return c.c end end do local b=function()
 
-local b=a.ag()
+local b=a.af()
 
 local c="rbxassetid://148840371"
 local d="rbxassetid://5918726674"
@@ -7284,9 +7770,9 @@ run=function(j)
 i(j)
 end
 }
-}end a.bh=function()local c=a.cache.bh if not c then c={c=b()}a.cache.bh=c end return c.c end end do local b=function()
+}end a.bl=function()local c=a.cache.bl if not c then c={c=b()}a.cache.bl=c end return c.c end end do local b=function()
 
-local b=a.ag()
+local b=a.af()
 
 local c="507768375"
 local d="180435571"
@@ -7383,13 +7869,9 @@ g("Animations Copied\n\n"..table.concat(k,"\n\n"))
 e:notify("Animations","Copied to clipboard")
 end
 }
-}end a.bi=function()local c=a.cache.bi if not c then c={c=b()}a.cache.bi=c end return c.c end end do local b=function()
+}end a.bm=function()local c=a.cache.bm if not c then c={c=b()}a.cache.bm=c end return c.c end end do local b=function()
 
-return{a.aL()
-,a.aM()
-,a.aN()
-,a.aO()
-,a.aP()
+return{a.aP()
 ,a.aQ()
 ,a.aR()
 ,a.aS()
@@ -7408,11 +7890,11 @@ return{a.aL()
 ,a.a4()
 ,a.a5()
 ,a.a6()
-
 ,a.a7()
 ,a.a8()
 ,a.a9()
 ,a.ba()
+
 ,a.bb()
 ,a.bc()
 ,a.bd()
@@ -7421,8 +7903,12 @@ return{a.aL()
 ,a.bg()
 ,a.bh()
 ,a.bi()
+,a.bj()
+,a.bk()
+,a.bl()
+,a.bm()
 
-}end a.bj=function()local c=a.cache.bj if not c then c={c=b()}a.cache.bj=c end return c.c end end do local b=function()
+}end a.bn=function()local c=a.cache.bn if not c then c={c=b()}a.cache.bn=c end return c.c end end do local b=function()
 
 local b={}
 
@@ -7460,7 +7946,7 @@ assert(h,"can't convert to value")
 return h(f)end
 
 
-return b end a.bk=function()local c=a.cache.bk if not c then c={c=b()}a.cache.bk=c end return c.c end end do local b=function()
+return b end a.bo=function()local c=a.cache.bo if not c then c={c=b()}a.cache.bo=c end return c.c end end do local b=function()
 
 
 
@@ -7474,8 +7960,8 @@ return b end a.bk=function()local c=a.cache.bk if not c then c={c=b()}a.cache.bk
 
 local b=a.l()
 local c=a.b()
-local d=a.af()
-local e=a.bk()
+local d=a.ae()
+local e=a.bo()
 
 local f="showingWaypoints"
 
@@ -7769,12 +8255,12 @@ h.show()
 end end
 
 
-return h end a.bl=function()local c=a.cache.bl if not c then c={c=b()}a.cache.bl=c end return c.c end end do local b=function()
+return h end a.bp=function()local c=a.cache.bp if not c then c={c=b()}a.cache.bp=c end return c.c end end do local b=function()
 
 
 
 
-local b=a.bl()
+local b=a.bp()
 
 local c="Waypoints"local d=function(
 
@@ -7943,7 +8429,7 @@ b.hide()
 f:notify(c,`deleted {i} waypoints from this game`)
 end
 }
-}end a.bm=function()local c=a.cache.bm if not c then c={c=b()}a.cache.bm=c end return c.c end end do local b=function()
+}end a.bq=function()local c=a.cache.bq if not c then c={c=b()}a.cache.bq=c end return c.c end end do local b=function()
 
 return{
 action="tweenspeed|tspeed",
@@ -7953,9 +8439,9 @@ run=function(b,c)
 
 b.privateEnv.tweenSpeed=c:nextValue()
 end
-}end a.bn=function()local c=a.cache.bn if not c then c={c=b()}a.cache.bn=c end return c.c end end do local b=function()
+}end a.br=function()local c=a.cache.br if not c then c={c=b()}a.cache.br=c end return c.c end end do local b=function()
 
-local b=a.ag()local c=function(
+local b=a.af()local c=function(
 
 
 c)
@@ -8064,9 +8550,9 @@ run=function(f)
 c(f)
 end
 }
-}end a.bo=function()local c=a.cache.bo if not c then c={c=b()}a.cache.bo=c end return c.c end end do local b=function()
+}end a.bs=function()local c=a.cache.bs if not c then c={c=b()}a.cache.bs=c end return c.c end end do local b=function()
 
-local b=a.ag()
+local b=a.af()
 
 return{
 action="vehiclegoto|vgoto|vehicletp|vtp",
@@ -8090,9 +8576,9 @@ if i then
 i:PivotTo(h:GetPivot())
 end
 end
-}end a.bp=function()local c=a.cache.bp if not c then c={c=b()}a.cache.bp=c end return c.c end end do local b=function()
+}end a.bt=function()local c=a.cache.bt if not c then c={c=b()}a.cache.bt=c end return c.c end end do local b=function()
 
-local b=a.ag()
+local b=a.af()
 
 return{
 action="pulsetp|ptp",
@@ -8123,9 +8609,9 @@ task.wait(f)
 
 c.playerService:setRootCFrame(i)
 end
-}end a.bq=function()local c=a.cache.bq if not c then c={c=b()}a.cache.bq=c end return c.c end end do local b=function()
+}end a.bu=function()local c=a.cache.bu if not c then c={c=b()}a.cache.bu=c end return c.c end end do local b=function()
 
-local b=a.ag()local c=function(
+local b=a.af()local c=function(
 
 
 c, d)
@@ -8150,6 +8636,7 @@ end end
 
 return{
 {
+client=true,
 action="clientbring|cbring",
 description="Bring a player (CLIENT)",
 args={
@@ -8175,6 +8662,7 @@ end
 end
 },
 {
+client=true,
 action="loopbring",
 description="Loop brings a player to you (useful for killing) (CLIENT)",
 args={
@@ -8228,6 +8716,7 @@ end,h)
 end
 },
 {
+client=true,
 action="unloopbring|noloopbring",
 description="Undoes loopbring",
 args={
@@ -8243,9 +8732,9 @@ c(d,nil)
 end
 end
 }
-}end a.br=function()local c=a.cache.br if not c then c={c=b()}a.cache.br=c end return c.c end end do local b=function()
+}end a.bv=function()local c=a.cache.bv if not c then c={c=b()}a.cache.bv=c end return c.c end end do local b=function()
 
-local b=a.ag()
+local b=a.af()
 
 local c="IYFloatPlatform"
 
@@ -8286,7 +8775,7 @@ end
 end
 end
 }
-}end a.bs=function()local c=a.cache.bs if not c then c={c=b()}a.cache.bs=c end return c.c end end do local b=function()local b=function(
+}end a.bw=function()local c=a.cache.bw if not c then c={c=b()}a.cache.bw=c end return c.c end end do local b=function()local b=function(
 
 
 b, c)
@@ -8316,12 +8805,14 @@ run=function(c)
 b(c,1)
 end
 }
-}end a.bt=function()local c=a.cache.bt if not c then c={c=b()}a.cache.bt=c end return c.c end end do local b=function()local b=function(
+}end a.bx=function()local c=a.cache.bx if not c then c={c=b()}a.cache.bx=c end return c.c end end do local b=function()
 
-b, c)
-local d=b.playerService:getRootPart()
-if d then
-d.Anchored=c
+local b=a.av()local c=function(
+
+c, d)
+local e=c.playerService:getRootPart()
+if e then
+b.setProperty(e,"Anchored",d)
 end end
 
 
@@ -8329,18 +8820,18 @@ return{
 {
 action="anchor",
 description="Anchors your characters RootPart",
-run=function(c)
-b(c,true)
+run=function(d)
+c(d,true)
 end
 },
 {
 action="unanchor",
 description="Unanchors your characters RootPart",
-run=function(c)
-b(c,false)
+run=function(d)
+c(d,false)
 end
 }
-}end a.bu=function()local c=a.cache.bu if not c then c={c=b()}a.cache.bu=c end return c.c end end do local b=function()
+}end a.by=function()local c=a.cache.by if not c then c={c=b()}a.cache.by=c end return c.c end end do local b=function()
 
 return{
 {
@@ -8428,9 +8919,9 @@ local g=e.CFrame.Position+f*d
 b.playerService:teleportTo(CFrame.new(g,g+f))
 end
 }
-}end a.bv=function()local c=a.cache.bv if not c then c={c=b()}a.cache.bv=c end return c.c end end do local b=function()
+}end a.bz=function()local c=a.cache.bz if not c then c={c=b()}a.cache.bz=c end return c.c end end do local b=function()
 
-local b=a.ag()local c=function(
+local b=a.af()local c=function(
 
 
 c, d)
@@ -8496,7 +8987,7 @@ d:notify("Position","character is not loaded")
 end
 end
 }
-}end a.bw=function()local c=a.cache.bw if not c then c={c=b()}a.cache.bw=c end return c.c end end do local b=function()
+}end a.bA=function()local c=a.cache.bA if not c then c={c=b()}a.cache.bA=c end return c.c end end do local b=function()
 
 return{
 action="walktoposition|walktopos",
@@ -8516,7 +9007,7 @@ if e then
 e.WalkToPoint=d
 end
 end
-}end a.bx=function()local c=a.cache.bx if not c then c={c=b()}a.cache.bx=c end return c.c end end do local b=function()local b=function(
+}end a.bB=function()local c=a.cache.bB if not c then c={c=b()}a.cache.bB=c end return c.c end end do local b=function()local b=function(
 
 b)
 local c=b:collectGarbage("spawnpoint")
@@ -8566,9 +9057,9 @@ c:notify("Spawn Point","Removed spawn point")
 end
 end
 }
-}end a.by=function()local c=a.cache.by if not c then c={c=b()}a.cache.by=c end return c.c end end do local b=function()
+}end a.bC=function()local c=a.cache.bC if not c then c={c=b()}a.cache.bC=c end return c.c end end do local b=function()
 
-local b=a.aE()
+local b=a.aI()
 local c=a.g()
 
 local d local e=function(
@@ -8601,7 +9092,7 @@ end
 
 f.playerService:teleportTo(d)
 end
-}end a.bz=function()local c=a.cache.bz if not c then c={c=b()}a.cache.bz=c end return c.c end end do local b=function()local b=function(
+}end a.bD=function()local c=a.cache.bD if not c then c={c=b()}a.cache.bD=c end return c.c end end do local b=function()local b=function(
 
 b)
 local c=b:collectGarbage("walltp")
@@ -8646,7 +9137,7 @@ run=function(c)
 b(c)
 end
 }
-}end a.bA=function()local c=a.cache.bA if not c then c={c=b()}a.cache.bA=c end return c.c end end do local b=function()
+}end a.bE=function()local c=a.cache.bE if not c then c={c=b()}a.cache.bE=c end return c.c end end do local b=function()
 
 return{
 action="teleporttool|tptool",
@@ -8673,7 +9164,7 @@ local g=f.Hit.Position+Vector3.new(0,3,0)
 b.playerService:teleportTo(CFrame.new(g)*(e.CFrame-e.CFrame.Position))
 end)
 end
-}end a.bB=function()local c=a.cache.bB if not c then c={c=b()}a.cache.bB=c end return c.c end end do local b=function()local b=function(
+}end a.bF=function()local c=a.cache.bF if not c then c={c=b()}a.cache.bF=c end return c.c end end do local b=function()local b=function(
 
 
 
@@ -8794,7 +9285,7 @@ run=function(g,h)
 g.privateEnv.gotopartDelay=h:nextValue()or 0.1
 end
 }
-}end a.bC=function()local c=a.cache.bC if not c then c={c=b()}a.cache.bC=c end return c.c end end do local b=function()
+}end a.bG=function()local c=a.cache.bG if not c then c={c=b()}a.cache.bG=c end return c.c end end do local b=function()
 
 return{
 action="mouseteleport|mousetp",
@@ -8808,7 +9299,7 @@ if not(c and d.Hit)then return end
 local e=d.Hit.Position+Vector3.new(0,3,0)
 b.playerService:teleportTo(CFrame.new(e)*(c.CFrame-c.CFrame.Position))
 end
-}end a.bD=function()local c=a.cache.bD if not c then c={c=b()}a.cache.bD=c end return c.c end end do local b=function()local b=function(
+}end a.bH=function()local c=a.cache.bH if not c then c={c=b()}a.cache.bH=c end return c.c end end do local b=function()local b=function(
 
 b)
 local c=b:collectGarbage("tpwalk")
@@ -8934,11 +9425,11 @@ end
 d:notify("Wallwalk",if f then"disabled"else"it is not running")
 end
 }
-}end a.bE=function()local c=a.cache.bE if not c then c={c=b()}a.cache.bE=c end return c.c end end do local b=function()
+}end a.bI=function()local c=a.cache.bI if not c then c={c=b()}a.cache.bI=c end return c.c end end do local b=function()
 
 
 
-local b=a.ag()
+local b=a.af()
 local c=a.f()
 
 local d=c.PathfindingService
@@ -9162,13 +9653,9 @@ p:notify("Pathfind","nothing is walking right now")
 end
 end
 }
-}end a.bF=function()local c=a.cache.bF if not c then c={c=b()}a.cache.bF=c end return c.c end end do local b=function()
+}end a.bJ=function()local c=a.cache.bJ if not c then c={c=b()}a.cache.bJ=c end return c.c end end do local b=function()
 
-return{a.bn()
-,a.bo()
-,a.bp()
-,a.bq()
-,a.br()
+return{a.br()
 ,a.bs()
 ,a.bt()
 ,a.bu()
@@ -9183,8 +9670,12 @@ return{a.bn()
 ,a.bD()
 ,a.bE()
 ,a.bF()
+,a.bG()
+,a.bH()
+,a.bI()
+,a.bJ()
 
-}end a.bG=function()local c=a.cache.bG if not c then c={c=b()}a.cache.bG=c end return c.c end end do local b=function()
+}end a.bK=function()local c=a.cache.bK if not c then c={c=b()}a.cache.bK=c end return c.c end end do local b=function()
 
 
 
@@ -9212,7 +9703,7 @@ end)
 return e,if e then nil else tostring(f)end
 
 
-return c end a.bH=function()local c=a.cache.bH if not c then c={c=b()}a.cache.bH=c end return c.c end end do local b=function()
+return c end a.bL=function()local c=a.cache.bL if not c then c={c=b()}a.cache.bL=c end return c.c end end do local b=function()
 
 
 
@@ -9277,7 +9768,7 @@ local g=if f then c else b
 return g[d.value(e.Name)%#g+1]end
 
 
-return d end a.bI=function()local c=a.cache.bI if not c then c={c=b()}a.cache.bI=c end return c.c end end do local b=function()
+return d end a.bM=function()local c=a.cache.bM if not c then c={c=b()}a.cache.bM=c end return c.c end end do local b=function()
 
 
 
@@ -9289,9 +9780,9 @@ local c=a.a()
 local d=a.j()
 local e=a.t()
 local f=a.d()
-local g=a.aE()
-local h=a.bH()
-local i=a.bI()
+local g=a.aI()
+local h=a.bL()
+local i=a.bM()
 
 local j=500
 local k="https://files.catbox.moe/i968v2.jpg"
@@ -9516,12 +10007,13 @@ end
 return false,tostring(y)end
 
 
-return m end a.bJ=function()local c=a.cache.bJ if not c then c={c=b()}a.cache.bJ=c end return c.c end end do local b=function()
+return m end a.bN=function()local c=a.cache.bN if not c then c={c=b()}a.cache.bN=c end return c.c end end do local b=function()
 
-local b=a.bJ()
+local b=a.bN()
 
 return{
 {
+client=true,
 action="logs",
 description="Opens the chat logs window with chat and join logs turned on",
 run=function(c)
@@ -9531,6 +10023,7 @@ c.infiniteYield:chatLogs("chat")
 end
 },
 {
+client=true,
 action="chatlogs|clogs",
 description="Turns on chat logs and opens the chat tab",
 run=function(c)
@@ -9539,6 +10032,7 @@ c.infiniteYield:chatLogs("chat")
 end
 },
 {
+client=true,
 action="joinlogs|jlogs",
 description="Turns on join logs and opens the joins tab",
 run=function(c)
@@ -9547,6 +10041,7 @@ c.infiniteYield:chatLogs("join")
 end
 },
 {
+client=true,
 action="chatlogswebhook|logswebhook",
 description="Set a discord webhook for chatlogs to go to (provide no url to disable this)",
 args={
@@ -9572,10 +10067,10 @@ b.setWebhook(e)
 c:notify("Logs Webhook","chat logs will be sent to the webhook")
 end
 }
-}end a.bK=function()local c=a.cache.bK if not c then c={c=b()}a.cache.bK=c end return c.c end end do local b=function()
+}end a.bO=function()local c=a.cache.bO if not c then c={c=b()}a.cache.bO=c end return c.c end end do local b=function()
 
-local b=a.bH()
-local c=a.ag()
+local b=a.bL()
+local c=a.af()
 
 local d="spam"
 local e="pmspam:"local f=function(
@@ -9776,10 +10271,10 @@ run=function(n,o)
 n.privateEnv.spamSpeed=math.max(o:nextValue()or 1,0)
 end
 }
-}end a.bL=function()local c=a.cache.bL if not c then c={c=b()}a.cache.bL=c end return c.c end end do local b=function()
+}end a.bP=function()local c=a.cache.bP if not c then c={c=b()}a.cache.bP=c end return c.c end end do local b=function()
 
 local b=a.f()
-local c=a.bH()local d=function(
+local c=a.bL()local d=function(
 
 
 d)
@@ -9807,10 +10302,10 @@ run=function()
 d(false)
 end
 }
-}end a.bM=function()local c=a.cache.bM if not c then c={c=b()}a.cache.bM=c end return c.c end end do local b=function()
+}end a.bQ=function()local c=a.cache.bQ if not c then c={c=b()}a.cache.bQ=c end return c.c end end do local b=function()
 
 local b=a.f()
-local c=a.bH()local d=function(
+local c=a.bL()local d=function(
 
 d)
 if c.isLegacy()then
@@ -9889,10 +10384,10 @@ end
 e()
 end
 }
-}end a.bN=function()local c=a.cache.bN if not c then c={c=b()}a.cache.bN=c end return c.c end end do local b=function()
+}end a.bR=function()local c=a.cache.bR if not c then c={c=b()}a.cache.bR=c end return c.c end end do local b=function()
 
 local b=a.f()
-local c=a.ag()local d=function()
+local c=a.af()local d=function()
 
 
 
@@ -9955,6 +10450,7 @@ end end
 
 return{
 {
+client=true,
 action="listento",
 description="Listens to the area around a player. Can also eavesdrop with vc",
 args={kind="player",optional=true},
@@ -9971,6 +10467,7 @@ end
 end
 },
 {
+client=true,
 action="unlistento",
 description="Disables listento",
 run=function(h)
@@ -9978,6 +10475,7 @@ f(h)
 end
 },
 {
+client=true,
 action="muteallvoices|muteallvcs",
 description="Mutes voice chat for all players",
 run=function(h)
@@ -9987,6 +10485,7 @@ end)
 end
 },
 {
+client=true,
 action="unmuteallvoices|unmuteallvcs",
 description="Unmutes voice chat for all players",
 run=function(h)
@@ -9996,6 +10495,7 @@ end)
 end
 },
 {
+client=true,
 action="mutevc",
 description="Mutes the voice chat of a player",
 args={kind="player"},
@@ -10011,6 +10511,7 @@ end)
 end
 },
 {
+client=true,
 action="unmutevc",
 description="Unmutes the voice chat of a player",
 args={kind="player"},
@@ -10026,6 +10527,7 @@ end)
 end
 },
 {
+client=true,
 action="phonebook|call",
 description="Prompts the Roblox phonebook UI to let you call your friends. Needs voice chat enabled",
 run=function(h)
@@ -10040,10 +10542,11 @@ h:notify("Phonebook","It seems you're not able to call anyone. Sorry!")
 end
 end
 }
-}end a.bO=function()local c=a.cache.bO if not c then c={c=b()}a.cache.bO=c end return c.c end end do local b=function()
+}end a.bS=function()local c=a.cache.bS if not c then c={c=b()}a.cache.bS=c end return c.c end end do local b=function()
 
 return{
 {
+client=true,
 action="loopoof",
 description="Makes every player's head play its sounds (oof) over and over",
 run=function(b)
@@ -10073,6 +10576,7 @@ end)
 end
 },
 {
+client=true,
 action="unloopoof",
 description="Stops the oof loop",
 run=function(b)
@@ -10082,12 +10586,13 @@ c.running=false
 end
 end
 }
-}end a.bP=function()local c=a.cache.bP if not c then c={c=b()}a.cache.bP=c end return c.c end end do local b=function()
+}end a.bT=function()local c=a.cache.bT if not c then c={c=b()}a.cache.bT=c end return c.c end end do local b=function()
 
-local b=a.ag()
+local b=a.af()
 
 return{
 {
+client=true,
 action="muteboombox",
 description="Mutes someones boombox",
 args={
@@ -10095,20 +10600,18 @@ kind="player"
 },
 run=function(c,d)
 for e,f in b(d:nextValue())do
-task.spawn(function()
-local g={f.Character,f:FindFirstChildOfClass("Backpack")}
-for h,i in g do
-for j,k in i:GetDescendants()do
-if k:IsA("Sound")then
-k.Playing=false
+for g,h in{f.Character,f:FindFirstChildOfClass("Backpack")}do
+for i,j in h:GetDescendants()do
+if j:IsA("Sound")then
+j.Playing=false
 end
 end
 end
-end)
 end
 end
 },
 {
+client=true,
 action="unmuteboombox",
 description="Unmutes someones boombox",
 args={
@@ -10116,7 +10619,6 @@ kind="player"
 },
 run=function(c,d)
 for e,f in b(d:nextValue())do
-task.spawn(function()
 local g=f.Character
 if not g then return end
 
@@ -10125,21 +10627,20 @@ if i:IsA("Sound")and not i.Playing then
 i.Playing=true
 end
 end
-end)
 end
 end
 }
-}end a.bQ=function()local c=a.cache.bQ if not c then c={c=b()}a.cache.bQ=c end return c.c end end do local b=function()
+}end a.bU=function()local c=a.cache.bU if not c then c={c=b()}a.cache.bU=c end return c.c end end do local b=function()
 
-return{a.bK()
-,a.bL()
-,a.bM()
-,a.bN()
-,a.bO()
+return{a.bO()
 ,a.bP()
 ,a.bQ()
+,a.bR()
+,a.bS()
+,a.bT()
+,a.bU()
 
-}end a.bR=function()local c=a.cache.bR if not c then c={c=b()}a.cache.bR=c end return c.c end end do local b=function()
+}end a.bV=function()local c=a.cache.bV if not c then c={c=b()}a.cache.bV=c end return c.c end end do local b=function()
 
 
 
@@ -10150,7 +10651,7 @@ return{a.bK()
 
 
 local b=a.f()
-local c=a.af()
+local c=a.ae()
 local d=a.b()
 local e=a.d()
 
@@ -10381,15 +10882,15 @@ end
 n.folder:Destroy()end
 
 
-return m end a.bS=function()local c=a.cache.bS if not c then c={c=b()}a.cache.bS=c end return c.c end end do local b=function()
+return m end a.bW=function()local c=a.cache.bW if not c then c={c=b()}a.cache.bW=c end return c.c end end do local b=function()
 
 
 
 
 
 
-local b=a.bS()
-local c=a.ag()
+local b=a.bW()
+local c=a.af()
 local d=a.f()
 local e=a.b()
 
@@ -10529,6 +11030,7 @@ showText=true,
 
 return{
 {
+client=true,
 action="esp",
 description="View all players and their status",
 run=function(x)
@@ -10536,6 +11038,7 @@ t(x,m)
 end
 },
 {
+client=true,
 action="espteam",
 description="ESP but teammates are green and bad guys are red",
 run=function(x)
@@ -10543,6 +11046,7 @@ t(x,n)
 end
 },
 {
+client=true,
 action="noesp|unesp|unespteam",
 description="Removes ESP",
 run=function(x)
@@ -10550,6 +11054,7 @@ r(x,"esp")
 end
 },
 {
+client=true,
 action="esptransparency",
 description="Changes the transparency of ESP related commands",
 args={kind="number"},
@@ -10559,6 +11064,7 @@ e.espTransparency=math.clamp(z or g,0,1)
 end
 },
 {
+client=true,
 action="partesp",
 description="Highlights a part",
 args={
@@ -10588,6 +11094,7 @@ end
 end
 },
 {
+client=true,
 action="unpartesp|nopartesp",
 description="removes partesp",
 args={
@@ -10611,6 +11118,7 @@ end
 end
 },
 {
+client=true,
 action="chams",
 description="ESP but without text in the way",
 run=function(x)
@@ -10628,6 +11136,7 @@ showText=false,
 end
 },
 {
+client=true,
 action="nochams|unchams",
 description="Removes chams",
 run=function(x)
@@ -10635,6 +11144,7 @@ r(x,"chams")
 end
 },
 {
+client=true,
 action="locate",
 description="View a single player and their status",
 args={kind="player"},
@@ -10652,6 +11162,7 @@ end
 end
 },
 {
+client=true,
 action="unlocate|nolocate",
 description="Removes locate",
 args={kind="player"},
@@ -10697,7 +11208,7 @@ r(x,C)
 end
 end
 }
-}end a.bT=function()local c=a.cache.bT if not c then c={c=b()}a.cache.bT=c end return c.c end end do local b=function()local b=function(
+}end a.bX=function()local c=a.cache.bX if not c then c={c=b()}a.cache.bX=c end return c.c end end do local b=function()local b=function(
 
 
 b)
@@ -10726,6 +11237,7 @@ end end
 
 return{
 {
+client=true,
 action="xray",
 description="Makes all parts in workspace transparent",
 run=function(d)
@@ -10734,6 +11246,7 @@ b(d)
 end
 },
 {
+client=true,
 action="unxray|noxray",
 description="Restores transparency to all parts in workspace",
 run=function(d)
@@ -10742,6 +11255,7 @@ b(d)
 end
 },
 {
+client=true,
 action="loopxray",
 description="Makes all parts in workspace transparent but looped",
 run=function(d)
@@ -10755,6 +11269,7 @@ end)
 end
 },
 {
+client=true,
 action="unloopxray",
 description="Unloops xray",
 run=function(d)
@@ -10764,6 +11279,7 @@ b(d)
 end
 },
 {
+client=true,
 action="togglexray",
 description="Toggles xray",
 run=function(d)
@@ -10771,7 +11287,7 @@ d.privateEnv.xrayEnabled=not d.privateEnv.xrayEnabled
 b(d)
 end
 }
-}end a.bU=function()local c=a.cache.bU if not c then c={c=b()}a.cache.bU=c end return c.c end end do local b=function()local b=function(
+}end a.bY=function()local c=a.cache.bY if not c then c={c=b()}a.cache.bY=c end return c.c end end do local b=function()local b=function(
 
 
 
@@ -10822,6 +11338,7 @@ return e,g end
 
 return{
 {
+client=true,
 action="hovername",
 description="Shows a players username when your mouse is hovered over them",
 run=function(e)
@@ -10846,13 +11363,14 @@ end)
 end
 },
 {
+client=true,
 action="unhovername|nohovername",
 description="Turns off hovername",
 run=function(e)
 c(e)
 end
 }
-}end a.bV=function()local c=a.cache.bV if not c then c={c=b()}a.cache.bV=c end return c.c end end do local b=function()local b=function(
+}end a.bZ=function()local c=a.cache.bZ if not c then c={c=b()}a.cache.bZ=c end return c.c end end do local b=function()local b=function(
 
 
 b, c)
@@ -10882,17 +11400,17 @@ run=function(c)
 b(c,false)
 end
 }
-}end a.bW=function()local c=a.cache.bW if not c then c={c=b()}a.cache.bW=c end return c.c end end do local b=function()
+}end a.b_=function()local c=a.cache.b_ if not c then c={c=b()}a.cache.b_=c end return c.c end end do local b=function()
 
-return{a.bT()
-,a.bU()
-,a.bV()
-,a.bW()
+return{a.bX()
+,a.bY()
+,a.bZ()
+,a.b_()
 
-}end a.bX=function()local c=a.cache.bX if not c then c={c=b()}a.cache.bX=c end return c.c end end do local b=function()
+}end a.b0=function()local c=a.cache.b0 if not c then c={c=b()}a.cache.b0=c end return c.c end end do local b=function()
 
-return{}end a.bY=function()local c=a.cache.bY if not c then c={c=b()}a.cache.bY=c end return c.c end end do local b=function()
-local b=a.bY()
+return{}end a.b1=function()local c=a.cache.b1 if not c then c={c=b()}a.cache.b1=c end return c.c end end do local b=function()
+local b=a.b1()
 local c=a.d()
 
 local d={}
@@ -10934,7 +11452,7 @@ local f=Instance.new(e)
 return d.setup(f,...)end
 
 
-return d end a.bZ=function()local c=a.cache.bZ if not c then c={c=b()}a.cache.bZ=c end return c.c end end do local b=function()
+return d end a.b2=function()local c=a.cache.b2 if not c then c={c=b()}a.cache.b2=c end return c.c end end do local b=function()
 
 
 local b=a.f()
@@ -10957,7 +11475,7 @@ not c.KeyboardEnabled
 end
 )
 
-return d end a.b_=function()local c=a.cache.b_ if not c then c={c=b()}a.cache.b_=c end return c.c end end do local b=function()
+return d end a.b3=function()local c=a.cache.b3 if not c then c={c=b()}a.cache.b3=c end return c.c end end do local b=function()
 local b=a.f()
 local c=a.a()local d=function()
 
@@ -10981,7 +11499,106 @@ end
 return d end
 
 
-return d()end a.b0=function()local c=a.cache.b0 if not c then c={c=b()}a.cache.b0=c end return c.c end end do local aa=function()
+return d()end a.b4=function()local c=a.cache.b4 if not c then c={c=b()}a.cache.b4=c end return c.c end end do local b=function()
+local b={}
+
+local c="abcdefghijklmnopqrstuvABCDEFGHIJKLMNOPQRSTUV_0123456789"
+
+local d={
+["&"]="&amp;",
+["<"]="&lt;",
+[">"]="&gt;",
+["\""]="&quot;",
+["'"]="&apos;"
+}
+
+b.randomString=function(e)
+local f={}
+for g=1,e do
+local h=math.random(1,#c)
+table.insert(f,c:sub(h,h))
+end
+return table.concat(f)end
+
+
+b.getDeep=function(e, f)
+for g in f:gmatch("[^%.]+")do
+e=e[g]
+end
+return e end
+
+
+b.simpleCreate=function(e, f)
+local g=Instance.new(e)
+for h,i in f do
+g[h]=i
+end
+return g end
+
+
+b.chararray=function(e)
+local f={}
+for g=1,#e do
+table.insert(f,e:sub(g,g))
+end
+return f end
+
+
+b.lookupify=function(e)
+local f={}
+for g=1,#e do
+local h=e[g]
+f[h]=true
+end
+return f end
+
+
+b.unlookupify=function(e)
+local f={}
+for g,h in e do
+table.insert(f,g)
+end
+return f end
+
+
+b.escapeRichText=function(e)
+local f=tostring(e):gsub(".",function(f)
+return d[f]or f
+end)
+return f end
+
+
+b.charset=function(e)
+local f={}
+for g in e:gmatch(".")do
+f[g]=true
+end
+return f end
+
+
+b.versionToNumber=function(e)
+local f=e:gsub("^v","")
+
+local g=0
+local h=f:split(".")
+
+for i,j in h do
+local k=tonumber(j)or 0
+g=g+k*math.pow(1000,3-i)
+end
+
+return g end
+
+
+b.colorFromRGB=function(e, f)
+return`<font color="#{f:ToHex()}">{e}</font>`end
+
+
+b.richFontSize=function(e, f)
+return`<font size="{f}">{e}</font>`end
+
+
+return b end a.b5=function()local c=a.cache.b5 if not c then c={c=b()}a.cache.b5=c end return c.c end end do local aa=function()
 
 
 
@@ -10997,33 +11614,35 @@ return d()end a.b0=function()local c=a.cache.b0 if not c then c={c=b()}a.cache.b
 
 
 local b=a.f()
-local c=a.bZ()
-local d=a.aH()
-local e=a.af()
+local c=a.b2()
+local d=a.aL()
+local e=a.ae()
 local f=a.g()
 
-local g=a.b_()
-local h=a.b0()
+local g=a.b3()
+local h=a.b4()
+local i=a.b5()
+local j=a.av()
 
-local i=b.ContextActionService
-local j=b.UserInputService
+local k=b.ContextActionService
+local l=b.UserInputService
 
-local k={}
+local m={}
 
-k.DEFAULT_SPEED=1
-k.DEFAULT_BOOST=2
-k.MIN_BOOST=1
-k.MAX_BOOST=50
+m.DEFAULT_SPEED=1
+m.DEFAULT_BOOST=2
+m.MIN_BOOST=1
+m.MAX_BOOST=50
 
-local l="freecam.boost"
+local n="freecam.boost"
 
-local m="freecam"
-local n="freecamKeys"
-local o="freecamMouse"
-local p=Enum.ContextActionPriority.High.Value
-local q="freecamControls"
+local o="freecam"
+local p="freecamKeys"
+local q="freecamMouse"
+local r=Enum.ContextActionPriority.High.Value
+local s=i.randomString(math.random(30,50))
 
-local r={
+local t={
 Enum.KeyCode.W,
 Enum.KeyCode.A,
 Enum.KeyCode.S,
@@ -11034,160 +11653,160 @@ Enum.KeyCode.Up,
 Enum.KeyCode.Down,
 }
 
-local s=70
-local t=64
-local u=5
-local v=math.pi/64
+local u=70
+local v=64
+local w=5
+local x=math.pi/64
 
 
-local w=math.rad(89)
-local x=0.75
-local y=0.01
-local z=4
-local A=0.25
-local B=0.1
-local C=512
+local y=math.rad(89)
+local z=0.75
+local A=0.01
+local B=4
+local C=0.25
+local D=0.1
+local E=512
 
-local D=1
-local E=64
-local F=24
-local G=40 local H=function()
-
-
-return Enum.ContextActionResult.Sink end local I=function(
+local F=1
+local G=64
+local H=24
+local I=40 local J=function()
 
 
+return Enum.ContextActionResult.Sink end local K=function(
 
-I)
+
+
+K)
 return{
-position=I,
-velocity=I*0,
-}end local J=function(
-
-
-J, K, L)
-local M=u*2*math.pi
-local N=L-J.position
-local O=math.exp(-M*K)
-
-local P=L+(J.velocity*K-N*(M*K+1))*O
-local Q=(M*K*(N*M-J.velocity)+J.velocity)*O
-
-J.position=P
-J.velocity=Q
-
-return P end local K=function(
-
-
-
-K, L)
-local M=j:IsKeyDown(K)and 1 or 0
-local N=j:IsKeyDown(L)and 1 or 0
-return M-N end local L=function(
-
+position=K,
+velocity=K*0,
+}end local L=function(
 
 
 L, M, N)
-local O=L.ViewportSize
-local P=2*math.tan(math.rad(N)/2)
-local Q=O.X/O.Y*P
+local O=w*2*math.pi
+local P=N-L.position
+local Q=math.exp(-O*M)
 
-local R=C
-local S=M.LookVector
+local R=N+(L.velocity*M-P*(O*M+1))*Q
+local S=(O*M*(P*O-L.velocity)+L.velocity)*Q
 
-for T=0,1,0.5 do
-for U=0,1,0.5 do
-local V=M.RightVector*((T-0.5)*Q)
--M.UpVector*((U-0.5)*P)
-+M.LookVector
+L.position=R
+L.velocity=S
 
-local W=V.Unit
-local X=M.Position+V*B
-local Y=workspace:Raycast(X,W*C)
-local Z=Y and(Y.Position-X).Magnitude or C
-
-if Z<R then
-R=Z
-S=W
-end
-end
-end
-
-return M.LookVector:Dot(S)*R end local M=function(
-
-
-
+return R end local M=function(
 
 
 
 M, N)
-if not M then return Vector3.zero end
-
-local O=Vector3.new(-math.sin(N),0,-math.cos(N))
-local P=Vector3.new(math.cos(N),0,-math.sin(N))
-local Q=M.MoveDirection
-return Vector3.new(Q:Dot(P),0,-Q:Dot(O))end local N=function(
-
-
-N)
-return N.UserInputType==Enum.UserInputType.Touch end local O=function(
+local O=l:IsKeyDown(M)and 1 or 0
+local P=l:IsKeyDown(N)and 1 or 0
+return O-P end local aa=function(
 
 
 
-O, P)
-for Q,R in O.controls do
-local S=R.AbsolutePosition
-local T=R.AbsoluteSize
-if P.X>=S.X and P.X<=S.X+T.X
-and P.Y>=S.Y and P.Y<=S.Y+T.Y then
-return true
+N, O, P)
+local Q=N.ViewportSize
+local R=2*math.tan(math.rad(P)/2)
+local S=Q.X/Q.Y*R
+
+local T=E
+local U=O.LookVector
+
+for V=0,1,0.5 do
+for W=0,1,0.5 do
+local X=O.RightVector*((V-0.5)*S)
+-O.UpVector*((W-0.5)*R)
++O.LookVector
+
+local Y=X.Unit
+local Z=O.Position+X*D
+local _=workspace:Raycast(Z,Y*E)
+local aa=_ and(_.Position-Z).Magnitude or E
+
+if aa<T then
+T=aa
+U=Y
 end
 end
-return false end local P=function(
+end
+
+return O.LookVector:Dot(U)*T end local N=function(
+
+
+
+
+
+
+N, O)
+if not N then return Vector3.zero end
+
+local P=Vector3.new(-math.sin(O),0,-math.cos(O))
+local Q=Vector3.new(math.cos(O),0,-math.sin(O))
+local R=N.MoveDirection
+return Vector3.new(R:Dot(Q),0,-R:Dot(P))end local O=function(
+
+
+O)
+return O.UserInputType==Enum.UserInputType.Touch end local P=function(
 
 
 
 P, Q)
-local R=c.new("ScreenGui",h,{
-Name=q,
+for R,S in P.controls do
+local T=S.AbsolutePosition
+local U=S.AbsoluteSize
+if Q.X>=T.X and Q.X<=T.X+U.X
+and Q.Y>=T.Y and Q.Y<=T.Y+U.Y then
+return true
+end
+end
+return false end local Q=function(
+
+
+
+Q, R)
+local S=c.new("ScreenGui",h,{
+Name=s,
 ResetOnSpawn=false,
 DisplayOrder=50,
 })
-Q.gui=R local S=function(
+R.gui=S local T=function(
 
 
-S, T, U)
-local V=c.new("TextButton",R,{
-Name=S,
+T, U, V)
+local W=c.new("TextButton",S,{
+Name=T,
 AnchorPoint=Vector2.new(1,1),
-Position=U,
-Size=UDim2.fromOffset(E,E),
+Position=V,
+Size=UDim2.fromOffset(G,G),
 BackgroundColor3=Color3.new(0,0,0),
 BackgroundTransparency=0.5,
 AutoButtonColor=false,
-Text=T,
+Text=U,
 TextColor3=Color3.new(1,1,1),
 TextScaled=true,
 Active=true,
 })
 
-table.insert(Q.controls,V)
-table.insert(Q.connections,P:connect(V.InputBegan,function(W)
-if N(W)then
-Q.holds[S]=W
+table.insert(R.controls,W)
+table.insert(R.connections,Q:connect(W.InputBegan,function(X)
+if O(X)then
+R.holds[T]=X
 end
 end))end
 
 
-S("rise","UP",UDim2.new(1,-F,1,-G-E-12))
-S("fall","DOWN",UDim2.new(1,-F,1,-G))
-S("boost","BOOST",UDim2.new(1,-F-E-12,1,-G))
+T("rise","UP",UDim2.new(1,-H,1,-I-G-12))
+T("fall","DOWN",UDim2.new(1,-H,1,-I))
+T("boost","BOOST",UDim2.new(1,-H-G-12,1,-I))
 
-local T=c.new("TextButton",R,{
+local U=c.new("TextButton",S,{
 Name="Close",
 AnchorPoint=Vector2.new(1,0),
-Position=UDim2.new(1,-F,0,F),
-Size=UDim2.fromOffset(E,E),
+Position=UDim2.new(1,-H,0,H),
+Size=UDim2.fromOffset(G,G),
 BackgroundColor3=Color3.new(0,0,0),
 BackgroundTransparency=0.5,
 AutoButtonColor=false,
@@ -11197,17 +11816,17 @@ TextScaled=true,
 Active=true,
 })
 
-table.insert(Q.controls,T)
-table.insert(Q.connections,P:connect(T.Activated,function()
-k.stop(P)
+table.insert(R.controls,U)
+table.insert(R.connections,Q:connect(U.Activated,function()
+m.stop(Q)
 end))
 
 
-local U=c.new("TextButton",R,{
+local V=c.new("TextButton",S,{
 Name="Teleport",
 AnchorPoint=Vector2.new(1,0),
-Position=UDim2.new(1,-F-E-12,0,F),
-Size=UDim2.fromOffset(E,E),
+Position=UDim2.new(1,-H-G-12,0,H),
+Size=UDim2.fromOffset(G,G),
 BackgroundColor3=Color3.new(0,0,0),
 BackgroundTransparency=0.5,
 AutoButtonColor=false,
@@ -11217,113 +11836,113 @@ TextScaled=true,
 Active=true,
 })
 
-table.insert(Q.controls,U)
-table.insert(Q.connections,P:connect(U.Activated,function()
-k.teleport(P)
+table.insert(R.controls,V)
+table.insert(R.connections,Q:connect(V.Activated,function()
+m.teleport(Q)
 end))
 
 
-table.insert(Q.connections,P:connect(j.InputEnded,function(V)
-for W,X in Q.holds do
-if V==X then
-Q.holds[W]=nil
+table.insert(R.connections,Q:connect(l.InputEnded,function(W)
+for X,Y in R.holds do
+if W==Y then
+R.holds[X]=nil
 end
-end
-end))end local Q=function(
-
-
-
-
-Q, R)
-local S=b.Players.LocalPlayer:FindFirstChildOfClass("PlayerGui")
-local T=S and S:FindFirstChild("TouchGui")
-local U=T and T:FindFirstChild("JumpButton",true)
-if not U then return end
-
-R.jumpButton=U
-R.jumpVisible=U.Visible
-U.Visible=false
-
-table.insert(R.connections,Q:connect(U:GetPropertyChangedSignal("Visible"),function()
-if U.Visible then
-U.Visible=false
 end
 end))end local R=function(
 
 
 
+
 R, S)
-local T=R.playerService:getRootPart()
-if not T then return end
+local T=b.Players.LocalPlayer:FindFirstChildOfClass("PlayerGui")
+local U=T and T:FindFirstChild("TouchGui")
+local V=U and U:FindFirstChild("JumpButton",true)
+if not V then return end
 
-S.root=T
-S.rootAnchored=T.Anchored
-T.Anchored=true end local S=function(
+S.jumpButton=V
+S.jumpVisible=V.Visible
+V.Visible=false
 
-
-S)
-local T=S.root
-if T and T.Parent~=nil then
-T.Anchored=S.rootAnchored
-end end local aa=function(
-
-
-T, U, V)
-local W=workspace.CurrentCamera
+table.insert(S.connections,R:connect(V:GetPropertyChangedSignal("Visible"),function()
+if V.Visible then
+V.Visible=false
+end
+end))end local S=function(
 
 
-U.navMultiplier=math.clamp(
-U.navMultiplier+V*K(Enum.KeyCode.Up,Enum.KeyCode.Down)*x,
-y,
-z
+
+S, T)
+local U=S.playerService:getRootPart()
+if not U then return end
+
+T.root=U
+T.rootAnchored=U.Anchored
+j.setProperty(U,"Anchored",true)end local T=function(
+
+
+T)
+local U=T.root
+if U and U.Parent~=nil then
+j.setProperty(U,"Anchored",T.rootAnchored)
+end end local ab=function(
+
+
+U, V, W)
+local X=workspace.CurrentCamera
+
+
+V.navMultiplier=math.clamp(
+V.navMultiplier+W*M(Enum.KeyCode.Up,Enum.KeyCode.Down)*z,
+A,
+B
 )
 
 
-local X=T.playerService:getHumanoid()
-local Y=if g then M(X,U.rotation.Y)else Vector3.zero
-if g and X then
-X.Jump=false
+local Y=U.playerService:getHumanoid()
+local Z=if g then N(Y,V.rotation.Y)else Vector3.zero
+if g and Y then
+Y.Jump=false
 end
 
-local Z=U.holds.rise and 1 or 0
-local _=U.holds.fall and 1 or 0
-local aa=Vector3.new(
-K(Enum.KeyCode.D,Enum.KeyCode.A)+Y.X,
-K(Enum.KeyCode.E,Enum.KeyCode.Q)+Z-_,
-K(Enum.KeyCode.S,Enum.KeyCode.W)+Y.Z
+local _=V.holds.rise and 1 or 0
+local ab=V.holds.fall and 1 or 0
+local ac=Vector3.new(
+M(Enum.KeyCode.D,Enum.KeyCode.A)+Z.X,
+M(Enum.KeyCode.E,Enum.KeyCode.Q)+_-ab,
+M(Enum.KeyCode.S,Enum.KeyCode.W)+Z.Z
 )
 
-local ab=j:IsKeyDown(Enum.KeyCode.LeftShift)and A or 1
+local ad=l:IsKeyDown(Enum.KeyCode.LeftShift)and C or 1
 
-local ac=U.holds.boost or j:IsKeyDown(d:getBinding("freecamBoost"))
-local ad=if ac then k.getBoost(T)else 1
-local ae=(T.privateEnv.freecamSpeed or k.DEFAULT_SPEED)*U.navMultiplier*ab*ad
-local af=J(U.velocitySpring,V,aa*ae)
+local ae=V.holds.boost or l:IsKeyDown(d:getBinding("freecamBoost"))
+local af=if ae then m.getBoost(U)else 1
+local ag=(U.privateEnv.freecamSpeed or m.DEFAULT_SPEED)*V.navMultiplier*ad*af
+local ah=L(V.velocitySpring,W,ac*ag)
 
-local ag=J(U.panSpring,V,U.mouseDelta*v)
-U.mouseDelta=Vector2.zero
+local ai=L(V.panSpring,W,V.mouseDelta*x)
+V.mouseDelta=Vector2.zero
 
 
-local ah=math.sqrt(math.tan(math.rad(s/2))/math.tan(math.rad(U.fieldOfView/2)))
-local ai=U.rotation+ag*Vector2.new(0.75,1)*8*(V/ah)
-U.rotation=Vector2.new(
-math.clamp(ai.X,-w,w),
-ai.Y%(2*math.pi)
+local aj=math.sqrt(math.tan(math.rad(u/2))/math.tan(math.rad(V.fieldOfView/2)))
+local ak=V.rotation+ai*Vector2.new(0.75,1)*8*(W/aj)
+V.rotation=Vector2.new(
+math.clamp(ak.X,-y,y),
+ak.Y%(2*math.pi)
 )
 
-local aj=CFrame.fromOrientation(U.rotation.X,U.rotation.Y,0)
-local ak=CFrame.new(U.position)*aj*CFrame.new(af*t*V)
-U.position=ak.Position
+local al=CFrame.fromOrientation(V.rotation.X,V.rotation.Y,0)
+local am=CFrame.new(V.position)*al*CFrame.new(ah*v*W)
+V.position=am.Position
 
-W.CFrame=ak
-if U.anchor then
-U.anchor.CFrame=ak
+X.CFrame=am
+if V.anchor then
+V.anchor.CFrame=am
 end
-W.Focus=ak*CFrame.new(0,0,-L(W,ak,U.fieldOfView))
-W.FieldOfView=U.fieldOfView end local ab=function(
+X.Focus=am*CFrame.new(0,0,-aa(X,am,V.fieldOfView))
+X.FieldOfView=V.fieldOfView end local ac=function(
 
 
-ab)
+ac)
 return c.new("Part",workspace,{
 Name="freecamAnchor",
 Anchored=true,
@@ -11333,199 +11952,199 @@ CanTouch=false,
 CastShadow=false,
 Transparency=1,
 Size=Vector3.one*0.2,
-CFrame=CFrame.new(ab.position),
-})end local ac=function(
+CFrame=CFrame.new(ac.position),
+})end local ad=function(
 
 
-ac)
-local ad=f.Character or f.CharacterAdded:Wait()
-local ae=ad:WaitForChild("Humanoid",100)
+ad)
+local ae=f.Character or f.CharacterAdded:Wait()
+local af=ae:WaitForChild("Humanoid",100)
 
-if ac and(
-ac.CameraSubject==nil
-or not ac.CameraSubject:IsDescendantOf(workspace)
-)and e:isAlive(ad)then
-ac.CameraSubject=ae
+if ad and(
+ad.CameraSubject==nil
+or not ad.CameraSubject:IsDescendantOf(workspace)
+)and e:isAlive(ae)then
+ad.CameraSubject=af
 end end
 
 
-k.stop=function(ad)
-local ae=ad:collectGarbage(m)
-if not ae then return false end
+m.stop=function(ae)
+local af=ae:collectGarbage(o)
+if not af then return false end
 
-for af,ag in ae.connections do
-ag:Disconnect()
+for ag,ah in af.connections do
+ah:Disconnect()
 end
 
-i:UnbindAction(n)
-i:UnbindAction(o)
+k:UnbindAction(p)
+k:UnbindAction(q)
 
-if ae.gui then
-ae.gui:Destroy()
+if af.gui then
+af.gui:Destroy()
 end
-if ae.jumpButton then
-ae.jumpButton.Visible=ae.jumpVisible
+if af.jumpButton then
+af.jumpButton.Visible=af.jumpVisible
 end
-S(ae)
+T(af)
 
-local af=ae.cameraSubject
-local ag=workspace.CurrentCamera
+local ag=af.cameraSubject
+local ah=workspace.CurrentCamera
 
-ag.CameraSubject=af
+ah.CameraSubject=ag
 
-if ae.isLPHumanoid or(af and not af:IsDescendantOf(workspace))then
-task.spawn(ac,ag)
-end
-
-ag.CameraType=ae.cameraType
-
-if ae.anchor then
-ae.anchor:Destroy()
+if af.isLPHumanoid or(ag and not ag:IsDescendantOf(workspace))then
+task.spawn(ad,ah)
 end
 
-ag.Focus=ae.focus
-ag.FieldOfView=ae.fieldOfView
+ah.CameraType=af.cameraType
 
-j.MouseBehavior=ae.mouseBehavior
-j.MouseIconEnabled=ae.mouseIconEnabled
+if af.anchor then
+af.anchor:Destroy()
+end
+
+ah.Focus=af.focus
+ah.FieldOfView=af.fieldOfView
+
+l.MouseBehavior=af.mouseBehavior
+l.MouseIconEnabled=af.mouseIconEnabled
 
 return true end
 
 
-k.teleport=function(ad)
-local ae=ad:getGarbage(m)
-if not ae then return false end
+m.teleport=function(ae)
+local af=ae:getGarbage(o)
+if not af then return false end
 
-local af=CFrame.new(ae.position)*CFrame.Angles(0,ae.rotation.Y,0)
-k.stop(ad)
+local ag=CFrame.new(af.position)*CFrame.Angles(0,af.rotation.Y,0)
+m.stop(ae)
 
-if not ad.playerService:teleportTo(af)then
-ad:notify("Freecam","your character was not found")
+if not ae.playerService:teleportTo(ag)then
+ae:notify("Freecam","your character was not found")
 end
 
-return true end local ad=function(
+return true end local ae=function(
 
 
-ad, ae, af, ...)
-local ag,ah=pcall(af,...)
-if not ag then
-ad:notify("Freecam",`{ae} failed: {ah}`)
-end end local ae=function(
+ae, af, ag, ...)
+local ah,ai=pcall(ag,...)
+if not ah then
+ae:notify("Freecam",`{af} failed: {ai}`)
+end end local af=function(
 
 
-ae, af)
-k.stop(ae)
+af, ag)
+m.stop(af)
 
-local ag=workspace.CurrentCamera
-local ah=ag.CFrame
-local ai,aj=ah:ToOrientation()
+local ah=workspace.CurrentCamera
+local ai=ah.CFrame
+local aj,ak=ai:ToOrientation()
 
-local ak=ae:createGarbage(m)
-ak.connections={}
-ak.controls={}
-ak.holds={}
-ak.cameraType=ag.CameraType
-ak.cameraSubject=ag.CameraSubject
+local al=af:createGarbage(o)
+al.connections={}
+al.controls={}
+al.holds={}
+al.cameraType=ah.CameraType
+al.cameraSubject=ah.CameraSubject
 
-local T=f.Character and f.Character:FindFirstChildOfClass("Humanoid")
-ak.isLPHumanoid=
-(ak.cameraSubject~=nil and T==ak.cameraSubject)or
-ak.cameraSubject==nil
+local am=f.Character and f.Character:FindFirstChildOfClass("Humanoid")
+al.isLPHumanoid=
+(al.cameraSubject~=nil and am==al.cameraSubject)or
+al.cameraSubject==nil
 
-ak.focus=ag.Focus
-ak.fieldOfView=ag.FieldOfView
-ak.mouseBehavior=j.MouseBehavior
-ak.mouseIconEnabled=j.MouseIconEnabled
+al.focus=ah.Focus
+al.fieldOfView=ah.FieldOfView
+al.mouseBehavior=l.MouseBehavior
+al.mouseIconEnabled=l.MouseIconEnabled
 
-ak.position=af or ah.Position
-ak.rotation=Vector2.new(ai,aj)
-ak.mouseDelta=Vector2.zero
-ak.navMultiplier=1
-ak.velocitySpring=I(Vector3.zero)
-ak.panSpring=I(Vector2.zero)
+al.position=ag or ai.Position
+al.rotation=Vector2.new(aj,ak)
+al.mouseDelta=Vector2.zero
+al.navMultiplier=1
+al.velocitySpring=K(Vector3.zero)
+al.panSpring=K(Vector2.zero)
 
-ak.anchor=ab(ak)
+al.anchor=ac(al)
 
-ag.CameraType=Enum.CameraType.Custom
-ag.CameraSubject=ak.anchor
-j.MouseBehavior=Enum.MouseBehavior.Default
-j.MouseIconEnabled=true
+ah.CameraType=Enum.CameraType.Custom
+ah.CameraSubject=al.anchor
+l.MouseBehavior=Enum.MouseBehavior.Default
+l.MouseIconEnabled=true
 
-i:BindActionAtPriority(n,H,false,p,table.unpack(r))
-i:BindActionAtPriority(o,function(U,V,W)
+k:BindActionAtPriority(p,J,false,r,table.unpack(t))
+k:BindActionAtPriority(q,function(U,V,W)
 local X=W.Delta
-ak.mouseDelta=ak.mouseDelta+Vector2.new(-X.Y,-X.X)
+al.mouseDelta=al.mouseDelta+Vector2.new(-X.Y,-X.X)
 return Enum.ContextActionResult.Sink
-end,false,p,Enum.UserInputType.MouseMovement)
+end,false,r,Enum.UserInputType.MouseMovement)
 
 if g then
-R(ae,ak)
-ad(ae,"buttons",P,ae,ak)
-ad(ae,"jump button",Q,ae,ak)
+S(af,al)
+ae(af,"buttons",Q,af,al)
+ae(af,"jump button",R,af,al)
 
-table.insert(ak.connections,ae:connect(j.InputBegan,function(V,W)
-if W or not N(V)then return end
-if ak.lookTouch~=nil or O(ak,V.Position)then return end
+table.insert(al.connections,af:connect(l.InputBegan,function(V,W)
+if W or not O(V)then return end
+if al.lookTouch~=nil or P(al,V.Position)then return end
 
 if V.Position.X<workspace.CurrentCamera.ViewportSize.X/2 then return end
-ak.lookTouch=V
+al.lookTouch=V
 end))
-table.insert(ak.connections,ae:connect(j.InputChanged,function(V)
-if V==ak.lookTouch then
-ak.mouseDelta=ak.mouseDelta+Vector2.new(-V.Delta.Y,-V.Delta.X)*D
+table.insert(al.connections,af:connect(l.InputChanged,function(V)
+if V==al.lookTouch then
+al.mouseDelta=al.mouseDelta+Vector2.new(-V.Delta.Y,-V.Delta.X)*F
 end
 end))
-table.insert(ak.connections,ae:connect(j.InputEnded,function(V)
-if V==ak.lookTouch then
-ak.lookTouch=nil
+table.insert(al.connections,af:connect(l.InputEnded,function(V)
+if V==al.lookTouch then
+al.lookTouch=nil
 end
 end))
 end
 
-table.insert(ak.connections,ae:connect(ae.runService.RenderStepped,function(V)
-local W,X=pcall(aa,ae,ak,V)
+table.insert(al.connections,af:connect(af.runService.RenderStepped,function(V)
+local W,X=pcall(ab,af,al,V)
 if not W then
-k.stop(ae)
-ae:notify("Freecam",`stopped, the camera was given back: {X}`)
+m.stop(af)
+af:notify("Freecam",`stopped, the camera was given back: {X}`)
 end
 end))end
 
 
-k.start=function(af, ag)
-local ah,ai=pcall(ae,af,ag)
-if not ah then
-k.stop(af)
-af:notify("Freecam",`could not start: {ai}`)
+m.start=function(ag, ah)
+local ai,aj=pcall(af,ag,ah)
+if not ai then
+m.stop(ag)
+ag:notify("Freecam",`could not start: {aj}`)
 end end
 
 
-k.getBoost=function(af)
-local ag=af.storage.settings:getValue(l)
-if type(ag)~="number"then
-return k.DEFAULT_BOOST
+m.getBoost=function(ag)
+local ah=ag.storage.settings:getValue(n)
+if type(ah)~="number"then
+return m.DEFAULT_BOOST
 end
 
-return math.clamp(ag,k.MIN_BOOST,k.MAX_BOOST)end
+return math.clamp(ah,m.MIN_BOOST,m.MAX_BOOST)end
 
 
-k.addBoost=function(af, ag)
-local ah=math.clamp(k.getBoost(af)+ag,k.MIN_BOOST,k.MAX_BOOST)
+m.addBoost=function(ag, ah)
+local ai=math.clamp(m.getBoost(ag)+ah,m.MIN_BOOST,m.MAX_BOOST)
 
-af.storage.settings:setValue(l,ah)
-af.storage.settings:save()
+ag.storage.settings:setValue(n,ai)
+ag.storage.settings:save()
 
-return ah end
-
-
-k.getPosition=function(af)
-local ag=af:getGarbage(m)
-return ag and ag.position end
+return ai end
 
 
-return k end a.b1=function()local ab=a.cache.b1 if not ab then ab={c=aa()}a.cache.b1=ab end return ab.c end end do local aa=function()
+m.getPosition=function(ag)
+local ah=ag:getGarbage(o)
+return ah and ah.position end
 
-local aa=a.ag()
-local ab=a.b1()local ac=function(
+
+return m end a.b6=function()local ab=a.cache.b6 if not ab then ab={c=aa()}a.cache.b6=ab end return ab.c end end do local aa=function()
+
+local aa=a.af()
+local ab=a.b6()local ac=function(
 
 
 ac)
@@ -11561,6 +12180,7 @@ return true end
 
 return{
 {
+client=true,
 action="spectate|view",
 description="View a player",
 args={kind="player"},
@@ -11574,36 +12194,37 @@ af(ag)
 local aj=ag:createGarbage("view")
 aj.connections={}
 
-local ak=ag.playerService:getCamera()local b=function()
+local ak=ag.playerService:getCamera()local al=function()
 
 
 
-local b=ac(ai.Character)
-if b then
-ad(ag,b)
+local al=ac(ai.Character)
+if al then
+ad(ag,al)
 end end
 
 
-table.insert(aj.connections,ag:connect(ak:GetPropertyChangedSignal("CameraSubject"),b))
+table.insert(aj.connections,ag:connect(ak:GetPropertyChangedSignal("CameraSubject"),al))
 
-table.insert(aj.connections,ag:connect(ai.CharacterAdded,function(c)
-c:WaitForChild("Humanoid",10)
-b()
+table.insert(aj.connections,ag:connect(ai.CharacterAdded,function(am)
+am:WaitForChild("Humanoid",10)
+al()
 end))
 
 
-table.insert(aj.connections,ag:connect(ag.players.PlayerRemoving,function(c)
-if c==ai then
+table.insert(aj.connections,ag:connect(ag.players.PlayerRemoving,function(am)
+if am==ai then
 af(ag)
 ae(ag)
 end
 end))
 
-b()
+al()
 ag:notify("Spectate","Viewing "..ai.Name)
 end
 },
 {
+client=true,
 action="viewpart|viewp",
 description="View a part",
 args={
@@ -11618,9 +12239,9 @@ ab.stop(ag)
 af(ag)
 
 local aj=string.lower(ai)
-for ak,b in workspace:GetDescendants()do
-if b:IsA("BasePart")and string.lower(b.Name)==aj then
-ad(ag,b)
+for ak,al in workspace:GetDescendants()do
+if al:IsA("BasePart")and string.lower(al.Name)==aj then
+ad(ag,al)
 return
 end
 end
@@ -11629,6 +12250,7 @@ ag:notify("Spectate","no part named "..ai)
 end
 },
 {
+client=true,
 action="unspectate|unview",
 description="Stops viewing player, or part.",
 run=function(ag)
@@ -11642,12 +12264,12 @@ ag:notify("Spectate","View turned off")
 end
 end
 }
-}end a.b2=function()local ab=a.cache.b2 if not ab then ab={c=aa()}a.cache.b2=ab end return ab.c end end do local aa=function()
+}end a.b7=function()local ab=a.cache.b7 if not ab then ab={c=aa()}a.cache.b7=ab end return ab.c end end do local aa=function()
 
 
 
-local aa=a.ag()
-local ab=a.b1()
+local aa=a.af()
+local ab=a.b6()
 
 local ac="Freecam"local ad=function(
 
@@ -11665,6 +12287,7 @@ return`{math.round(ae.X)},{math.round(ae.Y)},{math.round(ae.Z)}`end
 
 return{
 {
+client=true,
 action="freecam|fc",
 description="Allows you to freely move camera around the game",
 args={
@@ -11682,6 +12305,7 @@ ab.start(af)
 end
 },
 {
+client=true,
 action="freecampos|fcpos",
 description="Moves / opens freecam in a certain position",
 args={kind="vector3"},
@@ -11693,6 +12317,7 @@ end
 end
 },
 {
+client=true,
 action="freecamwaypoint|fcwp",
 description="Moves / opens freecam to a waypoint",
 args={
@@ -11710,6 +12335,7 @@ ab.start(af,ai)
 end
 },
 {
+client=true,
 action="freecamgoto|fcgoto|freecamtp|fctp",
 description="Moves / opens freecam to a player",
 args={kind="player"},
@@ -11725,6 +12351,7 @@ ab.start(af,ai.Position)
 end
 },
 {
+client=true,
 action="unfreecam|unfc|nofreecam|nofc",
 description="Disables freecam",
 run=function(af)
@@ -11732,6 +12359,7 @@ ab.stop(af)
 end
 },
 {
+client=true,
 action="freecamspeed|fcspeed",
 description="Adjusts freecam speed (default is 1)",
 args={kind="number"},
@@ -11740,6 +12368,7 @@ af.privateEnv.freecamSpeed=ag:nextValue()or ab.DEFAULT_SPEED
 end
 },
 {
+client=true,
 action="notifyfreecamposition|notifyfcpos",
 description="Noitifies you your freecam coordinates",
 run=function(af)
@@ -11753,6 +12382,7 @@ af:notify("Freecam Position",ae(ag))
 end
 },
 {
+client=true,
 action="copyfreecamposition|copyfcpos",
 description="Copies your freecam coordinates to your clipboard",
 run=function(af)
@@ -11770,6 +12400,7 @@ af:notify(ac,"copied freecam position to clipboard")
 end
 },
 {
+client=true,
 action="freecamboost|fcboost",
 description="Increases the freecam boost (the BOOST button) by an amount, and saves it",
 args={kind="number",name="amount",optional=true},
@@ -11779,7 +12410,7 @@ local ai=ab.addBoost(af,ah)
 af:notify(ac,`freecam boost is now {ai}x`)
 end
 },
-}end a.b3=function()local ab=a.cache.b3 if not ab then ab={c=aa()}a.cache.b3=ab end return ab.c end end do local aa=function()
+}end a.b8=function()local ab=a.cache.b8 if not ab then ab={c=aa()}a.cache.b8=ab end return ab.c end end do local aa=function()
 
 return{
 {
@@ -11799,10 +12430,11 @@ speed=aa.privateEnv.tweenSpeed
 })
 end
 }
-}end a.b4=function()local ab=a.cache.b4 if not ab then ab={c=aa()}a.cache.b4=ab end return ab.c end end do local aa=function()
+}end a.b9=function()local ab=a.cache.b9 if not ab then ab={c=aa()}a.cache.b9=ab end return ab.c end end do local aa=function()
 
 return{
 {
+client=true,
 action="firstp",
 description="Forces camera to go into first person",
 run=function(aa)
@@ -11810,13 +12442,14 @@ aa.localPlayer.CameraMode=Enum.CameraMode.LockFirstPerson
 end
 },
 {
+client=true,
 action="thirdp",
 description="Allows camera to go into third person",
 run=function(aa)
 aa.localPlayer.CameraMode=Enum.CameraMode.Classic
 end
 }
-}end a.b5=function()local ab=a.cache.b5 if not ab then ab={c=aa()}a.cache.b5=ab end return ab.c end end do local aa=function()local aa=function(
+}end a.ca=function()local ab=a.cache.ca if not ab then ab={c=aa()}a.cache.ca=ab end return ab.c end end do local aa=function()local aa=function(
 
 
 aa)
@@ -11828,6 +12461,7 @@ return ae and ae:FindFirstChild("Popper")end
 
 
 return{
+client=true,
 action="noclipcam|nccam",
 description="Allows camera to go through objects like walls",
 run=function(ab)
@@ -11856,10 +12490,11 @@ end
 end
 end
 end
-}end a.b6=function()local ab=a.cache.b6 if not ab then ab={c=aa()}a.cache.b6=ab end return ab.c end end do local aa=function()
+}end a.cb=function()local ab=a.cache.cb if not ab then ab={c=aa()}a.cache.cb=ab end return ab.c end end do local aa=function()
 
 return{
 {
+client=true,
 action="maxzoom",
 description="Maximum camera zoom",
 args={kind="number"},
@@ -11868,6 +12503,7 @@ aa.localPlayer.CameraMaxZoomDistance=ab:nextValue()
 end
 },
 {
+client=true,
 action="minzoom",
 description="Minimum camera zoom",
 args={kind="number"},
@@ -11876,6 +12512,7 @@ aa.localPlayer.CameraMinZoomDistance=ab:nextValue()
 end
 },
 {
+client=true,
 action="camdistance",
 description="Changes camera distance from your player",
 args={kind="number"},
@@ -11896,9 +12533,10 @@ ad.CameraMaxZoomDistance=ae
 ad.CameraMinZoomDistance=af
 end
 }
-}end a.b7=function()local ab=a.cache.b7 if not ab then ab={c=aa()}a.cache.b7=ab end return ab.c end end do local aa=function()
+}end a.cc=function()local ab=a.cache.cc if not ab then ab={c=aa()}a.cache.cc=ab end return ab.c end end do local aa=function()
 
 return{
+client=true,
 action="fov",
 description="Adjusts field of view (default is 70)",
 args={kind="number",default=70},
@@ -11906,11 +12544,12 @@ run=function(aa,ab)
 local ac=math.clamp(math.abs(ab:nextValue()or 70),1,120)
 workspace.CurrentCamera.FieldOfView=ac
 end
-}end a.b8=function()local ab=a.cache.b8 if not ab then ab={c=aa()}a.cache.b8=ab end return ab.c end end do local aa=function()
+}end a.cd=function()local ab=a.cache.cd if not ab then ab={c=aa()}a.cache.cd=ab end return ab.c end end do local aa=function()
 
-local aa=a.b1()
+local aa=a.b6()
 
 return{
+client=true,
 action="fixcam|restorecam",
 description="Fixes camera",
 run=function(ab)
@@ -11941,9 +12580,10 @@ ad.CameraMode=Enum.CameraMode.Classic
 ab:notify("camera has been reseted successfully")
 end
 end
-}end a.b9=function()local ab=a.cache.b9 if not ab then ab={c=aa()}a.cache.b9=ab end return ab.c end end do local aa=function()
+}end a.ce=function()local ab=a.cache.ce if not ab then ab={c=aa()}a.cache.ce=ab end return ab.c end end do local aa=function()
 
 return{
+client=true,
 action="enableshiftlock|enablesl",
 description="Enables the shift lock option",
 run=function(aa)
@@ -11960,14 +12600,15 @@ end)
 
 aa:notify("Shiftlock","Shift lock should now be available")
 end
-}end a.ca=function()local ab=a.cache.ca if not ab then ab={c=aa()}a.cache.ca=ab end return ab.c end end do local aa=function()
+}end a.cf=function()local ab=a.cache.cf if not ab then ab={c=aa()}a.cache.cf=ab end return ab.c end end do local aa=function()
 
-local aa=a.ag()
+local aa=a.af()
 
 
 local ab={max=400,min=0.5}
 
 return{
+client=true,
 action="lookat",
 description="Moves your camera view to a player",
 args={kind="player"},
@@ -12002,9 +12643,9 @@ task.wait(0.1)
 ag.CameraMaxZoomDistance=ai.max
 ag.CameraMinZoomDistance=ai.min
 end
-}end a.cb=function()local ab=a.cache.cb if not ab then ab={c=aa()}a.cache.cb=ab end return ab.c end end do local aa=function()
+}end a.cg=function()local ab=a.cache.cg if not ab then ab={c=aa()}a.cache.cg=ab end return ab.c end end do local aa=function()
 
-local aa=a.ag()local ab=function(
+local aa=a.af()local ab=function(
 
 ab)
 local ac=ab:collectGarbage("stareat")
@@ -12015,6 +12656,7 @@ end end
 
 return{
 {
+client=true,
 action="stareat|stare",
 description="Stare / look at a player",
 args={
@@ -12046,27 +12688,28 @@ end)
 end
 },
 {
+client=true,
 action="unstareat|unstare",
 description="Disables stareat",
 run=function(ac)
 ab(ac)
 end
 }
-}end a.cc=function()local ab=a.cache.cc if not ab then ab={c=aa()}a.cache.cc=ab end return ab.c end end do local aa=function()
+}end a.ch=function()local ab=a.cache.ch if not ab then ab={c=aa()}a.cache.ch=ab end return ab.c end end do local aa=function()
 
-return{a.b2()
-,a.b3()
-,a.b4()
-,a.b5()
-,a.b6()
-,a.b7()
+return{a.b7()
 ,a.b8()
 ,a.b9()
 ,a.ca()
 ,a.cb()
 ,a.cc()
+,a.cd()
+,a.ce()
+,a.cf()
+,a.cg()
+,a.ch()
 
-}end a.cd=function()local ab=a.cache.cd if not ab then ab={c=aa()}a.cache.cd=ab end return ab.c end end do local aa=function()
+}end a.ci=function()local ab=a.cache.ci if not ab then ab={c=aa()}a.cache.ci=ab end return ab.c end end do local aa=function()
 
 
 local aa
@@ -12114,7 +12757,7 @@ ab:notify("F3X",`failed to load: {tostring(ae)}`)
 end
 end
 }
-}end a.ce=function()local ab=a.cache.ce if not ab then ab={c=aa()}a.cache.ce=ab end return ab.c end end do local aa=function()local aa=function(
+}end a.cj=function()local ab=a.cache.cj if not ab then ab={c=aa()}a.cache.cj=ab end return ab.c end end do local aa=function()local aa=function(
 
 
 
@@ -12154,6 +12797,7 @@ return af end
 
 return{
 {
+client=true,
 action="partname|partpath",
 description="Opens a window: click a part to see its path & name, then Select Part saves it as a waypoint",
 run=function(ac)
@@ -12163,7 +12807,7 @@ ac:notify("Modified Waypoints","Created waypoint: "..ae)
 end)
 end
 }
-}end a.cf=function()local ab=a.cache.cf if not ab then ab={c=aa()}a.cache.cf=ab end return ab.c end end do local aa=function()local aa=function(
+}end a.ck=function()local ab=a.cache.ck if not ab then ab={c=aa()}a.cache.ck=ab end return ab.c end end do local aa=function()local aa=function(
 
 
 aa, ab, ac)
@@ -12232,13 +12876,14 @@ end
 ab:notify("Item(s) Deleted","Deleted items with ClassName "..ad)
 end
 }
-}end a.cg=function()local ab=a.cache.cg if not ab then ab={c=aa()}a.cache.cg=ab end return ab.c end end do local aa=function()
+}end a.cl=function()local ab=a.cache.cl if not ab then ab={c=aa()}a.cache.cl=ab end return ab.c end end do local aa=function()
 
 
 
 
 return{
 {
+client=true,
 action="lockworkspace|lockws",
 description="Locks the whole workspace",
 run=function(aa)
@@ -12261,6 +12906,7 @@ aa:notify("Lock workspace","locked the parts in the workspace")
 end
 },
 {
+client=true,
 action="unlockworkspace|unlockws",
 description="Unlocks the whole workspace",
 run=function(aa)
@@ -12276,7 +12922,7 @@ end
 aa:notify("Lock workspace","unlocked")
 end
 }
-}end a.ch=function()local ab=a.cache.ch if not ab then ab={c=aa()}a.cache.ch=ab end return ab.c end end do local aa=function()
+}end a.cm=function()local ab=a.cache.cm if not ab then ab={c=aa()}a.cache.cm=ab end return ab.c end end do local aa=function()
 
 return{
 {
@@ -12308,7 +12954,7 @@ end
 aa.privateEnv.shownParts={}
 end
 }
-}end a.ci=function()local ab=a.cache.ci if not ab then ab={c=aa()}a.cache.ci=ab end return ab.c end end do local aa=function()local aa=function(
+}end a.cn=function()local ab=a.cache.cn if not ab then ab={c=aa()}a.cache.cn=ab end return ab.c end end do local aa=function()local aa=function(
 
 aa, ab, ac)
 return{
@@ -12367,7 +13013,7 @@ ac.connection:Disconnect()
 end
 end
 }
-}end a.cj=function()local ab=a.cache.cj if not ab then ab={c=aa()}a.cache.cj=ab end return ab.c end end do local aa=function()
+}end a.co=function()local ab=a.cache.co if not ab then ab={c=aa()}a.cache.co=ab end return ab.c end end do local aa=function()
 
 local aa=workspace.Gravity
 local ab=-500
@@ -12389,7 +13035,7 @@ run=function(ac,ad)
 workspace.FallenPartsDestroyHeight=ad:nextValue()or ab
 end
 }
-}end a.ck=function()local ab=a.cache.ck if not ab then ab={c=aa()}a.cache.ck=ab end return ab.c end end do local aa=function()
+}end a.cp=function()local ab=a.cache.cp if not ab then ab={c=aa()}a.cache.cp=ab end return ab.c end end do local aa=function()
 
 return{
 {
@@ -12413,7 +13059,7 @@ aa:Clear()
 end
 end
 }
-}end a.cl=function()local ab=a.cache.cl if not ab then ab={c=aa()}a.cache.cl=ab end return ab.c end end do local aa=function()local aa=function(
+}end a.cq=function()local ab=a.cache.cq if not ab then ab={c=aa()}a.cache.cq=ab end return ab.c end end do local aa=function()local aa=function(
 
 aa, ab)
 return ab==""
@@ -12561,8 +13207,8 @@ end
 end
 end
 }
-}end a.cm=function()local ab=a.cache.cm if not ab then ab={c=aa()}a.cache.cm=ab end return ab.c end end do local aa=function()
-local aa=a.ag()local ab=function(
+}end a.cr=function()local ab=a.cache.cr if not ab then ab={c=aa()}a.cache.cr=ab end return ab.c end end do local aa=function()
+local aa=a.af()local ab=function(
 
 
 ab)
@@ -12655,20 +13301,20 @@ end
 end
 end
 }
-}end a.cn=function()local ab=a.cache.cn if not ab then ab={c=aa()}a.cache.cn=ab end return ab.c end end do local aa=function()
+}end a.cs=function()local ab=a.cache.cs if not ab then ab={c=aa()}a.cache.cs=ab end return ab.c end end do local aa=function()
 
-return{a.ce()
-,a.cf()
-,a.cg()
-,a.ch()
-,a.ci()
-,a.cj()
+return{a.cj()
 ,a.ck()
 ,a.cl()
 ,a.cm()
 ,a.cn()
+,a.co()
+,a.cp()
+,a.cq()
+,a.cr()
+,a.cs()
 
-}end a.co=function()local ab=a.cache.co if not ab then ab={c=aa()}a.cache.co=ab end return ab.c end end do local aa=function()local aa=function(
+}end a.ct=function()local ab=a.cache.ct if not ab then ab={c=aa()}a.cache.ct=ab end return ab.c end end do local aa=function()local aa=function(
 
 aa)
 local ab=aa.robloxServices.Lighting
@@ -12688,6 +13334,7 @@ end end
 
 return{
 {
+client=true,
 action="fullbright|fb",
 description="Makes the map brighter / more visible (CLIENT)",
 run=function(ac)
@@ -12695,6 +13342,7 @@ aa(ac)
 end
 },
 {
+client=true,
 action="loopfullbright|loopfb",
 description="Makes the map brighter / more visible but looped (CLIENT)",
 run=function(ac)
@@ -12707,13 +13355,14 @@ end)
 end
 },
 {
+client=true,
 action="unloopfullbright|unloopfb",
 description="Unloops fullbright",
 run=function(ac)
 ab(ac)
 end
 }
-}end a.cp=function()local ab=a.cache.cp if not ab then ab={c=aa()}a.cache.cp=ab end return ab.c end end do local aa=function()
+}end a.cu=function()local ab=a.cache.cu if not ab then ab={c=aa()}a.cache.cu=ab end return ab.c end end do local aa=function()
 
 return{
 client=true,
@@ -12727,7 +13376,7 @@ local ad=aa.robloxServices.Lighting
 ad.Ambient=ac
 ad.OutdoorAmbient=ac
 end
-}end a.cq=function()local ab=a.cache.cq if not ab then ab={c=aa()}a.cache.cq=ab end return ab.c end end do local aa=function()
+}end a.cv=function()local ab=a.cache.cv if not ab then ab={c=aa()}a.cache.cv=ab end return ab.c end end do local aa=function()
 
 return{
 {
@@ -12746,7 +13395,7 @@ run=function(aa)
 aa.robloxServices.Lighting.ClockTime=0
 end
 }
-}end a.cr=function()local ab=a.cache.cr if not ab then ab={c=aa()}a.cache.cr=ab end return ab.c end end do local aa=function()
+}end a.cw=function()local ab=a.cache.cw if not ab then ab={c=aa()}a.cache.cw=ab end return ab.c end end do local aa=function()
 
 return{
 client=true,
@@ -12762,7 +13411,7 @@ ad:Destroy()
 end
 end
 end
-}end a.cs=function()local ab=a.cache.cs if not ab then ab={c=aa()}a.cache.cs=ab end return ab.c end end do local aa=function()
+}end a.cx=function()local ab=a.cache.cx if not ab then ab={c=aa()}a.cache.cx=ab end return ab.c end end do local aa=function()
 
 return{
 client=true,
@@ -12772,7 +13421,7 @@ args={kind="number"},
 run=function(aa,ab)
 aa.robloxServices.Lighting.Brightness=ab:nextValue()
 end
-}end a.ct=function()local ab=a.cache.ct if not ab then ab={c=aa()}a.cache.ct=ab end return ab.c end end do local aa=function()
+}end a.cy=function()local ab=a.cache.cy if not ab then ab={c=aa()}a.cache.cy=ab end return ab.c end end do local aa=function()
 
 return{
 {
@@ -12791,10 +13440,10 @@ run=function(aa)
 aa.robloxServices.Lighting.GlobalShadows=false
 end
 }
-}end a.cu=function()local ab=a.cache.cu if not ab then ab={c=aa()}a.cache.cu=ab end return ab.c end end do local aa=function()
+}end a.cz=function()local ab=a.cache.cz if not ab then ab={c=aa()}a.cache.cz=ab end return ab.c end end do local aa=function()
 
 local aa=a.b()
-local ab=a.ag()
+local ab=a.af()
 
 
 local ac=a.f().Lighting
@@ -12825,11 +13474,13 @@ ag()
 
 return{
 {
+client=true,
 action="restorelighting|rlighting",
 description="Restores Lighting properties",
 run=af
 },
 {
+client=true,
 action="light",
 description="Gives your player dynamic light (CLIENT)",
 args={
@@ -12846,20 +13497,21 @@ run=function(ah,ai)
 local aj=ab(ai:nextValue())
 local ak=ai:nextValue()or 10
 
-for b,c in aj do
-local d=c.Character and c.Character:FindFirstChild("HumanoidRootPart")
-if not d then return end
+for al,am in aj do
+local b=am.Character and am.Character:FindFirstChild("HumanoidRootPart")
+if not b then return end
 
-local e=Instance.new("PointLight")
-e.Range=ak
-e.Brightness=5
-e.Parent=d
+local c=Instance.new("PointLight")
+c.Range=ak
+c.Brightness=5
+c.Parent=b
 
-table.insert(ah:registerGarbage("dynamicLights"),e)
+table.insert(ah:registerGarbage("dynamicLights"),c)
 end
 end
 },
 {
+client=true,
 action="nolight|unlight",
 description="Removes dynamic light from your player",
 run=function(ah)
@@ -12877,17 +13529,17 @@ end
 end
 end
 }
-}end a.cv=function()local ab=a.cache.cv if not ab then ab={c=aa()}a.cache.cv=ab end return ab.c end end do local aa=function()
+}end a.cA=function()local ab=a.cache.cA if not ab then ab={c=aa()}a.cache.cA=ab end return ab.c end end do local aa=function()
 
-return{a.cp()
-,a.cq()
-,a.cr()
-,a.cs()
-,a.ct()
-,a.cu()
+return{a.cu()
 ,a.cv()
+,a.cw()
+,a.cx()
+,a.cy()
+,a.cz()
+,a.cA()
 
-}end a.cw=function()local ab=a.cache.cw if not ab then ab={c=aa()}a.cache.cw=ab end return ab.c end end do local aa=function()
+}end a.cB=function()local ab=a.cache.cB if not ab then ab={c=aa()}a.cache.cB=ab end return ab.c end end do local aa=function()
 
 
 
@@ -12973,9 +13625,9 @@ end
 end end
 
 
-return ab end a.cx=function()local ab=a.cache.cx if not ab then ab={c=aa()}a.cache.cx=ab end return ab.c end end do local aa=function()
+return ab end a.cC=function()local ab=a.cache.cC if not ab then ab={c=aa()}a.cache.cC=ab end return ab.c end end do local aa=function()
 
-local aa=a.cx()
+local aa=a.cC()
 
 return{
 {
@@ -13033,7 +13685,7 @@ local ad=aa.clear(ab.commandsList)
 ab:notify("Aliases Modified",`Removed {ad} custom alias(es)`)
 end
 }
-}end a.cy=function()local ab=a.cache.cy if not ab then ab={c=aa()}a.cache.cy=ab end return ab.c end end do local aa=function()
+}end a.cD=function()local ab=a.cache.cD if not ab then ab={c=aa()}a.cache.cD=ab end return ab.c end end do local aa=function()
 
 return{
 
@@ -13042,12 +13694,12 @@ extensions={".luau",".lua",".txt",".iy"},
 translateClassic=true,
 
 sectionName="plugin commands",
-}end a.cz=function()local ab=a.cache.cz if not ab then ab={c=aa()}a.cache.cz=ab end return ab.c end end do local aa=function()
+}end a.cE=function()local ab=a.cache.cE if not ab then ab={c=aa()}a.cache.cE=ab end return ab.c end end do local aa=function()
 
 
 
 local aa=a.a()
-local ab=a.ag()
+local ab=a.af()
 
 local ac={}
 local ad
@@ -13133,37 +13785,37 @@ if ak.Description~=nil and type(ak.Description)~="string"then
 return nil,`Description of '{aj}' must be a string`
 end
 
-local b={aj}
-local c={[aj:lower()]=true}
-for d,e in ak.Aliases or{}do
-if type(e)~="string"or e==""or e:find("[|%s]")then
+local al={aj}
+local am={[aj:lower()]=true}
+for b,c in ak.Aliases or{}do
+if type(c)~="string"or c==""or c:find("[|%s]")then
 return nil,`invalid alias of '{aj}'`
 end
-if not c[e:lower()]then
-c[e:lower()]=true
-table.insert(b,e)
+if not am[c:lower()]then
+am[c:lower()]=true
+table.insert(al,c)
 end
 end
 
-local d=ak.Function
+local b=ak.Function
 table.insert(ai,{
-action=table.concat(b,"|"),
+action=table.concat(al,"|"),
 description=ak.Description or ag.PluginDescription or"",
 classicListName=ak.ListName,
 args={kind="string",name="args",optional=true,variadic=true},
-run=function(e,f)
-local g={}
+run=function(c,d)
+local e={}
 while true do
-local h=f:nextValue()
-if h==nil then break end
-table.insert(g,h)
+local f=d:nextValue()
+if f==nil then break end
+table.insert(e,f)
 end
-if ah then rawset(ah,"cargs",g)end
-local h=d(g,e.localPlayer)
-if type(h)=="string"and not table.find(g,"nonotify")then
-e:notify(`Command: {aj}`,h)
+if ah then rawset(ah,"cargs",e)end
+local f=b(e,c.localPlayer)
+if type(f)=="string"and not table.find(e,"nonotify")then
+c:notify(`Command: {aj}`,f)
 end
-return h
+return f
 end,
 })
 end
@@ -13173,7 +13825,10 @@ af(ah)
 return ai end
 
 
-return ac end a.cA=function()local ab=a.cache.cA if not ab then ab={c=aa()}a.cache.cA=ab end return ab.c end end do local aa=function()
+return ac end a.cF=function()local ab=a.cache.cF if not ab then ab={c=aa()}a.cache.cF=ab end return ab.c end end do local aa=function()
+
+
+
 
 
 
@@ -13199,14 +13854,19 @@ return ac end a.cA=function()local ab=a.cache.cA if not ab then ab={c=aa()}a.cac
 local aa=a.a()
 local ab=a.j()
 local ac=a.m()
-local ad=a.cz()
-local ae=a.cA()
+local ad=a.cE()
+local ae=a.cF()
 
 local af={}
+
+
+
+
 
 local ag=`{ab.privateFolder}/plugins`
 
 af.FOLDER=ag
+
 
 
 local ah={}
@@ -13214,268 +13874,315 @@ local ah={}
 
 local ai={}
 
+
+
 local aj={isSection=true,isPluginSection=true}local ak=function(
 
 
+
+
+
+
+
 ak)
-local b=ak.original
-if b then
-for c=#b,1,-1 do
-local d=b[c]
-if d.isPluginCommand or d.isPluginSection then
-table.remove(b,c)
-end
-end
-local c={}
-for d in ah do table.insert(c,d)end
-table.sort(c)
-if#c>0 then
-aj.sectionName=ad.sectionName or"plugin commands"
-table.insert(b,aj)
-for d,e in c do
-for f,g in ah[e].entries do
-table.insert(b,g)
-end
-end
-end
-end
-ak.revision=(ak.revision or 0)+1
-if ak.changed then ak.changed:Fire()end end local b=function(
+if type(ak)~="string"then return nil end
 
+local al=ak
+local am
 
-b, c)
-local d=table.find(b,c)
-if d then
-table.remove(b,d)
-end end local c=function(
-
-
-
-c)
-if type(c)~="string"then return nil end
-local d=c
-local e
-for f,g in ad.extensions do
-if c:sub(-#g):lower()==g then
-d=c:sub(1,-#g-1)
-e=c
+for b,c in ad.extensions do
+if ak:sub(-#c):lower()==c then
+al=ak:sub(1,-#c-1)
+am=ak
 break
 end
 end
-if d:match("^[%w_%-]+$")then return d,e end
+
+if al:match("^[%w_%-]+$")then return al,am end
 return nil end
 
 
-af.normalizeName=c local d=function()
+af.normalizeName=ak local al=function()
+
+
+
+
 
 
 
 if aa.listfiles==nil then return nil,"your exploit does not support listfiles"end
-local d,e=pcall(aa.listfiles,ag)
-if not(d and type(e)=="table")then
+
+local al,am=pcall(aa.listfiles,ag)
+if not(al and type(am)=="table")then
 return nil,`could not read the folder {ag}`
 end
-local f={}
-for g,h in e do
-local i=type(h)=="string"and h:match("([^/\\]+)$")
-if i then
-local j,k=c(i)
-if j and k then
-table.insert(f,{name=j,filename=i})
+
+local b={}
+
+for c,d in am do
+local e=type(d)=="string"and d:match("([^/\\]+)$")
+if e then
+local f,g=ak(e)
+if f and g then
+table.insert(b,{name=f,filename=e})
 end
 end
 end
-table.sort(f,function(g,h)return g.filename<h.filename end)
-return f end local e=function(
+
+table.sort(b,function(c,d)return c.filename<d.filename end)
+return b end local am=function(
 
 
-e, f)
+
+am)
+local b,c=pcall(aa.isfile,`{ag}/{am}`)
+return b and c and true or false end local b=function(
+
+
+
+
+
+
+b, c)
+local d={}
+local e={}local f=function(
+
+f)
+if not e[f]then
+e[f]=true
+table.insert(d,f)
+end end
+
+
+if c then
+local g,h=ak(c)
+if g==b and h then f(h)end
+end
+
+for g,h in ad.extensions do
+f(b..h)
+end
+
+for g,h in d do
+if am(h)then return h,d end
+end
+
+
+local g=#d+1
+local h=al()or{}
+
+for i,j in ad.extensions do
+for k,l in h do
+if l.name==b and l.filename:sub(-#j):lower()==j then
+f(l.filename)
+end
+end
+end
+
+for i=g,#d do
+if am(d[i])then return d[i],d end
+end
+
+return nil,d end local c=function(
+
+
+
+
+c, d)
 if aa.readfile==nil or aa.isfile==nil then
 return nil,"your exploit does not support readfile"
 end
 
-local g={}
-local h={}local i=function(
-i)
-if not h[i]then
-h[i]=true
-table.insert(g,i)
-end end
+local e,f=b(c,d)
+if e==nil then
+return nil,`file not found in {ag}; tried: {table.concat(f,", ")}`
+end
 
+local g=`{ag}/{e}`
+local h,i=pcall(aa.readfile,g)
 
-if f then
-local j,k=c(f)
-if j==e and k then i(k)end
+if not(h and type(i)=="string")then
+return nil,`could not read {g}`
 end
-for j,k in ad.extensions do i(e..k)end
 
-
-local j
-local k=1
-while true do
-local l=g[k]
-if not l then
-if j~=nil then break end
-j=d()or{}
-for m,n in ad.extensions do
-for o,p in j do
-if p.name==e and p.filename:sub(-#n):lower()==n then
-i(p.filename)
-end
-end
-end
-l=g[k]
-if not l then break end
-end
-local m=`{ag}/{l}`
-local n,o=pcall(aa.isfile,m)
-if n and o then
-local p,q=pcall(aa.readfile,m)
-if not(p and type(q)=="string")then
-return nil,`could not read {m}`
-end
-return q,nil,l
-end
-k=k+1
-end
-return nil,`file not found in {ag}; tried: {table.concat(g,", ")}`end local f=function(
+return i,nil,e end local d=function(
 
 
 
-f)
+
+
+
+
+d)
 if aa.loadstring==nil then return nil,"your exploit does not support loadstring"end
-local g,h,i=pcall(aa.loadstring,f)
-if not g then return nil,tostring(h)end
-if not h then return nil,tostring(i)end
 
-local j
+local e,f,g=pcall(aa.loadstring,d)
+if not e then return nil,tostring(f)end
+if not f then return nil,tostring(g)end
+
+local h
 if ad.translateClassic then
-local k,l=pcall(ae.environment,h)
-if k then j=l end
+local i,j=pcall(ae.environment,f)
+if i then h=j end
 end
-local k,l=pcall(h)
-if not k then return nil,`error while loading the plugin: {l}`end
-if type(l)~="table"then return nil,"the plugin must return a table of commands"end
-if ad.translateClassic and ae.detect(l)then
-local m,n,o=pcall(ae.translate,l,j)
-if not m then return nil,`could not translate the classic plugin: {n}`end
-return n,o
+
+local i,j=pcall(f)
+if not i then return nil,`error while loading the plugin: {j}`end
+if type(j)~="table"then return nil,"the plugin must return a table of commands"end
+
+if ad.translateClassic and ae.detect(j)then
+local k,l,m=pcall(ae.translate,j,h)
+if not k then return nil,`could not translate the classic plugin: {l}`end
+return l,m
 end
-return l end local g=function(
+
+return j end local e=function(
+
+
+
+
+e)
+local f=e
+if type(e.action)=="string"then
+f={e}
+end
+
+local g={}
+
+for h,i in f do
+if type(i)~="table"or type(i.action)~="string"then
+return nil,"every command needs an action string"
+end
+
+if i.run~=nil and type(i.run)~="function"then
+return nil,`run of '{i.action}' must be a function`
+end
+
+local j={}
+
+for k,l in i.action:split("|")do
+local m=l:lower()
+if m==""then
+return nil,`empty name in '{i.action}'`
+end
+table.insert(j,m)
+end
+
+local k={}
+for l,m in i do
+k[l]=m
+end
+
+local l=k.args or{}
+if#l==0 and next(l)then
+l={l}
+end
+k.args=l
+
+local m=table.clone(j)
+table.sort(m,function(n,o)
+return#n<#o
+end)
+
+k.name=j[1]
+k.aliases=m
+k.action=nil
+
+table.insert(g,{entry=k,names=j})
+end
+
+if#g==0 then
+return nil,"the plugin has no commands"
+end
+
+return g end local f=function(
+
+
+
+
+
+
+f, g)
+local h=table.find(f,g)
+if h then
+table.remove(f,h)
+end end local g=function(
 
 
 
 
 g)
-local h=g
-if type(g.action)=="string"then
-h={g}
+local h=g.original
+
+if h then
+for i=#h,1,-1 do
+local j=h[i]
+if j.isPluginCommand or j.isPluginSection then
+table.remove(h,i)
+end
 end
 
 local i={}
-
-for j,k in h do
-if type(k)~="table"or type(k.action)~="string"then
-return nil,"every command needs an action string"
+for j in ah do
+table.insert(i,j)
 end
+table.sort(i)
 
-if k.run~=nil and type(k.run)~="function"then
-return nil,`run of '{k.action}' must be a function`
+if#i>0 then
+aj.sectionName=ad.sectionName or"plugin commands"
+table.insert(h,aj)
+
+for j,k in i do
+for l,m in ah[k].entries do
+table.insert(h,m)
 end
-
-local l={}
-for m,n in k.action:split("|")do
-local o=n:lower()
-if o==""then
-return nil,`empty name in '{k.action}'`
 end
-table.insert(l,o)
-end
-
-
-local m={}
-for n,o in k do
-m[n]=o
-end
-
-local n=m.args or{}
-if#n==0 and next(n)then
-n={n}
-end
-m.args=n
-
-local o=table.clone(l)
-table.sort(o,function(p,q)
-return#p<#q
-end)
-
-m.name=l[1]
-m.aliases=o
-m.action=nil
-
-table.insert(i,{entry=m,names=l})
-end
-
-if#i==0 then
-return nil,"the plugin has no commands"
-end
-
-return i end local h=function(
-
-
-
-h, i, j)
-local k,l,m=e(i,j)
-if not k then
-return false,l
-end
-
-local n,o=f(k)
-if not n then
-return false,o
-end
-
-local p,q=g(n)
-if not p then
-return false,q
-end
-
-local r={}
-local s={}
-
-for t,u in p do
-for v,w in u.names do
-if h.lookup[w]~=nil or s[w]then
-return false,`'{w}' is already a command or an alias`
-end
-s[w]=true
-table.insert(r,w)
 end
 end
 
-local t={}
-for u,v in p do
-v.entry.isPluginCommand=true
-v.entry.pluginName=i
-table.insert(t,v.entry)
-for w,x in v.names do
-h.lookup[x]=v.entry
-table.insert(h.array,x)
+g.revision=(g.revision or 0)+1
+if g.changed then g.changed:Fire()end end local h=function(
+
+
+
+h, i)
+local j={}
+local k={}
+
+for l,m in i do
+for n,o in m.names do
+if h.lookup[o]~=nil or k[o]then
+return nil,`'{o}' is already a command or an alias`
+end
+
+k[o]=true
+table.insert(j,o)
 end
 end
 
-ah[i]={keys=r,commands=#p,filename=m,entries=t}
-ac.object[i]=m
-ak(h)
-return true,#p end local i=function(
+return j end local i=function(
 
 
 
-i, j, k)
-local l,m=h(i,j,k)
+i, j, k, l, m)
+local n={}
 
-ai[j]=if l then nil else tostring(m)
-return l,m end local j=function(
+for o,p in l do
+p.entry.isPluginCommand=true
+p.entry.pluginName=j
+table.insert(n,p.entry)
+
+for q,r in p.names do
+i.lookup[r]=p.entry
+table.insert(i.array,r)
+end
+end
+
+ah[j]={keys=m,commands=#l,filename=k,entries=n}
+ac.object[j]=k
+
+g(i)end local j=function(
+
 
 
 j, k)
@@ -13484,153 +14191,235 @@ if not l then return end
 
 for m,n in l.keys do
 j.lookup[n]=nil
-b(j.array,n)
+f(j.array,n)
 end
 
 ah[k]=nil
-ak(j)end
+g(j)end local k=function(
 
 
 
-af.add=function(k, l)
-local m,n=c(l)
-if not m then
+
+
+
+
+
+k, l, m)
+local n,o,p=c(l,m)
+if not n then return false,o end
+
+local q,r=d(n)
+if not q then return false,r end
+
+local s,t=e(q)
+if not s then return false,t end
+
+local u,v=h(k,s)
+if not u then return false,v end
+
+i(k,l,p,s,u)
+return true,#s end local l=function(
+
+
+
+l, m, n)
+local o,p=k(l,m,n)
+
+ai[m]=if o then nil else tostring(p)
+return o,p end
+
+
+
+
+
+
+
+af.add=function(m, n)
+local o,p=ak(n)
+if not o then
 return false,"plugin names can only use letters, numbers, '_' and '-'"
 end
 
-if ah[m]then
-return false,`'{m}' is already loaded`
+if ah[o]then
+return false,`'{o}' is already loaded`
 end
 
-local o,p=i(k,m,n)
-if not o then
-return false,p
+local q,r=l(m,o,p)
+if not q then
+return false,r
 end
 
 ac:save()
 
-return true,p end
+return true,r end
 
 
 
-af.remove=function(k, l)
-local m=c(l)
-if not m then return false end
-if ac.object[m]==nil and ah[m]==nil then
+af.remove=function(m, n)
+local o=ak(n)
+if not o then return false end
+
+if ac.object[o]==nil and ah[o]==nil then
 return false
 end
 
-j(k,m)
-ai[m]=nil
+j(m,o)
+ai[o]=nil
 
-ac.object[m]=nil
+ac.object[o]=nil
 ac:save()
 
 return true end
 
 
 
-af.reload=function(k, l)
-local m,n=c(l)
-if not m then return false,"invalid plugin name"end
-if ac.object[m]==nil then
-return false,`'{m}' is not installed`
+af.reload=function(m, n)
+local o,p=ak(n)
+if not o then return false,"invalid plugin name"end
+
+if ac.object[o]==nil then
+return false,`'{o}' is not installed`
 end
 
-local o=n or ac.object[m]
-j(k,m)
-local p,q=i(k,m,o)
-if p then ac:save()end
-return p,q end
+local q=p or ac.object[o]
+
+j(m,o)
+
+local r,s=l(m,o,q)
+if r then ac:save()end
+
+return r,s end
 
 
 
 
-af.restore=function(k)
-local l={}
+local m=10
 
-local m=false
-for n,o in ac.object do
-if c(n)~=n then
-l[n]="invalid installed plugin name"
-ai[n]=l[n]
-elseif not ah[n]then
-local p=if type(o)=="string"then o else nil
-local q,r=i(k,n,p)
-if q and ac.object[n]~=o then m=true end
-if not q then
-l[n]=tostring(r)
+
+
+
+
+
+af.restore=function(n, o, p)
+local q={}
+
+local r={}
+for s in ac.object do
+table.insert(r,s)
 end
-end
-end
 
-if m then ac:save()end
-return l end
+for s,t in r do
+local u=ac.object[t]
+local v=false
 
+task.spawn(function()
+local w
 
+if ak(t)~=t then
+w="invalid installed plugin name"
+ai[t]=w
+elseif not ah[t]then
+local x=if type(u)=="string"then u else nil
+local y,z=l(n,t,x)
 
-af.addAll=function(k)
-local l,m=d()
-if not l then return nil,m end
-local n={added={},failed={}}
-local o={}
-for p,q in l do
-local r=q.name
-if ah[r]or o[r]then continue end
-o[r]=true
-local s,t=af.add(k,r)
-if s then
-table.insert(n.added,r)
+if y then
+if ac.object[t]~=u then ac:save()end
 else
-table.insert(n.failed,`{r}: {t}`)
+w=tostring(z)
 end
 end
-return n end
+
+v=true
+
+if w then
+q[t]=w
+if o then o(t,w)end
+end
+end)
+
+task.delay(m,function()
+if not v and p then p(t)end
+end)
+end
+
+return q end
+
+
+
+
+
+af.addAll=function(n)
+local o,p=al()
+if not o then return nil,p end
+
+local q={added={},failed={}}
+local r={}
+
+for s,t in o do
+local u=t.name
+if ah[u]or r[u]then continue end
+r[u]=true
+
+local v,w=af.add(n,u)
+if v then
+table.insert(q.added,u)
+else
+table.insert(q.failed,`{u}: {w}`)
+end
+end
+
+return q end
 
 
 
 
 af.getInstalled=function()
-local k={}
+local n={}
 
-for l in ac.object do
-local m=ah[l]
+for o in ac.object do
+local p=ah[o]
 
-table.insert(k,{
-name=l,
-loaded=m~=nil,
-commands=if m then m.commands else 0,
-error=if m then nil else ai[l],
+table.insert(n,{
+name=o,
+loaded=p~=nil,
+commands=if p then p.commands else 0,
+error=if p then nil else ai[o],
 })
 end
 
-table.sort(k,function(l,m)
-return l.name:lower()<m.name:lower()
+table.sort(n,function(o,p)
+return o.name:lower()<p.name:lower()
 end)
 
-return k end
+return n end
 
 
 
 af.getAvailable=function()
-local k,l=d()
-if not k then return nil,l end
-local m={}
-local n={}
-for o,p in k do
-local q=p.name
-if not n[q]and ac.object[q]==nil then
-n[q]=true
-table.insert(m,q)
+local n,o=al()
+if not n then return nil,o end
+
+local p={}
+local q={}
+
+for r,s in n do
+local t=s.name
+if not q[t]and ac.object[t]==nil then
+q[t]=true
+table.insert(p,t)
 end
 end
-table.sort(m,function(o,p)return o:lower()<p:lower()end)
-return m end
+
+table.sort(p,function(r,s)
+return r:lower()<s:lower()
+end)
+
+return p end
 
 
-return af end a.cB=function()local ab=a.cache.cB if not ab then ab={c=aa()}a.cache.cB=ab end return ab.c end end do local aa=function()
+return af end a.cG=function()local ab=a.cache.cG if not ab then ab={c=aa()}a.cache.cG=ab end return ab.c end end do local aa=function()
 
-local aa=a.cB()
+local aa=a.cG()
 
 return{
 {
@@ -13702,7 +14491,7 @@ end
 ab:notify("Plugins",ae)
 end
 }
-}end a.cC=function()local ab=a.cache.cC if not ab then ab={c=aa()}a.cache.cC=ab end return ab.c end end do local aa=function()
+}end a.cH=function()local ab=a.cache.cH if not ab then ab={c=aa()}a.cache.cH=ab end return ab.c end end do local aa=function()
 
 local aa=a.d()
 local ab=a.v()local ac=function(
@@ -13760,8 +14549,8 @@ ag(ak)
 continue
 end
 
-for b=1,#ak do
-ag(ak[b])
+for al=1,#ak do
+ag(ak[al])
 end
 end
 end
@@ -13778,53 +14567,57 @@ changed=ab.new(),
 return ac({
 {
 name="general",
-commands=a.av()
+commands=a.au()
+},
+{
+name="bypass",
+commands=a.az()
 },
 {
 name="interface",
-commands=a.aJ()
+commands=a.aN()
 },
 {
 name="character",
-commands=a.bj()
+commands=a.bn()
 },
 {
 name="waypoints",
-commands=a.bm()
+commands=a.bq()
 },
 {
 name="teleport",
-commands=a.bG()
+commands=a.bK()
 },
 {
 name="communication",
-commands=a.bR()
+commands=a.bV()
 },
 {
 name="visual",
-commands=a.bX()
+commands=a.b0()
 },
 {
 name="camera",
-commands=a.cd()
+commands=a.ci()
 },
 {
 name="workspace",
-commands=a.co()
+commands=a.ct()
 },
 {
 name="lighting",
-commands=a.cw()
+commands=a.cB()
 },
 {
 name="aliases",
-commands=a.cy()
+commands=a.cD()
 },
 {
 name="plugins",
-commands=a.cC()
+commands=a.cH()
 }
-})end a.cD=function()local ab=a.cache.cD if not ab then ab={c=aa()}a.cache.cD=ab end return ab.c end end do local aa=function()
+})end a.cI=function()local ab=a.cache.cI if not ab then ab={c=aa()}a.cache.cI=ab end return ab.c end end do local aa=function()
 
 
 
@@ -14966,11 +15759,11 @@ local ak=tostring(aj):lower()
 
 if#ak<#af then continue end
 
-local b=ak:find(af,1,true)
+local al=ak:find(af,1,true)
 
-if b==1 then
+if al==1 then
 table.insert(ag,aj)
-elseif b and not ae then
+elseif al and not ae then
 table.insert(ah,aj)
 end
 end
@@ -14982,7 +15775,7 @@ end
 return ag end
 
 
-return aa end a.cE=function()local ab=a.cache.cE if not ab then ab={c=aa()}a.cache.cE=ab end return ab.c end end do local aa=function()
+return aa end a.cJ=function()local ab=a.cache.cJ if not ab then ab={c=aa()}a.cache.cJ=ab end return ab.c end end do local aa=function()
 
 
 
@@ -14993,7 +15786,7 @@ return aa end a.cE=function()local ab=a.cache.cE if not ab then ab={c=aa()}a.cac
 
 local aa=a.k()
 local ab=a.j()
-local ac=a.aw()
+local ac=a.aA()
 
 local ad={}
 
@@ -15035,10 +15828,10 @@ end
 aa:writeFile(ah,ag)end
 
 
-return ad end a.cF=function()local ab=a.cache.cF if not ab then ab={c=aa()}a.cache.cF=ab end return ab.c end end do local aa=function()
+return ad end a.cK=function()local ab=a.cache.cK if not ab then ab={c=aa()}a.cache.cK=ab end return ab.c end end do local aa=function()
 
-local aa=a.ax()
-local ab=a.cF()
+local aa=a.aB()
+local ab=a.cK()
 local ac=a.d()
 
 local ad=aa.owner
@@ -15061,105 +15854,105 @@ end
 return aj end local ak=function(
 
 
-ak, b)
-local c=ak..aj(b)
-local d,e=pcall(ai,c)
+ak, al)
+local am=ak..aj(al)
+local b,c=pcall(ai,am)
 
-if not d then
-ac:warn(`failed to fetch http url '{c}':\n\t{e}`)
+if not b then
+ac:warn(`failed to fetch http url '{am}':\n\t{c}`)
 return nil
 end
 
-if type(e)~="string"or#e==0 then
-ac:warn(`empty response from '{c}'`)
+if type(c)~="string"or#c==0 then
+ac:warn(`empty response from '{am}'`)
 return nil
 end
 
-return e end
+return c end
 
 
-ah.download=function(b)
-return ak(ag,b)end
-
-
-
-ah.downloadUrl=function(b)
-return ag..aj(b)end
+ah.download=function(al)
+return ak(ag,al)end
 
 
 
-ah.fetchUrl=function(b)
-return ak("",b)end
-
-
-ah.fetch=function(b)
-return ak(af,b)end
+ah.downloadUrl=function(al)
+return ag..aj(al)end
 
 
 
+ah.fetchUrl=function(al)
+return ak("",al)end
 
-ah.fetchReference=function(b)
-local c=aj(b)
 
-local d=ab.read("reference",c)
-if d~=nil then
-return d
+ah.fetch=function(al)
+return ak(af,al)end
+
+
+
+
+ah.fetchReference=function(al)
+local am=aj(al)
+
+local b=ab.read("reference",am)
+if b~=nil then
+return b
 end
 
-local e=ah.fetch(b)
+local c=ah.fetch(al)
+if c~=nil then
+ab.write("reference",am,c)
+end
+
+return c end local al=function(
+
+
+
+al)
+return(al:gsub("^backups/",""))end local am=function(
+
+
+
+am, b, c)
+local d,e=loadstring(am,c)
+
+if d==nil then
+ac:warn(`failed to compile '{b}':\n\t{e}`)
+return nil
+end
+
+return d end
+
+
+
+
+ah.load=function(b, c)
+local d=al(b)
+
+local e=ab.read("scripts",d)
 if e~=nil then
-ab.write("reference",c,e)
+local f=am(e,b,c)
+
+if f~=nil then
+return f
+end
 end
 
-return e end local b=function(
-
-
-
-b)
-return(b:gsub("^backups/",""))end local c=function(
-
-
-
-c, d, e)
-local f,g=loadstring(c,e)
-
+local f=ah.fetch(b)
 if f==nil then
-ac:warn(`failed to compile '{d}':\n\t{g}`)
 return nil
 end
 
-return f end
+local g=am(f,b,c)
 
-
-
-
-ah.load=function(d, e)
-local f=b(d)
-
-local g=ab.read("scripts",f)
 if g~=nil then
-local h=c(g,d,e)
-
-if h~=nil then
-return h
-end
+ab.write("scripts",d,f)
 end
 
-local h=ah.fetch(d)
-if h==nil then
-return nil
-end
-
-local i=c(h,d,e)
-
-if i~=nil then
-ab.write("scripts",f,h)
-end
-
-return i end
+return g end
 
 
-return ah end a.cG=function()local ab=a.cache.cG if not ab then ab={c=aa()}a.cache.cG=ab end return ab.c end end do local aa=function()
+return ah end a.cL=function()local ab=a.cache.cL if not ab then ab={c=aa()}a.cache.cL=ab end return ab.c end end do local aa=function()
 
 local aa=a.f()
 local ab=aa.CoreGui
@@ -15187,13 +15980,13 @@ message=Instance.new("Message")
 },ac)end
 
 
-return ac end a.cH=function()local ab=a.cache.cH if not ab then ab={c=aa()}a.cache.cH=ab end return ab.c end end do local aa=function()
+return ac end a.cM=function()local ab=a.cache.cM if not ab then ab={c=aa()}a.cache.cM=ab end return ab.c end end do local aa=function()
 return{
 isEnabled=true,
 animationScale=1,
 scrollSpeed=1
-}end a.cI=function()local ab=a.cache.cI if not ab then ab={c=aa()}a.cache.cI=ab end return ab.c end end do local aa=function()
-local aa=a.cI()
+}end a.cN=function()local ab=a.cache.cN if not ab then ab={c=aa()}a.cache.cN=ab end return ab.c end end do local aa=function()
+local aa=a.cN()
 
 local ab={}
 
@@ -15205,20 +15998,20 @@ ab.getScrollSpeed=function(ac, ad)
 return(ad*aa.scrollSpeed)end
 
 
-return ab end a.cJ=function()local ab=a.cache.cJ if not ab then ab={c=aa()}a.cache.cJ=ab end return ab.c end end do local aa=function()
+return ab end a.cO=function()local ab=a.cache.cO if not ab then ab={c=aa()}a.cache.cO=ab end return ab.c end end do local aa=function()
 return{
-createService=a.bZ(),
-specialProps=a.bY(),
+createService=a.b2(),
+specialProps=a.b1(),
 
-connectionService=a.aE(),
-fetchService=a.cG(),
-keyboardService=a.aH(),
+connectionService=a.aI(),
+fetchService=a.cL(),
+keyboardService=a.aL(),
 localPlayer=a.g(),
-messageService=a.cH(),
-playerService=a.af(),
+messageService=a.cM(),
+playerService=a.ae(),
 rbxServices=a.f(),
-tweenService=a.cJ(),
-}end a.cK=function()local ab=a.cache.cK if not ab then ab={c=aa()}a.cache.cK=ab end return ab.c end end do local aa=function()
+tweenService=a.cO(),
+}end a.cP=function()local ab=a.cache.cP if not ab then ab={c=aa()}a.cache.cP=ab end return ab.c end end do local aa=function()
 
 return{
 DisplayName="Classic",
@@ -15273,7 +16066,7 @@ SliderBar=Color3.fromRGB(1,76,105),
 SliderNumber=Color3.fromRGB(232,233,235),
 },
 },
-}end a.cL=function()local ab=a.cache.cL if not ab then ab={c=aa()}a.cache.cL=ab end return ab.c end end do local aa=function()
+}end a.cQ=function()local ab=a.cache.cQ if not ab then ab={c=aa()}a.cache.cQ=ab end return ab.c end end do local aa=function()
 
 return{
 DisplayName="Dark",
@@ -15323,7 +16116,7 @@ SliderBar=Color3.fromRGB(1,76,105),
 SliderNumber=Color3.fromRGB(232,233,235),
 },
 }
-}end a.cM=function()local ab=a.cache.cM if not ab then ab={c=aa()}a.cache.cM=ab end return ab.c end end do local aa=function()
+}end a.cR=function()local ab=a.cache.cR if not ab then ab={c=aa()}a.cache.cR=ab end return ab.c end end do local aa=function()
 return{
 DisplayName="Light",
 
@@ -15372,7 +16165,7 @@ SliderBar=Color3.fromRGB(120,130,240),
 SliderNumber=Color3.fromRGB(40,40,48),
 },
 },
-}end a.cN=function()local ab=a.cache.cN if not ab then ab={c=aa()}a.cache.cN=ab end return ab.c end end do local aa=function()
+}end a.cS=function()local ab=a.cache.cS if not ab then ab={c=aa()}a.cache.cS=ab end return ab.c end end do local aa=function()
 
 return{
 DisplayName="M3 Dark",
@@ -15424,12 +16217,12 @@ SliderBar=Color3.fromRGB(208,188,255),
 SliderNumber=Color3.fromRGB(230,224,233),
 },
 },
-}end a.cO=function()local ab=a.cache.cO if not ab then ab={c=aa()}a.cache.cO=ab end return ab.c end end do local aa=function()
+}end a.cT=function()local ab=a.cache.cT if not ab then ab={c=aa()}a.cache.cT=ab end return ab.c end end do local aa=function()
 
-local aa={a.cL()
-,a.cM()
-,a.cN()
-,a.cO()
+local aa={a.cQ()
+,a.cR()
+,a.cS()
+,a.cT()
 
 }
 
@@ -15440,7 +16233,7 @@ local ae=string.lower(ad.DisplayName)
 ab[ae]=ad
 end
 
-return ab end a.cP=function()local ab=a.cache.cP if not ab then ab={c=aa()}a.cache.cP=ab end return ab.c end end do local aa=function()
+return ab end a.cU=function()local ab=a.cache.cU if not ab then ab={c=aa()}a.cache.cU=ab end return ab.c end end do local aa=function()
 
 
 
@@ -15457,113 +16250,14 @@ options={
 {key="darkGreen",color=Color3.fromRGB(34,110,62)},
 {key="red",color=Color3.fromRGB(214,58,58)},
 },
-}end a.cQ=function()local ab=a.cache.cQ if not ab then ab={c=aa()}a.cache.cQ=ab end return ab.c end end do local aa=function()
+}end a.cV=function()local ab=a.cache.cV if not ab then ab={c=aa()}a.cache.cV=ab end return ab.c end end do local aa=function()
 
-local aa={}
-
-local ab="abcdefghijklmnopqrstuvABCDEFGHIJKLMNOPQRSTUV_0123456789"
-
-local ac={
-["&"]="&amp;",
-["<"]="&lt;",
-[">"]="&gt;",
-["\""]="&quot;",
-["'"]="&apos;"
-}
-
-aa.randomString=function(ad)
-local ae={}
-for af=1,ad do
-local ag=math.random(1,#ab)
-table.insert(ae,ab:sub(ag,ag))
-end
-return table.concat(ae)end
-
-
-aa.getDeep=function(ad, ae)
-for af in ae:gmatch("[^%.]+")do
-ad=ad[af]
-end
-return ad end
-
-
-aa.simpleCreate=function(ad, ae)
-local af=Instance.new(ad)
-for ag,ah in ae do
-af[ag]=ah
-end
-return af end
-
-
-aa.chararray=function(ad)
-local ae={}
-for af=1,#ad do
-table.insert(ae,ad:sub(af,af))
-end
-return ae end
-
-
-aa.lookupify=function(ad)
-local ae={}
-for af=1,#ad do
-local ag=ad[af]
-ae[ag]=true
-end
-return ae end
-
-
-aa.unlookupify=function(ad)
-local ae={}
-for af,ag in ad do
-table.insert(ae,af)
-end
-return ae end
-
-
-aa.escapeRichText=function(ad)
-local ae=tostring(ad):gsub(".",function(ae)
-return ac[ae]or ae
-end)
-return ae end
-
-
-aa.charset=function(ad)
-local ae={}
-for af in ad:gmatch(".")do
-ae[af]=true
-end
-return ae end
-
-
-aa.versionToNumber=function(ad)
-local ae=ad:gsub("^v","")
-
-local af=0
-local ag=ae:split(".")
-
-for ah,ai in ag do
-local aj=tonumber(ai)or 0
-af=af+aj*math.pow(1000,3-ah)
-end
-
-return af end
-
-
-aa.colorFromRGB=function(ad, ae)
-return`<font color="#{ae:ToHex()}">{ad}</font>`end
-
-
-aa.richFontSize=function(ad, ae)
-return`<font size="{ae}">{ad}</font>`end
-
-
-return aa end a.cR=function()local ab=a.cache.cR if not ab then ab={c=aa()}a.cache.cR=ab end return ab.c end end do local aa=function()
-local aa=a.cP()
-local ab=a.cQ()
+local aa=a.cU()
+local ab=a.cV()
 local ac=a.n()
 
 local ad=a.d()
-local ae=a.cR()
+local ae=a.b5()
 
 
 
@@ -15628,10 +16322,10 @@ return ab.defaultKey end
 
 
 af.getPrimaryColor=function(ai, aj, ak)
-local b=ah(ak)
+local al=ah(ak)
 
-if b and b.color then
-return b.color
+if al and al.color then
+return al.color
 end
 
 return aj.Colors.Primary end local ai=function(
@@ -15645,43 +16339,43 @@ if not ak or ak.color==nil then
 return ai
 end
 
-local b=table.clone(ai.Colors)
-b.Primary=ak.color
-b.OnPrimary=ak.color:Lerp(Color3.new(0,0,0),ab.darken)
+local al=table.clone(ai.Colors)
+al.Primary=ak.color
+al.OnPrimary=ak.color:Lerp(Color3.new(0,0,0),ab.darken)
 
-local c=table.clone(ai)
-c.Colors=b
+local am=table.clone(ai)
+am.Colors=al
 
-return c end
+return am end
 
 
 af.selectTheme=function(aj, ak)
 ad:expect(ak,{"string"},"'themeService:selectTheme' #1")
 
-local b=ak:lower()
-local c=aa[b]
+local al=ak:lower()
+local am=aa[al]
 
-if not c then
+if not am then
 ad:error(`'{ak}' isn't a valid theme`)
 return
 end
 
-aj.selectedKey=b
-aj.selectedTheme=if aj:isUsable(c)then ai(c,aj:getPrimaryKey(b))else c
+aj.selectedKey=al
+aj.selectedTheme=if aj:isUsable(am)then ai(am,aj:getPrimaryKey(al))else am
 aj:updateObjects()
 
 return aj end
 
 
 
-af.setPrimary=function(aj, ak, b)
-local c=ak:lower()
+af.setPrimary=function(aj, ak, al)
+local am=ak:lower()
 
-ac:setValue(ag..c,b)
+ac:setValue(ag..am,al)
 ac:save()
 
-if aj.selectedKey==c then
-aj:selectTheme(c)
+if aj.selectedKey==am then
+aj:selectTheme(am)
 end end
 
 
@@ -15692,21 +16386,21 @@ aj:updateObjectProperties(ak,aj.objects[ak])end
 
 af.updateObjectProperties=function(aj, 
 ak, 
-b)
+al)
 
-for c,d in b do
-ak[c]=ae.getDeep(aj.selectedTheme,d)
+for am,b in al do
+ak[am]=ae.getDeep(aj.selectedTheme,b)
 end end
 
 
 af.updateObjects=function(aj)
-for ak,b in aj.objects do
+for ak,al in aj.objects do
 aj:updateObject(ak)
 end end
 
 
-af.addObject=function(aj, ak, b)
-aj.objects[ak]=b
+af.addObject=function(aj, ak, al)
+aj.objects[ak]=al
 aj:updateObject(ak)end
 
 
@@ -15721,11 +16415,11 @@ aj.objects[ak]=nil end
 af.resetRemovedPrimaries=function(aj)
 local ak=false
 
-for b in aa do
-local c=ac:getValue(ag..b)
+for al in aa do
+local am=ac:getValue(ag..al)
 
-if c~=nil and not(type(c)=="string"and ah(c))then
-ac:setValue(ag..b,ab.defaultKey)
+if am~=nil and not(type(am)=="string"and ah(am))then
+ac:setValue(ag..al,ab.defaultKey)
 ak=true
 end
 end
@@ -15745,15 +16439,15 @@ aj:selectTheme(ak.theme)
 end end
 
 
-return af end a.cS=function()local ab=a.cache.cS if not ab then ab={c=aa()}a.cache.cS=ab end return ab.c end end do local aa=function()
+return af end a.cW=function()local ab=a.cache.cW if not ab then ab={c=aa()}a.cache.cW=ab end return ab.c end end do local aa=function()
 
 
 
-local aa=a.cK()
+local aa=a.cP()
 local ab=a.d()
 
 local ac=aa.specialProps
-local ad=a.cS()
+local ad=a.cW()
 
 ac.ThemeTag=function(ae, af)
 if type(af)~="table"then
@@ -15764,7 +16458,55 @@ end
 ad:addObject(ae,af)end
 
 
-return a.bZ()end a.cT=function()local ab=a.cache.cT if not ab then ab={c=aa()}a.cache.cT=ab end return ab.c end end do local aa=function()return{["infinite-yield-logo"]=104371861083126,["lucide-custom-x"]=83276213460768,["lucide-chevron-down"]=76683704146139,["lucide-chevron-left"]=116084397950605,["lucide-blocks"]=80329404661557,["lucide-terminal"]=138735373900955,["lucide-pin"]=85638424763987,["lucide-refresh-cw"]=127184558868486,["lucide-eraser"]=121383006814792,["lucide-tag"]=95367077436662,
+return a.b2()end a.cX=function()local ab=a.cache.cX if not ab then ab={c=aa()}a.cache.cX=ab end return ab.c end end do local aa=function()local aa="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"local ab={}for ac=1,#aa do ab[string.byte(aa,ac)]=ac-1 end local ac={}ac.decode=function(ad)local ae={}local af=0 local ag=0
+
+for ah=1,#ad do
+local ai=ab[string.byte(ad,ah)]
+if ai==nil then continue end
+
+af=af*64+ai
+ag=ag+1
+
+if ag==4 then
+table.insert(ae,string.char(af//65536,(af//256)%256,af%256))
+af,ag=0,0
+end
+end
+
+
+if ag>=2 then
+af=af*2^(6*(4-ag))
+
+table.insert(ae,string.char(af//65536))
+
+if ag==3 then
+table.insert(ae,string.char((af//256)%256))
+end
+end
+
+return table.concat(ae)end
+
+
+return ac end a.cY=function()local ab=a.cache.cY if not ab then ab={c=aa()}a.cache.cY=ab end return ab.c end end do local aa=function()
+
+return{
+
+["infinite-yield-logo"]=104371861083126,
+
+["lucide-custom-x"]=83276213460768,
+["lucide-chevron-down"]=76683704146139,
+
+["lucide-chevron-left"]=116084397950605,
+["lucide-blocks"]=80329404661557,
+
+
+["lucide-terminal"]=138735373900955,
+["lucide-pin"]=85638424763987,
+["lucide-refresh-cw"]=127184558868486,
+["lucide-eraser"]=121383006814792,
+
+
+["lucide-tag"]=95367077436662,
 ["lucide-keyboard"]=102097005397654,
 ["lucide-palette"]=105784737972091,
 ["lucide-map-pin"]=132787420207871,
@@ -15788,109 +16530,236 @@ return a.bZ()end a.cT=function()local ab=a.cache.cT if not ab then ab={c=aa()}a.
 ["lucide-clipboard-copy"]=103811515822314,
 ["lucide-arrow-left"]=88403839941496,
 ["lucide-arrow-right"]=97590643131532,
-}end a.cU=function()local ab=a.cache.cU if not ab then ab={c=aa()}a.cache.cU=ab end return ab.c end end do local aa=function()
+
+
+["lucide-app-window"]=87639344154535,
+["lucide-scaling"]=102084193088943,
+["lucide-blend"]=138161723939087,
+["lucide-eye-off"]=122453588278564,
+["lucide-rotate-ccw-clock"]=94201058681961,
+}end a.cZ=function()local ab=a.cache.cZ if not ab then ab={c=aa()}a.cache.cZ=ab end return ab.c end end do local aa=function()
+
+
+
+
+
+
+return{
+["lucide-custom-x"]="close",
+["lucide-settings"]="settings",
+["lucide-book-open"]="reference",
+["lucide-pin"]="pin",
+["lucide-tag"]="editaliases",
+["lucide-map-pin"]="editwaypoints",
+["lucide-palette"]="edittheme",
+["lucide-keyboard"]="editkeybinds",
+["lucide-blocks"]="bindsandplugins",
+}end a.c_=function()local ab=a.cache.c_ if not ab then ab={c=aa()}a.cache.c_=ab end return ab.c end end do local aa=function()
+
+
+
+return{remake=
+{
+["lucide-app-window"]="iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAACGElEQVR4nO2Z4XHTYAyGpQkaNmg3yAaECSgTEDaBCWADwgSUCXAmaEZgA9wJwiNdbOr0vfyo72q55+dO0h2v+HhE/7luM2c5YGqWA6bmdR5wPB4/MrZmtqZW1JS01IHaufsP5gCnehBfMX5SG6tJY2YfOKRlJucH/GZsrDYNB7xjJk4lyG/N7Ds1Bz65+87g8QGNmb2lOn5Rn1k8MCM/Mnr48/7vBsQX8+fCs9dm9o16T3Xs3X1j0P8jLP5lrKiOG3f/YyfILwoSX8zHwNNrxj3V0fL8G+bggIsCxKPysfC8fD9bQC4XOohH5WPhefl+toB8sFAd/NM9W4D/csBLgn+6Zwvwf10HkPdZBdCTftkCcrlQBfSkX7aAXC5UAT3ply0glwtVQE/6ZQvI5UIV0JN+2QJyuVAF9KRftoBcLlQBPemXLSCXC1VAT/plC8jlQhXQk37ZAnK5UAX0pF+2gFwuVAE96ZctIJcLVUBP+mULyOVCFdCTftkCcrlQBfSkX7aAXC5UAT3ply0glwtVQE/6ZQvI5UIV0JN+2QJyuVAF9KRftoC8ZVxRHTf+6MPWlOC2ZtxTHQ+4rZiDAxobflq8o7746dPiVOB1bWZfqVuqY+/i0+LW5vxxN+CIxoY/hYrs/fS/H5wfsGLcUVWP2FO3HNAyE6eewCFb+/8rpitqSh6oA7VDfGdnyAPmxHLA1CwHTM3sD/gHKmooQAKdXgwAAAAASUVORK5CYII=",
+["lucide-arrow-down-up"]="iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAFzUkdCAK7OHOkAAADGSURBVEiJ7ZVBCsIwFEQnnqK9jB694lalLrU9gHvBjQjPzS/GkMYkuHDRgUBp8vM6IX8qLaoV0AHdlzUNcLPRlAIASMy3wMhbI9D+BGBf7m/uQ/KczAGCzUMH+ZAYAHDAyaYGO6ZJ/pH1U80qy86nnpLOkjbOuev00p7Xki6SHlUOatbVOCjSAvgTgN3vHbCPNYk11wHYVlEM0PuZMtNAx0ht1nWujoBsQARCAInmSxHACsIYHkjEcDHAg9xtJDOejB/ToqRechib9LbxHlwAAAAASUVORK5CYII=",
+["lucide-arrow-left"]="iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABmJLR0QA/wD/AP+gvaeTAAAAv0lEQVRoge3YQQqCUBSF4ftqGy2pSVA0qAW0kgatM9uEwt8kafLMJ6j33TgfOJP8jxDIMxMREVkAcACaz7X37pkEOAMtX0/vpmKZ+DgDBuJb4ODdNgo4ZeI74OLdNkrxXhTvRfFeFO8levwdH0VfsalgQGdm21nexnRNSmn364bNWiVLKRnwWLwi72Vmt1l+CTiS/xNfZ3nAGjSiFhpRC42ohUbU4l9GxD3Y6g2MiHG02MuMiDXALPjxuoiIhPEGT+k+v8NX18MAAAAASUVORK5CYII=",
+["lucide-arrow-right"]="iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABmJLR0QA/wD/AP+gvaeTAAAAuElEQVRoge3YQQrCMBRF0R9xF27JWRUHugBX4sB1Vjehcp0UClJtAsafL+9AZ4XeVyiUmImIiFQArIHLcHXePcWAntEN2Hk3FXkZEG8E0A3RoUdsJkbcgYN3WzaNaIVGtEIjWqERrag+gvGv0sNpri9lDOjNbPWVt1HukVJafrph8auSWnIGHM3sWjvkjbPTc/MBW6Y/4r132yzFe1G8F8V7UbyX6PGxD7b4g6PF8Ie7sY/XRUQkhCd2vT7HIMUj7AAAAABJRU5ErkJggg==",
+["lucide-blend"]="iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAFTUlEQVR4nO2Wz1HjSBSHfy+C7YkAuWrv64lgTARjIsBEAJc9Y+57gAiQIsATASYCzH2rkCMYEQH7tSXZrT82smUOVO1X9e1va3jvdbfdlm364vx/gI94f393xA8cY6SNnlQbZ/hkZhnZGcNPgY1Hkq5xov2IJd2YWaoOHP0AbNwRfuNX2IeppDsOkpFbOeoBis0/4hCPwQJPbcchjnYANj8k/OYd1lnirDBjQwuy7HE4LjzBOhmeWtFTx7A3bMQRr+gzZIlTFo/VAeZMRL2aB8lwYC3vhGEvWNQRjzjEkF84aVt0F8W8WNJPDFngqdXmHeMAt8QlhiRmNlEPmBtLOseQGzObKqDXAVgkUn51QhLrufkS5s+InxgysOAR2/cAsaqv0hKHLJCRvWG+IxZ4giWJBS+Q4UEUw39jyIV1/MB2hXUmku4x5BvrZGSvA4yJByxZmlmkT4C1UlXfhTPWmpH7H4BhjviB/+CfGJJq4wyfrHil+sCat8QlliRWXKPOB2BIpPwnwkT7ESt/eqQ6ENYeKX9UlzyZ2Ujw4QFodsQ1XmEfpurw26YN9jAknrFkwZzv5O4D0OiIRxziMVjgqR12iHdiDTNWe1/9pw3qh8QjOqyzxBNcwzwrehyOCys1BRme2pbfNttg9juxhn4j2g9ArSNe0WfIEqf0xtSkqm5wYLV7Ts1E1Kta58lwYB3fCeYMifAKvdDr/615AIod8YhDDPmFExoz0tfNlT+NSk7NbK4a1DkiVvMbdYGnVszbBTNGyvdU8mTbPsQU3xKXGJJY8dgqoS5W9Vv4jporspWWes+N1X7btEHvLRHuKbFiP5UDUBgpvzohiRXFIdSOiQcsSakbkFuhZ0b8xJCB1a5eHfr8niJtOKPHz5LhGgpjVV+lJQ4pzsgK1DriN4ZcGJ8PbaHoWeAJliTW8gKV0DNRl58SFDpi3w3Fqh44lfSdnoxshZ6JdmwohFpHPGOkDYkFBzZcQfGYeMCSpZlF2gE9kZpXbkbfGbkV+lJV34UzemZkBer8fsYYMrDgyhmuoDhW9dW8o/CK3Al9U+Xf1CExvRdkK/TcEpdYkljwqnqouScmqnJjtQ+94Qoa5urwWKxDnyPmkv7CkBleWPvVGGnLY5G/OeIexxjygiPqMnJNeIBXItKGgQVv1S7odUQq6Q8MScUXGXMScg31Q+IZSxbUfOffz/n/qar78LxhRE1GVjBcQfM7sYbi9d+6QPuQmKt5CE+q/B3xvjF6QX1lPUglRWriNz/yPWQDwxXMqwykYf23rjDCEXM1r9OhvOCIrWRkK+tNsniq6pNhYB2vUAhzHHGF19iHG7xlDxm5FcMVLDzXAR/ibTAvUn6fz3EfEpyydqoOGK5gwVjVxe4YckX2grmOGCl/qkTKf+HWr9i/+DfOWTMjO2O4goXGxAOWpAwbkEeHtV6JSBvOWGtG7o3hCoY64jeGXNiOnxKHwDoT5c/5kG+sk5F7sz6Ah+Gxqtco1Qe/bfaB+Y54xkgbEqt9C++D4RoWiHTAb5uuMP+BGGPIwDp+YNuoHMDDIlM1H4Exi1yQB8Pce2KiKjdW+22zL4YVWMgRczWfFDO8sD2vUzHPb36MIS842ndencYBPMWiqZo/C1Llz+iE/BDmnBNTSZGqvGHEnIzshWErLD4k5moewpMqf0e8b2xkQZY9vn5cGKmJ3/yo7OmL4VbYkCPmal6nQ3lBv/mMPAo7D+ApDnGF19iHG7w95uY9hp3gIJHy+3yO+5DglI2n+gQM94KDOGKkzR13WF4xf0UyTJV/PuZsPCM/DcMvzZc/wH/OMTZPuOUwmAAAAABJRU5ErkJggg==",
+["lucide-blocks"]="iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAFzUkdCAK7OHOkAAADGSURBVEiJ7ZTLDcIwDIaTLkGHYAYujEAWBAnBQE1ViQUq1B0+DjRSQI2bRxVx4DvGjz+2ZSv1iwAGGAgzAKZEwArJHbZEAIAYe5OtEkkzK7bABRgD5fbAKVsFuEf0tPP8o1vkHqb57RATkCOQFFBjyL2f6BvfJ7cCAzyEeX0uWnJPE6izB46VngbtvPdk8fZoF7jBZ63Wer9oKZ2BZK87g7+AJDAppRSBYycBHP0cIaeYc73GTRJogSvwzEg8Amdgl1r9JrwAbBtFmpWGot0AAAAASUVORK5CYII=",
+["lucide-book-open"]="iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAFzUkdCAK7OHOkAAADeSURBVEiJ7ZXNCcJAEIUfohWoRK9agecgHizBOhQbUGxFQUgJ/oGXnK0jiIodfB7cw6obskQRkbzT7vB4384eZqS/ENAAFkDCq07ABpgAZaACTIEtcHH4E5PVsAGRw+jSClh7eiMbcDbFrqO7NjAGjk+vHAIth79nPEe7CEDGNwYWoJ7hfczzAeT1lbLM76oAFIAC8EXARZKA8N1AoG+OJ0kqm8te0kBS7Bg1Z0kHSbEVMpMUSupIqqawdja1CSyfRnJeJcAcCHxbTtsHI6DtFeIJCrivzytQ+1jwz+sG7gelHAXthgcAAAAASUVORK5CYII=",
+["lucide-calendar-clock"]="iVBORw0KGgoAAAANSUhEUgAAADQAAAA0CAYAAADFeBvrAAAABHNCSVQICAgIfAhkiAAAAAFzUkdCAK7OHOkAAAUOSURBVGiB7ZpbiFZVFMf/yzTJSUtr8tJVKglsTLRQSnSqeUkKKoLyISvqKayg6MF80F6CoEIjulhkUVk2o2j1ZBpeyrxGRkY0E5qlplaYl3R0nF8P55vpzPr2Od8538Wm8A8ffGuftf57r73Ovq19pNP4HwMYDjwNtADTASuDwwq2LQWu4bVoa9bGzKUnJpbB0eg45lbSppI9Ctwk6XpJ4yUNdo8nSuofk3dJasvZhlGS4lFpl7Te6fwh6StJq81sbU7+CMBAYDG9D+8AZye1OxghoE7SVkmXl9UbtUebpLFmdsQ/6JNg8JJ6rzOSdIWkeaEHRREChknaE9BtUzRG4rhO0oCY/JOkHTkbd5mkS2PyX5I2OZ0LFTnhUW9mv6WyA9MC7+2EBN1tTm9OZjf+4ZjjOL5N0JsYaNddXi/0yk128hoz25C3odWGma2XtM4VN3q9kEPnO3lvSj1+CvXTbRZ4m89TdHc7+QKvkDQpZMXrktZI+l3SAkmflcGxStJbitaalQXOstG3EmMz2yJpSoUcxyQ9UAlHHJVGqNfhtEP/Mr5x8lavEBpDfrFtBFZlrHCvpHfN7OOM+nmxQNIESZMkrS7I6QDWV7R1hHbgnBo5VBKhCI2okPNMSbdI+iBNCegjaZyibU+9pPMkHZa0X9F6sym0+cwN4IsKI3SYaLeexH8HsAQ4UILnBLAWeBLon8TnEdqcNkuK75H2S9qWka9N0rNmVnTIA66U9Iqkm7M2Lobtkh43s6W5LYFm11MfltEAz3lnYWxVireBM9Lqqvm0DcyStFjR2AqhU9Ivkr6U9IOkYyl00yWtIM+kU80IATMTevoI8AwwJTQ+gNHADODHBPt1IbuaOkQ0+ENoBuozcvQFngBOBngWnjKHgMHAwUAjnsvLVeBrKkTV4+5T5dCrgcrfLMeZGGcT0Ok4d1Hq1avUIaAh4MzmtIqB+4hSZrOBoSl6swPcs2rt0GvOvhMYm6I/yek/n6LbD2h1+vviOrWYtm918kIz+zpF/0YnJy68ZnZC0lOuuB4Y1yVU1SFgjIr3gi0lzPxC2a+E/jJJx13Z1K4/1Y7QmEDZp9WswMyOK8pjxNHQ9afaDg1x8oEydsxk0Nnp5O5MVbUdGuTk/WVwjAbeB3w6LQ6fWuu+Fam2Q4ecnHiMiGFHoOweSa1AU4KNv33ofguq7ZDvuSy3cYskfRcoP1fSUmBU4NkwJ//a9afWDhnQENTsUjA7quhC7UVJHe5xncJRvtbJNXNoi6STrsyvS0Uwsz/N7DFFs9Xy2KNWucwOcJWkkY7C31b0MKh0p7DC2W8HSq0tnmM88EhoYgBedvwdwMBaOvQwxZiZhyOF+2qKjxLp6xzwhjPIlYAnupvdF+jFkq9eCd4RwM5AZ6XnKIBHA43x60spjvsDFR8Dbi/TmYuA7wOcy7IYTw4YHgU2AqsCv3nA6ADPkgBPJzAjpzPjgN0Brj1E16clCQxYHSBIw8oATx3FV5Zd2ARMJf2MdA1Rlscf6iCKtp+6JSVf6w+RtFE5bsLNLJTjG6noRi4pG9suabOivNvPirKnFyu6jE7a+nRKutfMsuUUYo0ZBCzKGKGPUniGEp1Yq4FDgD8/9UDWT2NuUJSH9p/GSNInkuab2cEUjgGSXpD0kIrPP1mxQdKDZpY1i1t7AJcA8wlncJKwvNCpmZD7c7BqADhL0m2Spikc9Q5FW6D3zMx/7HEa/2n8Df8KtuC31cR8AAAAAElFTkSuQmCC",
+["lucide-chart-column"]="iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAFzUkdCAK7OHOkAAAB9SURBVEiJY2AYNuD////7////v5+WFvz/////f2qby0SGQ8jzKbE+INWnJPuAVDA0LCAqXiiJA3x6h0YQDV4LqFp8EBt5Iy+SWQjIH6BADBXQo7h+A7XIjtqWMEANXvGfegCetJHjoICBgeEvAwODKwMDgyiF7v1Dof5BBAA6wM3qFndYlQAAAABJRU5ErkJggg==",
+["lucide-chevron-down"]="iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABHNCSVQICAgIfAhkiAAAAAFzUkdCAK7OHOkAAAFbSURBVHic7dhBToNQEMbxwY3GpYkx3qCxpR7GuHfl6Uw8Q0/hzoWNCxPKBbr4u4AXzRMBH/Dqo99v16Qw881QQjETERERERERERGRY5KFHghcmtld/fEpy7JinJYSqA8sgC1f3oCbiPWXDfUXsYqfA6/8tANWEeqv6lq+F+B06voGPDYUjzKElvDOw1/PeRLQR9uUL8xsM8UQ6nNu6hq/ORu7blMj18BHyxYACmA9Ys3bjs1T93Q1Vs2uhtZAGWMIPcOXRLj/+I11/R5h4D0hRo1Bpmzw34efstFkwjtjNpxceGeMxpMN7wwJkHx4JyTIbMI7QN4zUD678A7VA0zXw9Kux3dKID90niA9tzuvzfuoHptDhlAku3lfwJWQ/uZ99PtTM6/N+3pcCfPbvK9lCPMP79RDeP8WfgssD9FL8Gvxoahea9+b2d7MnmO/VhcREREREREREZHj9Ak8sZ1fjUQMhwAAAABJRU5ErkJggg==",
+["lucide-chevron-left"]="iVBORw0KGgoAAAANSUhEUgAAAFQAAABUCAYAAAAcaxDBAAAABHNCSVQICAgIfAhkiAAAAAFzUkdCAK7OHOkAAAFESURBVHic7dxPSsNgEEDx6LYb/4GL9rz1Ogr1JuqqtifwDM9FI6jUMNEZv0Tfbx3o8OBLSsuk6yRJkiRJkiRJ+s+ABXADbIA1sGg902wBK+CJjx6As9azzU4fc8dxt63nmxVgCey/iPnmovWcsxCMCXDeetbJ64/5NhDzrvWsk9fHfA7E3OJDadiIY74Hlq3nnTRjJjJmImMmMmYiYyYyZiJjJjJmImMmMmYiYyYyZiJjJjJmIuCS+O+Zq9bzTh5wH4i5M2YAcP3Xj/npL3/eSeCal+B16rrwkff+GQVc4UMpF35tymfUAkYtYNQCRi1g1AJGLWDUAkYtYNQCRi1g1AJGLWDUAkYtgEsL+RjennvPTbqoEcffTbqoYFQ36cZg+J7qJt139FEfP8V0vfsnOLyAYM3hb2pfQCBJkiRJkiRJmpdXW18bb2Yrs24AAAAASUVORK5CYII=",
+["lucide-clipboard-copy"]="iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABmJLR0QA/wD/AP+gvaeTAAACSElEQVRoge2ZTU4UQRiGv5IFw1omo1E4AHHtIQwLSDQu9AAmLiCEM7jgBhhxpQkLE+/BRE1EDqDOTDIJbIEBkocFRVIU1T1dPz2VTvrddVfX+71P9VR39ZRIqwYLWAL2gRH++gfsAd2c4U8Cgtv6D/RyAOwnCH+rvdAcKgJgJCKPQ/tbGimlniTyuitgAdgGfgEXRUPo6alK7sYE+AFsAZ3Y8MvAUZXfQIB3FR0CS6HhF6qGrxHgFqLwTjwoqfFeRFY8AgXPpyl6JiLvvHsBP62R+AY8NNoHHqM4TQPDtwt8t9r7IQDnlsmi1f45IcAXy7tntZ+GANyRo73HzUsoVsfAvUfotPrRAPqaLvAJ+BsQfAh8dYX3ASiceHYnpVRdkzSqftlTqBFqAXJr5gDAup7AQ2C1zkJxjzG352vg0rAdlFwbVz81gCP8NICxcd04pGAygILwl8B6SZ81DTEG1rIBAK8c4a+AN6GeVQtHA2QLr4tHAWQNrwMEA2QPr0MEAQAf7L6J5HxvJF/MAVciMlcV2FNDpdRT80S7lHBopwZPEZGR+Hwbh84B3fcl7kn81jd1sGIAdP+8ELEA2iMfRAoA7ZMHIhWA9mruYs7wa+5y2vBs7geN4Vvpk7Jq/fZ/odwqA5iYB8xwNxF4ZJ06K7q2DODIOv7IDHYTdY1d6/SfEKMteyJl1EZRzrJJ3BGRvtzskOTUbxF5rpSauBoLf0JKqXMReSEhty+dDkVktSh8JQEdYBPoc3/Xpg6dAQfABjCfbixa1aNrtik2Bl6PVngAAAAASUVORK5CYII=",
+["lucide-custom-x"]="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XCJtVkZsaXBcIjowLFwibVJvdGF0aW9uRWZmZWN0XCI6MCxcIm1Sb3RhdGVFZmZlY3RcIjowLFwibUhGbGlwRWZmZWN0XCI6MCxcIm1WRmxpcEVmZmVjdFwiOjAsXCJtSG96UGVyc3BlY3RpdmVcIjowLFwibVZlclBlcnNwZWN0aXZlXCI6MH0iLCJ0b25lVmFsdWUiOiJ7XCJicmlnaHRuZXNzXCI6MTAwLFwiZXhwb3N1cmVcIjoxMDAsXCJjb250cmFzdFwiOjEwMCxcInNhdHVyYXRpb25cIjoxMDAsXCJodWVcIjoxMDAsXCJ3Yk1vZGVcIjotMSxcIndiVGVtcGVyYXR1cmVcIjoxMDAsXCJ0aW50XCI6MTAwLFwic2hhZG93XCI6MTAwLFwiaGlnaGxpZ2h0XCI6MTAwLFwibGlnaHRiYWxhbmNlXCI6MTAwLFwic2hhcnBuZXNzXCI6MTAwLFwiZGVmaW5pdGlvblwiOjEwMCxcImlzQnJpZ2h0bmVzc0lQRVwiOmZhbHNlLFwiaXNFeHBvc3VyZUlQRVwiOmZhbHNlLFwiaXNDb250cmFzdElQRVwiOmZhbHNlLFwiaXNTYXR1cmF0aW9uSVBFXCI6ZmFsc2V9IiwiZWZmZWN0VmFsdWUiOiJ7XCJmaWx0ZXJJbmRpY2F0aW9uXCI6NDA5NyxcImFscGhhVmFsdWVcIjoxMDAsXCJmaWx0ZXJUeXBlXCI6MH0iLCJwb3J0cmFpdEVmZmVjdFZhbHVlIjoie1wiZWZmZWN0SWRcIjotMSxcImVmZmVjdExldmVsXCI6LTEsXCJleGlmUm90YXRpb25cIjowLFwibGlnaHRMZXZlbFwiOjAsXCJ0b3VjaFhcIjowLFwidG91Y2hZXCI6MCxcInJlZm9jdXNYXCI6LTEsXCJyZWZvY3VzWVwiOi0xLFwiZWZmZWN0SWRPcmlnaW5hbFwiOi0xLFwiZWZmZWN0TGV2ZWxPcmlnaW5hbFwiOi0xLFwibGlnaHRMZXZlbE9yaWdpbmFsXCI6LTEsXCJ0b3VjaFhPcmlnaW5hbFwiOjAsXCJ0b3VjaFlPcmlnaW5hbFwiOjAsXCJyZWZvY3VzWE9yaWdpbmFsXCI6LTEsXCJyZWZvY3VzWU9yaWdpbmFsXCI6LTEsXCJ3YXRlck1hcmtSZW1vdmVkXCI6ZmFsc2UsXCJ3YXRlck1hcmtSZW1vdmVkT3JpZ2luYWxcIjpmYWxzZX0iLCJpc0JsZW5kaW5nIjp0cnVlLCJpc05vdFJlRWRpdCI6ZmFsc2UsInNlcFZlcnNpb24iOiIxNzA1MDAiLCJuZGVWZXJzaW9uIjoxLCJyZVNpemUiOjQsImlzU2NhbGVBSSI6ZmFsc2UsInJvdGF0aW9uIjoxLCJhZGp1c3RtZW50VmFsdWUiOiJ7XCJtQ3JvcFN0YXRlXCI6MTMxMDc2fSIsImlzQXBwbHlTaGFwZUNvcnJlY3Rpb24iOmZhbHNlLCJpc05ld1JlRWRpdE9ubHkiOmZhbHNlLCJpc0RlY29SZUVkaXRPbmx5IjpmYWxzZSwiaXNBSUZpbHRlclJlRWRpdE9ubHkiOmZhbHNlLCJpc1NQZW5TREtPbmx5IjpmYWxzZX0AAKELFgAAAE9yaWdpbmFsX1BhdGhfSGFzaF9LZXlhNTMyNzdhMGRlNWMyMWM4NzRmNDQ1MGQ5YjJhYTAwZWQzYjYyMTNlYjJhYjE5MDNmOWI0M2JhMzIyOGUwYWRjLzY0NVNFRkhrAAAAAgAAAAAAoQsABwAAngYAAAAAoQtiAAAAYgAAACQAAABTRUZU",
+["lucide-eraser"]="iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABHNCSVQICAgIfAhkiAAAAAFzUkdCAK7OHOkAAAJiSURBVGiB7Zc/axRBGIffja1fwFziXRQEsbO0FIurApHDSiGFXykhKCJi8B/EoIiCJKn8BBZilShJSEglWISgl8fi9mAY3tnb2Z2ZPWR/sMXdzvvO88wO+0ekTZs20QM8ADaAw/zYAO43zTUxwCywjTufgdmmOdUAHWCvAH6cH1Mn4QE/fRLAHLCrQK4D1/NjXTm/C3Sahnet/KoydnWqroQPvFEzHRJV4I3aZiXqwBs9mpEIAW/0SisREt7o+SSJRAx4o3dciZjwxhxxJIB5B/xKIHZzrjWHxKWqDaOvvDKndiW2qjRKtvLK3NqVWPZpcBM4TbnyCsMba+73ZQs7wO8m4XOOHjA05j8cn5spKOqIyBcRuWifEpGdOKjO4Dd69Eqs7flxhsBSJFiN51XpLYT7bjO0fv8BFhPAP1NY+r7wK0AfOEspATxWWDaLCnY0eON8Mgn0Z8Aerqcx8LAIPqUE8NQBP19U9MkqeFEwtp9D2xL63vSDf67AHwC9SYW/LJjLE8YvKhJndSSAlwr8PtAtU3xkCUwsCiUBzNSCz5t8tIqdWyi0BPBagT8AFsr2EGBJaVLqlaGqRL7yb2utvNVwK4LEbcf4C0Hh86bOB5mHxF+r9lSTADaVeY6BK5XgS0iUvRKDIol85T8o/Y+Aq7XgLYn9CBJ3osMbEN0IEvYLYRz4gBL3HNDx4Q2IHqN7sp1HJesHwLlSfwxciwpvQCw4JFLmOzCw2TIPia6MPjHnQi6OZ75lWXbD/MP5TWwny7KfInJLRLZDU3nkPEgXYBl4B5wk3EJfgbtBBNq0+Y/yDwt+X1uLKXKOAAAAAElFTkSuQmCC",
+["lucide-eye-off"]="iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAEf0lEQVR4nN2WPXLbVhhF79emMbyBmF6BoT4zAVcgagXBm6RKE2UFoZIFSC5SZkytQPQKBPWZMVykNpQNGGrSKucJpASADyBB0jOUz8yda1N433uHBH9Mz5yvR+D+/j6RdEU8zszm9MFTF/hMRWSJM7OZDpy6QEm9IHWcHbhEXWBCXZE2zg5Y4lHAg0Qq6R1p4+xAJRoCnucmsSLg2UWCtedUIikmS3JSkkwVmaRbMyu0I0EBDwdJNVCiZ00XM0mXZpZpSzoFPD0HchaQ4PpTyr8CQ8nJBTMv6UEY6YVDpQpL/MWGP9GPcG1EZZLekG0oibMBX6JrBTwc7GfqT9LGWfiVGPF4oQX8P6YikqhiQvok58SZWUn3slZgsfkVGSmMs4DEOpibSEol/UBCFJJOmJ3TnRjphE1i6ppEpA9nW0h42GOkSuSUvCB1SjK2HolOAQbHVOjw/5JvSRtnW0p4FvvNtHprlWRsHRJBAYaNJH0gEalzZmZT/p4q/MZ2toOEh9kzrd5WJTlidqEWXQL+8DGp46x2OK5J9eUkUq3Ozpl7RDdYEWDxBfULqeMscCiuTbW6kec3rv+d3hpmn1LnpM5b5vrHH2kIsChRdd/Xec+iCR2ENanCEs4C0kNg9pw6JnVeW+1WagtcU4meuCUxC0o6CGtGkv4h35A2znaQYHZE5eQVWTJn5gn9gJEHuDjR6rM/tjW/U1g3FbcM6cLZbhKJes5VF5hT9ZfrxswSrYF1maTvSR/OdpPI1Nzj8bauC3ymIrJkbAvLPlrrbslUe35PsEei5qtQMusl3RAoqRdkydg2E6ivK1jzmsdS7VGCeYmaAnfMieiGwJw6JksyLhrTvbAuU/PlPWJdzuOp9iTBrGsq0RPvmTGhGwIjSZ9IHWdrNmPdVM03caFKouRvqcISG39PMCNR89n3jG1xdzwKeLh4pubXeKHFYeggrImpD6ROocUvSf6eKizhbP2TE1GfiO8lN1b7cGkLjFQtqDNjgaM7Yd0pdU7aFKoYKYyzHgnmztR8Qj1HrMnpB4w06Fh0ZvyIUw+sm1PHZCjOOiSYeU/VObPWOUICEZVp9Wets46NlrD2lJrq6VOpzX9k429s5mV6+oD4yDUx3WBFwMPCkaqv8PZBLhjyK90Ja2NqQhLxM4R4cpKJ21HV4+9IG2ctCWZF1FQVU/5e0g2CAh4Wx1SmVYmcnDCs0JYwO9WGEuvoFPD0bFSSC/KWDUt6MD2zN/6I9fQKeNgopubkFQkxU/XmKjQA5iaS/iDfkTbONnwl1gp42CyiZur/lMlJpiolB7ihH2D9SNUTEJOITEhM+nC2gYSRjeEgp9RUq++LL4WzNRKDBDxIRNSETFU9q/vgI/mb/EjaOOuRGCxQBxkvkqr/1urjksw4YCZgXqrwG9tZh4SRvcDmiarP+ETVff6GLLkjOSlUxf8751CFWjAn1QCJvQnskyESByng2VTiYAU8PRInSMzpwxbwdEiUCLykD1/AE5C4QyCin4eAB4kJNVPFBIFM8GwEunj2Av8DUrsBT4j80Q8AAAAASUVORK5CYII=",
+["lucide-keyboard"]="iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAFzUkdCAK7OHOkAAACMSURBVEiJ7ZTBCYAwEATFJkw1+rBSBTFd2E5Qexg/JxyiEszpQ51fLmEW9iBZ9hMD4IAWCKQTxOV0gDcQb/E6YJZhadBGJa5JDwFIle/58oMHAzBcPWt2A8x5vCJLTgNSuo8KMOOdO5B+Yzncw3t2MMuFxWdXa+c6vOO77nWAAzpgNBAHoAGK1DY+wgLoIRn20wC3NQAAAABJRU5ErkJggg==",
+["lucide-map-pin"]="iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAFzUkdCAK7OHOkAAAHXSURBVEiJtZW/S1VhHMafI+osRYguDUmYZUtEYDSEEP6CiziUQ/+BQ4hLCIIUaEJDS9TY5OJaFFGTV2wwkNL6AxwczHIStPo09ERfD/e+91x/vHD4wnM+z/Pc95yXe6QTXlktALgkaUDSNUk3JO1JWpb0QdLLLMvWD9UMNAGzwC+qr5/AQ6Cx3vDzwKpDvgOTQB9wCmgD+oEpYMfMR+Bc0fBm4IuNr4DWBNsOvDW7DjQXKXhsw+s6dvzOnrlaYA/wG9gGzgS9BJSBH77KwGBuJzv2Xk0VzPuXPAnaUOIlDwTuqbUXMbMh19HhWQ7afc8FSRd9LVibDNw/T4eqLT8agLagbVm7ELQua9+CdtbaZmoHeO4FLcvNamu3EpcvWPPsDtpXz2mgE+iSNJ27J0mXK2gHF/Dc2xwLWuol9wdu3NqzVEGfoZWcPgQs+ShuA4vxBJlZs/dW1QKDnwyOJsGDnrv2fC4C3za8ReJvIvCt4aSNFCnIgPc2LAL5gxDZRj86gDc1w4PxNLBp40yCmzOzAbQULrD5Ov+/BWMV7t/zvX3gSl3hIeQOfz8qABNBnwrhw4cKD2EjoeQB8CiEl44UHkpKDiSED9Z21lfSC6wAy8DNYw0/yvoDW1WSkmO9S94AAAAASUVORK5CYII=",
+["lucide-palette"]="iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAFzUkdCAK7OHOkAAAHoSURBVEiJtdU9SJVRGAfwcxPChowMpAalmnQJIugLirbWihbLBu/YEOgiNLZlEARFDVFDS0PSEIUUEQ1tDcnFIdJokDKFvqSCRH4NPtHx8t57fft44F3+z//jOe85nJPSf65KsyZ6UkpHUkoHU0p9KaXulNL3lNJESqkW33ilUpktlYr1uIQfWtdnnEbTYXPzzZjIDGo4j+PoxgbsxSlcxlLwnqG3lXknpkOwiBG0tdDsxqvQfMOBRsQ2PA7iNHY24A1hBkMZ1o7boV1AX5FwOJu8N7CrmMdwxpvr7+8fx1ydvh0vwuNpvflGfIrmSIbPV6vVR7lZhC7gSsGQ2/AlfA7ljcEAn2PNaswaFa6F1/UcHAtwcLVGmXbFnmAgvCZz0lSAxSegecCKPcHW8PqYkz4EuKVoqhYBK36j5aMOb3PSbIDbi6YquaJ94XUvB2sBHiuaqmTAg/A6nIO3AjxX1jD0m7Af98Pnbj3hRDTeYF0Ls7UYxTvF9RBd9aJ2vA/ChRYBNwpMZ3AHA82EZ4K8hB1NeL9O3J5mgxQJ2/AkxFMaX3Yvg3OyVECIO/E6DBZxVt117fe1UisdEAZFD84ojqILuwIv90zWhXTgYqyiUd3844AsqCc2fwyTlq/ir5Yfpo6/DvgX9RPM5D79NsKI9AAAAABJRU5ErkJggg==",
+["lucide-pin"]="iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAFzUkdCAK7OHOkAAAERSURBVEiJ3ZRNagJBEIVbyRmCXsFDZOsyREYRs3fhxl3uoygET+EBVBDBH4SsBxfewPmyqYFO2z2p9gfBtxlm6r16b7qKNuYRACrAEEj5HwdgALzGGHwrGrsYxRgcRfSm4NaFm/rq5YDulOsVeTIF5yzVxPr1NfDh4SRSu+iIqsBYBgiw9HDy5mn0kJ1GAGdHFfruIjSDm+GxBkBe921K5nDiDICSMaYnrzMPZSHPbpFBqHkH2MscT4E1bQKZcHZAS9v8y9rtPfBewG0APxa/rzFYCbmtDFQCPkUz1wgyzX47mnJ+nG7txcPfGGNqsSaCrSZNYg04BlsguSDUH3PV9WDjya+KW8C3RUWY3iPEVfgFKaKwBHzDCVIAAAAASUVORK5CYII=",
+["lucide-puzzle"]="iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAFzUkdCAK7OHOkAAAIsSURBVEiJzZU/a1RBFMXvbJEYExKTuGBhDIqFFkqEYBXEXkE/gEELRQsRooUEJYU2BmRB0BRR0dTBzk8gpjB/DBFJEaONEZeYTkFci5/FO6N3Ny+zz0oHln1zz7n33LlzZ8bsfxhAF/AQqOo3CXQ6/DTwHPgJvAeu/E3wHmCZzWNZwkdyMICzRYK3A/NyWAGGgOPAB9nmgJf6HgU6gXuaLxQRuCnyK6DX2cvAa5ftR6DFYQBfzcxKTTT69N9vZpeAYGYWQvhiZkNmVjGz+2Z2MoRQE35GPp+LrOAosO4yvZ3g7gUWHXcsj9QGjAOVWBIgACNyWksITIqzAdyIq/WEsttQyLqk1WEA3xICY+LM+v2K4K6GzpjR9yNgZ5HOADqABfFWgLIHnwlYIuvtQfLHua0EFKcHeCvutAc2ZNzvbIeAKaBGdjpHUsGd30HFqnpjVcZ9BYNcVUlrZFfEKYcdUKw17zDhS9Qk+PktyjegEr3R/IF36gVWBcwC2xMCMUCF7GqIp/0FfzZ5FehudPRtej0h8F2cHZq3AJ/cSuZwHVQSqWRmF81st+x7ElWKmzcMhBBCzcxOWHZl3DGzY7pK6rIadxmsA4OJFdxy3EWgP5HMb6fYRZfREVfJKhJvddyS6h5be6KIQKxrt+bbgHcu07rj37Bfo0UElkS+S3Y1PNV8hvrjn/fgtBcRuED+iL2d92Q2PTONIteU2Q/gCXDYYV3AY7IG2PTo/9PxC7sg3mc2Dh7YAAAAAElFTkSuQmCC",
+["lucide-reference"]="iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAFzUkdCAK7OHOkAAADeSURBVEiJ7ZXNCcJAEIUfohWoRK9agecgHizBOhQbUGxFQUgJ/oGXnK0jiIodfB7cw6obskQRkbzT7vB4384eZqS/ENAAFkDCq07ABpgAZaACTIEtcHH4E5PVsAGRw+jSClh7eiMbcDbFrqO7NjAGjk+vHAIth79nPEe7CEDGNwYWoJ7hfczzAeT1lbLM76oAFIAC8EXARZKA8N1AoG+OJ0kqm8te0kBS7Bg1Z0kHSbEVMpMUSupIqqawdja1CSyfRnJeJcAcCHxbTtsHI6DtFeIJCrivzytQ+1jwz+sG7gelHAXthgcAAAAASUVORK5CYII=",
+["lucide-refresh-cw"]="iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAFzUkdCAK7OHOkAAAGcSURBVEiJ1dU/axZBEAbw2deABBQtFCSlKSys/IuYQoTYiFUqS1ELFUsFwdrGyg/gh7AQG4s3sVCJRYKFxIAIitgqAZFo/Fncnln13ruT1yYPLMvtzDzPzOwyF7HVkdqM2BYR5yLiWEQciogjETERES8i4mVELEfEw5TSWhGzEBE/UkqnW5WxH4u68Q6zRRzoIr+CL9n3af4+hT3YjRlcxINC6D52dgrgWvZZx00MOpK5jK855lWrAKZz5t9xtLXM3+MOYLXsW5PTAM+y/XZP4uGoi2lynsm2511t6SHwucn5RjZe6EPeF2WmJ/K+8j8FfgHvcwU7xuRZwLDJMI/HY5Lvy0l+HIenTeBsFnhUn/V6Lf+Aw3lf+lM54dOIJ/d3PxuASbzJMXNNAqPQ615wN/u/xmSTQ4kVHOxDnGOPY0M1k5rjCvK6zHXcwfYW4gFu2Rx219uyqLFLNXprvMU9nMcU9qpG91XVWIE1XOoqE5tDCrP40HI3NYaYGsWbCsL5iPiWUjpTnE1E9as8WayNiHhSr5TSamvmWx4/ASSRgNPVRpFyAAAAAElFTkSuQmCC",
+["lucide-rotate-ccw-clock"]="iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAElElEQVR4nO2YjXHaWBSFz63AcgWBCqJUsHIFxhUEOsAVBBrY4AoWVxC2AssVGFcQuQLLDSz7vRXS6qEfJNCuJ5l8M2fOGOme+654EgbTD86vAd6bn2+A3W4XSfqGHDdmFqsD1IXYNYqUEaAQObYoRY4NejSzLX42dQO8YgFypDS6xGvh3EjSZzRBAepDIimWtDSzRCdSN8AOKyC87pwQ+4oiDcNC0h2tUrwXdYtrHIBDAeYWPtXwpOiWdmv1oFhcDousHYCXR8rujRDV8YY2KFa2Pdz22+J57UiZJiiSdIHqWFC3xDthyINmlQF4KVK2+AAd8ogWnBarB2RORZ2kD+iQtbJ3I8VbMeRB8A4rM0N/oEOe0Zwmsc6AdguRgy5QmTXZrncrhjwI3GHHuDezqQaCliEWqzrE0swWauGUAdxbu8JbISZStu0cN9TEaoHzAyyW9BGVmVnLjd13gJm1hJUh5hVzi3Kk1F3irVDjzk/kvxMpGlvD/dB3gDpccOUKE+PlcLzSqw7KQiyWP8TSGrZSJZQAr3FHKleYGC+H45VeTVC6kPQFlRlbzSd2JZTiv7DK60d4IzzAC8jZYQUc75VJeSL/EXtvNQ+OSiiFc+x3VDnWwBuaEB6rBDk7rIDjXfP+gfKp/Md3QsQY9zD0n8ACdlgBzXv3IiLFyvfCJ2K2eEHv0K7QfIgBNtg1yrklZoUX9A7tCs2HGGAqfxs9mlmkEr1Du0LzHVZA4969iIgkPaCcRzs2wL7oG3LcUBDrBMjZYWUuyUrxzhARYk8oZ0vGJ7ygboBXLECOlIJLvDfkHA6QohW6IzPFO0GMl0Ott2bvDwfntxZ0hRi3yAt0iHt9hToNQk7rerw/HJyfyP8AGVvNJ+AxyJkqW2jdEI4UrVDjIGSE2BPKeeZc91pB3QCxpN9QzpWdfh8E2HyvC1RHim7qelAf6YSbOJY/wMw6/gfaBJkBNt+rbpDae426qfo+RilyTb6inD8pmuBnQ3aAzfe6QDkvZjbSAZy/wa5Rzi3nrfACQx4UhdgTyqm9OudAjwCb7+WY0CPWAZz3igUo5xPnbfGCygAOChP5N/LMztxGfWENU/nb58XMRjrAUAWK18p+cctJKB7j/xus4Ts20r/csYY57mGoAsUjSS6gzNIavhUNDf0XOvULTU5NSIqu7GAPDg19Q+wBBShnaQ0Xr20AF5DIf1qkaGwNHzznsu/5HTnPeUOjpp6NAzgInMq/kRxbdGUNgadCrwB7QCEqM7OWB0jrAA6CF/K3kiNFVzbQdqJHiD2gAJVZWsPWyTk6gIMGa/lPJUeKVjRY4idD9hdsjgJU5t5qvsQfYugoNHHhK/QZHZKIH2lpdo93hkyXtZA0UpV7NCczxVsx1BmaLlTdTjmuWazsJ/ZE3HwsYIu7uhBzD4OR+NRFkapXPGdpR7ZNGUO9YDFTZe+GW9CQuKeNu+pr9aD3AA6GCLA5ano3+rJEKxaf4r0wdDIMMlI2yAR9QH14QRvkFp7oRAwNAsOEWKRsGEeAPiLHM0qRY4NiFr3Fz2awAd6LXwO8Nz/8AH8DJlfpQKVelr0AAAAASUVORK5CYII=",
+["lucide-scaling"]="iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAADiklEQVR4nO2ZgXHTQBBF92jATgekg3SASkgq4NQBQwXQANBB0gGhApwKSAl0YLkBjrcEHVqdtJEdWUmYvJmdzUp/d/8lY1vjBHnmvBzgsfm/D5BSekuKInJGrIlDaIiLEMJGOjC7EpGvxJqYQiLeM+cLOTN4AIavSTq8knloWHxCzrBjS9I9+5CY84qcGTvAd1Il87FjsTHLjoa0IvaCOcazKRQGRxG5JOZiR5yzdyMd2FOJyDWx1yGYYzybQmHwRkTeEC3fiA/03ZKPDvujOL9AfBjPplAYsCWtiZbTEMJPWQB2R3HMK3gxnk2hMCSRMugLzTFgbZR7zCvYMX5MoTAokTLoC83csDLKsPmaMNexE0gZUygMS6QM+kIzJ6yL0jP5lzqEcMX9xM8Zrhk/plDQuw1zwqoojnkBNImU4brxYwoFvdswF6yJco95BV0iZbhn/JhCQe82zAErokwwr6BNpAz3jR9TKOjdhofC+CgTzSvoG9KKUIpP9MIcDYmUoaHQHAqjo+xhXqGnkrtPbKX4RC/M0ZBIGRoKTRfkldw9+CkXyDcyALooe5qfQmGORYmUYXih6YJ8S1oTSoP8hGxAE+UI5pXCHMsSKcOCQtMFuavndpQjmVfMMoWFiZRhSaHpgnxUz60oRzSv5GUtLE2kDIsKTRfkg3ouR5nBPHMqcV5jf5Z1oSGRMjQUmi7ICz2XosxgXmHWljT6GivM0ZBIGRoKTRfkRg81cUn0qcOe5hXGJ1KGGYGUMYWC3m3og9zoR6jDAeYVxpv5zDF+TKGgdxv6IDf6AepwoHmF8WY+s4wfUyjo3YY+yI2+Rx0eYF5hvJnPPOPHFAp6t6EPcqOfQEMU7yZjMN7Mp8/4MYWC3m3og9zoJ1K8m4zBeDOfPuPHFAp6t6EP8l8kVzPAjrFr8r0w3/VjCgW929AH+TvSJ8LVddgR54zdyASY7/oxhYLebVga7Lh+TKGgdxuWBjuuH1Mo6N2GpcGO68cUCnq3YWmw4/oxhYLebVga7Lh+TKGgdxuWBjuuH1Mo6BvSimg5DQt9udsHL2ekH0RL8fkxdICN2K/Xr4mPYaGv11vw8VpEPhPnRMtNCKGSDkMHiDL8PP8UqEPv4bA4gMIhNmL/Ck+Bm9D77StjB1iTromncogbQh8/GrIhEKNwkCj//s26IpZEn5luiSuMX8kI7gGeAy8HeGye/QF+AxWmvkCEkcR0AAAAAElFTkSuQmCC",
+["lucide-send"]="iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAFzUkdCAK7OHOkAAAG3SURBVEiJ1dS9a1RBFMbheyOCHyFLEERFgyCCYJXGwsJKEMQqnam0kBRWoiAGGxcs/BMs7BQhFmohBiy0EAnEFKbzIwS0ELQygh8xm8diz8JkvFez64J4mjvzzpnfO3M4c4vifwnsxWUsYAV3+gEdwUXM+jWWe4Vuxzk8y4Cr+JzMn3QDHcYEHqOVQZ/iPF6E9im+E3+CDuE0pvEjO+1sQHdhEDOhz4XpCoaroFswjvv4nkHnMYmRJD+Fz+BCjKdz8EHcwrcMuoAm9lccJocPRrngVJ68mEAXcRWjvylfFXx3zJfRyDe8i8UlPMBJbFwvPPROee5VbTqEh9Z2yIe4yZ4a+FwHHmvPQx+vu3mh3RWX8DIxWo1bHc/gjWTfvtC/YmutQWZ2GNetfTy0W7SR5U7G2tS64NnmzTiTlO9YRc58rI11bZBArgTkbqYfSBpk098YbNN+0S3sSPRmGNzsGZ7AbgesmWivQzvRD4MjAXuPAYwm5al8N72YdE48hmsxvtEXeBicDegjvI3x0X4aDOFL8i4+YkNd/kC3BmVZLhVFkXbMVFmWrV4OWxvYiVd4I/lX/ZP4Cd3RIu5RXL4bAAAAAElFTkSuQmCC",
+["lucide-settings"]="iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAFzUkdCAK7OHOkAAAHJSURBVEiJzZXJSgNBEIYz5hC9KF49ucUlIErwIPgEanBFH8PlKUTQi+sbKOJrOC4oqJDccjQmLol6NcrnYWqYsu1x3EALmun565+/uqtrqmOx/2BAG7AL3MnYAVp/SzwOZHlv54DzGwH6RbAMtMhu7gXr+Y5gvd4+sCViawrbtGCtQEOU+DJQlY+zwLFKyYDiDSr8GMjJ/AlYDBOfF1IVyCuBa2DCwp8BbhUvDzzLfNYkO0BRnKOC9QLpiB07QBrolfdx0SiYxIRaSbNFaAxwgQcZLjBi4SWVTtx0nojjAEgoPEO4DRuL9DUObdvtBEpC0NXhCrYHpGTsCeYqnl9tJSAZltO0kK4UdidYt8JSgpUVdiPYm3+jxohRjr03x3iG2cuHXqCDoJJWFa5T1PWJFBWtKQJOhXD0hUMeUrxapXFoitepj1oswTN41fUIVIB9VAUpXrvSiWtHDUEFZQRrAvo+zKvH6wOaZD4pGpc24oI4zVZRAKYs/Gm8NuKbbhVzYatZ4W2zyymBsGZ3QXBfPAFLUVtuRLUL7O16Q7B1hUW365CA/oVTwbtw2gkunMgz+kyAuJEq385+LK6C+Jd+RQ52G0vX/RN7BRNWoKLt1vZqAAAAAElFTkSuQmCC",
+["lucide-sliders-horizontal"]="iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAFzUkdCAK7OHOkAAABsSURBVEiJ5ZRBDoAwCASbxv9/qfxsPHmhWihVg3HOwBIyoZRfAjSgPRkAgKe2qq1GdBt7aqtuSsHMibZghgT7XiaVjlcMNT0JtFROpukdJ7I0lZXh+Umh8cw37RTUQfk0tfCcKPpND2Sx/wPsAA4FoBogcpgAAAAASUVORK5CYII=",
+["lucide-tag"]="iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAFzUkdCAK7OHOkAAAFGSURBVEiJvZSxSgNBEIZTWYl6R44IAbWx8R2SV7l38FUUxNbKTi3TBSVNwESCok00pWiwSa2fhXNkkr29nYXDKXdm/m/3Zv5rNP4jgF3gAninOr6AE2AjFnAZEF6PO2AzBjCXxm6g7gAYS+3ADCmuZaxNgYm0DIGtWgElkDGQRAOAM+ATODZAHoFmLGCe53kP+DC+5MUL8QDOgQVw6r3ZEvKsIC0TICaATEGmQLtWgII8idQrkOnkQhLbNUCKl1zrxI0c3prN44fsAT+ilxSHO8C9HNod6gd8i1aqEynL34DNoa54U83hqqwgBR6kYETIoau9LfX936o8YXfoqvhUembOmgYgfoe64q4HIiCOQ4H2mrjrYgOk1KEiPqu6gBWSySzgz6EdYF8GiWxNcE4WSPESHaYlsEISoK/E+zFrHAM6Ag6t9b+LKt1JWDZEDwAAAABJRU5ErkJggg==",
+["lucide-terminal"]="iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAFzUkdCAK7OHOkAAABySURBVEiJ7ZRBCoAgEAC1T4j/f4jQNaGOIfmHfjAd8tAlNGmhYOesMyq4xiifAbDACEyAkwrMnGyAl4g4IJdIlrqJRh5FPJBKJPY4hoY1e4+4iugTqfxOboGlyNPro6IEIrCKzKHGQwTqhOueln+g/JwD3jcEgg3qEwUAAAAASUVORK5CYII=",
+["lucide-trash"]="iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAFzUkdCAK7OHOkAAACnSURBVEiJ7ZXNDcIwDEYtxA5kGjgwaZEQ3SKME0F3eFx8qPKjOIRChfpu0Wf7iyMrFvklgAMuQCAlqOZ6DMZM4Zixx2DSIseMdlLt2WMAwLu6iMhuFuzj3uNCDbpPDL6Gpe2WvMU7WIeBDoAvnZvIvWVpamp5Imt5os1gUfbGuHvlbOcvvopJb5QsmRLAeZ5bC7asyRI3i4EDrsCjoXAABuBg7fpjvAD06oaJMJp5fQAAAABJRU5ErkJggg==",
+["lucide-zap"]="iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAFzUkdCAK7OHOkAAAEpSURBVEiJzdW/TsJQFMdxZsJSFgbDnxAGfRXCOxgGXQz4QCYuDsbEQOLAopAQRhcNvAABFwcTh4bF+HXoj6S05WLtaeKZ2nPP/Zx7c2/aQuG/BVAFBsAHcAUULfEGsGY37vPA50BLz0sLvBnCX4Ey0NH7NCteD+ELwFP+TrleHngJ2ADfQMUU11hX+bE5rvGxxs7+gscONKHGJx4+cBNdTHRi7RCuukudQVI8uBqMDuGOucea++4q+lTRUUq8rEUBDF2FT3u27QMXv8DXQM3VoAW8AF8JTWJbT8CbaXa+Rc4FPEbyHsEV3uL11LigiZDTPPAKwedgA5RMcWF9QbfmuMCZsLYOdB7CG5lwNVgJPMl8W/Y0eI5c1TczXA084JrgBz8Aqma4VfwA1z2gXm/TI6EAAAAASUVORK5CYII=",
+},legacy=
+{close=
+"iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAQAAAAnOwc2AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAJcEhZcwAALiMAAC4jAXilP3YAAAAHdElNRQfkBRIUGwWxgtfpAAAAPUlEQVQI13WOSw0AMAhDmylBAv7NIOXtNNJkQC8F0o8QgQyBRFBkn5IiHkmMyZZ+uqxtjqbZ5EPQUukrfwGG7Gr7eVHzRQAAAABJRU5ErkJggg==",editaliases=
+"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAHdElNRQfkBgcDDg2x4tFHAAAAVklEQVQoz62QuQ3AMAwDT0FGUabzItn6UhkwDH9FyJICcVTIWheQLK5CEIhVQw0Ldm4aph1xAimS0wsRU2XsNi72wh8gbzYN9VHPyYohJKLqO5u5hfwADbRtUc2EmVAAAAAASUVORK5CYII=",editkeybinds=
+"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",edittheme=
+"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",editwaypoints=
+"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAHdElNRQfkBgcDDgzG5eHRAAAAj0lEQVQoz2NgYPhf8//jfwsGKPjP9N/u/+T/p/9f/D/7vxIDAwsDA4M0Ax/D0v/9DBcY+BhsGcIYlKBq9Rj+MGSyQDlKDJMZsAImBgJgSChgwSp6geEEww8GC2QFWxhsGAQYGBjuMKxgWMh4BxqqEhBq+v///33+s/1X+S+GxwrGXwx3aOfNPww/GP7hUgAAJakp6yg93EUAAAAASUVORK5CYII=",imgstudiopluginlogo=
+"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",minimize=
+"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",pin=
+"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",reference=
+"iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAQAAABLCVATAAAABGdBTUEAALGPC/xhBQAAAAJiS0dEAP+Hj8y/AAAAB3RJTUUH4wcXDAMMCGuWNgAAAVtJREFUSMfdlr1OAkEUhc8YE9daTTaa+BYatHEfxG2gdSvs3QpCQg08gPY8gjaC+w5QGMOSXUuNlRybBRkzM8xMrDjd5s79cs+9Oz/A1kroQ7zENc5whBDfKFEiw4N4dqIz4A2nVGnKhIEtJmZBkwrGNpg72ijdhBlYYUhyYMK0rTEk2dZh6k4Ykqwrxs8AbzhQ8J/wCCDClSL2jlPx9beepqmtTDXR5jJ/Z0W6tfw7ZK2ydqt6agg1SyOmACJNNGRNjNeNdZwbvVRHtnbuZWwts7KGE+1C09QA4Fj64qd5M2inRn7I1hbe1iiDcm9QLoNm3qCZDMq8QS8yaOgNGsqgkWeXcowlkCC6XqCuqKb2e4zs4xWHiqWuxwjAhvM+a2jqZMsJ0zJYZs8a09/QvX+6jgCAMedGyNzqggQABkw4UUImTLinyjE9Ii4QV4+IBQqUyHAvRpa1bJN+AFElufnK4ja7AAAAAElFTkSuQmCC",settings=
+"iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAQAAAD9CzEMAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAHdElNRQfhCxoGHBsxJwxuAAACQklEQVRYw+2XvU9UQRTF5+0+I4Kria6xATWoJAoWliY2qBHJxlBYSG9iFFx1MYbOwkQrLUj8R1ArCxIbYyJYgWiDH2yWSk2AuLKS/Cx8u2Z27sybxz4KEk43d889Zz7u3Hmr1Da2CHhPM6bTlN+LhD0+uRkvh8MJoikaHNpCBl1itLM5wC4PLc5R5TVX2RGNu5lgWTzkMiN1STJcZopfHI+TD5mL0is8pIt7VHFhkQLt3ORTNJ6MMxglOfT1nXfJ5/m5AQMd8/XNlQyetSwPULTJn2I9FYMf7JcNXjrTZinRS548fYw1SkHGE0m+35FQ4xZZjZ3lDjUrf42jpkGBP1b6RXHFlxwWQ1LCWcoi+UbCol7lmi3hAK+Evc9aDbJ8MPjv6HHdhMDY26Jy8e82ndW4fTr/kz5qSSec3D6N+y1WXCmlWNGSdju5OY27bjKkdq03Xbxm9Q9VP4MlbeR+VvRfK7EGZBhXB7WQeAcaGNBGRygRONh0MmWU3RyhlR8yb/An2WejX+G7eHFKVoP7Iv8rZyTykPXa1xgQ5QetzaUmXDaOseawSNbs4LQ0o6e4MEuJk7TRRm9su34h72iOCmngN91imQYr6oFKAxPBgq0qMky3PP8lcg5zLmjkZS9JnTUSsz6eR8QFinRQsDxCdXxhkA5u87lRCmGcQQ+rzDBcJ9LOqMWkzHV2RqyQYWao0u9xRuYnLI9Fg0c+Jy5008BsuvJD4vW8+H2+b7rBYoLoRtDKn0Bfi7eG/JsU5bexqfgL1SjLmuYaxYMAAAAASUVORK5CYII=",
+},
+}end a.c0=function()local ab=a.cache.c0 if not ab then ab={c=aa()}a.cache.c0=ab end return ab.c end end do local aa=function()
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 local aa=a.a()
-local ab=a.az()
-
-local ac=ab.storage.imagePath
-
+local ab=a.aD()
+local ac=a.n()
 local ad=a.k()
-local ae=a.cF()
-local af=a.cG()
-local ag=a.d()
+local ae=a.cK()
+local af=a.cL()
+local ag=a.cY()
+local ah=a.d()
 
-local ah=a.cU()
+local ai=a.cZ()
+local aj=a.c_()
+local ak=a.c0()
 
-local ai={}
-local aj={}
-
-local ak=aa.getcustomasset
+local al=ab.storage.imagePath
+local am=ab.ui.legacyIconsKey
 
 local b={}
 
-b.newCustomAsset=function(c, d, e)
-ag:assert(not ai[d],"asset is already loaded")
 
-local f=ad:getCustomAsset(e)
+local c=setmetatable({},{__mode="k"})
 
-if f==nil then
-f=ah[d]
-ai[d]=f
-return f
+local d={}
+
+local e={}local f=function(
+
+
+f)
+return ac:getValue(am)==true and aj[f]~=nil end local g=function(
+
+
+g, h)
+return`{if h then"legacy"else"new"}|{g}`end local h=function(
+
+
+
+h)
+local i=ai[h]
+
+if type(i)=="number"then
+return`rbxassetid://{i}`
 end
 
-ag:log(`new custom asset to '{e}': '{f}'`)
-return f end
+return i or""end local i=function(
 
 
-b.get=function(c, d)
 
-if ai[d]then
-return ai[d]
+i, j)
+local k=`{i}/{j}.png`
+local l=ae.path("assets",k)
+
+if ae.has("assets",k)then
+return ad:getCustomAsset(l)
 end
 
-if type(ak)~="function"then
-return ah[d]
+local m=ak[i]
+local n=if m then m[j]else nil
+
+if n~=nil then
+n=ag.decode(n)
+else
+n=af.fetch(al:format(i,j))
 end
 
-local e=`{d}.png`
-local f=ae.path("assets",e)
-ag:log(`loading asset: '{f}'`)
-
-if ae.has("assets",e)then
-return c:newCustomAsset(d,f)
+if n==nil then
+return nil
 end
 
-local g=af.fetch(ac:format(d))
+ae.write("assets",k,n)
+ah:log(`created a file to asset: '{l}'`)
 
-if g==nil then
-local h=ah[d]
-h=if type(h)=="number"then`rbxassetid://{h}`else h
+return ad:getCustomAsset(l)end local j=function(
 
-ai[d]=h
-return h
+
+
+j, k)
+if type(aa.getcustomasset)~="function"then
+return h(j)
 end
 
-ae.write("assets",e,g)
-ag:log(`created a file to asset: '{f}'`)
-
-return c:newCustomAsset(d,f)end
-
-
-b.loadImage=function(c, d, e)
-ag:assert(ah[e],`invalid asset name: {e}`)
-
-local f=ai[e]
-if f~=nil then
-d.Image=f
-return
+if k then
+local l=i("legacy",aj[j])
+if l then
+return l
+end
 end
 
-d.Image=""
+return i("remake",j)or h(j)end local k=function(
 
-if aj[e]then
-table.insert(aj[e],d)
-return
+
+
+k)
+
+if type(aa.getcustomasset)~="function"then
+return h(k)
 end
 
-aj[e]={d}
+local l=f(k)
+local m=g(k,l)
+
+local n=d[m]
+if n~=nil then
+return n
+end
+
+if e[m]then
+return nil
+end
+
+e[m]=true
 
 task.defer(function()
-local g=c:get(e)
-if not g then return end
+d[m]=j(k,l)
+e[m]=nil
 
-for h,i in aj[e]do
-i.Image=g
+for o,p in c do
+if g(p,f(p))==m then
+o.Image=d[m]
 end
+end
+end)
 
-aj[e]=nil
-end)end
+return nil end
 
 
-return b end a.cV=function()local ab=a.cache.cV if not ab then ab={c=aa()}a.cache.cV=ab end return ab.c end end do local aa=function()
+
+b.loadImage=function(l, m, n)
+ah:assert(ai[n]~=nil,`invalid asset name: {n}`)
+
+c[m]=n
+m.Image=k(n)or""end
+
+
+
+b.refresh=function(l)
+for m,n in c do
+m.Image=k(n)or""
+end end
+
+
+return b end a.c1=function()local ab=a.cache.c1 if not ab then ab={c=aa()}a.cache.c1=ab end return ab.c end end do local aa=function()
+
 return{
 uiScale=Instance.new("UIScale"),
 getScale=function(aa)
@@ -15905,7 +16774,7 @@ ac.Scale=ab
 ac:SetAttribute("REAL_SCALE",ab)
 end
 end
-}end a.cW=function()local ab=a.cache.cW if not ab then ab={c=aa()}a.cache.cW=ab end return ab.c end end do local aa=function()
+}end a.c2=function()local ab=a.cache.c2 if not ab then ab={c=aa()}a.cache.c2=ab end return ab.c end end do local aa=function()
 
 
 
@@ -15942,7 +16811,10 @@ actionsTopGap=4,
 
 tweenTime=0.5,
 flashTime=0.5,
-}end a.cX=function()local ab=a.cache.cX if not ab then ab={c=aa()}a.cache.cX=ab end return ab.c end end do local aa=function()
+
+
+copyFeedbackTime=1.5,
+}end a.c3=function()local ab=a.cache.c3 if not ab then ab={c=aa()}a.cache.c3=ab end return ab.c end end do local aa=function()
 
 local aa=Color3.fromRGB(248,109,115)
 local ab=Color3.fromRGB(223,215,136)
@@ -15977,7 +16849,7 @@ ah,client=
 ab,deprecated=
 ae
 }
-}end a.cY=function()local ab=a.cache.cY if not ab then ab={c=aa()}a.cache.cY=ab end return ab.c end end do local aa=function()
+}end a.c4=function()local ab=a.cache.c4 if not ab then ab={c=aa()}a.cache.c4=ab end return ab.c end end do local aa=function()
 
 
 
@@ -15986,8 +16858,8 @@ ae
 
 
 
-local aa=a.cY().args
-local ab=a.cR()
+local aa=a.c4().args
+local ab=a.b5()
 
 local ac={}
 
@@ -16012,17 +16884,17 @@ return string.match(ah,"^%d+$")~=nil or string.match(ah,"^%d+%.%d+$")~=nil end l
 
 ai, aj)
 local ak=string.sub(ai,aj,aj)
-local b=aj+1
+local al=aj+1
 
-while b<=#ai do
-local c=string.sub(ai,b,b)
+while al<=#ai do
+local am=string.sub(ai,al,al)
 
-if c=="\\"then
-b=b+2
-elseif c==ak then
-return b
+if am=="\\"then
+al=al+2
+elseif am==ak then
+return al
 else
-b=b+1
+al=al+1
 end
 end
 
@@ -16031,107 +16903,108 @@ return nil end local aj=function(
 
 
 aj)
-local ak={}local b=function(
+local ak={}local al=function(
 
-b, c, d)
-if b==""then
+al, am, b)
+if al==""then
 return
 end
 
-local e=ak[#ak]
-if e and e.color==c and e.bold==d then
-e.text=e.text..b
+local c=ak[#ak]
+if c and c.color==am and c.bold==b then
+c.text=c.text..al
 else
-table.insert(ak,{text=b,color=c,bold=d})
+table.insert(ak,{text=al,color=am,bold=b})
 end end
 
 
-local c=1
-local d=#aj
+local am=1
+local b=#aj
 
-while c<=d do
-local e=string.sub(aj,c,c)
-local f=if c>1 then string.sub(aj,c-1,c-1)else""
+while am<=b do
+local c=string.sub(aj,am,am)
+local d=if am>1 then string.sub(aj,am-1,am-1)else""
 
 
-if(e=="@"or e=="#")and not ag(f)then
-local g,h=string.find(aj,af,c+1)
-if h then
-b(string.sub(aj,c,h),aa.tag,true)
-c=h+1
+if(c=="@"or c=="#")and not ag(d)then
+local e,f=string.find(aj,af,am+1)
+if f then
+al(string.sub(aj,am,f),aa.tag,true)
+am=f+1
 continue
 end
 end
 
 
-if(e=='"'or e=="'")and not ag(f)then
-local g=ai(aj,c)
+if(c=='"'or c=="'")and not ag(d)then
+local e=ai(aj,am)
 
-if g then
-b(string.sub(aj,c,g),aa.string,false)
-c=g+1
+if e then
+al(string.sub(aj,am,e),aa.string,false)
+am=e+1
 continue
 end
 end
 
-if ag(e)then
-local g,h=string.find(aj,ae,c)
-local i=string.sub(aj,c,h)
-b(i,if ah(i)then aa.number else nil,false)
-c=h+1
+if ag(c)then
+local e,f=string.find(aj,ae,am)
+local g=string.sub(aj,am,f)
+al(g,if ah(g)then aa.number else nil,false)
+am=f+1
 else
-b(e,if ad[e]then aa.symbol else nil,false)
-c=c+1
+al(c,if ad[c]then aa.symbol else nil,false)
+am=am+1
 end
 end
 
 return ak end
 
 
-ac.apply=function(ak, b)
-local c={}
+ac.apply=function(ak, al)
+local am={}
 
-for d,e in aj(tostring(b))do
-local f=ab.escapeRichText(e.text)
+for b,c in aj(tostring(al))do
+local d=ab.escapeRichText(c.text)
 
-if e.color then
-f=ab.colorFromRGB(f,e.color)
+if c.color then
+d=ab.colorFromRGB(d,c.color)
 end
-if e.bold then
-f=`<b>{f}</b>`
-end
-
-table.insert(c,f)
+if c.bold then
+d=`<b>{d}</b>`
 end
 
-return table.concat(c)end
+table.insert(am,d)
+end
+
+return table.concat(am)end
 
 
-return ac end a.cZ=function()local ab=a.cache.cZ if not ab then ab={c=aa()}a.cache.cZ=ab end return ab.c end end do local aa=function()
+return ac end a.c5=function()local ab=a.cache.c5 if not ab then ab={c=aa()}a.cache.c5=ab end return ab.c end end do local aa=function()
 
 
 
-local aa=a.cT()
-local ab=a.cV()
-local ac=a.cS()
+local aa=a.cX()
+local ab=a.c1()
+local ac=a.a()
 local ad=a.cW()
+local ae=a.c2()
 
-local ae=a.aE()
-local af=a.f()
-local ag=a.cX()
+local af=a.aI()
+local ag=a.f()
+local ah=a.c3()
 
-local ah=a.cZ()
+local ai=a.c5()
 
-local ai=4
-local aj=8
+local aj=4
+local ak=8
 
 
 
-local ak=5
-local b=5
-local c=ag.titleHeight+ak+b*2
+local al=5
+local am=5
+local b=ah.titleHeight+al+am*2
 
-local d={
+local c={
 container=nil,
 
 items={},
@@ -16141,28 +17014,30 @@ queue={},
 
 
 room=math.huge,
-}local e=function(
+}local d=function(
 
-e, f)
-local g=aa.new("Frame","Notification",e,{
+d, e, f)
+local g=aa.new("Frame","Notification",d,{
 BorderSizePixel=0,
 ClipsDescendants=true,
-LayoutOrder=f,
-Size=UDim2.fromOffset(ag.size.X.Offset,0),
+LayoutOrder=e,
+Size=UDim2.fromOffset(ah.size.X.Offset,0),
 ThemeTag={
 BackgroundColor3="Colors.Background",
 },
 })
 
-local h=ai+ag.iconSize+aj
+local h=aj+ah.iconSize+ak
 
-local i=aa.new("TextLabel","Title",g,{
-AnchorPoint=Vector2.new(0.5,0),
+
+local i=if f then ah.iconSize+aj else 0
+
+local j=aa.new("TextLabel","Title",g,{
 BackgroundTransparency=1,
-Position=UDim2.fromScale(0.5,0),
-Size=UDim2.new(1,-h*2,0,ag.titleHeight),
+Position=UDim2.fromOffset(h,0),
+Size=UDim2.new(1,-(h*2+i),0,ah.titleHeight),
 Text="",
-TextSize=ag.titleTextSize,
+TextSize=ah.titleTextSize,
 TextTruncate=Enum.TextTruncate.AtEnd,
 ThemeTag={
 Font="Font.Normal",
@@ -16170,28 +17045,28 @@ TextColor3="Colors.Text.Default",
 },
 })
 
-local j=aa.new("Frame","Description",g,{
+local k=aa.new("Frame","Description",g,{
 AnchorPoint=Vector2.new(0.5,1),
 ClipsDescendants=true,
-Position=UDim2.new(0.5,0,1,-ak),
-Size=UDim2.new(1,-10,1,-(ag.titleHeight+ak)),
+Position=UDim2.new(0.5,0,1,-al),
+Size=UDim2.new(1,-10,1,-(ah.titleHeight+al)),
 ThemeTag={
 BackgroundColor3="Colors.Buttons.Default",
 },
 })
 
-aa.new("UICorner",j,{
-CornerRadius=UDim.new(0,ag.cornerRadius),
+aa.new("UICorner",k,{
+CornerRadius=UDim.new(0,ah.cornerRadius),
 })
 
 
-local k=aa.new("TextLabel","Text",j,{
+local l=aa.new("TextLabel","Text",k,{
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundTransparency=1,
-Position=UDim2.fromOffset(b,b),
-Size=UDim2.new(1,-b*2,0,0),
+Position=UDim2.fromOffset(am,am),
+Size=UDim2.new(1,-am*2,0,0),
 Text="",
-TextSize=ag.textSize,
+TextSize=ah.textSize,
 RichText=true,
 TextWrapped=true,
 TextXAlignment=Enum.TextXAlignment.Left,
@@ -16202,447 +17077,491 @@ TextColor3="Colors.Text.Default",
 },
 })
 
-local l=aa.new("ImageButton","PinButton",g,{
+local m=aa.new("ImageButton","PinButton",g,{
 AnchorPoint=Vector2.new(0,0.5),
 BackgroundTransparency=1,
-Position=UDim2.new(0,ai,0,ag.titleHeight/2),
-Size=UDim2.fromOffset(ag.iconSize,ag.iconSize),
+Position=UDim2.new(0,aj,0,ah.titleHeight/2),
+Size=UDim2.fromOffset(ah.iconSize,ah.iconSize),
 ThemeTag={
 ImageColor3="Colors.Icons",
 },
 })
 
-local m=aa.new("ImageButton","CloseButton",g,{
+local n=aa.new("ImageButton","CloseButton",g,{
 AnchorPoint=Vector2.new(1,0.5),
 BackgroundTransparency=1,
-Position=UDim2.new(1,-ai,0,ag.titleHeight/2),
-Size=UDim2.fromOffset(ag.iconSize,ag.iconSize),
+Position=UDim2.new(1,-aj,0,ah.titleHeight/2),
+Size=UDim2.fromOffset(ah.iconSize,ah.iconSize),
 ThemeTag={
 ImageColor3="Colors.Icons",
 },
 })
 
-ab:loadImage(l,"lucide-pin")
-ab:loadImage(m,"lucide-custom-x")
-
-return g,i,k,l,m,j end local f=function(
+ab:loadImage(m,"lucide-pin")
+ab:loadImage(n,"lucide-custom-x")
 
 
+local o
+if f then
+o=aa.new("ImageButton","CopyButton",g,{
+AnchorPoint=Vector2.new(1,0.5),
+BackgroundTransparency=1,
+Position=UDim2.new(1,-(aj*2+ah.iconSize),0,ah.titleHeight/2),
+Size=UDim2.fromOffset(ah.iconSize,ah.iconSize),
+ThemeTag={
+ImageColor3="Colors.Icons",
+},
+})
+
+ab:loadImage(o,"lucide-clipboard-copy")
+end
+
+return g,j,l,m,n,k,o end local e=function(
 
 
-f, g, h)
-local i=aa.new("Frame","Actions",f,{
+
+
+e, f, g)
+local h=aa.new("Frame","Actions",e,{
 AnchorPoint=Vector2.new(0.5,1),
 BackgroundTransparency=1,
-Position=UDim2.new(0.5,0,1,-b),
-Size=UDim2.new(1,-b*2,0,ag.actionHeight),
+Position=UDim2.new(0.5,0,1,-am),
+Size=UDim2.new(1,-am*2,0,ah.actionHeight),
 ZIndex=2,
 
 aa.new("UIListLayout",{
 FillDirection=Enum.FillDirection.Horizontal,
 HorizontalAlignment=Enum.HorizontalAlignment.Right,
-Padding=UDim.new(0,ag.actionGap),
+Padding=UDim.new(0,ah.actionGap),
 SortOrder=Enum.SortOrder.LayoutOrder,
 VerticalAlignment=Enum.VerticalAlignment.Center,
 }),
 })
 
-local j={}
+local i={}
 
-for k,l in g do
-local m=l.primary==true
+for j,k in f do
+local l=k.primary==true
 
-local n=aa.new("TextButton","Action",i,{
+local m=aa.new("TextButton","Action",h,{
 AutoButtonColor=false,
 AutomaticSize=Enum.AutomaticSize.X,
 BorderSizePixel=0,
-LayoutOrder=k,
-Size=UDim2.fromOffset(0,ag.actionHeight),
-Text=l.text,
-TextSize=ag.textSize,
+LayoutOrder=j,
+Size=UDim2.fromOffset(0,ah.actionHeight),
+Text=k.text,
+TextSize=ah.textSize,
 ZIndex=2,
 ThemeTag={
-BackgroundColor3=if l.primary then"Colors.Primary"else"Colors.Background",
+BackgroundColor3=if k.primary then"Colors.Primary"else"Colors.Background",
 Font="Font.Normal",
 TextColor3="Colors.Text.Default",
 },
 
 aa.new("UICorner",{
-CornerRadius=UDim.new(0,ag.cornerRadius),
+CornerRadius=UDim.new(0,ah.cornerRadius),
 }),
 aa.new("UIPadding",{
-PaddingLeft=UDim.new(0,ag.actionPadding),
-PaddingRight=UDim.new(0,ag.actionPadding),
+PaddingLeft=UDim.new(0,ah.actionPadding),
+PaddingRight=UDim.new(0,ah.actionPadding),
 }),
 aa.new("UISizeConstraint",{
-MinSize=Vector2.new(ag.actionMinWidth,0),
+MinSize=Vector2.new(ah.actionMinWidth,0),
 }),
-})local o=function(
+})local n=function(
 
 
-o)
-if m then
-n.BackgroundTransparency=if o then 0.2 else 0
+n)
+if l then
+m.BackgroundTransparency=if n then 0.2 else 0
 else
-ac:updateObjectProperties(n,{
-BackgroundColor3=if o then"Colors.Buttons.Holding"else"Colors.Background",
+ad:updateObjectProperties(m,{
+BackgroundColor3=if n then"Colors.Buttons.Holding"else"Colors.Background",
 })
 end end
 
 
-table.insert(h,ae:Connect(n.MouseEnter,function()
-o(true)
+table.insert(g,af:Connect(m.MouseEnter,function()
+n(true)
 end))
-table.insert(h,ae:Connect(n.MouseLeave,function()
-o(false)
+table.insert(g,af:Connect(m.MouseLeave,function()
+n(false)
 end))
 
-j[k]=n
+i[j]=m
 end
 
-return j end local g=function(
+return i end local f=function(
 
 
-g)
-for h,i in g.connections do
-ae:disconnect(i)
+f)
+for g,h in f.connections do
+af:disconnect(h)
 end
 
-table.clear(g.connections)end
+table.clear(f.connections)end
 
 
-d.getContainer=function(h, i)
-if h.container then
-return h.container
+c.getContainer=function(g, h)
+if g.container then
+return g.container
 end
 
-local j=aa.new("Frame","Notifications",i,{
+local i=aa.new("Frame","Notifications",h,{
 BackgroundTransparency=1,
 BorderSizePixel=0,
-Size=UDim2.fromOffset(ag.size.X.Offset,0),
+Size=UDim2.fromOffset(ah.size.X.Offset,0),
 })
 
-aa.new("UIListLayout",j,{
-Padding=UDim.new(0,ag.spacing),
+aa.new("UIListLayout",i,{
+Padding=UDim.new(0,ah.spacing),
 SortOrder=Enum.SortOrder.LayoutOrder,
 })
 
-h.container=j
+g.container=i
 
 
-j.ChildAdded:Connect(function()
-h:refreshLayout()
+i.ChildAdded:Connect(function()
+g:refreshLayout()
 end)
 
-j.ChildRemoved:Connect(function()
-h:refreshLayout()
+i.ChildRemoved:Connect(function()
+g:refreshLayout()
 end)
 
-local k=h.queue
-h.queue={}
+local j=g.queue
+g.queue={}
 
-for l,m in k do
-h:add(m.title,m.message,m.duration,m.choices)
-end
-
-return j end
-
-
-
-d.getStackHeight=function(h)
-local i=h.container
-if not i then return 0 end
-
-local j=0
-local k=0
-
-for l,m in i:GetChildren()do
-if m:IsA("GuiObject")then
-j=j+1
-k=k+m.Size.Y.Offset
-end
-end
-
-if j>1 then
-k=k+(j-1)*ag.spacing
-end
-
-return k end
-
-
-
-d.refreshLayout=function(h)
-local i=h.container
-if not i then return end
-
-i.Size=UDim2.fromOffset(ag.size.X.Offset,h:getStackHeight())
-
-if h.onLayoutChanged then
-h.onLayoutChanged()
-end end
-
-
-d.tweenHeight=function(h, i, j)
-if i.tween then
-i.tween:Cancel()
-end
-
-local k=TweenInfo.new(ag.tweenTime,Enum.EasingStyle.Quart,Enum.EasingDirection.InOut)
-i.tween=af.TweenService:Create(i.frame,k,{
-Size=UDim2.fromOffset(ag.size.X.Offset,j),
-})
-i.tween:Play()end
-
-
-
-
-d.wantedHeight=function(h, i)
-local j=math.max(ad:getScale(),0.01)
-local k=i.textLabel.AbsoluteSize.Y/j
-
-
-local l=if i.actionsHeight>0 then 0 else ag.size.Y.Offset
-local m=math.max(k+c+i.actionsHeight,l)
-return math.min(m,ag.maxHeight,h.room)end
-
-
-
-d.fitHeight=function(h, i, j)
-if i.removed or not i.textLabel then return end
-
-local k=h:wantedHeight(i)
-if k==i.height then return end
-i.height=k
-
-if j then
-if i.tween then
-i.tween:Cancel()
-end
-
-i.frame.Size=UDim2.fromOffset(ag.size.X.Offset,k)
-else
-h:tweenHeight(i,k)
-end end
-
-
-
-
-d.setRoom=function(h, i)
-if i==h.room then return end
-h.room=i
-
-for j,k in h.items do
-h:fitHeight(k,true)
-end
-
-h:trimToRoom()end
-
-
-
-d.liveHeight=function(h)
-local i=0
-
-for j,k in h.items do
-i=i+k.height
-end
-
-if#h.items>1 then
-i=i+(#h.items-1)*ag.spacing
+for k,l in j do
+g:add(l.title,l.message,l.duration,l.choices,l.options)
 end
 
 return i end
 
 
 
-d.trimToRoom=function(h)
-while#h.items>1 and h:liveHeight()>h.room do
-local i
+c.getStackHeight=function(g)
+local h=g.container
+if not h then return 0 end
 
-for j,k in h.items do
-if j==#h.items then break end
+local i=0
+local j=0
 
-if not k.pinned then
-i=k
+for k,l in h:GetChildren()do
+if l:IsA("GuiObject")then
+i=i+1
+j=j+l.Size.Y.Offset
+end
+end
+
+if i>1 then
+j=j+(i-1)*ah.spacing
+end
+
+return j end
+
+
+
+c.refreshLayout=function(g)
+local h=g.container
+if not h then return end
+
+h.Size=UDim2.fromOffset(ah.size.X.Offset,g:getStackHeight())
+
+if g.onLayoutChanged then
+g.onLayoutChanged()
+end end
+
+
+c.tweenHeight=function(g, h, i)
+if h.tween then
+h.tween:Cancel()
+end
+
+local j=TweenInfo.new(ah.tweenTime,Enum.EasingStyle.Quart,Enum.EasingDirection.InOut)
+h.tween=ag.TweenService:Create(h.frame,j,{
+Size=UDim2.fromOffset(ah.size.X.Offset,i),
+})
+h.tween:Play()end
+
+
+
+
+c.wantedHeight=function(g, h)
+local i=math.max(ae:getScale(),0.01)
+local j=h.textLabel.AbsoluteSize.Y/i
+
+
+local k=if h.actionsHeight>0 then 0 else ah.size.Y.Offset
+local l=math.max(j+b+h.actionsHeight,k)
+return math.min(l,ah.maxHeight,g.room)end
+
+
+
+c.fitHeight=function(g, h, i)
+if h.removed or not h.textLabel then return end
+
+local j=g:wantedHeight(h)
+if j==h.height then return end
+h.height=j
+
+if i then
+if h.tween then
+h.tween:Cancel()
+end
+
+h.frame.Size=UDim2.fromOffset(ah.size.X.Offset,j)
+else
+g:tweenHeight(h,j)
+end end
+
+
+
+
+c.setRoom=function(g, h)
+if h==g.room then return end
+g.room=h
+
+for i,j in g.items do
+g:fitHeight(j,true)
+end
+
+g:trimToRoom()end
+
+
+
+c.liveHeight=function(g)
+local h=0
+
+for i,j in g.items do
+h=h+j.height
+end
+
+if#g.items>1 then
+h=h+(#g.items-1)*ah.spacing
+end
+
+return h end
+
+
+
+c.trimToRoom=function(g)
+while#g.items>1 and g:liveHeight()>g.room do
+local h
+
+for i,j in g.items do
+if i==#g.items then break end
+
+if not j.pinned then
+h=j
 break
 end
 end
 
-if not i then break end
-h:remove(i)
+if not h then break end
+g:remove(h)
 end end
 
 
-d.pin=function(h, i)
-if i.pinned or i.removed then return end
-i.pinned=true
+c.pin=function(g, h)
+if h.pinned or h.removed then return end
+h.pinned=true
 
-i.titleLabel.Text=i.title.." (Pinned)"
-ac:addObject(i.pinButton,{ImageColor3="Colors.Primary"})
+h.titleLabel.Text=h.title.." (Pinned)"
+ad:addObject(h.pinButton,{ImageColor3="Colors.Primary"})
 
-local j=i.titleLabel
+local i=h.titleLabel
 task.spawn(function()
-j.TextTransparency=0.5
-task.wait(ag.flashTime)
-j.TextTransparency=0
+i.TextTransparency=0.5
+task.wait(ah.flashTime)
+i.TextTransparency=0
 end)end
 
 
-d.remove=function(h, i)
-if i.removed then return end
-i.removed=true
+c.remove=function(g, h)
+if h.removed then return end
+h.removed=true
 
-local j=table.find(h.items,i)
-if j then
-table.remove(h.items,j)
+local i=table.find(g.items,h)
+if i then
+table.remove(g.items,i)
 end
 
-g(i)
+f(h)
 
-h:tweenHeight(i,0)
-task.delay(ag.tweenTime,function()
-i.frame:Destroy()
+g:tweenHeight(h,0)
+task.delay(ah.tweenTime,function()
+h.frame:Destroy()
 end)end
 
 
-d.trim=function(h)
-while#h.items>ag.maxVisible do
-local i
+c.trim=function(g)
+while#g.items>ah.maxVisible do
+local h
 
-for j,k in h.items do
-if not k.pinned then
-i=k
+for i,j in g.items do
+if not j.pinned then
+h=j
 break
 end
 end
 
-if not i then break end
-h:remove(i)
+if not h then break end
+g:remove(h)
 end end
 
 
-d.add=function(h, i, j, k, l)
-h.nextOrder=h.nextOrder+1
+c.add=function(g, h, i, j, k, l)
+g.nextOrder=g.nextOrder+1
 
 local m={
-title=i,
+title=h,
 pinned=false,
 removed=false,
 connections={},
-height=ag.size.Y.Offset,
-actionsHeight=if l then ag.actionHeight+ag.actionsTopGap+b else 0,
+height=ah.size.Y.Offset,
+actionsHeight=if k then ah.actionHeight+ah.actionsTopGap+am else 0,
 }
 
-local n
-m.frame,m.titleLabel,m.textLabel,m.pinButton,m.closeButton,n=
-e(h.container,h.nextOrder)
 
-m.titleLabel.Text=i
-m.textLabel.Text=ah:apply(j)
+local n=l~=nil and l.copy==true and ac.setclipboard~=nil
 
-table.insert(m.connections,ae:Connect(m.pinButton.Activated,function()
-h:pin(m)
+local o,p
+m.frame,m.titleLabel,m.textLabel,m.pinButton,m.closeButton,o,p=
+d(g.container,g.nextOrder,n)
+
+
+m.copyButton=p
+m.copyText=tostring(if l and l.copyText~=nil then l.copyText else i)
+
+m.titleLabel.Text=h
+m.textLabel.Text=ai:apply(i)
+
+table.insert(m.connections,af:Connect(m.pinButton.Activated,function()
+g:pin(m)
 end))
 
+if p then
+table.insert(m.connections,af:Connect(p.Activated,function()
+g:copy(m)
+end))
+end
 
 
-local o=l~=nil and type(k)~="number"
 
-if o then
+local q=k~=nil and type(j)~="number"
+
+if q then
 m.pinned=true
 m.pinButton.Visible=false
 end
 
-if l then
-local p=f(n,l,m.connections)
+if k then
+local r=e(o,k,m.connections)
 
-for q,r in p do
-local s=l[q]
+for s,t in r do
+local u=k[s]
 
-table.insert(m.connections,ae:Connect(r.Activated,function()
+table.insert(m.connections,af:Connect(t.Activated,function()
 if m.removed then return end
 
-h:remove(m)
+g:remove(m)
 
-if s.onTap then
-s.onTap()
+if u.onTap then
+u.onTap()
 end
 end))
 end
 end
 
-table.insert(m.connections,ae:Connect(m.closeButton.Activated,function()
-h:remove(m)
+table.insert(m.connections,af:Connect(m.closeButton.Activated,function()
+g:remove(m)
 end))
 
 
-table.insert(m.connections,ae:Connect(m.textLabel:GetPropertyChangedSignal("AbsoluteSize"),function()
-h:fitHeight(m)
+table.insert(m.connections,af:Connect(m.textLabel:GetPropertyChangedSignal("AbsoluteSize"),function()
+g:fitHeight(m)
 end))
 
-table.insert(h.items,m)
-h:tweenHeight(m,m.height)
+table.insert(g.items,m)
+g:tweenHeight(m,m.height)
 
 
 m.frame:GetPropertyChangedSignal("Size"):Connect(function()
-h:refreshLayout()
+g:refreshLayout()
 end)
-h:refreshLayout()
+g:refreshLayout()
 
-if not o then
-local p=if type(k)=="number"then k else ag.defaultTime
-task.delay(p,function()
+if not q then
+local r=if type(j)=="number"then j else ah.defaultTime
+task.delay(r,function()
 if not m.pinned then
-h:remove(m)
+g:remove(m)
 end
 end)
 end
 
-h:trim()
-h:trimToRoom()end
+g:trim()
+g:trimToRoom()end
 
 
-d.notify=function(h, i, j, k)
-if j==nil then
-j=i
-i=ag.defaultTitle
+
+c.copy=function(g, h)
+local i=ac.setclipboard
+if i==nil or h.removed then return end
+
+i(h.copyText)
+ad:addObject(h.copyButton,{ImageColor3="Colors.Primary"})
+
+task.delay(ah.copyFeedbackTime,function()
+if h.removed then return end
+ad:addObject(h.copyButton,{ImageColor3="Colors.Icons"})
+end)end
+
+
+
+c.notify=function(g, h, i, j, k)
+if i==nil then
+i=h
+h=ah.defaultTitle
 end
 
-i=tostring(i)
+h=tostring(h)
 
-if not h.container then
-table.insert(h.queue,{title=i,message=j,duration=k})
+if not g.container then
+table.insert(g.queue,{title=h,message=i,duration=j,options=k})
 return
 end
 
-h:add(i,j,k)end
+g:add(h,i,j,nil,k)end
 
 
 
 
 
 
-d.ask=function(h, i, j, k, l)
-i=tostring(i)
+c.ask=function(g, h, i, j, k)
+h=tostring(h)
 
-if not h.container then
-table.insert(h.queue,{title=i,message=j,choices=k,duration=l})
+if not g.container then
+table.insert(g.queue,{title=h,message=i,choices=j,duration=k})
 return
 end
 
-h:add(i,j,l,k)end
+g:add(h,i,k,j)end
 
 
-d.destroy=function(h)
-for i,j in h.items do
-g(j)
+c.destroy=function(g)
+for h,i in g.items do
+f(i)
 end
 
-table.clear(h.items)
-table.clear(h.queue)
-h.container=nil end
+table.clear(g.items)
+table.clear(g.queue)
+g.container=nil end
 
 
-return d end a.c_=function()local ab=a.cache.c_ if not ab then ab={c=aa()}a.cache.c_=ab end return ab.c end end do local aa=function()
+return c end a.c6=function()local ab=a.cache.c6 if not ab then ab={c=aa()}a.cache.c6=ab end return ab.c end end do local aa=function()
 
 
 
@@ -16721,374 +17640,377 @@ ab:expect(af,{"number"},"'loopService:remove' #1")
 ae._callbacks[af]=nil end
 
 
-return ac end a.c0=function()local ab=a.cache.c0 if not ab then ab={c=aa()}a.cache.c0=ab end return ab.c end end do local aa=function()
+return ac end a.c7=function()local ab=a.cache.c7 if not ab then ab={c=aa()}a.cache.c7=ab end return ab.c end end do local aa=function()
 local aa=a.b()
 local ab=a.a()
 
-local ac=a.cD()
+local ac=a.cI()
 local ad=a.v()
 local ae=a.d()
 
 local af=a.t().usedCmds
 local ag=a.j()
 local ah=a.f()
-local ai=a.az()
+local ai=a.aD()
 
-local aj=a.cE()
-local ak=a.W()
-local b=a.cx()
-local c=a.cB()
-local d=a.ag()
+local aj=a.cJ()
+local ak=a.V()
+local al=a.cC()
+local am=a.cG()
+local b=a.af()
 
-local e=ai.commands.cmdsRank
-local f=e.maxTimesUsed
-local g=e.decreasePerUse
-local h=e.increasePerUse
+local c=ai.commands.cmdsRank
+local d=c.maxTimesUsed
+local e=c.decreasePerUse
+local f=c.increasePerUse
 
-local i=aa.iyGarbages or{}
-aa.iyGarbages=i
+local g=aa.iyGarbages or{}
+aa.iyGarbages=g
 
-local j={
-garbages=i
+local h={
+garbages=g
 }
 
-j.registerGarbage=function(k, l)
-return k:getGarbage(l)or k:createGarbage(l)end
+h.registerGarbage=function(i, j)
+return i:getGarbage(j)or i:createGarbage(j)end
 
 
-j.createGarbage=function(k, l)
-local m=k.garbages[l]
-if m==nil then
-m={}
-k.garbages[l]=m
+h.createGarbage=function(i, j)
+local k=i.garbages[j]
+if k==nil then
+k={}
+i.garbages[j]=k
 end
 
-return m end
+return k end
 
 
-j.getCommandData=function(k, l)
-return ac.lookup[l:lower()]end
+h.getCommandData=function(i, j)
+return ac.lookup[j:lower()]end
 
 
-j.hasGarbage=function(k, l)
-return k.garbages[l]~=nil end
+h.hasGarbage=function(i, j)
+return i.garbages[j]~=nil end
 
 
-j.getGarbage=function(k, l)
-return k.garbages[l]end
+h.getGarbage=function(i, j)
+return i.garbages[j]end
 
 
-j.collectGarbage=function(k, l)
-local m=k.garbages[l]
+h.collectGarbage=function(i, j)
+local k=i.garbages[j]
 
-if m~=nil then
-k.garbages[l]=nil
-return m
+if k~=nil then
+i.garbages[j]=nil
+return k
 end end
 
 
-j.commandUsed=function(k, l)
-local m=af:getValue(l)or 0
+h.commandUsed=function(i, j)
+local k=af:getValue(j)or 0
 
-local n=math.clamp(m+h,0,f)
-af:setValue(l,n)
+local l=math.clamp(k+f,0,d)
+af:setValue(j,l)
 
-for o,p in af:getData()do
-if o==l then continue end
+for m,n in af:getData()do
+if m==j then continue end
 
-local q=(n==f)
+local o=(l==d)
 
-if(q or p<n)and p>0 then
-p=p-g
+if(o or n<l)and n>0 then
+n=n-e
 
-if p==0 then p=nil end
-af:setValue(o,p)
+if n==0 then n=nil end
+af:setValue(m,n)
 end
 end
 
-af:save()end local k=function(
+af:save()end local i=function(
 
 
 
-k)
-local l={}
-if k and k.args then
-for m,n in k.args do
-l[m]={value=n.value}
+i)
+local j={}
+if i and i.args then
+for k,l in i.args do
+j[k]={value=l.value}
 end
 end
-return l end
+return j end
 
 
 
 
 
-local l=setmetatable({},{__mode="k"})
+local j=setmetatable({},{__mode="k"})
 
-local m=`{ag.privateFolder}/error-logs`local n=function(
+local k=`{ag.privateFolder}/error-logs`local l=function(
 
 
-n, o, p)
-local q=ab.writefile
-if not q then return nil end
+l, m, n)
+local o=ab.writefile
+if not o then return nil end
 
 if ab.makefolder then
 pcall(ab.makefolder,ag.privateFolder)
-pcall(ab.makefolder,m)
+pcall(ab.makefolder,k)
 end
 
-local r=`{m}/{os.time()}-{n}.txt`
-local s=table.concat({
-`command: {n}`,
+local p=`{k}/{os.time()}-{l}.txt`
+local q=table.concat({
+`command: {l}`,
 `time: {os.date("%Y-%m-%d %H:%M:%S")}`,
-`error: {o}`,
+`error: {m}`,
 "",
 "traceback:",
-p or"(not available)",
+n or"(not available)",
 },"\n")
 
-local t=pcall(q,r,s)
-if t then return r end
+local r=pcall(o,p,q)
+if r then return p end
 
 return nil end
 
 
 
-j.reportError=function(o, p, q, r)
-local s=tostring(q)
-local t=n(p,s,r)
+h.reportError=function(m, n, o, p)
+local q=tostring(o)
+local r=l(n,q,p)
 
-local u=s
-if t then
-u=u..`\nsaved to {t}`
+local s=q
+if r then
+s=s..`\nsaved to {r}`
 end
 
-o:notify(`'{p}' failed`,u)end
+m:notify(`'{n}' failed`,s)end
 
 
 
-j.run=function(o, p, q, r)
-ae:expect(p,{"string"},"'commandsController:run' #1")
-ae:expect(q,{"table","nil"},"'commandsController:run' #2")
+h.run=function(m, n, o, p)
+ae:expect(n,{"string"},"'commandsController:run' #1")
+ae:expect(o,{"table","nil"},"'commandsController:run' #2")
 
-local s=ac.lookup[p]
-ae:assert(s,"invalid command")
-
-
-q=q or ak.new({})
-
-local t=coroutine.running()
-local u=l[t]
-local v=u~=nil
-local w=v and not r
-
-if not w then
-o:commandUsed(s.name)
+local q=ac.lookup[n]
+ae:assert(q,"invalid command")
 
 
-local x=k(q)
-o.privateEnv.lastArgs=o.privateEnv.lastArgs or{}
-o.privateEnv.lastArgs[s.name]=x
+o=o or ak.new({})
 
-if s.name~="lastcommand"then
-o.privateEnv.lastCommand={
-name=s.name,
-args=x
+local r=coroutine.running()
+local s=j[r]
+local t=s~=nil
+local u=t and not p
+
+if not u then
+m:commandUsed(q.name)
+
+
+local v=i(o)
+m.privateEnv.lastArgs=m.privateEnv.lastArgs or{}
+m.privateEnv.lastArgs[q.name]=v
+
+if q.name~="lastcommand"then
+m.privateEnv.lastCommand={
+name=q.name,
+args=v
 }
 end
 end
 
-if s.run==nil then
-ae:warn(`missing command run func: {s.name}`)
+if q.run==nil then
+ae:warn(`missing command run func: {q.name}`)
 return
 end
 
-if not v then
-u={reported=false}
-l[t]=u
+if not t then
+s={reported=false}
+j[r]=s
 end
 
-local x
-local y,z=xpcall(function()
-s.run(o,q)
-end,function(y)
+local v
+local w,x=xpcall(function()
+q.run(m,o)
+end,function(w)
 
-x=debug.traceback(tostring(y),2)
-return y
+v=debug.traceback(tostring(w),2)
+return w
 end)
 
-if not v then
-l[t]=nil
+if not t then
+j[r]=nil
 end
 
-if not y then
+if not w then
 
 
-if not u.reported then
-u.reported=true
-o:reportError(s.name,z,x)
+if not s.reported then
+s.reported=true
+m:reportError(q.name,x,v)
 end
 
-error(z,0)
+error(x,0)
 end end
 
 
 
-j.getLastArgs=function(o, p)
-local q=o.privateEnv.lastArgs
-return q and q[p]end local o=function(
+h.getLastArgs=function(m, n)
+local o=m.privateEnv.lastArgs
+return o and o[n]end local m=function(
 
 
-o)
-local p=ac.lookup[o:lower()]
-if p==nil then return 0 end
+m)
+local n=ac.lookup[m:lower()]
+if n==nil then return 0 end
 
 
-return af:getValue(p.name)or 0 end
+return af:getValue(n.name)or 0 end
 
 
-j.search=function(p, q, r)
-local s=aj:searchAtArray(ac.array,q,r)
-local t=q:lower()
-local u={}
+h.search=function(n, o, p)
+local q=aj:searchAtArray(ac.array,o,p)
+local r=o:lower()
+local s={}
 
-for v,w in s do
-table.insert(u,{
-alias=w,
-index=v,
-isPrefix=w:lower():sub(1,#t)==t,
-usage=o(w),
+for t,u in q do
+table.insert(s,{
+alias=u,
+index=t,
+isPrefix=u:lower():sub(1,#r)==r,
+usage=m(u),
 })
 end
 
-table.sort(u,function(v,w)
-if v.isPrefix~=w.isPrefix then return v.isPrefix end
-if v.usage~=w.usage then return v.usage>w.usage end
-return v.index<w.index
+table.sort(s,function(t,u)
+if t.isPrefix~=u.isPrefix then return t.isPrefix end
+if t.usage~=u.usage then return t.usage>u.usage end
+return t.index<u.index
 end)
 
-local v={}
-for w,x in u do
-v[w]=x.alias
+local t={}
+for u,v in s do
+t[u]=v.alias
 end
 
-return v end
+return t end
 
 
 
-j.resolvePlayers=function(p, q)
-return d(q)end
+h.resolvePlayers=function(n, o)
+return b(o)end
 
 
-j.init=function(p, q)
-ae:assert(q,"'commandsController:init' #1 expected a config to init")
+h.init=function(n, o)
+ae:assert(o,"'commandsController:init' #1 expected a config to init")
 
-local r=a.aE()
-local s=a.bk()
-local t=a.c_()
-
-
-p.notify=function(u, ...)
-return t:notify(...)end
+local p=a.aI()
+local q=a.bo()
+local r=a.c6()
 
 
-
-p.ask=function(u, ...)
-return t:ask(...)end
-
-
-p.stringify=function(u, ...)
-return s:stringify(...)end
+n.notify=function(s, ...)
+return r:notify(...)end
 
 
-p.unstringify=function(u, ...)
-return s:unstringify(...)end
+
+n.ask=function(s, ...)
+return r:ask(...)end
 
 
-p.connect=function(u, ...)
-return r:Connect(...)end
+n.stringify=function(s, ...)
+return q:stringify(...)end
 
 
-p.expectExploit=function(u, v)
-local w=ab[v]
-if w~=nil then return w end
-
-u:notify("Incompatible Exploit",`Your exploit does not support this command (missing {v})`)end
+n.unstringify=function(s, ...)
+return q:unstringify(...)end
 
 
-p.getRoot=function(u)
-local v=u.playerService:getRootPart()
-if v then return v end
-
-u:notify("Character","your character is not loaded")end
+n.connect=function(s, ...)
+return p:Connect(...)end
 
 
-p.getRootPart=p.getRoot
-p.Connect=p.connect
+n.expectExploit=function(s, t)
+local u=ab[t]
+if u~=nil then return u end
+
+s:notify("Incompatible Exploit",`Your exploit does not support this command (missing {t})`)end
 
 
-local u=a.b_()
-p.isMobile=u
-p.isPC=not u
+n.getRoot=function(s)
+local t=s.playerService:getRootPart()
+if t then return t end
+
+s:notify("Character","your character is not loaded")end
 
 
-p.localPlayer=a.g()
-p.executorEnv=ab
-p.privateEnv=aa
+n.getRootPart=n.getRoot
+n.Connect=n.connect
 
 
-p.infiniteYield=q.infiniteYield
-p.playerService=q.playerService
-p.fetchService=q.fetchService
+local s=a.b3()
+n.isMobile=s
+n.isPC=not s
 
 
-p.signals={
+n.localPlayer=a.g()
+n.executorEnv=ab
+n.privateEnv=aa
+
+
+n.infiniteYield=o.infiniteYield
+n.playerService=o.playerService
+n.fetchService=o.fetchService
+
+
+n.signals={
 onCameraReset=ad.new()
 }
 
 
-p.config={
+n.config={
 links=ai.links
 }
 
 
-p.userSettings=UserSettings()
-p.gameSettings=settings()
+n.userSettings=UserSettings()
+n.gameSettings=settings()
 
-p.userGameSettings=p.userSettings:GetService("UserGameSettings")
-p.gameNetworkSettings=p.gameSettings:GetService("NetworkSettings")
-
-
-p.loopService=a.c0()
+n.userGameSettings=n.userSettings:GetService("UserGameSettings")
+n.gameNetworkSettings=n.gameSettings:GetService("NetworkSettings")
 
 
-p.storage=a.t()
+n.loopService=a.c7()
 
 
-p.robloxServices=ah
-p.rbxServices=ah
-
-p.teleportService=ah.TeleportService
-p.groupService=ah.GroupService
-p.runService=ah.RunService
-p.starterGui=ah.StarterGui
-p.coreGui=ah.CoreGui
-p.players=ah.Players
-p.guiService=ah.GuiService
-p.networkClient=ah.NetworkClient
-p.proximityPromptService=ah.ProximityPromptService
-p.commandsList=ac
+n.storage=a.t()
 
 
-b.restore(ac)
+n.robloxServices=ah
+n.rbxServices=ah
+
+n.teleportService=ah.TeleportService
+n.groupService=ah.GroupService
+n.runService=ah.RunService
+n.starterGui=ah.StarterGui
+n.coreGui=ah.CoreGui
+n.players=ah.Players
+n.guiService=ah.GuiService
+n.networkClient=ah.NetworkClient
+n.proximityPromptService=ah.ProximityPromptService
+n.commandsList=ac
 
 
-for v,w in c.restore(ac)do
-ae:warn(`plugin '{v}' could not be loaded: {w}`)
-end end
+al.restore(ac)
 
 
-return j end a.c1=function()local ab=a.cache.c1 if not ab then ab={c=aa()}a.cache.c1=ab end return ab.c end end do local aa=function()
+
+am.restore(ac,function(t,u)
+ae:warn(`plugin '{t}' could not be loaded: {u}`)
+end,function(t)
+n:notify("Plugins",`'{t}' is still loading. It may be waiting for something that is missing, like PlayerScripts.PlayerModule`)
+end)end
+
+
+return h end a.c8=function()local ab=a.cache.c8 if not ab then ab={c=aa()}a.cache.c8=ab end return ab.c end end do local aa=function()
 
 
 return{
@@ -17100,15 +18022,15 @@ bundleName="compiled.luau",
 
 
 localBundlePath="iy-remake/compiled.luau",
-}end a.c2=function()local ab=a.cache.c2 if not ab then ab={c=aa()}a.cache.c2=ab end return ab.c end end do local aa=function()
+}end a.c9=function()local ab=a.cache.c9 if not ab then ab={c=aa()}a.cache.c9=ab end return ab.c end end do local aa=function()
 
 
 
 local aa=a.a()
-local ab=a.aE()
+local ab=a.aI()
 local ac=a.f()
-local ad=a.cG()
-local ae=a.c2()
+local ad=a.cL()
+local ae=a.c9()
 local af=a.n()
 local ag=a.d()
 
@@ -17118,33 +18040,33 @@ local ai=false
 local aj=false local ak=function()
 
 
-return af:getValue(ae.settingKey)==true end local b=function()
+return af:getValue(ae.settingKey)==true end local al=function()
 
 
 
-local b=ad.downloadUrl(ae.bundleName)
+local al=ad.downloadUrl(ae.bundleName)
 
 return table.concat({
 "local ok, source = pcall(readfile, \""..ae.localBundlePath.."\")",
 "if not ok or type(source) ~= \"string\" or source == \"\" then",
-"\tsource = game:HttpGet(\""..b.."\")",
+"\tsource = game:HttpGet(\""..al.."\")",
 "end",
 "loadstring(source)()",
-},"\n")end local c=function()
+},"\n")end local am=function()
 
 
 
 if aj or not ak()then return end
 
-local c=aa.queueteleport
-if c==nil then return end
+local am=aa.queueteleport
+if am==nil then return end
 
 aj=true
 
-local d,e=pcall(c,b())
-if not d then
+local b,c=pcall(am,al())
+if not b then
 aj=false
-ag:warn("keepiy: failed to queue the loader: "..tostring(e))
+ag:warn("keepiy: failed to queue the loader: "..tostring(c))
 end end
 
 
@@ -17152,30 +18074,30 @@ ah.start=function()
 if ai then return end
 ai=true
 
-ab:Connect(ac.Players.LocalPlayer.OnTeleport,c)end
+ab:Connect(ac.Players.LocalPlayer.OnTeleport,am)end
 
 
-ah.enable=function(d)
-if not d:expectExploit("queueteleport")then return end
+ah.enable=function(b)
+if not b:expectExploit("queueteleport")then return end
 
-d.infiniteYield:setKeepIY(true)
-d:notify("Keepiy","on: IY runs again after you teleport, and the interface stays open")end
-
-
-ah.disable=function(d)
-d.infiniteYield:setKeepIY(false)
-d:notify("Keepiy","off: IY will not run after the next teleport")end
+b.infiniteYield:setKeepIY(true)
+b:notify("Keepiy","on: IY runs again after you teleport, and the interface stays open")end
 
 
-ah.toggle=function(d)
+ah.disable=function(b)
+b.infiniteYield:setKeepIY(false)
+b:notify("Keepiy","off: IY will not run after the next teleport")end
+
+
+ah.toggle=function(b)
 if ak()then
-ah.disable(d)
+ah.disable(b)
 else
-ah.enable(d)
+ah.enable(b)
 end end
 
 
-return ah end a.c3=function()local ab=a.cache.c3 if not ab then ab={c=aa()}a.cache.c3=ab end return ab.c end end do local aa=function()
+return ah end a.da=function()local ab=a.cache.da if not ab then ab={c=aa()}a.cache.da=ab end return ab.c end end do local aa=function()
 
 
 
@@ -17251,16 +18173,16 @@ conditions={
 },
 },
 },
-}end a.c4=function()local ab=a.cache.c4 if not ab then ab={c=aa()}a.cache.c4=ab end return ab.c end end do local aa=function()
+}end a.db=function()local ab=a.cache.db if not ab then ab={c=aa()}a.cache.db=ab end return ab.c end end do local aa=function()
 
 local aa=a.f()
-local ab=a.ag()
-local ac=a.cD()
+local ab=a.af()
+local ac=a.cI()
 local ad=a.l()
 local ae=a.p()
 local af=a.m()
-local ag=a.cB()
-local ah=a.cR()
+local ag=a.cG()
+local ah=a.b5()
 
 
 
@@ -17280,12 +18202,12 @@ local ah=a.cR()
 
 local ai={}local aj=function(
 
-aj, ak, b)
+aj, ak, al)
 return{
 success=false,
 message=aj,
 options=ak,
-comment=b,
+comment=al,
 }end
 
 
@@ -17298,131 +18220,182 @@ return ak or{}end
 
 
 
-ai.getOptions=function(ak, b)
-local c=(b and b.options)or ak.options
-return ai.normalizeOptions(c)end local ak=function(
+ai.getOptions=function(ak, al)
+local am=(al and al.options)or ak.options
+return ai.normalizeOptions(am)end local ak=function(
 
 
 
-ak, b)
-local c=b:lower()
+ak, al)
+local am=al:lower()
 
-for d,e in ak do
-local f=tostring(e)
-if f:lower()==c then
-return f
+for b,c in ak do
+local d=tostring(c)
+if d:lower()==am then
+return d
 end
 end
 
-return nil end local b=function(
+return nil end local al=function(
 
 
-b)
-if type(b)~="table"then return{}end
-return ah.unlookupify(b)end local c=function(
+al)
+if type(al)~="table"then return{}end
+return ah.unlookupify(al)end local am=function(
 
 
-c)
+am)
 return{
 success=true,
-value=c,
+value=am,
 color="string",
-}end local d=function(
+}end local b=function(
 
 
-d, e)
-local f=ai.normalizeOptions(e.options)
+b, c)
+local d=ai.normalizeOptions(c.options)
 
-if#f==0 then
-return c(d)
+if#d==0 then
+return am(b)
 end
 
-local g=ak(f,d)
+local e=ak(d,b)
 
-if g then
-return{success=true,value=g,color="string"}
+if e then
+return{success=true,value=e,color="string"}
 end
 
-return aj(" - invalid option",f)end
+return aj(" - invalid option",d)end
 
 
-local e={
+local c={
 ["true"]=true,yes=
 true,enabled=
 true,
 ["false"]=false,no=
 false,disabled=
 false,
-}local f=function(
+}local d=function(
 
-f)
-local g=e[f:lower()]
+d)
+local e=c[d:lower()]
 
-if g==nil then
+if e==nil then
 return aj(" - invalid boolean",{"false","true"})
 end
 
 return{
 success=true,
-value=g,
+value=e,
 color="boolean",
-}end local g=function(
+}end local e=function(
 
 
-g, h)
-local i=tonumber(g)
+e, f)
+local g=tonumber(e)
 
-if i==nil or i~=i or math.abs(i)==math.huge then
+if g==nil or g~=g or math.abs(g)==math.huge then
 return aj(" - invalid number")
 end
 
-local j,k=h.min,h.max
+local h,i=f.min,f.max
 
-if h.clamp then
-j,k=h.clamp[1],h.clamp[2]
+if f.clamp then
+h,i=f.clamp[1],f.clamp[2]
 end
 
-if j and i<j then
-return aj(` - the <b>MIN</b> is <b>{j}</b>`)
+if h and g<h then
+return aj(` - the <b>MIN</b> is <b>{h}</b>`)
 end
 
-if k and i>k then
-return aj(` - the <b>MAX</b> is <b>{k}</b>`)
+if i and g>i then
+return aj(` - the <b>MAX</b> is <b>{i}</b>`)
 end
 
-if h.floor and math.floor(i)~=i then
+if f.floor and math.floor(g)~=g then
 return aj(" - whole numbers only")
 end
 
 
-if tonumber(string.format("%.5f",i))~=i then
+if tonumber(string.format("%.5f",g))~=g then
 return aj(" - too many decimal places")
 end
 
 return{
 success=true,
-value=i,
-display=`<b>{g}</b>`,
+value=g,
+display=`<b>{e}</b>`,
 color="number",
-}end local h=function(
+}end local f=function(
 
 
-h)
-local i=h:split(",")
+f)
+local g=f:split(",")
 
-if#i>3 then
+if#g>3 then
 return aj(" - too many args")
+end
+
+local h={}
+
+for i,j in g do
+
+if j:match("^%s*$")then
+j="0"
+end
+
+local k=e(j,{})
+
+if not k.success then
+return k
+end
+
+h[i]=k.value
+end
+
+if#h~=3 then
+return{
+success=false,
+comment=true,
+message=`: {({"X","Y","Z"})[#h+1]}`,
+}
+end
+
+local i=Vector3.new(h[1],h[2],h[3])
+
+return{
+success=true,
+value=i,
+display=`({i})`,
+color="others",
+}end local g=function(
+
+
+g)
+local h=g:match("^#?(%x%x%x%x%x%x)$")
+
+if h then
+local i=tonumber(h:sub(1,2),16)
+local j=tonumber(h:sub(3,4),16)
+local k=tonumber(h:sub(5,6),16)
+
+return{
+success=true,
+value=Color3.fromRGB(i,j,k),
+color="others",
+}
+end
+
+local i=g:split(",")
+
+if#i~=3 then
+return aj(" - use R,G,B or #hex")
 end
 
 local j={}
 
 for k,l in i do
-
-if l:match("^%s*$")then
-l="0"
-end
-
-local m=g(l,{})
+local m=e(l,{min=0,max=255,floor=true})
 
 if not m.success then
 return m
@@ -17431,248 +18404,197 @@ end
 j[k]=m.value
 end
 
-if#j~=3 then
-return{
-success=false,
-comment=true,
-message=`: {({"X","Y","Z"})[#j+1]}`,
-}
-end
-
-local k=Vector3.new(j[1],j[2],j[3])
-
 return{
 success=true,
-value=k,
-display=`({k})`,
+value=Color3.fromRGB(j[1],j[2],j[3]),
 color="others",
-}end local i=function(
+}end local h=function(
 
 
-i)
-local j=i:match("^#?(%x%x%x%x%x%x)$")
-
-if j then
-local k=tonumber(j:sub(1,2),16)
-local l=tonumber(j:sub(3,4),16)
-local m=tonumber(j:sub(5,6),16)
-
-return{
-success=true,
-value=Color3.fromRGB(k,l,m),
-color="others",
-}
-end
-
-local k=i:split(",")
-
-if#k~=3 then
-return aj(" - use R,G,B or #hex")
-end
-
-local l={}
-
-for m,n in k do
-local o=g(n,{min=0,max=255,floor=true})
-
-if not o.success then
-return o
-end
-
-l[m]=o.value
-end
-
-return{
-success=true,
-value=Color3.fromRGB(l[1],l[2],l[3]),
-color="others",
-}end local j=function(
-
-
-j)
-if j==""then
+h)
+if h==""then
 return aj(" - player missing")
 end
 
-local k=ab.parts(j)
+local i=ab.parts(h)
 
-if#k==0 then
+if#i==0 then
 return aj(" - player missing")
 end
 
 
-for l,m in k do
-if#ab(m)==0 then
-if ab.hasOperators(m)then
+for j,k in i do
+if#ab(k)==0 then
+if ab.hasOperators(k)then
 return aj(" - no players match this")
 end
 
-if ab.isSelector(m)then
+if ab.isSelector(k)then
 return aj(" - no players match this selector")
 end
 
-local n={}
-for o,p in aa.Players:GetPlayers()do
-table.insert(n,p.Name)
+local l={}
+for m,n in aa.Players:GetPlayers()do
+table.insert(l,n.Name)
 end
 
-return aj(" - player not found",n)
+return aj(" - player not found",l)
 end
 end
 
-return{success=true,value=j,color="valid"}end
+return{success=true,value=h,color="valid"}end
 
 
-local k={
+local i={
 "BasePart","Part","MeshPart","Model","Folder","Script","LocalScript",
 "ModuleScript","Sound","Humanoid","Tool","ClickDetector",
 "ProximityPrompt","TouchTransmitter","SpawnLocation","Seat","VehicleSeat",
-}local l=function(
+}local j=function(
 
-l)
+j)
 
-local m=pcall(function()
-local m=Instance.new(l)
-m:Destroy()
+local k=pcall(function()
+local k=Instance.new(j)
+k:Destroy()
 end)
 
-if m then
-return{success=true,value=l,color="valid"}
+if k then
+return{success=true,value=j,color="valid"}
 end
 
-return aj(" - invalid class name",k)end local m=function(
+return aj(" - invalid class name",i)end local k=function(
 
 
-m)
+k)
 
-local n=b(ad:getValue(tostring(game.PlaceId)))
+local l=al(ad:getValue(tostring(game.PlaceId)))
 
-if#n==0 then
+if#l==0 then
 return aj(" - no waypoints created")
 end
 
-local o=ak(n,m)
+local m=ak(l,k)
 
-if o then
-return{success=true,value=o,color="valid"}
+if m then
+return{success=true,value=m,color="valid"}
 end
 
-return aj(" - invalid waypoint",n)end local n=function(
+return aj(" - invalid waypoint",l)end local l=function(
 
 
-n)
-local o={}
+l)
+local m={}
 
-for p,q in aa.Teams:GetTeams()do
-table.insert(o,q.Name)
+for n,o in aa.Teams:GetTeams()do
+table.insert(m,o.Name)
 end
 
-if#o==0 then
+if#m==0 then
 return aj(" - there are no teams")
 end
 
-local p=ak(o,n)
+local n=ak(m,l)
+
+if n then
+return{success=true,value=n,color="valid"}
+end
+
+return aj(" - invalid team",m)end local m=function(
+
+
+m)
+local n=m:lower()
+local o={}
+local p
+
+for q,r in Enum.KeyCode:GetEnumItems()do
+table.insert(o,r.Name)
+
+if r.Name:lower()==n then
+p=r
+end
+end
 
 if p then
 return{success=true,value=p,color="valid"}
 end
 
-return aj(" - invalid team",o)end local o=function(
+return aj(" - invalid key",o)end local n=function(
 
 
-o)
-local p=o:lower()
-local q={}
-local r
+n)
+local o=ac.lookup[n:lower()]
 
-for s,t in Enum.KeyCode:GetEnumItems()do
-table.insert(q,t.Name)
-
-if t.Name:lower()==p then
-r=t
-end
+if o then
+return{success=true,value=o.name,color="valid"}
 end
 
-if r then
-return{success=true,value=r,color="valid"}
+return aj(" - invalid command",ac.array)end local o=function(
+
+
+
+o, p, q, r)
+local s=al(o:getData())
+
+if#s==0 then
+return aj(q)
 end
 
-return aj(" - invalid key",q)end local p=function(
+local t=ak(s,p)
+
+if t then
+return{success=true,value=t,color="valid"}
+end
+
+return aj(r,s)end local p=function(
 
 
 p)
-local q=ac.lookup[p:lower()]
-
-if q then
-return{success=true,value=q.name,color="valid"}
-end
-
-return aj(" - invalid command",ac.array)end local q=function(
+return o(ae,p," - no custom aliases"," - invalid alias")end local q=function(
 
 
-
-q, r, s, t)
-local u=b(q:getData())
-
-if#u==0 then
-return aj(s)
-end
-
-local v=ak(u,r)
-
-if v then
-return{success=true,value=v,color="valid"}
-end
-
-return aj(t,u)end local r=function(
+q)
+return o(af,ag.normalizeName(q)or q," - no plugins installed"," - invalid plugin")end
 
 
-r)
-return q(ae,r," - no custom aliases"," - invalid alias")end local s=function(
-
-
-s)
-return q(af,ag.normalizeName(s)or s," - no plugins installed"," - invalid plugin")end
-
-
-local t={
-string=d,
-text=d,
-object=c,
-boolean=f,
-number=g,
-vector3=h,
-color3=i,
-player=j,
-waypoint=m,
-className=l,
-team=n,
-keycode=o,
-command=p,
-alias=r,
-plugin=s,
+local r={
+string=b,
+text=b,
+object=am,
+boolean=d,
+number=e,
+vector3=f,
+color3=g,
+player=h,
+waypoint=k,
+className=j,
+team=l,
+keycode=m,
+command=n,
+alias=p,
+plugin=q,
 }
 
-ai.validate=function(u, v, w)
-local x=t[v.kind]
+ai.validate=function(s, t, u)
+local v=r[t.kind]
 
-if not x then
-return aj(` - missing parser {v.kind}`)
+if not v then
+return aj(` - missing parser {t.kind}`)
 end
 
-return x(w,v)end
+return v(u,t)end
 
 
-return ai end a.c5=function()local ab=a.cache.c5 if not ab then ab={c=aa()}a.cache.c5=ab end return ab.c end end do local aa=function()
+return ai end a.dc=function()local ab=a.cache.dc if not ab then ab={c=aa()}a.cache.dc=ab end return ab.c end end do local aa=function()
 
-local aa=a.c1()
-local ab=a.cE()
+local aa=a.c8()
+local ab=a.cJ()
 
-local ac=a.cD()
-local ad=a.cY()
+local ac=a.cI()
+local ad=a.c4()
 
-local ae=a.cR()
-local af=a.c5()
+local ae=a.b5()
+local af=a.dc()
 
 local ag=ae.colorFromRGB
 local ah=ae.escapeRichText
@@ -17683,454 +18605,454 @@ local ai="\\"
 local aj="^"
 local ak="inf"
 
-local b="!"
+local al="!"
 
-local c=ae.lookupify({"`","'","\""})
-local d=ae.lookupify({" ","\t","\n","\r"})
-local e=ae.lookupify({",","|","&"})local f=function(
+local am=ae.lookupify({"`","'","\""})
+local b=ae.lookupify({" ","\t","\n","\r"})
+local c=ae.lookupify({",","|","&"})local d=function(
+
+d)
+return ac.lookup[d]end local e=function(
+
+
+e, f, g)
+local h=ad.args
+return ag(e,h[f]or g or h.others)end local f=function(
+
 
 f)
-return ac.lookup[f]end local g=function(
-
-
-g, h, i)
-local j=ad.args
-return ag(g,j[h]or i or j.others)end local h=function(
-
-
-h)
-local i=h:gsub(".",function(i)
-return d[i]and"_"or i
+local g=f:gsub(".",function(g)
+return b[g]and"_"or g
 end)
-return i end local i=function(
+return g end local g=function(
 
 
-i, j)
-if i.name then
-return`'{h(i.name)}'`
+g, h)
+if g.name then
+return`'{f(g.name)}'`
 end
-return`#{j}`end local j=function(
+return`#{h}`end local h=function(
 
 
 
-j, k, l)
-local m=l+1
+h, i, j)
+local k=j+1
 
 while true do
-local n=j:find(k,m,true)
+local l=h:find(i,k,true)
 
-if not n then
+if not l then
 return nil
 end
 
-if j:sub(n-1,n-1)~="\\"then
-return n
+if h:sub(l-1,l-1)~="\\"then
+return l
 end
 
-m=n+1
-end end local k=function(
+k=l+1
+end end local i=function(
 
+
+
+
+i, j)
+local k={}
+local l=j
+local m=#i
+
+while l<=m do
+local n=i:sub(l,l)
+
+if b[n]or n==ai then
+break
+end
+
+table.insert(k,n)
+l=l+1
+
+if c[n]then
+while l<=m and b[i:sub(l,l)]do
+l=l+1
+end
+end
+end
+
+return table.concat(k),l-1 end local j=function(
+
+
+j, k, l, m, n, o)
+return{
+kind=j,
+value=k,
+usedChar=o,
+from=m,
+to=n,
+raw=l:sub(m,n),
+}end local k=function(
 
 
 
 k, l)
-local m={}
-local n=l
-local o=#k
-
-while n<=o do
-local p=k:sub(n,n)
-
-if d[p]or p==ai then
-break
+if l==""then
+return"","",k
 end
 
-table.insert(m,p)
-n=n+1
+local m,n=k:lower():find(l:lower(),1,true)
 
-if e[p]then
-while n<=o and d[k:sub(n,n)]do
-n=n+1
-end
-end
+if not m then
+return"","",k
 end
 
-return table.concat(m),n-1 end local l=function(
+return k:sub(1,m-1),k:sub(m,n),k:sub(n+1)end local l=function(
 
 
-l, m, n, o, p, q)
-return{
-kind=l,
-value=m,
-usedChar=q,
-from=o,
-to=p,
-raw=n:sub(o,p),
-}end local m=function(
+l, m)
+if m then
+return m..l..m
+end
+
+if l:find("%s")then
+return`"{l}"`
+end
+
+return l end local m=function(
 
 
 
 m, n)
-if n==""then
-return"","",m
+if n then
+return ah(n)..m..ah(n)
 end
 
-local o,p=m:lower():find(n:lower(),1,true)
-
-if not o then
-return"","",m
-end
-
-return m:sub(1,o-1),m:sub(o,p),m:sub(p+1)end local n=function(
+return m end local n=function(
 
 
-n, o)
-if o then
-return o..n..o
-end
-
-if n:find("%s")then
-return`"{n}"`
-end
-
-return n end local o=function(
-
-
-
-o, p)
-if p then
-return ah(p)..o..ah(p)
-end
-
-return o end local p=function(
-
-
-p, q, r, s)
+n, o, p, q)
 return{
-from=p,
-to=q,
-text=n(r,s),
-}end local q=function(
+from=n,
+to=o,
+text=l(p,q),
+}end local o=function(
 
 
 
 
-q)
-local r=q:split(aj)
+o)
+local p=o:split(aj)
 
-if#r>2 then
+if#p>2 then
 return nil," - invalid loop"
 end
 
-local s
-if r[1]:lower()==ak then
-s=math.huge
+local q
+if p[1]:lower()==ak then
+q=math.huge
 else
-s=tonumber(r[1])
+q=tonumber(p[1])
 
-if s==nil or s<1 or s~=math.floor(s)then
+if q==nil or q<1 or q~=math.floor(q)then
 return nil," - invalid loop count"
 end
 end
 
-local t=0
-if r[2]~=nil then
-t=tonumber(r[2])
+local r=0
+if p[2]~=nil then
+r=tonumber(p[2])
 
-if t==nil or t<0 then
+if r==nil or r<0 then
 return nil," - invalid loop delay"
 end
 end
 
-return{count=s,delay=t}end
+return{count=q,delay=r}end
 
 
-local r={}
-r.__index=r
-r.colorFromName=g
-r.removeWhiteSpace=h
+local p={}
+p.__index=p
+p.colorFromName=e
+p.removeWhiteSpace=f
 
 
 
-r.parse=function(s, t)
-local u=s.cmdInput
-local v={}
-local w={}
-local x=#t
-local y={tokens={},start=1}
-local z=1
+p.parse=function(q, r)
+local s=q.cmdInput
+local t={}
+local u={}
+local v=#r
+local w={tokens={},start=1}
+local x=1
 
-table.insert(v,y)
+table.insert(t,w)
 
-while z<=x do
-local A=t:sub(z,z)
+while x<=v do
+local y=r:sub(x,x)
 
-if d[A]then
-z=z+1
-elseif A==ai then
-y.stop=z
-y={tokens={},start=z+1}
-table.insert(v,y)
-z=z+1
+if b[y]then
+x=x+1
+elseif y==ai then
+w.stop=x
+w={tokens={},start=x+1}
+table.insert(t,w)
+x=x+1
 else
-local B
-local C=c[A]and j(t,A,z)
+local z
+local A=am[y]and h(r,y,x)
 
-if C then
-local D=(t:sub(z+1,C-1):gsub("\\"..A,A))
-B=l("string",D,t,z,C,A)
-z=C+1
+if A then
+local B=(r:sub(x+1,A-1):gsub("\\"..y,y))
+z=j("string",B,r,x,A,y)
+x=A+1
 else
-local D,E=k(t,z)
-B=l("identifier",D,t,z,E)
-z=E+1
+local B,C=i(r,x)
+z=j("identifier",B,r,x,C)
+x=C+1
 end
 
-table.insert(y.tokens,B)
-table.insert(w,B)
+table.insert(w.tokens,z)
+table.insert(u,z)
 end
 end
 
-y.stop=x+1
+w.stop=v+1
 
-for A,B in v do
-local C=B.tokens[1]
-local D=B.tokens[#B.tokens]
-local E=if D then D.to+1 else B.start
+for y,z in t do
+local A=z.tokens[1]
+local B=z.tokens[#z.tokens]
+local C=if B then B.to+1 else z.start
 
-B.lead=if C then t:sub(B.start,C.from-1)else""
-B.spaces=t:sub(E,B.stop-1)
+z.lead=if A then r:sub(z.start,A.from-1)else""
+z.spaces=r:sub(C,z.stop-1)
 end
 
-local A={}
-for B,C in w do
-table.insert(A,C.value)
+local y={}
+for z,A in u do
+table.insert(y,A.value)
 end
 
-local B=v[#v]
+local z=t[#t]
 
-u.rawText=t
-u.parsed=w
-u.spacesAtEnd=B.spaces
-u.noHighlightText=table.concat(A," ")..B.spaces
+s.rawText=r
+s.parsed=u
+s.spacesAtEnd=z.spaces
+s.noHighlightText=table.concat(y," ")..z.spaces
 
-return v end
+return t end
 
 
 
-r.parseArg=function(s, t, u, v, w)
-local x=u.value
-local y=af:validate(t,x)
-local z=y.success and#x>0
+p.parseArg=function(q, r, s, t, u)
+local v=s.value
+local w=af:validate(r,v)
+local x=w.success and#v>0
 
-local A={success=z,text=x}
-if z then
-A.value=y.value
+local y={success=x,text=v}
+if x then
+y.value=w.value
 end
-w.args[v]=A
+u.args[t]=y
 
-if z then
+if x then
 
-local B=if y.display then o(y.display,u.usedChar)else ah(u.raw)
-return{success=true,display=g(B,y.color or"valid")}
-end
-
-local B=af.getOptions(t,y)
-local C
-
-if#x>0 then
-C=ab:searchAtArray(B,x)[1]
+local z=if w.display then m(w.display,s.usedChar)else ah(s.raw)
+return{success=true,display=e(z,w.color or"valid")}
 end
 
-if C then
-local D,E,F=m(C,x)
-w.correction=p(u.from,u.to,C,u.usedChar)
+local z=af.getOptions(r,w)
+local A
 
-local G=ah(D)..g(ah(E),"warn")..ah(F)
+if#v>0 then
+A=ab:searchAtArray(z,v)[1]
+end
+
+if A then
+local B,C,D=k(A,v)
+u.correction=n(s.from,s.to,A,s.usedChar)
+
+local E=ah(B)..e(ah(C),"warn")..ah(D)
 return{
 success=false,
 suggestion=true,
-display=g(o(G,u.usedChar),"comment"),
+display=e(m(E,s.usedChar),"comment"),
 }
 end
 
 return{
 success=false,
-display=g(ah(u.raw),y.color or"warn"),
-message=y.message,
-comment=y.comment,
+display=e(ah(s.raw),w.color or"warn"),
+message=w.message,
+comment=w.comment,
 }end
 
 
 
-r.parsePending=function(s, t, u, v)
-local w=af:validate(t,"")
-local x=af.getOptions(t,w)
+p.parsePending=function(q, r, s, t)
+local u=af:validate(r,"")
+local v=af.getOptions(r,u)
 
-if#x==0 then
+if#v==0 then
 return nil
 end
 
-local y=x[1]
+local w=v[1]
 
 
-if not t.optional then
-u.correction={from=v.stop,to=v.stop-1,text=n(y)}
+if not r.optional then
+s.correction={from=t.stop,to=t.stop-1,text=l(w)}
 else
-u.hasGhost=true
+s.hasGhost=true
 end
 
-return g(ah(y),"comment")end
+return e(ah(w),"comment")end
 
 
 
-r.highlightArgs=function(s, t, u, v, w, x, y)
-local z=v.tokens
-local A=u.args
-local B=#z-1
-local C=A[#A]
-if C and C.variadic then
-A=table.clone(A)
-local D=B+(if w then 1 else 0)
-while#A<D do
-table.insert(A,C)
+p.highlightArgs=function(q, r, s, t, u, v, w)
+local x=t.tokens
+local y=s.args
+local z=#x-1
+local A=y[#y]
+if A and A.variadic then
+y=table.clone(y)
+local B=z+(if u then 1 else 0)
+while#y<B do
+table.insert(y,A)
 end
 end
-local D=#A
+local B=#y
 
-local E=1
-local F
+local C=1
+local D
 
-for G,H in A do
-local I=z[G+1]
+for E,F in y do
+local G=x[E+1]
 
-if I==nil then
-if w then
-local J=s:parsePending(H,t,v)
-if J then
-table.insert(x,J)
+if G==nil then
+if u then
+local H=q:parsePending(F,r,t)
+if H then
+table.insert(v,H)
 end
 end
 break
 end
 
-local J=s:parseArg(H,I,G,t)
-E=G+1
+local H=q:parseArg(F,G,E,r)
+C=E+1
 
-if J.display then
-table.insert(x,J.display)
+if H.display then
+table.insert(v,H.display)
 end
 
-if not J.success then
-F={index=G,result=J}
+if not H.success then
+D={index=E,result=H}
 break
 end
 end
 
 
-for G=E+1,math.min(#z,D+1)do
-table.insert(x,ah(z[G].raw))
+for E=C+1,math.min(#x,B+1)do
+table.insert(v,ah(x[E].raw))
 end
 
-if#z>D+1 then
-local G=s.cmdInput.rawText:sub(z[D+2].from,z[#z].to)
-table.insert(x,g(`<b>{ah(G)}</b>`,"warn"))
+if#x>B+1 then
+local E=q.cmdInput.rawText:sub(x[B+2].from,x[#x].to)
+table.insert(v,e(`<b>{ah(E)}</b>`,"warn"))
 
-t.runError=" - extra arg"
-t.comment={text=" - extra arg",color="warn"}
+r.runError=" - extra arg"
+r.comment={text=" - extra arg",color="warn"}
 return
 end
 
-if F then
-local G=F.result
+if D then
+local E=D.result
 
 
-t.runError=` - {i(A[F.index],F.index)} is invalid`
+r.runError=` - {g(y[D.index],D.index)} is invalid`
 
-if G.message and not G.suggestion then
-t.comment={text=G.message,color=if G.comment then"comment"else"warn"}
+if E.message and not E.suggestion then
+r.comment={text=E.message,color=if E.comment then"comment"else"warn"}
 end
 return
 end
 
 
-for G=B+1,D do
-local H=A[G]
+for E=z+1,B do
+local F=y[E]
 
-if not H.optional then
-t.runError=` - {i(H,G)} is missing`
+if not F.optional then
+r.runError=` - {g(F,E)} is missing`
 break
 end
 end
 
-local G
+local E
 
-if w then
-G=B+1
-elseif B>0 then
-G=B
+if u then
+E=z+1
+elseif z>0 then
+E=z
 end
 
-local H=G and A[G]
+local F=E and y[E]
 
 
-if H and y then
-local I=if w then""else": "
-t.comment={text=`{I}({s:highlightArgType(H)})`}
+if F and w then
+local G=if u then""else": "
+r.comment={text=`{G}({q:highlightArgType(F)})`}
 end end
 
 
-r.highlightArgType=function(s, t)
-local u=t.optional and g("?","symbol")or""
-local v=`{g(t.kind,t.kind)}{u}`
+p.highlightArgType=function(q, r)
+local s=r.optional and e("?","symbol")or""
+local t=`{e(r.kind,r.kind)}{s}`
 
-if t.name then
-return`{h(t.name)}: {v}`
+if r.name then
+return`{f(r.name)}: {t}`
 end
 
-return v end
+return t end
 
 
-r.highlightArgsType=function(s, t)
-if#t==0 then return""end
+p.highlightArgsType=function(q, r)
+if#r==0 then return""end
 
-local u={}
+local s={}
 
-for v,w in t do
-table.insert(u,s:highlightArgType(w))
+for t,u in r do
+table.insert(s,q:highlightArgType(u))
 end
 
-return`({table.concat(u,", ")})`end
+return`({table.concat(s,", ")})`end
 
 
-r.resetInput=function(s)
-local t=s.cmdInput
+p.resetInput=function(q)
+local r=q.cmdInput
 
-t.highlightText=""
-t.commandName=""
-t.commandData=nil
-t.isValidCommand=false
-t.isAbreviated=false
-t.bestMatch=nil
-t.bestMatches={}
-t.correctionText=nil
-t.correction=nil
-t.runError=nil
-t.hasGhost=false
-t.args={}
-t.statements={}
+r.highlightText=""
+r.commandName=""
+r.commandData=nil
+r.isValidCommand=false
+r.isAbreviated=false
+r.bestMatch=nil
+r.bestMatches={}
+r.correctionText=nil
+r.correction=nil
+r.runError=nil
+r.hasGhost=false
+r.args={}
+r.statements={}
 
-s:setComment("")end
+q:setComment("")end
 
 
 
-r.highlightStatement=function(s, t, u)
-local v=s.cmdInput
-local w=t.tokens
-local x={
-lead=t.lead,
+p.highlightStatement=function(q, r, s)
+local t=q.cmdInput
+local u=r.tokens
+local v={
+lead=r.lead,
 text="",
-trailing=t.spaces,
+trailing=r.spaces,
 args={},
 commandName="",
 bestMatches={},
@@ -18138,208 +19060,208 @@ isValidCommand=false,
 isAbreviated=false,
 }
 
-if#w==0 then
-x.empty=true
-return x
+if#u==0 then
+v.empty=true
+return v
 end
 
-local y=w[1]
-local z=#t.spaces>0
-local A=y.value
-local B=A
-local C
-local D
-local E=false
+local w=u[1]
+local x=#r.spaces>0
+local y=w.value
+local z=y
+local A
+local B
+local C=false
 
 
-if y.kind=="identifier"then
-local F,G=A:match("^(.*%^)(.*)$")
-
-if F then
-C,D=q(F:sub(1,-2))
-B=G
-end
-
-if B:sub(1,1)==b then
-E=true
-B=B:sub(2)
-end
-end
-
-local F=A:sub(1,#A-#B)
-local G=B:lower()
-local H=f(G)
-
-x.commandName=G
-x.commandData=H
-x.isValidCommand=H~=nil
-x.isAbreviated=H~=nil and H.name~=G
-x.loop=C
+if w.kind=="identifier"then
+local D,E=y:match("^(.*%^)(.*)$")
 
 if D then
-x.text=g(ah(A),"error")
-x.runError=D
-x.comment={text=D,color="error"}
-return x
+A,B=o(D:sub(1,-2))
+z=E
 end
 
-local I=""
-if F~=""then
-I=g(ah(F),"comment")
+if z:sub(1,1)==al then
+C=true
+z=z:sub(2)
+end
 end
 
-if not H then
-local J=aa:search(G)
-local K=J[1]
+local D=y:sub(1,#y-#z)
+local E=z:lower()
+local F=d(E)
 
-x.bestMatches=J
-x.bestMatch=K
+v.commandName=E
+v.commandData=F
+v.isValidCommand=F~=nil
+v.isAbreviated=F~=nil and F.name~=E
+v.loop=A
 
-if z or#w>1 or not K then
-local L=v.rawText:sub(y.from,w[#w].to)
+if B then
+v.text=e(ah(y),"error")
+v.runError=B
+v.comment={text=B,color="error"}
+return v
+end
 
-x.text=g(ah(L),"error")
-x.runError=" - invalid command"
-x.comment={text=" - invalid command",color="error"}
-return x
+local G=""
+if D~=""then
+G=e(ah(D),"comment")
+end
+
+if not F then
+local H=aa:search(E)
+local I=H[1]
+
+v.bestMatches=H
+v.bestMatch=I
+
+if x or#u>1 or not I then
+local J=t.rawText:sub(w.from,u[#u].to)
+
+v.text=e(ah(J),"error")
+v.runError=" - invalid command"
+v.comment={text=" - invalid command",color="error"}
+return v
 end
 
 
-local L,M,N=m(K,B)
+local J,K,L=k(I,z)
 
-x.text=I..g(ah(L)..g(ah(M),"warn")..ah(N),"comment")
-x.correction=p(y.from,y.to,F..K,y.usedChar)
-x.correctionText=K
-x.runError=" - invalid command"
-return x
+v.text=G..e(ah(J)..e(ah(K),"warn")..ah(L),"comment")
+v.correction=n(w.from,w.to,D..I,w.usedChar)
+v.correctionText=I
+v.runError=" - invalid command"
+return v
 end
 
-local J={I..g(ah(B),"valid")}
+local H={G..e(ah(z),"valid")}
 
 
-if u and#w==1 and not z and#H.aliases>1 then
-local K=table.clone(H.aliases)
-local L=table.find(K,G)
+if s and#u==1 and not x and#F.aliases>1 then
+local I=table.clone(F.aliases)
+local J=table.find(I,E)
 
-if L then
-table.remove(K,L)
+if J then
+table.remove(I,J)
 end
 
-x.comment={text=`: [{table.concat(K,", ")}]`,color="comment"}
+v.comment={text=`: [{table.concat(I,", ")}]`,color="comment"}
 end
 
-if E and#w==1 then
+if C and#u==1 then
 
-x.repeatLast=true
+v.repeatLast=true
 
-if#H.args>0 and aa:getLastArgs(H.name)==nil then
-x.runError=" - no previous arguments"
-x.comment={text=" - no previous arguments",color="error"}
+if#F.args>0 and aa:getLastArgs(F.name)==nil then
+v.runError=" - no previous arguments"
+v.comment={text=" - no previous arguments",color="error"}
 end
 else
-s:highlightArgs(x,H,t,z,J,u)
+q:highlightArgs(v,F,r,x,H,s)
 end
 
-x.text=table.concat(J," ")
-return x end
+v.text=table.concat(H," ")
+return v end
 
 
 
 
-r.highlight=function(s, t)
-local u=s.cmdInput
-s:resetInput()
+p.highlight=function(q, r)
+local s=q.cmdInput
+q:resetInput()
 
-local v=#t
-local w={}
+local t=#r
+local u={}
 
-for x,y in t do
-w[x]=s:highlightStatement(y,x==v)
+for v,w in r do
+u[v]=q:highlightStatement(w,v==t)
 end
 
-local x=w[v]
+local v=u[t]
 
-u.statements=w
-u.commandName=x.commandName
-u.commandData=x.commandData
-u.isValidCommand=x.isValidCommand
-u.isAbreviated=x.isAbreviated
-u.bestMatch=x.bestMatch
-u.bestMatches=x.bestMatches
-u.args=x.args
+s.statements=u
+s.commandName=v.commandName
+s.commandData=v.commandData
+s.isValidCommand=v.isValidCommand
+s.isAbreviated=v.isAbreviated
+s.bestMatch=v.bestMatch
+s.bestMatches=v.bestMatches
+s.args=v.args
 
 
-local y
+local w
 
-for z,A in w do
+for x,y in u do
 
-if A.empty and v>1 then
-A.runError=" - command missing"
+if y.empty and t>1 then
+y.runError=" - command missing"
 end
 
-if A.runError and u.runError==nil then
-u.runError=A.runError
+if y.runError and s.runError==nil then
+s.runError=y.runError
 end
 
-if A.correction and u.correction==nil then
-u.correction=A.correction
+if y.correction and s.correction==nil then
+s.correction=y.correction
 end
 
-if A.hasGhost then
-u.hasGhost=true
+if y.hasGhost then
+s.hasGhost=true
 end
 
-if A.comment and y==nil then
-y=A.comment
+if y.comment and w==nil then
+w=y.comment
 end
 end
 
-if y then
-s:setComment(y.text,y.color)
+if w then
+q:setComment(w.text,w.color)
 end
 
-local z={}
+local x={}
 
-for A,B in w do
+for y,z in u do
 
-local C=if B.correction or B.hasGhost then""else B.trailing
-local D=B.lead..B.text..C
+local A=if z.correction or z.hasGhost then""else z.trailing
+local B=z.lead..z.text..A
 
-if A<v then
-D=D..g(ah(ai),"symbol")
+if y<t then
+B=B..e(ah(ai),"symbol")
 end
 
-table.insert(z,D)
+table.insert(x,B)
 end
 
-local A=table.concat(z)
-u.highlightText=A
+local y=table.concat(x)
+s.highlightText=y
 
-return A end
-
-
-r.setComment=function(s, ...)
-return s.setCommentCallback(...)end
+return y end
 
 
-r.new=function(s, t)
+p.setComment=function(q, ...)
+return q.setCommentCallback(...)end
+
+
+p.new=function(q, r)
 return setmetatable({
-cmdInput=s,
-setCommentCallback=t
-},r)end
+cmdInput=q,
+setCommentCallback=r
+},p)end
 
 
-return r end a.c6=function()local ab=a.cache.c6 if not ab then ab={c=aa()}a.cache.c6=ab end return ab.c end end do local aa=function()
-
-
-
+return p end a.dd=function()local ab=a.cache.dd if not ab then ab={c=aa()}a.cache.dd=ab end return ab.c end end do local aa=function()
 
 
 
-local aa=a.c1()
-local ab=a.c6()
-local ac=a.W()
-local ad=a.c0()
+
+
+
+local aa=a.c8()
+local ab=a.dd()
+local ac=a.V()
+local ad=a.c7()
 local ae=a.d()
 
 local af={}
@@ -18369,13 +19291,13 @@ local ak
 ak=ad:add(function()
 aj=aj+1
 
-local b,c=pcall(function()
+local al,am=pcall(function()
 aa:run(ag,ac.new(ah))
 end)
 
-if not b then
+if not al then
 ad:remove(ak)
-ae:error(`loop of '{ag}' stopped: {c}`)
+ae:error(`loop of '{ag}' stopped: {am}`)
 return
 end
 
@@ -18428,10 +19350,10 @@ return true end
 
 af.runText=function(ai)
 local aj,ak=ag(ai)
-local b=ah(aj)
+local al=ah(aj)
 
-if b then
-return false,b
+if al then
+return false,al
 end
 
 if ak then
@@ -18439,18 +19361,18 @@ if ak then
 return false,(ak:gsub("^%s*%-%s*",""))
 end
 
-for c,d in aj do
-local e,f=pcall(af.runStatement,d)
+for am,b in aj do
+local c,d=pcall(af.runStatement,b)
 
-if not e then
-return false,tostring(f)
+if not c then
+return false,tostring(d)
 end
 end
 
 return true end
 
 
-return af end a.c7=function()local ab=a.cache.c7 if not ab then ab={c=aa()}a.cache.c7=ab end return ab.c end end do local aa=function()
+return af end a.de=function()local ab=a.cache.de if not ab then ab={c=aa()}a.cache.de=ab end return ab.c end end do local aa=function()
 
 
 
@@ -18459,11 +19381,11 @@ return af end a.c7=function()local ab=a.cache.c7 if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.c4()
+local aa=a.db()
 local ab=a.r()
-local ac=a.c7()
-local ad=a.c1()
-local ae=a.ag()
+local ac=a.de()
+local ad=a.c8()
+local ae=a.af()
 
 local af=aa.ANY
 
@@ -18500,231 +19422,231 @@ return table.clone(ak)end local aj=function(
 
 
 aj, ak)
-local b=ai(ak or"")
+local al=ai(ak or"")
 
-if b==""then
-b=aj.default
+if al==""then
+al=aj.default
 end
 
-if b:lower()==af then
+if al:lower()==af then
 return af
 end
 
-if aj.kind=="Number"and tonumber(b)==nil then
+if aj.kind=="Number"and tonumber(al)==nil then
 return nil,`{aj.label} must be a number or any`
 end
+
+return al end
+
+
+
+
+ag.add=function(ak, al, am, b)
+local c=ah[ak]
+if not c then
+return false,"invalid event"
+end
+
+local d=ai(al)
+local e,f=ac.checkText(d)
+
+if not e then
+return false,f
+end
+
+if type(am)~="number"or am<0 then
+return false,"the delay must be 0 or more"
+end
+
+local g={}
+
+for h,i in c.conditions do
+local j,k=aj(i,b and b[h])
+
+if not j then
+return false,k
+end
+
+g[h]=j
+end
+
+local h=ab.object[ak]
+if type(h)~="table"then
+h={}
+ab.object[ak]=h
+end
+
+table.insert(h,{command=d,delay=am,conditions=g})
+ab:save()
+
+return true end
+
+
+
+ag.remove=function(ak, al)
+local am=ab.object[ak]
+
+if type(am)~="table"or am[al]==nil then
+return nil
+end
+
+local b=table.remove(am,al)
+ab:save()
 
 return b end
 
 
 
 
-ag.add=function(ak, b, c, d)
-local e=ah[ak]
-if not e then
-return false,"invalid event"
+ag.restore=function(ak, al, am)
+if not ah[ak]or type(am)~="table"then
+return false
 end
 
-local f=ai(b)
-local g,h=ac.checkText(f)
-
-if not g then
-return false,h
+local b=ab.object[ak]
+if type(b)~="table"then
+b={}
+ab.object[ak]=b
 end
 
-if type(c)~="number"or c<0 then
-return false,"the delay must be 0 or more"
-end
-
-local i={}
-
-for j,k in e.conditions do
-local l,m=aj(k,d and d[j])
-
-if not l then
-return false,m
-end
-
-i[j]=l
-end
-
-local j=ab.object[ak]
-if type(j)~="table"then
-j={}
-ab.object[ak]=j
-end
-
-table.insert(j,{command=f,delay=c,conditions=i})
+table.insert(b,math.clamp(al,1,#b+1),am)
 ab:save()
 
 return true end
 
 
 
-ag.remove=function(ak, b)
-local c=ab.object[ak]
+ag.setDelay=function(ak, al, am)
+local b=ab.object[ak]
 
-if type(c)~="table"or c[b]==nil then
-return nil
-end
-
-local d=table.remove(c,b)
-ab:save()
-
-return d end
-
-
-
-
-ag.restore=function(ak, b, c)
-if not ah[ak]or type(c)~="table"then
+if type(b)~="table"or type(b[al])~="table"then
 return false
 end
 
-local d=ab.object[ak]
-if type(d)~="table"then
-d={}
-ab.object[ak]=d
-end
-
-table.insert(d,math.clamp(b,1,#d+1),c)
-ab:save()
-
-return true end
-
-
-
-ag.setDelay=function(ak, b, c)
-local d=ab.object[ak]
-
-if type(d)~="table"or type(d[b])~="table"then
+if type(am)~="number"or am<0 then
 return false
 end
 
-if type(c)~="number"or c<0 then
-return false
-end
-
-d[b].delay=c
+b[al].delay=am
 ab:save()
 
 return true end local ak=function(
 
 
 
-ak, b)
-local c,d=pcall(ae,ak)
+ak, al)
+local am,b=pcall(ae,ak)
 
-if not c then
+if not am then
 return false
 end
 
-for e,f in d do
-if f.Name==b then
+for c,d in b do
+if d.Name==al then
 return true
 end
 end
 
-return false end local b=function(
+return false end local al=function(
 
 
 
-b, c, d)
-if c:lower()==af then
+al, am, b)
+if am:lower()==af then
 return true
 end
 
-if b.kind=="Player"then
-return ak(c,tostring(d))
+if al.kind=="Player"then
+return ak(am,tostring(b))
 end
 
-if b.kind=="String"then
-return tostring(d):lower():find(c:lower(),1,true)~=nil
+if al.kind=="String"then
+return tostring(b):lower():find(am:lower(),1,true)~=nil
 end
 
-if b.kind=="Number"then
-local e,f=tonumber(c),tonumber(d)
-return e~=nil and f~=nil and f<=e
+if al.kind=="Number"then
+local c,d=tonumber(am),tonumber(b)
+return c~=nil and d~=nil and d<=c
 end
 
-return false end local c=function(
+return false end local am=function(
 
 
 
-c, d, e)
-local f=d.conditions or{}
+am, b, c)
+local d=b.conditions or{}
 
-for g,h in c.conditions do
-local i=tostring(f[g]or h.default)
+for e,f in am.conditions do
+local g=tostring(d[e]or f.default)
 
-if not b(h,i,e[g])then
+if not al(f,g,c[e])then
 return false
 end
 end
 
-return true end local d=function(
+return true end local b=function(
 
 
 
 
-d)
-if d:match("^[%w_%-%.]+$")then
-return d
+b)
+if b:match("^[%w_%-%.]+$")then
+return b
 end
 
-return'"'..(d:gsub('"','\\"'))..'"'end local e=function(
+return'"'..(b:gsub('"','\\"'))..'"'end local c=function(
 
 
 
-e, f)
-return(e:gsub("%$(%d+)",function(g)
-local h=f[tonumber(g)]
+c, d)
+return(c:gsub("%$(%d+)",function(e)
+local f=d[tonumber(e)]
 
-if h==nil then
+if f==nil then
 return nil
 end
 
-return d(tostring(h))
-end))end local f=function(
+return b(tostring(f))
+end))end local d=function(
 
 
 
 
-f, g)
-local h=f.delay or 0
+d, e)
+local f=d.delay or 0
 
-if h>0 then
-task.wait(h)
+if f>0 then
+task.wait(f)
 end
 
-local i=e(f.command,g)
-local j,k=ac.runText(i)
+local g=c(d.command,e)
+local h,i=ac.runText(g)
 
-if not j then
-ad:notify("Event Bind",`'{i}' did not run: {k}`)
+if not h then
+ad:notify("Event Bind",`'{g}' did not run: {i}`)
 end end
 
 
 
 
-ag.fire=function(g, ...)
-local h=ah[g]
-local i=ab.object[g]
+ag.fire=function(e, ...)
+local f=ah[e]
+local g=ab.object[e]
 
-if not h or type(i)~="table"then
+if not f or type(g)~="table"then
 return
 end
 
-local j={...}
+local h={...}
 
-for k,l in table.clone(i)do
-if type(l)=="table"and c(h,l,j)then
-task.spawn(f,l,j)
+for i,j in table.clone(g)do
+if type(j)=="table"and am(f,j,h)then
+task.spawn(d,j,h)
 end
 end end
 
 
-return ag end a.c8=function()local ab=a.cache.c8 if not ab then ab={c=aa()}a.cache.c8=ab end return ab.c end end do local aa=function()
+return ag end a.df=function()local ab=a.cache.df if not ab then ab={c=aa()}a.cache.df=ab end return ab.c end end do local aa=function()
 
 
 
@@ -18734,8 +19656,8 @@ return ag end a.c8=function()local ab=a.cache.c8 if not ab then ab={c=aa()}a.cac
 
 
 local aa=a.f()
-local ab=a.aE()
-local ac=a.c8()
+local ab=a.aI()
+local ac=a.df()
 
 local ad=aa.Players
 local ae=aa.TextChatService
@@ -18751,97 +19673,97 @@ local ai={}
 local aj={}local ak=function(
 
 
-ak, b, c, d)
-local e=ab:Connect(c,d)
+ak, al, am, b)
+local c=ab:Connect(am,b)
 
-local f=ak[b]or{}
-ak[b]=f
-table.insert(f,e)end local b=function(
-
-
-b, c)
-local d=b[c]
-b[c]=nil
-
-for e,f in d or{}do
-ab:disconnect(f)
-end end local c=function(
+local d=ak[al]or{}
+ak[al]=d
+table.insert(d,c)end local al=function(
 
 
+al, am)
+local b=al[am]
+al[am]=nil
 
-c, d)
-b(aj,c)
+for c,d in b or{}do
+ab:disconnect(d)
+end end local am=function(
+
+
+
+am, b)
+al(aj,am)
 
 task.spawn(function()
-local e=d:WaitForChild("Humanoid",10)
+local c=b:WaitForChild("Humanoid",10)
 
 
-if not e or not e:IsA("Humanoid")or c.Character~=d then
+if not c or not c:IsA("Humanoid")or am.Character~=b then
 return
 end
 
-local f=e.Health
+local d=c.Health
 
-ak(aj,c,e.HealthChanged,function(g)
-if g<f then
-ac.fire("OnDamage",c.Name,g)
+ak(aj,am,c.HealthChanged,function(e)
+if e<d then
+ac.fire("OnDamage",am.Name,e)
 end
 
-f=g
+d=e
 end)
 
-ak(aj,c,e.Died,function()
-ac.fire("OnDied",c.Name)
+ak(aj,am,c.Died,function()
+ac.fire("OnDied",am.Name)
 
 
-local g=e:FindFirstChild("creator")
-local h=if g and g:IsA("ObjectValue")then g.Value else nil
+local e=c:FindFirstChild("creator")
+local f=if e and e:IsA("ObjectValue")then e.Value else nil
 
-if h and h:IsA("Player")then
-ac.fire("OnKilled",c.Name,h.Name)
+if f and f:IsA("Player")then
+ac.fire("OnKilled",am.Name,f.Name)
 end
 end)
-end)end local d=function(
+end)end local b=function(
 
 
 
 
-d)
-ak(ai,d,d.CharacterAdded,function(e)
-ac.fire("OnSpawn",d.Name)
-c(d,e)
+b)
+ak(ai,b,b.CharacterAdded,function(c)
+ac.fire("OnSpawn",b.Name)
+am(b,c)
 end)
 
 if ah then
-ak(ai,d,d.Chatted,function(e)
-ac.fire("OnChatted",d.Name,e)
+ak(ai,b,b.Chatted,function(c)
+ac.fire("OnChatted",b.Name,c)
 end)
 end
 
-if d.Character then
-c(d,d.Character)
-end end local e=function(
+if b.Character then
+am(b,b.Character)
+end end local c=function(
 
 
-e)
-local f=e.TextSource
+c)
+local d=c.TextSource
 
-if not f or e.Status==Enum.TextChatMessageStatus.InvalidTextChannelPermissions then
+if not d or c.Status==Enum.TextChatMessageStatus.InvalidTextChannelPermissions then
 return
 end
 
-local g=ad:GetPlayerByUserId(f.UserId)
+local e=ad:GetPlayerByUserId(d.UserId)
 
-if g then
-ac.fire("OnChatted",g.Name,e.Text)
-end end local f=function(
+if e then
+ac.fire("OnChatted",e.Name,c.Text)
+end end local d=function(
 
 
-f)
-ac.fire("OnLeave",f.Name)
+d)
+ac.fire("OnLeave",d.Name)
 
-b(ai,f)
-b(aj,f)end
+al(ai,d)
+al(aj,d)end
 
 
 
@@ -18853,26 +19775,26 @@ end
 ag=true
 ah=ae.ChatVersion==Enum.ChatVersion.LegacyChatService
 
-ab:Connect(ad.PlayerAdded,function(g)
-ac.fire("OnJoin",g.Name)
-d(g)
+ab:Connect(ad.PlayerAdded,function(e)
+ac.fire("OnJoin",e.Name)
+b(e)
 end)
 
-ab:Connect(ad.PlayerRemoving,f)
+ab:Connect(ad.PlayerRemoving,d)
 
 if not ah then
-ab:Connect(ae.MessageReceived,e)
+ab:Connect(ae.MessageReceived,c)
 end
 
 
-for g,h in ad:GetPlayers()do
-d(h)
+for e,f in ad:GetPlayers()do
+b(f)
 end
 
 ac.fire("OnExecute")end
 
 
-return af end a.c9=function()local ab=a.cache.c9 if not ab then ab={c=aa()}a.cache.c9=ab end return ab.c end end do local aa=function()
+return af end a.dg=function()local ab=a.cache.dg if not ab then ab={c=aa()}a.cache.dg=ab end return ab.c end end do local aa=function()
 
 
 
@@ -18899,7 +19821,7 @@ defaultOpacity=0.5,
 
 
 slowSeconds=10,
-}end a.da=function()local ab=a.cache.da if not ab then ab={c=aa()}a.cache.da=ab end return ab.c end end do local aa=function()
+}end a.dh=function()local ab=a.cache.dh if not ab then ab={c=aa()}a.cache.dh=ab end return ab.c end end do local aa=function()
 
 
 
@@ -18918,7 +19840,8 @@ slowSeconds=10,
 
 
 
-local aa=a.c2()
+local aa=a.c9()
+local ab=a.aD()
 
 return{
 
@@ -18927,6 +19850,8 @@ keepMenuOpen="interface.keepMenuOpen",
 keepIY=aa.settingKey,
 clearOnEnter="clearOnEnter",
 theme="selectedTheme",
+legacyIcons=ab.ui.legacyIconsKey,
+transparentMinimized="interface.transparentWhenMinimized",
 },
 
 
@@ -19018,6 +19943,25 @@ theme={
 title="#theme",
 incomplete="(incomplete)",
 primary="primary",
+iconsTitle="#icons",
+legacyIcons="Use legacy icons",
+legacyIcon="lucide-rotate-ccw-clock",
+legacyTitle="Legacy Icons",
+legacyNoCustomAsset="your exploit does not support getcustomasset, so the legacy icons can't be shown",
+},
+
+interface={
+title="#interface",
+keepMenuOpen="Keep Menu Open",
+uiScale="UI Scale",
+transparent="Transparent When Minimized",
+hide="Hide IY",
+icons={
+keepMenuOpen="lucide-pin",
+uiScale="lucide-scaling",
+transparent="lucide-blend",
+hide="lucide-eye-off",
+},
 },
 background={
 title="#background",
@@ -19053,25 +19997,31 @@ loadFailed="the image was downloaded, but it could not be loaded",
 keybinds={
 title="#keybinds",
 reset="Reset to defaults",
+resetIcon="lucide-refresh-cw",
 alwaysWorks="%s also works as the %s",
 },
 commands={
 title="#command settings",
 reset="Reset command keys to defaults",
+resetIcon="lucide-refresh-cw",
 },
 importExport={
 title="#import / export",
-exportTitle="#export",
-exportRow="Copy settings",
-exportHint="copies your settings, keybinds, aliases, event binds and waypoints as text",
-importTitle="#import",
-importRow="Import settings",
-importHint="paste a copied text in the box, then import it. It replaces the settings it holds",
+exportRow="Export",
+exportIcon="lucide-clipboard-copy",
+importRow="Import",
+importIcon="lucide-arrow-down-up",
+hint="paste a copied text in the box to import it. Import asks first, and replaces only the parts the text holds",
 placeholder="paste the copied text here",
-copied="settings copied to the clipboard",
+copied="settings copied to the clipboard. The copy button copies them again",
 copyFailed="your exploit can't copy: the text is in the box, copy it from there",
 empty="paste a copied text first",
 notAnExport="that text is not an export of IY",
+confirmTitle="Import",
+confirmMessage="replace %s with the ones in the text? The current ones are lost",
+confirmButton="Import",
+cancel="Cancel",
+confirmTime=15,
 imported="imported %s",
 restartNote="aliases and plugins apply when IY is opened again",
 notifyTitle="Import / Export",
@@ -19212,7 +20162,6 @@ sections={
 title="#general",
 options={
 {kind="keybind",label="Prefix",icon="lucide-terminal",binding="prefix"},
-{kind="switch",label="Keep Menu Open",icon="lucide-pin",setting="keepMenuOpen"},
 {kind="switch",label="Keep Interface",icon="lucide-refresh-cw",setting="keepIY"},
 {kind="switch",label="Clear On Enter",icon="lucide-eraser",setting="clearOnEnter"},
 },
@@ -19220,6 +20169,7 @@ options={
 {
 title="#editors",
 options={
+{kind="button",label="Interface",icon="lucide-app-window",action="interface"},
 {kind="button",label="Edit Theme",icon="lucide-palette",action="theme"},
 {kind="button",label="Edit Keybinds",icon="lucide-keyboard",action="keybinds"},
 {kind="button",label="Edit Aliases",icon="lucide-tag",action="aliases"},
@@ -19246,7 +20196,7 @@ items={
 },
 },
 },
-}end a.db=function()local ab=a.cache.db if not ab then ab={c=aa()}a.cache.db=ab end return ab.c end end do local aa=function()
+}end a.di=function()local ab=a.cache.di if not ab then ab={c=aa()}a.cache.di=ab end return ab.c end end do local aa=function()
 
 
 
@@ -19261,13 +20211,13 @@ items={
 
 
 local aa=a.a()
-local ab=a.cG()
+local ab=a.cL()
 local ac=a.n()
 local ad=a.s()
 local ae=a.k()
 
-local af=a.da()
-local ag=a.db().pages.background
+local af=a.dh()
+local ag=a.di().pages.background
 
 local ah={
 frame=nil,
@@ -19283,115 +20233,115 @@ local ai=0
 local aj local ak=function(
 
 ak)
-return ak:match("^%s*(.-)%s*$")or""end local b=function(
+return ak:match("^%s*(.-)%s*$")or""end local al=function(
+
+
+
+al)
+local am=al:match("^[^?#]*")or al
+local b=(am:match("%.(%w+)$")or""):lower()
+
+return af.extensions[b]or af.defaultExtension end local am=function()
+
+
+
+local am=ac:getValue(af.keys.opacity)
+
+if type(am)~="number"then
+return af.defaultOpacity
+end
+
+return math.clamp(am,0,1)end local b=function(
 
 
 
 b)
-local c=b:match("^[^?#]*")or b
-local d=(c:match("%.(%w+)$")or""):lower()
+local c=ad:getEntry(b)
 
-return af.extensions[d]or af.defaultExtension end local c=function()
-
-
-
-local c=ac:getValue(af.keys.opacity)
-
-if type(c)~="number"then
-return af.defaultOpacity
+if type(c)=="string"and ae:exist(c)then
+return c
 end
 
-return math.clamp(c,0,1)end local d=function(
-
-
-
-d)
-local e=ad:getEntry(d)
-
-if type(e)=="string"and ae:exist(e)then
-return e
-end
-
-return nil end local e=function(
+return nil end local c=function(
 
 
 
 
-e)
-local f=ac:getValue(af.keys.file)
+c)
+local d=ac:getValue(af.keys.file)
 
-if f==nil then
+if d==nil then
 return nil
 end
 
 ac:setValue(af.keys.file,nil)
 ac:save()
 
-if type(f)~="string"or not ae:exist(f)then
+if type(d)~="string"or not ae:exist(d)then
 return nil
 end
 
-ad:setEntry(e,f)
+ad:setEntry(c,d)
 ad:save()
 
-return f end local f=function(
+return d end local d=function(
 
 
 
 
-f, g)
-local h=ab.fetchUrl(f)
+d, e)
+local f=ab.fetchUrl(d)
 
-if not g()then
+if not e()then
 return nil,nil,nil
 end
 
-if h==nil then
+if f==nil then
 return nil,nil,ag.downloadFailed
 end
 
 
 ai=ai+1
-local i=`{af.folder}/image-{os.time()}-{ai}.{b(f)}`
+local g=`{af.folder}/image-{os.time()}-{ai}.{al(d)}`
 
 ae:makeFolder(af.folder)
-ae:writeFile(i,h)
+ae:writeFile(g,f)
 
-local j=ae:getCustomAsset(i)
+local h=ae:getCustomAsset(g)
 
-if j==nil then
+if h==nil then
 
-ae:delete(i)
+ae:delete(g)
 return nil,nil,ag.loadFailed
 end
 
-return i,j,nil end
+return g,h,nil end
 
 
 
-ah.getUrl=function(g)
-local h=ac:getValue(af.keys.url)
+ah.getUrl=function(e)
+local f=ac:getValue(af.keys.url)
 
-if type(h)=="string"and h~=""then
-return h
+if type(f)=="string"and f~=""then
+return f
 end
 
 return nil end
 
 
-ah.getOpacity=function(g)
-return c()end
+ah.getOpacity=function(e)
+return am()end
 
 
 
-ah.checkUrl=function(g, h)
-local i=ak(h)
+ah.checkUrl=function(e, f)
+local g=ak(f)
 
-if i==""then
+if g==""then
 return ag.empty
 end
 
-if not i:match("^https?://")then
+if not g:match("^https?://")then
 return ag.badUrl
 end
 
@@ -19403,184 +20353,185 @@ return nil end
 
 
 
-ah.paint=function(g)
-local h=g.frame
-if h==nil then return end
+ah.paint=function(e)
+local f=e.frame
+if f==nil then return end
 
-local i=g.asset
+local g=e.asset
 
-h.Image=i or""
-h.ImageTransparency=1-c()
+f.Image=g or""
+f.ImageTransparency=1-am()
 
-if g.topBar then
-g.topBar.BackgroundTransparency=if i~=nil then 1 else 0
+if e.topBar then
+e.topBar.BackgroundTransparency=if g~=nil then 1 else 0
 end end
 
 
 
-ah.attach=function(g, h)
-if g.frame~=nil then return end
+ah.attach=function(e, f, g)
+if e.frame~=nil then return end
 
-g.frame=h
-g.topBar=h:FindFirstChild("TopBar")
 
-local i=g:getUrl()
+e.frame=g or f
+e.topBar=f:FindFirstChild("TopBar")
 
-if i~=nil and aa.getcustomasset~=nil then
-local j=d(i)or e(i)
+local h=e:getUrl()
 
-if j~=nil then
-g.asset=ae:getCustomAsset(j)
+if h~=nil and aa.getcustomasset~=nil then
+local i=b(h)or c(h)
+
+if i~=nil then
+e.asset=ae:getCustomAsset(i)
 end
 end
 
-g:paint()end
+e:paint()end
 
 
 
 
 
-ah.setFromUrl=function(g, h, i, j)
-local k=ak(h)
-local l=d(k)
-local m=j or function()return true end
+ah.setFromUrl=function(e, f, g, h)
+local i=ak(f)
+local j=b(i)
+local k=h or function()return true end
 
-local n=l
-local o
+local l=j
+local m
 
-if l~=nil and not i then
-o=ae:getCustomAsset(l)
+if j~=nil and not g then
+m=ae:getCustomAsset(j)
 end
 
-if o==nil then
-local p,q,r=f(k,m)
+if m==nil then
+local n,o,p=d(i,k)
 
-if p==nil or q==nil then
-return false,r
+if n==nil or o==nil then
+return false,p
 end
 
-n=p
-o=q
+l=n
+m=o
 
-if l~=nil and l~=p then
-ae:delete(l)
+if j~=nil and j~=n then
+ae:delete(j)
 end
 end
 
-ad:setEntry(k,n)
+ad:setEntry(i,l)
 ad:save()
 
-ac:setValue(af.keys.url,k)
+ac:setValue(af.keys.url,i)
 ac:save()
 
-g.asset=o
-g:paint()
+e.asset=m
+e:paint()
 
 return true end
 
 
 
 
-ah.clear=function(g)
+ah.clear=function(e)
 
-g:cancelDownload()
+e:cancelDownload()
 
-local h=g:getUrl()
-local i=true
+local f=e:getUrl()
+local g=true
 
-if h~=nil then
-local j=ad:getEntry(h)
+if f~=nil then
+local h=ad:getEntry(f)
 
-if type(j)=="string"then
-i=ae:delete(j)
+if type(h)=="string"then
+g=ae:delete(h)
 end
 
-ad:setEntry(h,nil)
+ad:setEntry(f,nil)
 ad:save()
 end
 
 ac:setValue(af.keys.url,nil)
 ac:save()
 
-g.asset=nil
-g:paint()
+e.asset=nil
+e:paint()
 
-return i end
+return g end
 
 
 
-ah.setOpacity=function(g, h)
-local i=math.round(math.clamp(h,0,1)*100)/100
+ah.setOpacity=function(e, f)
+local g=math.round(math.clamp(f,0,1)*100)/100
 
-ac:setValue(af.keys.opacity,i)
+ac:setValue(af.keys.opacity,g)
 ac:save()
 
-g:paint()end
+e:paint()end
 
 
 
-ah.isDownloading=function(g, h)
+ah.isDownloading=function(e, f)
 if aj==nil then return false end
-if h==nil then return true end
+if f==nil then return true end
 
-return aj.url==ak(h)end
-
-
+return aj.url==ak(f)end
 
 
-ah.cancelDownload=function(g)
-local h=aj
-if h==nil then return end
+
+
+ah.cancelDownload=function(e)
+local f=aj
+if f==nil then return end
 
 aj=nil
 
-if h.thread~=nil then
-pcall(task.cancel,h.thread)
+if f.thread~=nil then
+pcall(task.cancel,f.thread)
 end end
 
 
 
 
 
-ah.startDownload=function(g, h, i, j)
+ah.startDownload=function(e, f, g, h)
 
 
 
-g:cancelDownload()
+e:cancelDownload()
 
-local k={url=ak(h),thread=nil}
-aj=k
+local i={url=ak(f),thread=nil}
+aj=i
 
 task.delay(af.slowSeconds,function()
-if aj==k and j.onSlow then
-j.onSlow()
+if aj==i and h.onSlow then
+h.onSlow()
 end
 end)
 
-k.thread=task.spawn(function()
+i.thread=task.spawn(function()
 
-local l,m,n=pcall(function()
-return g:setFromUrl(k.url,i,function()
-return aj==k
+local j,k,l=pcall(function()
+return e:setFromUrl(i.url,g,function()
+return aj==i
 end)
 end)
 
-if not l then
-m,n=false,ag.downloadFailed
+if not j then
+k,l=false,ag.downloadFailed
 end
 
 
-if aj~=k then return end
+if aj~=i then return end
 
 aj=nil
 
-if j.onDone then
-j.onDone(m,n)
+if h.onDone then
+h.onDone(k,l)
 end
 end)end
 
 
-return ah end a.dc=function()local ab=a.cache.dc if not ab then ab={c=aa()}a.cache.dc=ab end return ab.c end end do local aa=function()
+return ah end a.dj=function()local ab=a.cache.dj if not ab then ab={c=aa()}a.cache.dj=ab end return ab.c end end do local aa=function()
 
 return{NEW_YEAR=
 "🎆",VALENTINE_DAYS=
@@ -19589,14 +20540,14 @@ return{NEW_YEAR=
 "🎃",CHRISTMAS=
 "🎄",EASTER=
 "🥚",
-}end a.dd=function()local ab=a.cache.dd if not ab then ab={c=aa()}a.cache.dd=ab end return ab.c end end do local aa=function()
+}end a.dk=function()local ab=a.cache.dk if not ab then ab={c=aa()}a.cache.dk=ab end return ab.c end end do local aa=function()
 
 
 
 local aa={}
 
-local ab=a.az()
-local ac=a.dd()
+local ab=a.aD()
+local ac=a.dk()
 
 aa.getEasterDate=function()
 local ad=tonumber(os.date("%Y"))
@@ -19654,7 +20605,7 @@ end
 return ad end
 
 
-return aa end a.de=function()local ab=a.cache.de if not ab then ab={c=aa()}a.cache.de=ab end return ab.c end end do local aa=function()
+return aa end a.dl=function()local ab=a.cache.dl if not ab then ab={c=aa()}a.cache.dl=ab end return ab.c end end do local aa=function()
 
 
 
@@ -19698,60 +20649,67 @@ ak={scale=ab.x.scale,offset=ab.x.offset-ae}
 end
 
 
-local b=ab.y.scale*ac.height+ab.y.offset
-local c=b+ab.height
+local al=ab.y.scale*ac.height+ab.y.offset
+local am=al+ab.height
 
 
 
-local d=(math.max(b,0)+math.min(c,ac.height))/2
-local e=d>ac.height/2
+local b=(math.max(al,0)+math.min(am,ac.height))/2
+local c=b>ac.height/2
 
-local f,g,h
-if e then
+local d,e,f
+if c then
 
-if c>=ac.height then
-f={scale=1,offset=0}
+if am>=ac.height then
+d={scale=1,offset=0}
 else
-f={scale=ab.y.scale,offset=ab.y.offset+ab.height}
+d={scale=ab.y.scale,offset=ab.y.offset+ab.height}
 end
-g=1
-h=math.min(c,ac.height)
+e=1
+f=math.min(am,ac.height)
 else
-if b<0 then
-f={scale=0,offset=0}
+if al<0 then
+d={scale=0,offset=0}
 else
-f={scale=ab.y.scale,offset=ab.y.offset}
+d={scale=ab.y.scale,offset=ab.y.offset}
 end
-g=0
-h=ac.height-math.max(b,0)
+e=0
+f=ac.height-math.max(al,0)
 end
 
 return{
 x=ak,
-y=f,
+y=d,
 anchorX=if aj then 0 else 1,
-anchorY=g,
-room=math.max(h,0),
+anchorY=e,
+room=math.max(f,0),
 }end
 
 
-return aa end a.df=function()local ab=a.cache.df if not ab then ab={c=aa()}a.cache.df=ab end return ab.c end end do local aa=function()
+return aa end a.dm=function()local ab=a.cache.dm if not ab then ab={c=aa()}a.cache.dm=ab end return ab.c end end do local aa=function()
 
 
 
-local aa=a.cT()
+
+
+
+local aa=a.cX()
 
 local ab={}
 
 ab.create=function(ac)
-local ad=aa.new("ImageLabel","MainFrame",{
+local ad=aa.new("CanvasGroup","MainFrame",{
 Active=true,
 BorderSizePixel=0,
-Image="",
-ScaleType=Enum.ScaleType.Crop,
 ThemeTag={
 BackgroundColor3="Colors.Background"
 },
+aa.new("ImageLabel","Background",{
+BackgroundTransparency=1,
+Image="",
+ScaleType=Enum.ScaleType.Crop,
+Size=UDim2.fromScale(1,1),
+}),
 aa.new("Frame","TopBar",{
 Size=UDim2.fromOffset(250,20),
 BorderSizePixel=0,
@@ -19761,9 +20719,10 @@ BackgroundColor3="Colors.Background"
 })
 })
 
-local ae=ad.TopBar
+local ae=ad.Background
+local af=ad.TopBar
 
-local af=aa.new("TextLabel","Title",ae,{
+local ag=aa.new("TextLabel","Title",af,{
 Size=UDim2.fromScale(1,1),
 BackgroundTransparency=1,
 TextSize=16,
@@ -19773,7 +20732,7 @@ Font="Font.Normal"
 }
 })
 
-local ag=aa.new("ImageButton",ae,{
+local ah=aa.new("ImageButton",af,{
 Name="SettingsButton",
 BackgroundTransparency=1,
 Position=UDim2.new(1,-2,0.5,0),
@@ -19784,7 +20743,7 @@ ImageColor3="Colors.Icons"
 }
 })
 
-local ah=aa.new("ImageButton",ae,{
+local ai=aa.new("ImageButton",af,{
 Name="ReferenceButton",
 BackgroundTransparency=1,
 Position=UDim2.new(1,-22,0.5,0),
@@ -19797,18 +20756,19 @@ ImageColor3="Colors.Icons"
 
 return{
 mainFrame=ad,
-topBar=ae,
-titleLabel=af,
+background=ae,
+topBar=af,
+titleLabel=ag,
 buttons={
-settings=ag,
-reference=ah
+settings=ah,
+reference=ai
 }
 }end
 
 
-return ab end a.dg=function()local ab=a.cache.dg if not ab then ab={c=aa()}a.cache.dg=ab end return ab.c end end do local aa=function()
+return ab end a.dn=function()local ab=a.cache.dn if not ab then ab={c=aa()}a.cache.dn=ab end return ab.c end end do local aa=function()
 
-local aa=a.cT()
+local aa=a.cX()
 
 local ab={up=
 function(ab,ac)
@@ -19889,11 +20849,11 @@ BackgroundColor3="Colors.Icons"
 end
 
 return ag
-end end a.dh=function()local ab=a.cache.dh if not ab then ab={c=aa()}a.cache.dh=ab end return ab.c end end do local aa=function()
+end end a.dp=function()local ab=a.cache.dp if not ab then ab={c=aa()}a.cache.dp=ab end return ab.c end end do local aa=function()
 
 
 
-local aa=a.aE()
+local aa=a.aI()
 local ab=a.f()
 
 local ac=ab.UserInputService
@@ -19943,18 +20903,18 @@ af.isMovingInput=function(ag)
 return ae[ag.UserInputType]~=nil end
 
 
-return af end a.di=function()local ab=a.cache.di if not ab then ab={c=aa()}a.cache.di=ab end return ab.c end end do local aa=function()
-local aa=a.aE()
-local ab=a.cT()
-local ac=a.af()
-local ad=a.cS()
+return af end a.dq=function()local ab=a.cache.dq if not ab then ab={c=aa()}a.cache.dq=ab end return ab.c end end do local aa=function()
+local aa=a.aI()
+local ab=a.cX()
+local ac=a.ae()
+local ad=a.cW()
 
-local ae=a.dh()
-local af=a.cW()
+local ae=a.dp()
+local af=a.c2()
 
 local ag=a.v()
 
-local ah=a.di()
+local ah=a.dq()
 
 local ai={}
 ai.__index=ai
@@ -19962,131 +20922,131 @@ ai.__index=ai
 ai.awake=function(aj)
 local ak=ac:getMouse()
 
-local b=aj.scrollThumbFrame
-local c=aj.scrollThumb
-local d=aj.scrollBar
+local al=aj.scrollThumbFrame
+local am=aj.scrollThumb
+local b=aj.scrollBar
 
-local e=false
-local f=false
-local g local h=function(
+local c=false
+local d=false
+local e local f=function(
 
-h, i)local j=function()
+f, g)local h=function()
 
-if e then return end
-if not aj:canScroll(i)then return end
+if c then return end
+if not aj:canScroll(g)then return end
 
-e=true
+c=true
 
-aj:scrollToDirection(i)
+aj:scrollToDirection(g)
 
 ah.onReleaseEvent(function()
-e=false
+c=false
 end)
 
 task.wait(0.4)
 
-while aj:canScroll(i)and e do
-aj:scrollToDirection(i)
+while aj:canScroll(g)and c do
+aj:scrollToDirection(g)
 task.wait(6.666666666666666E-2)
 end end
 
 
-aa:Connect(h.MouseButton1Down,j)end
+aa:Connect(f.MouseButton1Down,h)end
 
 
 
 
-h(aj.upButton,"up")
-h(aj.downButton,"down")local i=function(
+f(aj.upButton,"up")
+f(aj.downButton,"down")local g=function(
 
 
 
-i)
+g)
 if aj.locked then return end
-aj:scrollTo(aj.index+i*aj.wheelIncrement)end
+aj:scrollTo(aj.index+g*aj.wheelIncrement)end
 
 
-for j,k in{d,aj.container}do
-aa:Connect(k.MouseWheelForward,function()
-i(-1)
+for h,i in{b,aj.container}do
+aa:Connect(i.MouseWheelForward,function()
+g(-1)
 end)
 
-aa:Connect(k.MouseWheelBackward,function()
-i(1)
+aa:Connect(i.MouseWheelBackward,function()
+g(1)
 end)
 end
 
-aa:Connect(d.InputBegan,function(j)
-if not ah.isPressingInput(j)then return end
+aa:Connect(b.InputBegan,function(h)
+if not ah.isPressingInput(h)then return end
 if aj:isScrollBarDisabled()then return end
 
-local k=not ac:isMouseInGuiObject(c)
-local l=aj.isHorizontal and"X"or"Y"
+local i=not ac:isMouseInGuiObject(am)
+local j=aj.isHorizontal and"X"or"Y"
 
-local m
-f=true
+local k
+d=true
 
-ad:updateObjectProperties(c,{
+ad:updateObjectProperties(am,{
 BackgroundColor3="Colors.Primary"
 })
 
-local n=ak[l]-c.AbsolutePosition[l]
-local o local p=function()
+local l=ak[j]-am.AbsolutePosition[j]
+local m local n=function()
 
 
-if o then o:Disconnect()end end
+if m then m:Disconnect()end end
 
 
 ah.onReleaseEvent(function()
-p()
-f=false
+n()
+d=false
 
-ad:updateObjectProperties(c,{
+ad:updateObjectProperties(am,{
 BackgroundColor3="Colors.OnPrimary"
 })
 end)
 
-if k then local q=function()
+if i then local o=function()
 
 if aj.locked then return end
 
-local q=(ak[l]>=c.AbsolutePosition[l]+c.AbsoluteSize[l])and 1 or 0
-local r=aj.visibleSpace-1
+local o=(ak[j]>=am.AbsolutePosition[j]+am.AbsoluteSize[j])and 1 or 0
+local p=aj.visibleSpace-1
 
-if q==0 and(
-ak[l]<c.AbsolutePosition[l]
+if o==0 and(
+ak[j]<am.AbsolutePosition[j]
 )then
-aj:scrollTo(aj.index-r)
-elseif q==1 and(
-ak[l]>=c.AbsolutePosition[l]+c.AbsoluteSize[l]
+aj:scrollTo(aj.index-p)
+elseif o==1 and(
+ak[j]>=am.AbsolutePosition[j]+am.AbsoluteSize[j]
 )then
-aj:scrollTo(aj.index+r)
+aj:scrollTo(aj.index+p)
 end end
 
 
-while f do
-q()
+while d do
+o()
 task.wait(0.25)
 end
 return
 end
 
-o=ah.onMouseEvent(function(q)
-if not f then return end
+m=ah.onMouseEvent(function(o)
+if not d then return end
 if aj.locked then return end
 
-local r=b.AbsoluteSize[l]-c.AbsoluteSize[l]
-local s=ak[l]-b.AbsolutePosition[l]-n
+local p=al.AbsoluteSize[j]-am.AbsoluteSize[j]
+local q=ak[j]-al.AbsolutePosition[j]-l
 
-if s>r then
-s=r
-elseif s<0 then
-s=0
+if q>p then
+q=p
+elseif q<0 then
+q=0
 end
 
-if m~=s then
-m=s
-aj:scrollTo(math.floor(0.5+s/r*(aj.totalSpace-aj.visibleSpace)))
+if k~=q then
+k=q
+aj:scrollTo(math.floor(0.5+q/p*(aj.totalSpace-aj.visibleSpace)))
 end
 end)
 end)end
@@ -20162,10 +21122,10 @@ return ak end
 
 ai.createButtonsArrows=function(aj)
 local ak=aj.downButton
-local b=aj.upButton
+local al=aj.upButton
 
 ae(4,0.55,ak.Name).Parent=ak
-ae(4,0.55,b.Name).Parent=b end
+ae(4,0.55,al.Name).Parent=al end
 
 
 ai.canScrollUp=function(aj)
@@ -20194,13 +21154,13 @@ if ak<=0 then return 0 end
 return aj.index/ak end
 
 
-ai.scrollTo=function(aj, ak, b)
-local c=math.max(0,aj.totalSpace-aj.visibleSpace)
+ai.scrollTo=function(aj, ak, al)
+local am=math.max(0,aj.totalSpace-aj.visibleSpace)
 
-aj.index=math.clamp(ak,0,c)
+aj.index=math.clamp(ak,0,am)
 aj:update()
 
-if not b then
+if not al then
 aj.scrolledSignal:Fire(aj.index)
 end end
 
@@ -20222,16 +21182,16 @@ end end
 
 
 ai.isVisible=function(aj, ak)
-local b=aj.index
-if ak>=b and ak<(b+aj.visibleSpace)then
+local al=aj.index
+if ak>=al and ak<(al+aj.visibleSpace)then
 return true
 end
 return false end
 
 
 ai.setScrollPercent=function(aj, ak)
-local b=aj.totalSpace-aj.visibleSpace
-aj:scrollTo(math.floor(ak*b))end
+local al=aj.totalSpace-aj.visibleSpace
+aj:scrollTo(math.floor(ak*al))end
 
 
 ai.update=function(aj)
@@ -20239,16 +21199,16 @@ aj:drawThumb()end
 
 
 ai.setScrollBarThickness=function(aj, ak)
-local b=aj.scrollThumbFrame
-local c=aj.downButton
-local d=aj.container
-local e=aj.scrollBar
-local f=aj.upButton
+local al=aj.scrollThumbFrame
+local am=aj.downButton
+local b=aj.container
+local c=aj.scrollBar
+local d=aj.upButton
 
 aj.barThickness=ak
 
-if d then
-d.Size=UDim2.new(
+if b then
+b.Size=UDim2.new(
 1,
 aj.isHorizontal and 0 or-ak,
 1,
@@ -20256,81 +21216,81 @@ aj.isHorizontal and-ak or 0
 )
 end
 
-if e then
-e.Size=aj.isHorizontal
+if c then
+c.Size=aj.isHorizontal
 and UDim2.new(1,0,0,ak)
 or UDim2.new(0,ak,1,0)
-e.Position=aj.isHorizontal
+c.Position=aj.isHorizontal
 and UDim2.new(0,0,1,-ak)
 or UDim2.new(1,-ak,0,0)
 end
 
-if b then
-b.Size=aj.isHorizontal
+if al then
+al.Size=aj.isHorizontal
 and UDim2.new(1,-(ak*2),0,ak)
 or UDim2.new(0,ak,1,-(ak*2))
 end
 
-if c then
-c.Size=UDim2.fromOffset(ak,ak)
-c.Position=aj.isHorizontal
+if am then
+am.Size=UDim2.fromOffset(ak,ak)
+am.Position=aj.isHorizontal
 and UDim2.new(1,-ak,0,0)
 or UDim2.new(0,0,1,-ak)
 end
 
-if f then
-f.Size=UDim2.fromOffset(ak,ak)
-f.Position=UDim2.fromOffset(0,0)
+if d then
+d.Size=UDim2.fromOffset(ak,ak)
+d.Position=UDim2.fromOffset(0,0)
 end end
 
 
-ai.updateArrowTransparency=function(aj, ak, b)
+ai.updateArrowTransparency=function(aj, ak, al)
 if not ak:FindFirstChild("Arrow")then return end
 
-for c,d in ak.Arrow:GetChildren()do
-if not d:IsA("GuiObject")then continue end
-d.Transparency=b and 0.6 or 0
+for am,b in ak.Arrow:GetChildren()do
+if not b:IsA("GuiObject")then continue end
+b.Transparency=al and 0.6 or 0
 end end
 
 
 ai.drawThumb=function(aj)
 local ak=aj.scrollThumb
-local b=aj.scrollThumbFrame
+local al=aj.scrollThumbFrame
 
-local c=aj:canScrollUp()
-local d=aj:canScrollDown()
+local am=aj:canScrollUp()
+local b=aj:canScrollDown()
 
-aj:updateArrowTransparency(aj.upButton,not c)
-aj:updateArrowTransparency(aj.downButton,not d)
+aj:updateArrowTransparency(aj.upButton,not am)
+aj:updateArrowTransparency(aj.downButton,not b)
 
-if not ak or not b then return end
+if not ak or not al then return end
 
-if not c and not d then
+if not am and not b then
 ak.Visible=false
 return
 end
 
 ak.Visible=true
 
-local e=aj:getScrollPercent()
-local f=af:getScale()
-local g=aj.barThickness
+local c=aj:getScrollPercent()
+local d=af:getScale()
+local e=aj.barThickness
 
 if aj.isHorizontal then
-local h=b.AbsoluteSize.X/f
-local i=math.max(g,(aj.visibleSpace/aj.totalSpace)*h)
-ak.Size=UDim2.new(0,i,1,-2)
-ak.Position=UDim2.new(0,e*(h-i),0.5,0)
+local f=al.AbsoluteSize.X/d
+local g=math.max(e,(aj.visibleSpace/aj.totalSpace)*f)
+ak.Size=UDim2.new(0,g,1,-2)
+ak.Position=UDim2.new(0,c*(f-g),0.5,0)
 else
-local h=b.AbsoluteSize.Y/f
-local i=math.max(g,(aj.visibleSpace/aj.totalSpace)*h)
-ak.Size=UDim2.new(1,-2,0,i)
-ak.Position=UDim2.new(0.5,0,0,e*(h-i))
+local f=al.AbsoluteSize.Y/d
+local g=math.max(e,(aj.visibleSpace/aj.totalSpace)*f)
+ak.Size=UDim2.new(1,-2,0,g)
+ak.Position=UDim2.new(0.5,0,0,c*(f-g))
 end end
 
 
-ai.addMarker=function(aj, ak, b)
-aj.markers[ak]=b or Color3.new(1,1,0)
+ai.addMarker=function(aj, ak, al)
+aj.markers[ak]=al or Color3.new(1,1,0)
 aj:updateMarkers()end
 
 
@@ -20343,29 +21303,29 @@ ai.updateMarkers=function(aj)
 local ak=aj.markerFrame
 if not ak then return end
 
-for b,c in pairs(ak:GetChildren())do
-c:Destroy()
+for al,am in pairs(ak:GetChildren())do
+am:Destroy()
 end
 
-for b,c in pairs(aj.markers)do
-if b>=aj.totalSpace then continue end
+for al,am in pairs(aj.markers)do
+if al>=aj.totalSpace then continue end
 
-local d=Instance.new("Frame")
-d.BackgroundColor3=c
-d.BorderSizePixel=0
-d.BackgroundTransparency=0
-d.Parent=ak
+local b=Instance.new("Frame")
+b.BackgroundColor3=am
+b.BorderSizePixel=0
+b.BackgroundTransparency=0
+b.Parent=ak
 
-local e=b/aj.totalSpace
+local c=al/aj.totalSpace
 if aj.isHorizontal then
-d.Position=UDim2.new(e,0,1,-4)
-d.Size=UDim2.new(0,2,0,4)
+b.Position=UDim2.new(c,0,1,-4)
+b.Size=UDim2.new(0,2,0,4)
 else
-d.Position=UDim2.new(1,-4,e,0)
-d.Size=UDim2.new(0,4,0,2)
+b.Position=UDim2.new(1,-4,c,0)
+b.Size=UDim2.new(0,4,0,2)
 end
 
-d.Name="Marker_"..tostring(b)
+b.Name="Marker_"..tostring(al)
 end end
 
 
@@ -20441,7 +21401,7 @@ ak.downButtoName=ak.isHorizontal and"right"or"down"
 return ak end
 
 
-return ai end a.dj=function()local ab=a.cache.dj if not ab then ab={c=aa()}a.cache.dj=ab end return ab.c end end do local aa=function()
+return ai end a.dr=function()local ab=a.cache.dr if not ab then ab={c=aa()}a.cache.dr=ab end return ab.c end end do local aa=function()
 local aa={}
 aa.__index=aa
 
@@ -20460,491 +21420,491 @@ description=ab.description
 },aa)end
 
 
-return aa end a.dk=function()local ab=a.cache.dk if not ab then ab={c=aa()}a.cache.dk=ab end return ab.c end end do local aa=function()
-local aa=a.aE()
+return aa end a.ds=function()local ab=a.cache.ds if not ab then ab={c=aa()}a.cache.ds=ab end return ab.c end end do local aa=function()
+local aa=a.aI()
 local ab=a.f()
-local ac=a.af()
-local ad=a.cT()
-local ae=a.dk()
+local ac=a.ae()
+local ad=a.cX()
+local ae=a.ds()
 
-local af=a.c6()
-local ag=a.c7()
+local af=a.dd()
+local ag=a.de()
 
-local ah=a.di()
-local ai=a.cV()
-local aj=a.cD()
+local ah=a.dq()
+local ai=a.c1()
+local aj=a.cI()
 
 local ak=a.v()
-local b=a.d()
-local c=a.cR()
-local d=a.cW()
+local al=a.d()
+local am=a.b5()
+local b=a.c2()
 
-local e=a.n()
-local f=a.cY().commands
-local g=a.b_()
+local c=a.n()
+local d=a.c4().commands
+local e=a.b3()
 
-local h=ab.UserInputService
-local i=ab.RunService
-local j=ab.TweenService
+local f=ab.UserInputService
+local g=ab.RunService
+local h=ab.TweenService
 
-local k=c.richFontSize
-local l=c.colorFromRGB
+local i=am.richFontSize
+local j=am.colorFromRGB
 
-local m={}
-m.__index=m
+local k={}
+k.__index=k
 
-local n=0.15
-local o=2.50
-local p=6
-local q=24
-local r=18
-local s=3
-local t=5
-local u=4
-local v=0.2
+local l=0.15
+local m=2.50
+local n=6
+local o=24
+local p=18
+local q=3
+local r=5
+local s=4
+local t=0.2
 
-local w=UDim2.new(1,-2*t,0,r)
+local u=UDim2.new(1,-2*r,0,p)
 
-local x=UDim2.new(1,-(t+u+q+t),0,r)
-local y=50 local z=function(
+local v=UDim2.new(1,-(r+s+o+r),0,p)
+local w=50 local x=function(
+
+x)
+return aj.lookup[x]end local y=function(
+
+
+y)
+return math[(y<0)and"ceil"or"floor"](y)end local z=function(
+
 
 z)
-return aj.lookup[z]end local A=function(
+z=z:gsub("[\r\n]+$","")
+z=z:gsub("[\r\n]+"," ")
+return z end
 
 
-A)
-return math[(A<0)and"ceil"or"floor"](A)end local B=function(
+k.refresh=function(A, B, C)
+A:syncCommandsData()
+local D=A.parser:parse(B)
+A.parser:highlight(D)
 
+A:updateSearchBoxHighlight()
 
-B)
-B=B:gsub("[\r\n]+$","")
-B=B:gsub("[\r\n]+"," ")
-return B end
-
-
-m.refresh=function(C, D, E)
-C:syncCommandsData()
-local F=C.parser:parse(D)
-C.parser:highlight(F)
-
-C:updateSearchBoxHighlight()
-
-if E then
-C:scheduleSearchedCommand()
+if C then
+A:scheduleSearchedCommand()
 else
-C.scrollToken=C.scrollToken+1
-C:updateSearchedCommand()
+A.scrollToken=A.scrollToken+1
+A:updateSearchedCommand()
 end end
 
 
 
 
-m.scheduleSearchedCommand=function(C)
-C.scrollToken=C.scrollToken+1
-local D=C.scrollToken
+k.scheduleSearchedCommand=function(A)
+A.scrollToken=A.scrollToken+1
+local B=A.scrollToken
 
-task.delay(n,function()
-if D~=C.scrollToken then return end
-C:updateSearchedCommand()
+task.delay(l,function()
+if B~=A.scrollToken then return end
+A:updateSearchedCommand()
 end)end
 
 
-m.applyCorrection=function(C)
-local D=C.commandInput
-local E=D.correction
-local F=D.rawText
+k.applyCorrection=function(A)
+local B=A.commandInput
+local C=B.correction
+local D=B.rawText
 
-local G=F:sub(1,E.from-1)..E.text..F:sub(E.to+1)
+local E=D:sub(1,C.from-1)..C.text..D:sub(C.to+1)
 
-if e:getValue("spaceAfterCorrection")then
-G=G.." "
+if c:getValue("spaceAfterCorrection")then
+E=E.." "
 end
 
-C:writeText(G)end
+A:writeText(E)end
 
 
 
 
 
-m.ensureFocus=function(C)
-local D=C.searchBox
-if not D then return end
+k.ensureFocus=function(A)
+local B=A.searchBox
+if not B then return end
 
-C.focusRequest=(C.focusRequest or 0)+1
-local E=C.focusRequest
+A.focusRequest=(A.focusRequest or 0)+1
+local C=A.focusRequest
 
 task.spawn(function()
-for F=1,p do
-if E~=C.focusRequest or not C.isEnabled then return end
-if D:IsFocused()then return end
+for D=1,n do
+if C~=A.focusRequest or not A.isEnabled then return end
+if B:IsFocused()then return end
 
-if D.Parent~=nil then
-D:CaptureFocus()
+if B.Parent~=nil then
+B:CaptureFocus()
 end
 
-i.Heartbeat:Wait()
+g.Heartbeat:Wait()
 end
 end)end
 
 
 
-m.sendText=function(C)
-local D=B(C.searchBox.Text)
-if not D:match("%S")then return end
+k.sendText=function(A)
+local B=z(A.searchBox.Text)
+if not B:match("%S")then return end
 
-C:refresh(D)
-C:sendInputCommand()end
-
-
+A:refresh(B)
+A:sendInputCommand()end
 
 
 
-m.updateSendButton=function(C)
-local D=C.sendButton
-local E=C.searchBox
-if not(D and E)then return end
-
-local F=not E:IsFocused()and E.Text:match("%S")~=nil
-if F==C.sendShown then return end
-
-C.sendShown=F
-D.Visible=F
-C:tweenSearchBar(if F then x else w)end
 
 
+k.updateSendButton=function(A)
+local B=A.sendButton
+local C=A.searchBox
+if not(B and C)then return end
 
-m.tweenSearchBar=function(C, D)
-local E=C.searchBoxHolder
-if not E then return end
+local D=not C:IsFocused()and C.Text:match("%S")~=nil
+if D==A.sendShown then return end
 
-if C.barTween then
-C.barTween:Cancel()
-C.barTween=nil
+A.sendShown=D
+B.Visible=D
+A:tweenSearchBar(if D then v else u)end
+
+
+
+k.tweenSearchBar=function(A, B)
+local C=A.searchBoxHolder
+if not C then return end
+
+if A.barTween then
+A.barTween:Cancel()
+A.barTween=nil
 end
 
-if E.Size==D then return end
+if C.Size==B then return end
 
 
-if not C.isEnabled then
-E.Size=D
+if not A.isEnabled then
+C.Size=B
 return
 end
 
-local F=j:Create(E,TweenInfo.new(v,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{
-Size=D,
+local D=h:Create(C,TweenInfo.new(t,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{
+Size=B,
 })
 
-C.barTween=F
-F:Play()end
+A.barTween=D
+D:Play()end
 
 
-m.captureFocus=function(C)
-local D=C.searchBox
-if not D then return end
-
-
-
+k.captureFocus=function(A)
+local B=A.searchBox
+if not B then return end
 
 
 
-if D.Parent~=nil then
-D:CaptureFocus()
+
+
+
+if B.Parent~=nil then
+B:CaptureFocus()
 end end
 
 
 
 
 
-m.setInteractive=function(C, D)
-D=D==true
-if C.interactive==D then return end
-C.interactive=D
+k.setInteractive=function(A, B)
+B=B==true
+if A.interactive==B then return end
+A.interactive=B
 
-C.scrollBar:setLocked(not D)
+A.scrollBar:setLocked(not B)
 
 
-if not D then
-local E=C.searchBox
+if not B then
+local C=A.searchBox
 
-if E and E:IsFocused()then
-E:ReleaseFocus()
+if C and C:IsFocused()then
+C:ReleaseFocus()
 end
 end end
 
 
-m.isInteractive=function(C)
-return C.interactive end
+k.isInteractive=function(A)
+return A.interactive end
 
 
-m.awake=function(C)
-local D=C.commandInput
-local E=C.searchBox
-local F=C.searchBoxHolder
-local G=C.inputMarker
+k.awake=function(A)
+local B=A.commandInput
+local C=A.searchBox
+local D=A.searchBoxHolder
+local E=A.inputMarker
 
-local H=F.Placeholder
+local F=D.Placeholder
 
 aa:Connect(aj.changed,function()
-if C:syncCommandsData()then
-C:refresh(B(E.Text))
+if A:syncCommandsData()then
+A:refresh(z(C.Text))
 end
 end)
 
-local I=E:GetPropertyChangedSignal("Text")
+local G=C:GetPropertyChangedSignal("Text")
 
-local J=0 local K=function()
-
-
-if(tick()-J)>0.5 then
-G.Visible=not G.Visible
-J=tick()
-end end local L=function()
+local H=0 local I=function()
 
 
-
-if E:IsFocused()then
-E:ReleaseFocus()
-end end local M=function()
+if(tick()-H)>0.5 then
+E.Visible=not E.Visible
+H=tick()
+end end local J=function()
 
 
 
-if D.correction then
-C:applyCorrection()
-C:ensureFocus()
+if C:IsFocused()then
+C:ReleaseFocus()
+end end local K=function()
+
+
+
+if B.correction then
+A:applyCorrection()
+A:ensureFocus()
 return true
 end
 
 
-C:sendInputCommand()
-return false end local N=function()
+A:sendInputCommand()
+return false end local L=function()
 
 
 
-local N=not E:IsFocused()and#E.Text==0
-H.Visible=N
+local L=not C:IsFocused()and#C.Text==0
+F.Visible=L
 
-C:updateSendButton()end
+A:updateSendButton()end
 
 
-C.commandClickedSignal:Connect(function(O)
-if not C.interactive then return end
+A.commandClickedSignal:Connect(function(M)
+if not A.interactive then return end
 
-C:writeText(O.aliases[1])
-C:ensureFocus()
+A:writeText(M.aliases[1])
+A:ensureFocus()
 end)
 
-aa:Connect(F.Activated,function()
-if not C.interactive then return end
+aa:Connect(D.Activated,function()
+if not A.interactive then return end
 
-C:ensureFocus()
+A:ensureFocus()
 end)
 
-aa:Connect(C.sendButton.Activated,function()
-if not C.interactive then return end
+aa:Connect(A.sendButton.Activated,function()
+if not A.interactive then return end
 
 
-if E:IsFocused()then
-E:ReleaseFocus()
+if C:IsFocused()then
+C:ReleaseFocus()
 end
 
-C:sendText()
+A:sendText()
 end)
 
-aa:Connect(E.Focused,function()
-if C.onInteraction then C.onInteraction()end
+aa:Connect(C.Focused,function()
+if A.onInteraction then A.onInteraction()end
 
-N()
-C.markerConnection=aa:Connect(i.Stepped,K)
-
-if#E.Text==0 then
-C:setComment("")
-end
-end)
-
-aa:Connect(E.FocusLost,function(O)
-N()
-G.Visible=true
-aa:disconnect(C.markerConnection)
-
-if O then
-C:refresh(B(E.Text))
-M()
-end
-end)
-
-aa:Connect(I,function()
-if C.onInteraction then C.onInteraction()end
-
-local O=E.Text
-
-
-if O:find("\t")then
-E.Text=(O:gsub("\t",""))
-return
-end
-
-
-if C.historyIndex and O~=C.historyText then
-C.historyIndex=nil
-end
-
-local P=O:sub(-1)=="\n"or O:sub(-1)=="\r"
-
-if O:find("[\r\n]")then
-O=B(O)
-E.Text=O
-
-if P then
-C:refresh(O)
-
-if not M()then
 L()
+A.markerConnection=aa:Connect(g.Stepped,I)
+
+if#C.Text==0 then
+A:setComment("")
+end
+end)
+
+aa:Connect(C.FocusLost,function(M)
+L()
+E.Visible=true
+aa:disconnect(A.markerConnection)
+
+if M then
+A:refresh(z(C.Text))
+K()
+end
+end)
+
+aa:Connect(G,function()
+if A.onInteraction then A.onInteraction()end
+
+local M=C.Text
+
+
+if M:find("\t")then
+C.Text=(M:gsub("\t",""))
+return
+end
+
+
+if A.historyIndex and M~=A.historyText then
+A.historyIndex=nil
+end
+
+local N=M:sub(-1)=="\n"or M:sub(-1)=="\r"
+
+if M:find("[\r\n]")then
+M=z(M)
+C.Text=M
+
+if N then
+A:refresh(M)
+
+if not K()then
+J()
 end
 return
 end
 end
 
 
-local Q=#O<#C.lastText
-C.lastText=O
+local O=#M<#A.lastText
+A.lastText=M
 
-N()
-C:refresh(O,Q)
+L()
+A:refresh(M,O)
 end)
 
 
-aa:Connect(h.InputBegan,function(O)
-if not E:IsFocused()then return end
+aa:Connect(f.InputBegan,function(M)
+if not C:IsFocused()then return end
 
-if O.KeyCode==Enum.KeyCode.Up then
-C:browseHistory(-1)
-elseif O.KeyCode==Enum.KeyCode.Down then
-C:browseHistory(1)
-elseif O.KeyCode==Enum.KeyCode.Tab and C.commandInput.correction then
-C:applyCorrection()
-C:ensureFocus()
+if M.KeyCode==Enum.KeyCode.Up then
+A:browseHistory(-1)
+elseif M.KeyCode==Enum.KeyCode.Down then
+A:browseHistory(1)
+elseif M.KeyCode==Enum.KeyCode.Tab and A.commandInput.correction then
+A:applyCorrection()
+A:ensureFocus()
 end
 end)end
 
 
-local C=50
+local A=50
 
 
-m.sendInputCommand=function(D)
-local E=D.commandInput
+k.sendInputCommand=function(B)
+local C=B.commandInput
 
-if E.runError then
-D:setComment(E.runError,"error")
+if C.runError then
+B:setComment(C.runError,"error")
 return
 end
 
-local F=E.statements
+local D=C.statements
 
-for G,H in F do
-if not H.commandData then return end
+for E,F in D do
+if not F.commandData then return end
 end
 
 
-if D.onCommandSent then
-D.onCommandSent()
+if B.onCommandSent then
+B.onCommandSent()
 end
 
-local G=E.rawText
-local H,I
+local E=C.rawText
+local F,G
 
-for J,K in F do
-local L,M=pcall(function()
-D:runStatement(K)
+for H,I in D do
+local J,K=pcall(function()
+B:runStatement(I)
 end)
 
-if not L then
-H=M
-I=K.commandData.name
+if not J then
+F=K
+G=I.commandData.name
 break
 end
 end
 
-if e:getValue("clearOnEnter")then
-D:writeText("")
+if c:getValue("clearOnEnter")then
+B:writeText("")
 end
 
-D.historyIndex=nil
+B.historyIndex=nil
 
-if H then
-D:setComment(`failed - {H}`,"error")
-b:error(`failed to run command '{I}': {H}`)
+if F then
+B:setComment(`failed - {F}`,"error")
+al:error(`failed to run command '{G}': {F}`)
 else
-D:addToHistory(G)
+B:addToHistory(E)
 end end
 
 
 
-m.runStatement=function(D, E)
-ag.runStatement(E)end
+k.runStatement=function(B, C)
+ag.runStatement(C)end
 
 
-m.addToHistory=function(D, E)
-local F=(E or""):match("^(.-)%s*$")
+k.addToHistory=function(B, C)
+local D=(C or""):match("^(.-)%s*$")
 
-if F==""then return end
+if D==""then return end
 
-local G=D.history
+local E=B.history
 
-if G[#G]==F then return end
+if E[#E]==D then return end
 
-table.insert(G,F)
+table.insert(E,D)
 
-if#G>C then
-table.remove(G,1)
+if#E>A then
+table.remove(E,1)
 end end
 
 
 
-m.browseHistory=function(D, E)
-local F=D.history
+k.browseHistory=function(B, C)
+local D=B.history
 
-if#F==0 then return end
+if#D==0 then return end
 
-local G
+local E
 
-if D.historyIndex==nil then
-if E>0 then return end
-G=#F
+if B.historyIndex==nil then
+if C>0 then return end
+E=#D
 else
-G=D.historyIndex+E
+E=B.historyIndex+C
 end
 
-if G<1 then
-G=1
+if E<1 then
+E=1
 end
 
-if G>#F then
-D.historyIndex=nil
-D:setSearchText("")
+if E>#D then
+B.historyIndex=nil
+B:setSearchText("")
 return
 end
 
-D.historyIndex=G
-D:setSearchText(F[G])end
+B.historyIndex=E
+B:setSearchText(D[E])end
 
 
-m.setSearchText=function(D, E)
-D.historyText=E
-D:writeText(E)end
+k.setSearchText=function(B, C)
+B.historyText=C
+B:writeText(C)end
 
 
 
 
-m.writeText=function(D, E)
-D.searchBox.Text=E
-D.lastText=E
-D:refresh(E)end
+k.writeText=function(B, C)
+B.searchBox.Text=C
+B.lastText=C
+B:refresh(C)end
 
 
-m.create=function(D)
-D.searchBoxHolder=ad.new("ImageButton",{
-Size=w,
-Position=UDim2.new(0,t,0,0),
+k.create=function(B)
+B.searchBoxHolder=ad.new("ImageButton",{
+Size=u,
+Position=UDim2.new(0,r,0,0),
 AnchorPoint=Vector2.new(0,1),
 BorderSizePixel=0,
 ClipsDescendants=true,
@@ -20960,7 +21920,7 @@ TextXAlignment=Enum.TextXAlignment.Left,
 TextYAlignment=Enum.TextYAlignment.Center,
 AutomaticSize=Enum.AutomaticSize.X,
 BackgroundTransparency=1,
-TextSize=D.configs.textSize,
+TextSize=B.configs.textSize,
 Visible=false,
 RichText=true,
 ThemeTag={
@@ -20980,8 +21940,8 @@ AnchorPoint=Vector2.new(0,0.5),
 TextXAlignment=Enum.TextXAlignment.Left,
 TextYAlignment=Enum.TextYAlignment.Center,
 BackgroundTransparency=1,
-TextSize=D.configs.textSize-1,
-Text=D.configs.placeholderText,
+TextSize=B.configs.textSize-1,
+Text=B.configs.placeholderText,
 ThemeTag={
 TextColor3="Colors.Text.Dark",
 Font="Font.MonoSpace"
@@ -20989,10 +21949,10 @@ Font="Font.MonoSpace"
 }),
 })
 
-local E=D.searchBoxHolder
-local F=E.Input.Holder
+local C=B.searchBoxHolder
+local D=C.Input.Holder
 
-D.inputMarker=ad.new("Frame","Marker",F,{
+B.inputMarker=ad.new("Frame","Marker",D,{
 Size=UDim2.new(0,1.5,1,-3),
 Position=UDim2.new(1,0.2,0.5,0),
 AnchorPoint=Vector2.new(0,0.5),
@@ -21001,14 +21961,14 @@ Visible=false,
 ThemeTag={BackgroundColor3="Colors.Primary"}
 })
 
-D.inputComment=ad.new("TextLabel","Comment",F,{
+B.inputComment=ad.new("TextLabel","Comment",D,{
 Size=UDim2.fromScale(1,1),
 Position=UDim2.fromScale(1,0.5),
 AnchorPoint=Vector2.new(0,0.5),
 TextXAlignment=Enum.TextXAlignment.Left,
 TextYAlignment=Enum.TextYAlignment.Center,
 BackgroundTransparency=1,
-TextSize=D.configs.textSize,
+TextSize=B.configs.textSize,
 RichText=true,
 Text="",
 ThemeTag={
@@ -21017,14 +21977,14 @@ Font="Font.MonoSpace"
 }
 })
 
-D.commandInfo=ad.new("TextLabel","Info",{
+B.commandInfo=ad.new("TextLabel","Info",{
 Size=UDim2.new(1,-25,0,0),
 Position=UDim2.new(0,10,0,0),
 AutomaticSize=Enum.AutomaticSize.Y,
 TextYAlignment=Enum.TextYAlignment.Center,
 TextXAlignment=Enum.TextXAlignment.Left,
-Font=D.configs.textFont,
-TextSize=D.configs.textSize-5,
+Font=B.configs.textFont,
+TextSize=B.configs.textSize-5,
 Visible=false,
 ad.new("UICorner",{
 CornerRadius=UDim.new(0,4)
@@ -21035,7 +21995,7 @@ TextColor3="Colors.Text.Default"
 }
 })
 
-D.searchBox=ad.new("TextBox","SearchBox",{
+B.searchBox=ad.new("TextBox","SearchBox",{
 BackgroundTransparency=1,
 BorderSizePixel=0,
 TextTransparency=1,
@@ -21050,26 +22010,26 @@ MultiLine=true
 
 
 
-D.searchBox.ZIndex=0
+B.searchBox.ZIndex=0
 pcall(function()
-D.searchBox.Interactable=false
+B.searchBox.Interactable=false
 end)
 
-D.commandsFolder=ad.new("Folder","Commands")
+B.commandsFolder=ad.new("Folder","Commands")
 
-D:createSendButton()end
-
-
-
-m.createSendButton=function(D)
+B:createSendButton()end
 
 
-local E=ad.new("TextButton","Send",{
+
+k.createSendButton=function(B)
+
+
+local C=ad.new("TextButton","Send",{
 AnchorPoint=Vector2.new(1,1),
 AutoButtonColor=false,
 BorderSizePixel=0,
-Position=UDim2.new(1,-t,0,0),
-Size=UDim2.new(0,q,0,r),
+Position=UDim2.new(1,-r,0,0),
+Size=UDim2.new(0,o,0,p),
 Text="",
 Visible=false,
 ThemeTag={
@@ -21081,219 +22041,219 @@ CornerRadius=UDim.new(0,4),
 }),
 })
 
-local F=ad.new("ImageLabel","Icon",E,{
+local D=ad.new("ImageLabel","Icon",C,{
 AnchorPoint=Vector2.new(0.5,0.5),
 BackgroundTransparency=1,
 Position=UDim2.fromScale(0.5,0.5),
 ScaleType=Enum.ScaleType.Fit,
-Size=UDim2.new(1,-2*s,1,-2*s),
+Size=UDim2.new(1,-2*q,1,-2*q),
 ThemeTag={
 ImageColor3="Colors.Icons",
 },
 })
 
-ai:loadImage(F,"lucide-send")
+ai:loadImage(D,"lucide-send")
 
-D.sendIcon=F
-D.sendButton=E
-D.sendShown=false end
+B.sendIcon=D
+B.sendButton=C
+B.sendShown=false end
 
 
-m.createCommandsData=function(D)
-local E={}
-local F={}
-for G,H in aj.original do
-local I=H.commandData or ae.new(H)
-H.commandData=I
-I.position=G-1
-E[H]=true
-table.insert(F,I)
+k.createCommandsData=function(B)
+local C={}
+local D={}
+for E,F in aj.original do
+local G=F.commandData or ae.new(F)
+F.commandData=G
+G.position=E-1
+C[F]=true
+table.insert(D,G)
 end
-for G,H in D.renderedCommands or{}do
-if not E[H]then
-local I=H.commandData
-if I and I.element then I.element:Destroy()end
-H.commandData=nil
+for E,F in B.renderedCommands or{}do
+if not C[F]then
+local G=F.commandData
+if G and G.element then G.element:Destroy()end
+F.commandData=nil
 end
 end
-D.commandsData=F
-D.renderedCommands=table.clone(aj.original)
-D.commandsRevision=aj.revision or 0
-D.hoveredCommand=nil
-D:clearHoverDescription()end
+B.commandsData=D
+B.renderedCommands=table.clone(aj.original)
+B.commandsRevision=aj.revision or 0
+B.hoveredCommand=nil
+B:clearHoverDescription()end
 
 
-m.syncCommandsData=function(D)
-if D.commandsRevision==(aj.revision or 0)then return false end
-D:createCommandsData()
-D.scrollBar:setTotalSpace(D:calculateTotalSpace())
-if D.isEnabled then D:updateElements()end
+k.syncCommandsData=function(B)
+if B.commandsRevision==(aj.revision or 0)then return false end
+B:createCommandsData()
+B.scrollBar:setTotalSpace(B:calculateTotalSpace())
+if B.isEnabled then B:updateElements()end
 return true end
 
 
-m.updateSearchBoxHighlight=function(D)
-local E=D.commandInput.highlightText
-local F=D.searchBoxHolder
-local G=F.Input
-local H=d:getScale()
+k.updateSearchBoxHighlight=function(B)
+local C=B.commandInput.highlightText
+local D=B.searchBoxHolder
+local E=D.Input
+local F=b:getScale()
 
-G.Text=E
-G.Visible=#E>0
+E.Text=C
+E.Visible=#C>0
 
-local I=F.AbsoluteSize.X*H
-local J=I/2
-local K=G.AbsoluteSize.X*H
+local G=D.AbsoluteSize.X*F
+local H=G/2
+local I=E.AbsoluteSize.X*F
 
-if K<=J then
-G.AnchorPoint=Vector2.new(0,0.5)
-G.Position=UDim2.new(0,5,0.5,0)
+if I<=H then
+E.AnchorPoint=Vector2.new(0,0.5)
+E.Position=UDim2.new(0,5,0.5,0)
 else
-G.AnchorPoint=Vector2.new(1,0.5)
-G.Position=UDim2.new(0.5,0,0.5,0)
+E.AnchorPoint=Vector2.new(1,0.5)
+E.Position=UDim2.new(0.5,0,0.5,0)
 end end
 
 
 
 
-m.updateSearchBoxPosition=function(D)
-local E=D.searchBox
-local F=D.searchBoxHolder
-local G=D.screenGui
-local H=D.scrollHolder and D.scrollHolder.Parent
+k.updateSearchBoxPosition=function(B)
+local C=B.searchBox
+local D=B.searchBoxHolder
+local E=B.screenGui
+local F=B.scrollHolder and B.scrollHolder.Parent
 
-if not D.isEnabled or not(E and F and G and H)then return end
+if not B.isEnabled or not(C and D and E and F)then return end
 
-local I=G.AbsoluteSize
-local J=math.max(d:getScale(),0.01)
-
-
-
-local K=H.Position
-local L=K.X.Scale*I.X+K.X.Offset*J
-local M=K.Y.Scale*I.Y+K.Y.Offset*J
+local G=E.AbsoluteSize
+local H=math.max(b:getScale(),0.01)
 
 
 
-local N=L+(F.AbsolutePosition.X-H.AbsolutePosition.X)
-local O=M+(F.AbsolutePosition.Y-H.AbsolutePosition.Y)
+local I=F.Position
+local J=I.X.Scale*G.X+I.X.Offset*H
+local K=I.Y.Scale*G.Y+I.Y.Offset*H
 
 
-local P=F.AbsoluteSize
-local Q=math.max(math.min(P.X,I.X),1)
-local R=math.max(math.min(P.Y,I.Y),1)
 
-local S=D:calculateLabelSize()*o*J
-
-local T=math.clamp(N,0,math.max(I.X-Q,0))
-local V=math.clamp(O+R+S,0,math.max(I.Y-R,0))
+local L=J+(D.AbsolutePosition.X-F.AbsolutePosition.X)
+local M=K+(D.AbsolutePosition.Y-F.AbsolutePosition.Y)
 
 
-local W=UDim2.fromOffset(T/J,V/J)
-local X=UDim2.fromOffset(Q/J,R/J)
+local N=D.AbsoluteSize
+local O=math.max(math.min(N.X,G.X),1)
+local P=math.max(math.min(N.Y,G.Y),1)
+
+local Q=B:calculateLabelSize()*m*H
+
+local R=math.clamp(L,0,math.max(G.X-O,0))
+local S=math.clamp(M+P+Q,0,math.max(G.Y-P,0))
 
 
-if E.Position~=W or E.Size~=X then
-E.Position=W
-E.Size=X
+local T=UDim2.fromOffset(R/H,S/H)
+local V=UDim2.fromOffset(O/H,P/H)
+
+
+if C.Position~=T or C.Size~=V then
+C.Position=T
+C.Size=V
 end end
 
 
-m.updateSearchedCommand=function(D)
-D:syncCommandsData()
-local E=D.commandInput.bestMatch
-local F=D.commandInput.commandName
-if F==""then return end
+k.updateSearchedCommand=function(B)
+B:syncCommandsData()
+local C=B.commandInput.bestMatch
+local D=B.commandInput.commandName
+if D==""then return end
 
-local G=z(F)
-or(E and z(E))
+local E=x(D)
+or(C and x(C))
 
-if G and G.commandData then
-D.scrollBar:scrollTo(G.commandData.position)
+if E and E.commandData then
+B.scrollBar:scrollTo(E.commandData.position)
 end end
 
 
-m.setComment=function(D, E, F)
-if F~=nil then
-E=af.colorFromName(E,F)
+k.setComment=function(B, C, D)
+if D~=nil then
+C=af.colorFromName(C,D)
 end
 
-D.inputComment.Text=E
-D.inputComment.Visible=#E>0 end
+B.inputComment.Text=C
+B.inputComment.Visible=#C>0 end
 
 
-m.updateElementColor=function(D, E, F)
-local G=if F%2==1 then 1 else 0.96
-E.BackgroundTransparency=G end
+k.updateElementColor=function(B, C, D)
+local E=if D%2==1 then 1 else 0.96
+C.BackgroundTransparency=E end
 
 
-m.updateElements=function(D)
-local E=0
-local F=0
-local G={}
-local H=D.scrollBar
-local I=D.commandsFolder
+k.updateElements=function(B)
+local C=0
+local D=0
+local E={}
+local F=B.scrollBar
+local G=B.commandsFolder
 
-for J,K in D.commandsData do
-local L=H:isVisible(K.position)
+for H,I in B.commandsData do
+local J=F:isVisible(I.position)
 
-if not L then
-if K.element then K.element.Parent=nil end
+if not J then
+if I.element then I.element.Parent=nil end
 continue
 end
 
-local M=K.element
-if not M then
-M=D:createCommandElement(K)
-K.element=M
+local K=I.element
+if not K then
+K=B:createCommandElement(I)
+I.element=K
 end
 
-if not K.isSection then
-if#K.args>0 and#K.name>F then
-F=#K.name
+if not I.isSection then
+if#I.args>0 and#I.name>D then
+D=#I.name
 end
-table.insert(G,K)
+table.insert(E,I)
 end
 
-D:updateElementColor(M,J)
-M.Parent=I
-M.Position=UDim2.fromOffset(
+B:updateElementColor(K,H)
+K.Parent=G
+K.Position=UDim2.fromOffset(
 0,
-E*(M.Size.Y.Offset+D.configs.padding)
+C*(K.Size.Y.Offset+B.configs.padding)
 )
-E=E+1
+C=C+1
 end
 
-for J,K in G do
-D:updateDisplayName(K,F+3)
+for H,I in E do
+B:updateDisplayName(I,D+3)
 end
 
-D.visibleCommands=G end
+B.visibleCommands=E end
 
 
-m.setCommandInfo=function(D, E)
-E=E or""
+k.setCommandInfo=function(B, C)
+C=C or""
 
-if E==""then
-D.commandInfo.Visible=false
+if C==""then
+B.commandInfo.Visible=false
 return
 end
 
-D.commandInfo.Visible=true
-D.commandInfo.Text=E end
+B.commandInfo.Visible=true
+B.commandInfo.Text=C end
 
 
-m.createSection=function(D, E)
+k.createSection=function(B, C)
 
 
-local F=ad.new("TextLabel","Command",{
+local D=ad.new("TextLabel","Command",{
 Size=UDim2.fromScale(1,1),
 Position=UDim2.fromOffset(5,0),
 BackgroundTransparency=1,
 TextXAlignment=Enum.TextXAlignment.Left,
 TextYAlignment=Enum.TextYAlignment.Bottom,
 RichText=true,
-TextSize=D.configs.textSize-3,
-Text=`<b>#{E.sectionName}</b>`,
+TextSize=B.configs.textSize-3,
+Text=`<b>#{C.sectionName}</b>`,
 ThemeTag={
 TextColor3="Colors.Text.Darker",
 Font="Font.MonoSpace"
@@ -21301,26 +22261,26 @@ Font="Font.MonoSpace"
 })
 
 return ad.new("Frame",{
-Size=UDim2.new(1,-10,0,D.configs.labelSize),
+Size=UDim2.new(1,-10,0,B.configs.labelSize),
 BackgroundTransparency=1,
 
-F
+D
 })end
 
 
-m.createCommandElement=function(D, E)
-if E.isSection then
-return D:createSection(E)
+k.createCommandElement=function(B, C)
+if C.isSection then
+return B:createSection(C)
 end
 
-local F=ad.new("TextLabel","Command",{
+local D=ad.new("TextLabel","Command",{
 Size=UDim2.fromScale(0,1),
 Position=UDim2.fromOffset(5,0),
 BackgroundTransparency=1,
 TextXAlignment=Enum.TextXAlignment.Left,
 AutomaticSize=Enum.AutomaticSize.X,
 RichText=true,
-TextSize=D.configs.textSize,
+TextSize=B.configs.textSize,
 ThemeTag={
 TextColor3="Colors.Text.Default",
 Font="Font.MonoSpace"
@@ -21328,24 +22288,24 @@ Font="Font.MonoSpace"
 })
 
 return ad.new("Frame",{
-Size=UDim2.new(1,0,0,D.configs.labelSize),
+Size=UDim2.new(1,0,0,B.configs.labelSize),
 AutomaticSize=Enum.AutomaticSize.X,
 BackgroundTransparency=1,
-F
+D
 })end
 
 
-m.createCommandDescription=function(D, E)
-if E.isSection then return end
-if not E.description then return end
+k.createCommandDescription=function(B, C)
+if C.isSection then return end
+if not C.description then return end
 
-local F=ad.new("TextLabel","Description",{
+local D=ad.new("TextLabel","Description",{
 Size=UDim2.fromScale(1,1),
 Position=UDim2.fromOffset(25,0),
 BackgroundTransparency=1,
 TextXAlignment=Enum.TextXAlignment.Left,
 RichText=true,
-TextSize=D.configs.textSize,
+TextSize=B.configs.textSize,
 ThemeTag={
 TextColor3="Colors.Text.Dark",
 Font="Font.MonoSpace"
@@ -21353,88 +22313,88 @@ Font="Font.MonoSpace"
 })
 
 return ad.new("Frame","Description",{
-Size=UDim2.new(1,-30,0,D.configs.labelSize),
+Size=UDim2.new(1,-30,0,B.configs.labelSize),
 BackgroundTransparency=1,
-F
+D
 })end
 
 
-m.getCommandColor=function(D, E, F)
-local G=z(E)
-if not G then return E end
+k.getCommandColor=function(B, C, D)
+local E=x(C)
+if not E then return C end
 
-local H=
-if type(G.run)~="function"then"undefined"
-elseif F.isClient then"client"
-elseif F.isDeprecated then"deprecated"
+local F=
+if type(E.run)~="function"then"undefined"
+elseif D.isClient then"client"
+elseif D.isDeprecated then"deprecated"
 else nil
 
-if H~=nil then
-E=l(E,f[H])
+if F~=nil then
+C=j(C,d[F])
 end
 
-return E end
+return C end
 
 
-m.updateDisplayName=function(D, E, F)
-local G=E.element
-local H=E.name
+k.updateDisplayName=function(B, C, D)
+local E=C.element
+local F=C.name
 
-local I=string.rep("—",(F-#H)-2)
+local G=string.rep("—",(D-#F)-2)
 
-H=D:getCommandColor(H,E)
-local J=`{H} {af.colorFromName(I,"comment")} `
+F=B:getCommandColor(F,C)
+local H=`{F} {af.colorFromName(G,"comment")} `
 
-local K=D.parser:highlightArgsType(E.args)
-local L=J..K
+local I=B.parser:highlightArgsType(C.args)
+local J=H..I
 
-if E.isHolding then
-E.originalText=L
+if C.isHolding then
+C.originalText=J
 else
-D:setCommandText(E,L)
+B:setCommandText(C,J)
 end end
 
 
-m.setCommandText=function(D, E, F)
-local G=E.element
-if not G then return end
+k.setCommandText=function(B, C, D)
+local E=C.element
+if not E then return end
 
-G.Command.Text=F end
-
-
-m.getCommandText=function(D, E)
-local F=E.element
-return F and F.Command.Text or""end
+E.Command.Text=D end
 
 
-m.calculateTotalSpace=function(D)
-return#D.commandsData end
+k.getCommandText=function(B, C)
+local D=C.element
+return D and D.Command.Text or""end
 
 
-m.calculateVisibleSpace=function(D)
-local E=D.scrollContainer.AbsoluteSize.Y
-return math.floor(E/D:calculateLabelSize())end
+k.calculateTotalSpace=function(B)
+return#B.commandsData end
 
 
-m.calculateLabelSize=function(D)
-return D.configs.padding+D.configs.labelSize end
+k.calculateVisibleSpace=function(B)
+local C=B.scrollContainer.AbsoluteSize.Y
+return math.floor(C/B:calculateLabelSize())end
 
 
-m.getElementMouseIn=function(D)
-for E,F in D.visibleCommands do
-if ac:isMouseInGuiObject(F.element)then
-return F
+k.calculateLabelSize=function(B)
+return B.configs.padding+B.configs.labelSize end
+
+
+k.getElementMouseIn=function(B)
+for C,D in B.visibleCommands do
+if ac:isMouseInGuiObject(D.element)then
+return D
 end
 end end
 
 
-m.horizontalScroll=function(D, E)
-for F,G in D.visibleCommands do
-local H=G.element
+k.horizontalScroll=function(B, C)
+for D,E in B.visibleCommands do
+local F=E.element
 
-H.Position=UDim2.fromOffset(
-math.min(H.Position.X.Offset+E,0),
-H.Position.Y.Offset
+F.Position=UDim2.fromOffset(
+math.min(F.Position.X.Offset+C,0),
+F.Position.Y.Offset
 )
 end end
 
@@ -21443,233 +22403,233 @@ end end
 
 
 
-m.showHoverDescription=function(D, E)
-local F=D.inputComment
-local G=D.hoverText~=nil and F.Text==D.hoverText
+k.showHoverDescription=function(B, C)
+local D=B.inputComment
+local E=B.hoverText~=nil and D.Text==B.hoverText
 
-if not G then
-if F.Text~=""then
-D.hoverText=nil
+if not E then
+if D.Text~=""then
+B.hoverText=nil
 return false
 end
 
-D.savedComment=F.Text
+B.savedComment=D.Text
 end
 
-D.hoverText=af.colorFromName(E,"comment")
-F.Text=D.hoverText
-F.Visible=true
+B.hoverText=af.colorFromName(C,"comment")
+D.Text=B.hoverText
+D.Visible=true
 return true end
 
 
-m.clearHoverDescription=function(D)
-if D.hoverText==nil then return end
+k.clearHoverDescription=function(B)
+if B.hoverText==nil then return end
 
-local E=D.inputComment
+local C=B.inputComment
 
 
-if E.Text==D.hoverText then
-E.Text=D.savedComment or""
-E.Visible=#E.Text>0
+if C.Text==B.hoverText then
+C.Text=B.savedComment or""
+C.Visible=#C.Text>0
 end
 
-D.hoverText=nil
-D.savedComment=nil end
+B.hoverText=nil
+B.savedComment=nil end
 
 
-m.updateHoverDescription=function(D)
-local E
+k.updateHoverDescription=function(B)
+local C
 
-if D.interactive and ac:isMouseInGuiObject(D.scrollContainer)then
-E=D:getElementMouseIn()
+if B.interactive and ac:isMouseInGuiObject(B.scrollContainer)then
+C=B:getElementMouseIn()
 end
 
-local F=E and E.description
-if not F then
-D.hoveredCommand=nil
-D:clearHoverDescription()
+local D=C and C.description
+if not D then
+B.hoveredCommand=nil
+B:clearHoverDescription()
 return
 end
 
-if E==D.hoveredCommand then return end
+if C==B.hoveredCommand then return end
 
 
-if D:showHoverDescription(F)then
-D.hoveredCommand=E
+if B:showHoverDescription(D)then
+B.hoveredCommand=C
 end end
 
 
-m.startedHoldingContainer=function(D, E)
-if not D.interactive then return end
-if not ah.isPressingInput(E)then return end
-if D.scrollBar:isScrollBarDisabled()then return end
+k.startedHoldingContainer=function(B, C)
+if not B.interactive then return end
+if not ah.isPressingInput(C)then return end
+if B.scrollBar:isScrollBarDisabled()then return end
 
-D.scrollAxis=nil
-D.scrollBar:disableScroll()
+B.scrollAxis=nil
+B.scrollBar:disableScroll()
 
-local F=ac:getMouse()
-local G=D:calculateLabelSize()
-local H=D:getElementMouseIn()
-local I=tick()
+local D=ac:getMouse()
+local E=B:calculateLabelSize()
+local F=B:getElementMouseIn()
+local G=tick()
 
-if H and H.description then
-H.isHolding=true
+if F and F.description then
+F.isHolding=true
 
-local J=D.parser.colorFromName(H.description,"comment")
+local H=B.parser.colorFromName(F.description,"comment")
 
-H.originalText=D:getCommandText(H)
-D:setCommandText(H,J)
+F.originalText=B:getCommandText(F)
+B:setCommandText(F,H)
 end
 
-local J=F.Y
-local K=F.X
+local H=D.Y
+local I=D.X
 
 
 
-local L=F.Y
-local M=D.scrollBar.index<=0
-local N=0
-local O=false
+local J=D.Y
+local K=B.scrollBar.index<=0
+local L=0
+local M=false
 
-local P local Q=function()
-
-
-D.scrollBar:enableScroll()
+local N local O=function()
 
 
-if M and D.scrollAxis=="y"and N>=y and D.onSwipeDown then
-O=true
-D.onSwipeDown()
+B.scrollBar:enableScroll()
+
+
+if K and B.scrollAxis=="y"and L>=w and B.onSwipeDown then
+M=true
+B.onSwipeDown(L)
 end
 
-if H then
-H.isHolding=nil
+if F then
+F.isHolding=nil
 
-if H.originalText then
-D:setCommandText(H,H.originalText)
-H.originalText=nil
+if F.originalText then
+B:setCommandText(F,F.originalText)
+F.originalText=nil
 end
 
-if(tick()-I)<=0.15 and not O then
-D.commandClickedSignal:Fire(H)
+if(tick()-G)<=0.15 and not M then
+B.commandClickedSignal:Fire(F)
 end
 end
 
-if P then P:Disconnect()end end
+if N then N:Disconnect()end end
 
 
-ah.onReleaseEvent(Q)
+ah.onReleaseEvent(O)
 
-P=ah.onMouseEvent(function(R)
+N=ah.onMouseEvent(function(P)
 
-if not D.interactive then return end
-N=F.Y-L
+if not B.interactive then return end
+L=D.Y-J
 
-local S=F.X-K
-local T=F.Y-J
+local Q=D.X-I
+local R=D.Y-H
 
-if not D.scrollAxis then
-if math.abs(S)>4 or math.abs(T)>4 then
-D.scrollAxis=math.abs(S)>math.abs(T)and"x"or"y"
+if not B.scrollAxis then
+if math.abs(Q)>4 or math.abs(R)>4 then
+B.scrollAxis=math.abs(Q)>math.abs(R)and"x"or"y"
 end
 return
 end
 
-if D.scrollAxis=="x"then
-local V=A(S/3)
-if math.floor(V)~=0 then
-D:horizontalScroll(V)
-K=F.X
+if B.scrollAxis=="x"then
+local S=y(Q/3)
+if math.floor(S)~=0 then
+B:horizontalScroll(S)
+I=D.X
 end
 else
-local V=A(T/G)
-if math.floor(V)~=0 then
-D.scrollBar:scrollTo(D.scrollBar.index-V)
-J=F.Y
+local S=y(R/E)
+if math.floor(S)~=0 then
+B.scrollBar:scrollTo(B.scrollBar.index-S)
+H=D.Y
 end
 end
 end)end
 
 
-m.update=function(D)
-D:syncCommandsData()
-D.scrollBar:setVisibleSpace(D:calculateVisibleSpace())
-D.scrollBar:setTotalSpace(D:calculateTotalSpace())
-D:updateElements()end
+k.update=function(B)
+B:syncCommandsData()
+B.scrollBar:setVisibleSpace(B:calculateVisibleSpace())
+B.scrollBar:setTotalSpace(B:calculateTotalSpace())
+B:updateElements()end
 
 
-m.enable=function(D)
-if D.isEnabled then return end
-local E=D.scrollContainer
-D.isEnabled=true
+k.enable=function(B)
+if B.isEnabled then return end
+local C=B.scrollContainer
+B.isEnabled=true
 
-D.commandsFolder.Parent=E
-D.searchBox.Parent=D.screenGui
-D.searchBoxHolder.Parent=D.scrollHolder
-D.sendButton.Parent=D.scrollHolder
-D.commandInfo.Parent=D.scrollHolder
+B.commandsFolder.Parent=C
+B.searchBox.Parent=B.screenGui
+B.searchBoxHolder.Parent=B.scrollHolder
+B.sendButton.Parent=B.scrollHolder
+B.commandInfo.Parent=B.scrollHolder
 
-D.scrollConnection=D.scrolledSignal:Connect(function()
-D:updateElements()
+B.scrollConnection=B.scrolledSignal:Connect(function()
+B:updateElements()
 end)
 
-D.containerConnection=E.InputBegan:Connect(function(F)
-D:startedHoldingContainer(F)
+B.containerConnection=C.InputBegan:Connect(function(D)
+B:startedHoldingContainer(D)
 end)
 
-D:update()
-D:updateSearchBoxPosition()
+B:update()
+B:updateSearchBoxPosition()
 
 
-D.searchBoxConnection=aa:Connect(i.RenderStepped,function()
-D:updateSearchBoxPosition()
+B.searchBoxConnection=aa:Connect(g.RenderStepped,function()
+B:updateSearchBoxPosition()
 end)
 
 
-if not g then
-D.hoverConnection=aa:Connect(i.RenderStepped,function()
-D:updateHoverDescription()
+if not e then
+B.hoverConnection=aa:Connect(g.RenderStepped,function()
+B:updateHoverDescription()
 end)
 end end
 
 
-m.disable=function(D)
-if not D.isEnabled then return end
-D.isEnabled=false
+k.disable=function(B)
+if not B.isEnabled then return end
+B.isEnabled=false
 
-D.commandsFolder.Parent=nil
-D.searchBox.Parent=nil
-D.searchBoxHolder.Parent=nil
-D.sendButton.Parent=nil
-D.commandInfo.Parent=nil
+B.commandsFolder.Parent=nil
+B.searchBox.Parent=nil
+B.searchBoxHolder.Parent=nil
+B.sendButton.Parent=nil
+B.commandInfo.Parent=nil
 
-aa:disconnect(D.containerConnection)
-aa:disconnect(D.markerConnection)
-aa:disconnect(D.scrollConnection)
-aa:disconnect(D.searchBoxConnection)
-aa:disconnect(D.hoverConnection)
+aa:disconnect(B.containerConnection)
+aa:disconnect(B.markerConnection)
+aa:disconnect(B.scrollConnection)
+aa:disconnect(B.searchBoxConnection)
+aa:disconnect(B.hoverConnection)
 
-D.hoveredCommand=nil
-D:clearHoverDescription()end
-
-
-m.new=function(D)local E=function(
-E)
-return assert(D.configs[E],`missing config.configs['{E}']`)end
+B.hoveredCommand=nil
+B:clearHoverDescription()end
 
 
-local F=setmetatable({
-scrollContainer=D.scrollContainer,
-scrolledSignal=D.scrolledSignal,
-scrollHolder=D.scrollHolder,
-scrollBar=D.scrollBar,
-screenGui=D.screenGui,
+k.new=function(B)local C=function(
+C)
+return assert(B.configs[C],`missing config.configs['{C}']`)end
+
+
+local D=setmetatable({
+scrollContainer=B.scrollContainer,
+scrolledSignal=B.scrolledSignal,
+scrollHolder=B.scrollHolder,
+scrollBar=B.scrollBar,
+screenGui=B.screenGui,
 
 configs={
-placeholderText=E("placeholderText"),
-padding=E("padding"),
-labelSize=E("labelSize"),
-textSize=E("textSize")
+placeholderText=C("placeholderText"),
+padding=C("padding"),
+labelSize=C("labelSize"),
+textSize=C("textSize")
 },
 
 commandClickedSignal=ak.new(),
@@ -21694,19 +22654,16 @@ historyIndex=nil,
 historyText="",
 lastText="",
 scrollToken=0,
-},m)
+},k)
 
-F.parser=af.new(F.commandInput,function(G,H)
-return F:setComment(G,H)
+D.parser=af.new(D.commandInput,function(E,F)
+return D:setComment(E,F)
 end)
 
-return F end
+return D end
 
 
-return m end a.dl=function()local ab=a.cache.dl if not ab then ab={c=aa()}a.cache.dl=ab end return ab.c end end do local aa=function()
-
-
-
+return k end a.dt=function()local ab=a.cache.dt if not ab then ab={c=aa()}a.cache.dt=ab end return ab.c end end do local aa=function()
 
 
 
@@ -21717,7 +22674,10 @@ return m end a.dl=function()local ab=a.cache.dl if not ab then ab={c=aa()}a.cach
 
 
 
-local aa=a.di()
+
+
+
+local aa=a.dq()
 local ab=a.f()
 local ac=a.v()
 
@@ -21726,189 +22686,230 @@ local ad=ab.UserInputService
 local ae=0.28
 local af=0.2
 local ag=10
+local ah=0.15
 
-local ah={}
-ah.__index=ah local ai=function(
-
-
-
-ai)
-return ai.UserInputType~=Enum.UserInputType.Touch end local aj=function(
+local ai={}
+ai.__index=ai local aj=function(
 
 
 
-aj, ak)
-if ak==aj.input then return true end
-return aj.isMouse and ak.UserInputType==Enum.UserInputType.MouseMovement end local ak=function(
+aj)
+return aj.UserInputType~=Enum.UserInputType.Touch end local ak=function(
 
 
 
-ak, b)
-if b==ak.input then return true end
-return ak.isMouse and b.UserInputType==ak.input.UserInputType end
+ak, al)
+if al==ak.input then return true end
+return ak.isMouse and al.UserInputType==Enum.UserInputType.MouseMovement end local al=function(
+
+
+
+al, am)
+if am==al.input then return true end
+return al.isMouse and am.UserInputType==al.input.UserInputType end
 
 
 
 
-ah._resetDrag=function(b)
-for c,d in b._pressConnections do
-d:Disconnect()
+ai._resetDrag=function(am)
+for b,c in am._pressConnections do
+c:Disconnect()
 end
-table.clear(b._pressConnections)
+table.clear(am._pressConnections)
 
-b._press=nil
-b.isDragging=false
-b.draggingObject=nil
-b.dragStart=nil
-b.startPos=nil
-b.lastPos=nil
-b.pressTime=0
-b.travel=0 end
+am._press=nil
+am.isDragging=false
+am.draggingObject=nil
+am.dragStart=nil
+am.startPos=nil
+am.lastPos=nil
+am.pressTime=0
+am.travel=0
+table.clear(am.samples)end
 
 
 
 
-ah._endPress=function(b, c)
-if b._press~=c then return end
+ai._endPress=function(am, b)
+if am._press~=b then return end
 
-local d=b.isDragging
-local e=b.draggingObject
-local f
+local c=am.isDragging
+local d=am.draggingObject
+local e
 
-if d then
-f={
-duration=os.clock()-b.pressTime,
-travel=b.travel,
-dy=b.lastPos.Y-b.dragStart.Y,
+if c then
+
+
+local f=am:_velocity()
+
+e={
+duration=os.clock()-am.pressTime,
+travel=am.travel,
+dx=am.lastPos.X-am.dragStart.X,
+dy=am.lastPos.Y-am.dragStart.Y,
+velocityX=f.X,
+velocityY=f.Y,
 }
 end
 
-b:_resetDrag()
+am:_resetDrag()
 
-if d then
-b.dragEnded:Fire(e,f)
+if c then
+am.dragEnded:Fire(d,e)
 end end
 
 
 
-ah._beginDrag=function(b, c)
-if b.isDragging or b._press~=c then return end
+ai._beginDrag=function(am, b)
+if am.isDragging or am._press~=b then return end
 
-b.isDragging=true
-b.draggingObject=c.object
-b.dragStarted:Fire(c.object)end
+am.isDragging=true
+am.draggingObject=b.object
+am.dragStarted:Fire(b.object)end
 
 
 
-ah._onPressMoved=function(b, c, d)
-if b._press~=c or not aj(c,d)then return end
+ai._onPressMoved=function(am, b, c)
+if am._press~=b or not ak(b,c)then return end
 
-if c.isButton and not b.isDragging then
-if(d.Position-b.dragStart).Magnitude<=ag then return end
+if b.isButton and not am.isDragging then
+if(c.Position-am.dragStart).Magnitude<=ag then return end
 
-b:_beginDrag(c)
+am:_beginDrag(b)
 end
 
-if b.isDragging then
-b:update(c.object,d)
+if am.isDragging then
+am:update(b.object,c)
 end end
 
 
 
 
-ah._startPress=function(b, c, d)
-local e={
-object=c,
-input=d,
-isMouse=ai(d),
-isButton=c:IsA("GuiButton"),
+ai._startPress=function(am, b, c)
+local d={
+object=b,
+input=c,
+isMouse=aj(c),
+isButton=b:IsA("GuiButton"),
 }
 
-b._press=e
-b.dragStart=d.Position
-b.lastPos=d.Position
-b.startPos=c.Position
-b.pressTime=os.clock()
-b.travel=0
+am._press=d
+am.dragStart=c.Position
+am.lastPos=c.Position
+am.startPos=b.Position
+am.pressTime=os.clock()
+am.travel=0
+table.clear(am.samples)
+am:_recordSample(c.Position)
 
 
-b._pressConnections={
-d.Changed:Connect(function()
-if d.UserInputState==Enum.UserInputState.End then
-b:_endPress(e)
+am._pressConnections={
+c.Changed:Connect(function()
+if c.UserInputState==Enum.UserInputState.End then
+am:_endPress(d)
 end
 end),
-ad.InputChanged:Connect(function(f)
-b:_onPressMoved(e,f)
+ad.InputChanged:Connect(function(e)
+am:_onPressMoved(d,e)
 end),
-ad.InputEnded:Connect(function(f)
-if ak(e,f)then
-b:_endPress(e)
+ad.InputEnded:Connect(function(e)
+if al(d,e)then
+am:_endPress(d)
 end
 end),
 }
 
-if not e.isButton then
-b:_beginDrag(e)
+if not d.isButton then
+am:_beginDrag(d)
 return
 end
 
 task.delay(af,function()
-b:_beginDrag(e)
+am:_beginDrag(d)
 end)end
 
 
 
 
 
-ah.addGuiObject=function(b, c)
-return c.InputBegan:Connect(function(d)
-if not aa.isPressingInput(d)then return end
-if b._press then return end
+ai.addGuiObject=function(am, b)
+return b.InputBegan:Connect(function(c)
+if not aa.isPressingInput(c)then return end
+if am._press then return end
 
-b:_startPress(c,d)
+am:_startPress(b,c)
 end)end
 
 
-ah.update=function(b, c, d)
-local e=d.Position-b.dragStart
-local f=(b._uiScale and b._uiScale.Scale)or 1
+ai.update=function(am, b, c)
+local d=c.Position-am.dragStart
+local e=(am._uiScale and am._uiScale.Scale)or 1
 
-b.lastPos=d.Position
-b.travel=math.max(b.travel,e.Magnitude)
+am.lastPos=c.Position
+am.travel=math.max(am.travel,d.Magnitude)
+am:_recordSample(c.Position)
 
-local g=UDim2.new(
-b.startPos.X.Scale,
-b.startPos.X.Offset+(e.X/f),
-b.startPos.Y.Scale,
-b.startPos.Y.Offset+(e.Y/f)
+local f=UDim2.new(
+am.startPos.X.Scale,
+am.startPos.X.Offset+(d.X/e),
+am.startPos.Y.Scale,
+am.startPos.Y.Offset+(d.Y/e)
 )
 
-if b.filters[c]~=nil then
-local h=b.filters[c](g,f)
-g=h or g
+if am.filters[b]~=nil then
+local g=am.filters[b](f,e)
+f=g or f
 end
 
-c.Position=c.Position:Lerp(g,ae)
-b.onDragged:Fire(c)end
+b.Position=b.Position:Lerp(f,ae)
+am.onDragged:Fire(b)end
 
 
-ah.canDragObject=function(b, c)
-return(not b.isDragging)or(b.draggingObject==c)end
+
+ai._recordSample=function(am, b)
+local c=os.clock()
+table.insert(am.samples,{time=c,position=b})
+
+while#am.samples>2 and c-am.samples[1].time>ah do
+table.remove(am.samples,1)
+end end
 
 
-ah.setFilter=function(b, 
-c, 
-d)
-
-b.filters[c]=d end
 
 
-ah.new=function(b)
+ai._velocity=function(am)
+local b=am.samples
+local c,d=b[1],b[#b]
+
+if#b<2 or os.clock()-d.time>ah then
+return Vector2.zero
+end
+
+local e=d.time-c.time
+if e<=0 then
+return Vector2.zero
+end
+
+local f=d.position-c.position
+return Vector2.new(f.X/e,f.Y/e)end
+
+
+ai.canDragObject=function(am, b)
+return(not am.isDragging)or(am.draggingObject==b)end
+
+
+ai.setFilter=function(am, 
+b, 
+c)
+
+am.filters[b]=c end
+
+
+ai.new=function(am)
 return setmetatable({
 isDragging=false,
 draggingObject=nil,
-_uiScale=b,
+_uiScale=am,
 dragStart=nil,
 startPos=nil,
 lastPos=nil,
@@ -21916,19 +22917,20 @@ pressTime=0,
 travel=0,
 _press=nil,
 _pressConnections={},
+samples={},
 filters={},
 
 onDragged=ac.new(),
 dragStarted=ac.new(),
 dragEnded=ac.new(),
-},ah)end
+},ai)end
 
 
-return ah end a.dm=function()local ab=a.cache.dm if not ab then ab={c=aa()}a.cache.dm=ab end return ab.c end end do local aa=function()
+return ai end a.du=function()local ab=a.cache.du if not ab then ab={c=aa()}a.cache.du=ab end return ab.c end end do local aa=function()
 
-local aa=a.cW().uiScale
-return a.dm().new(aa)end a.dn=function()local ab=a.cache.dn if not ab then ab={c=aa()}a.cache.dn=ab end return ab.c end end do local aa=function()
-local aa=a.cR()
+local aa=a.c2().uiScale
+return a.du().new(aa)end a.dv=function()local ab=a.cache.dv if not ab then ab={c=aa()}a.cache.dv=ab end return ab.c end end do local aa=function()
+local aa=a.b5()
 
 local ab={a=
 "\a",b="\b",f="\f",n="\n",r=
@@ -21985,7 +22987,7 @@ supportsInterpolatedStrings=true,
 supportsTypeAnnotations=true,
 supportsCompounds=true,
 supportsIfElseInLine=true,
-}end a.dp=function()local ab=a.cache.dp if not ab then ab={c=aa()}a.cache.dp=ab end return ab.c end end do local aa=function()
+}end a.dw=function()local ab=a.cache.dw if not ab then ab={c=aa()}a.cache.dw=ab end return ab.c end end do local aa=function()
 
 
 
@@ -21996,9 +22998,9 @@ supportsIfElseInLine=true,
 
 
 
-local aa=a.dp()
-local ab=a.cY().args
-local ac=a.cR()
+local aa=a.dw()
+local ab=a.c4().args
+local ac=a.b5()
 
 local ad=ac.lookupify({
 "and","break","continue","do","else","elseif","end","export","for","function","if","in","local",
@@ -22027,278 +23029,278 @@ aj.__index=aj local ak=function(
 
 
 
-ak, b)
-local c=string.match(ak,"^%[(=*)%[",b)
+ak, al)
+local am=string.match(ak,"^%[(=*)%[",al)
+if am==nil then
+return nil
+end
+
+local b,c=string.find(ak,"]"..am.."]",al+#am+2,true)
+return if c then c+1 else#ak+1 end local al=function(
+
+
+
+
+al, am)
+local b=string.sub(al,am,am)
+local c=am+1
+
+while c<=#al do
+local d=string.sub(al,c,c)
+
+if d=="\\"then
+c=c+2
+elseif d==b then
+return c+1
+elseif d=="\n"then
+return c
+else
+c=c+1
+end
+end
+
+return#al+1 end local am=function(
+
+
+
+am, b)
+local c=string.match(am,"^0[xX][%x_]+",b)or string.match(am,"^0[bB][01_]+",b)
+if c then
+return c
+end
+
+local d=string.sub(am,b,b)=="."
+
+if d and string.sub(am,b-1,b-1)=="."then
+return nil
+end
+
+c=string.match(am,"^%d[%d_]*",b)
+if c==nil and d then
+c=string.match(am,"^%.%d[%d_]*",b)
+end
 if c==nil then
 return nil
 end
 
-local d,e=string.find(ak,"]"..c.."]",b+#c+2,true)
-return if e then e+1 else#ak+1 end local b=function(
+local e=b+#c
 
+if string.sub(am,e,e)=="."and string.sub(am,e+1,e+1)~="."then
+local f=string.match(am,"^%.[%d_]*",e)
+c=c..f
+e=e+#f
+end
+
+local f=string.match(am,"^[eE][%+%-]?%d+",e)
+if f then
+c=c..f
+end
+
+return c end local b=function(
 
 
 
 b, c)
-local d=string.sub(b,c,c)
-local e=c+1
-
-while e<=#b do
-local f=string.sub(b,e,e)
-
-if f=="\\"then
-e=e+2
-elseif f==d then
-return e+1
-elseif f=="\n"then
-return e
-else
-e=e+1
-end
+local d=string.sub(b,c,c+2)
+if ah[d]then
+return d
 end
 
-return#b+1 end local c=function(
-
-
-
-c, d)
-local e=string.match(c,"^0[xX][%x_]+",d)or string.match(c,"^0[bB][01_]+",d)
-if e then
+local e=string.sub(b,c,c+1)
+if ah[e]then
 return e
 end
 
-local f=string.sub(c,d,d)=="."
-
-if f and string.sub(c,d-1,d-1)=="."then
-return nil
-end
-
-e=string.match(c,"^%d[%d_]*",d)
-if e==nil and f then
-e=string.match(c,"^%.%d[%d_]*",d)
-end
-if e==nil then
-return nil
-end
-
-local g=d+#e
-
-if string.sub(c,g,g)=="."and string.sub(c,g+1,g+1)~="."then
-local h=string.match(c,"^%.[%d_]*",g)
-e=e..h
-g=g+#h
-end
-
-local h=string.match(c,"^[eE][%+%-]?%d+",g)
-if h then
-e=e..h
-end
-
-return e end local d=function(
-
-
-
-d, e)
-local f=string.sub(d,e,e+2)
-if ah[f]then
-return f
-end
-
-local g=string.sub(d,e,e+1)
-if ah[g]then
-return g
-end
-
-return nil end local e=function(
+return nil end local c=function(
 
 
 
 
-e)
-local f={}
-local g=#e
+c)
+local d={}
+local e=#c
 
-local h={}local i=function(
+local f={}local g=function(
 
-i, j)
-table.insert(f,{kind=i,text=j})end local j=function(
+g, h)
+table.insert(d,{kind=g,text=h})end local h=function(
 
 
 
-j)
-local k=j
-while k<=g do
-local l=string.sub(e,k,k)
-if l=="\\"then
-k=k+2
-elseif l=="`"or l=="{"then
+h)
+local i=h
+while i<=e do
+local j=string.sub(c,i,i)
+if j=="\\"then
+i=i+2
+elseif j=="`"or j=="{"then
 break
 else
-k=k+1
+i=i+1
 end
 end
 
-local l=math.min(k,g+1)
-if l>j then
-i("string",string.sub(e,j,l-1))
+local j=math.min(i,e+1)
+if j>h then
+g("string",string.sub(c,h,j-1))
 end
 
-if k>g then
-return g+1
+if i>e then
+return e+1
 end
 
-if string.sub(e,k,k)=="`"then
-i("string","`")
+if string.sub(c,i,i)=="`"then
+g("string","`")
 else
-i("symbol","{")
-table.insert(h,0)
+g("symbol","{")
+table.insert(f,0)
 end
 
-return k+1 end
+return i+1 end
 
 
-local k=1
-while k<=g do
-local l=string.sub(e,k,k)
+local i=1
+while i<=e do
+local j=string.sub(c,i,i)
 
-if string.match(l,"%s")then
-local m=string.match(e,"^%s+",k)
-i("space",m)
-k=k+#m
-elseif string.sub(e,k,k+1)=="--"then
+if string.match(j,"%s")then
+local k=string.match(c,"^%s+",i)
+g("space",k)
+i=i+#k
+elseif string.sub(c,i,i+1)=="--"then
 
-local m=ak(e,k+2)or string.find(e,"\n",k,true)or g+1
-i("comment",string.sub(e,k,m-1))
-k=m
-elseif l=='"'or l=="'"then
-local m=b(e,k)
-i("string",string.sub(e,k,m-1))
-k=m
-elseif l=="["and ak(e,k)then
-local m=ak(e,k)
-i("string",string.sub(e,k,m-1))
-k=m
-elseif l=="`"then
-i("string","`")
-k=j(k+1)
-elseif l=="{"and#h>0 then do local m=
-#h h[m]=h[m]+1 end
-i("symbol","{")
-k=k+1
-elseif l=="}"and#h>0 then
-if h[#h]==0 then
-table.remove(h)
-i("symbol","}")
-k=j(k+1)
-else do local m=
-#h h[m]=h[m]-1 end
-i("symbol","}")
-k=k+1
+local k=ak(c,i+2)or string.find(c,"\n",i,true)or e+1
+g("comment",string.sub(c,i,k-1))
+i=k
+elseif j=='"'or j=="'"then
+local k=al(c,i)
+g("string",string.sub(c,i,k-1))
+i=k
+elseif j=="["and ak(c,i)then
+local k=ak(c,i)
+g("string",string.sub(c,i,k-1))
+i=k
+elseif j=="`"then
+g("string","`")
+i=h(i+1)
+elseif j=="{"and#f>0 then do local k=
+#f f[k]=f[k]+1 end
+g("symbol","{")
+i=i+1
+elseif j=="}"and#f>0 then
+if f[#f]==0 then
+table.remove(f)
+g("symbol","}")
+i=h(i+1)
+else do local k=
+#f f[k]=f[k]-1 end
+g("symbol","}")
+i=i+1
 end
-elseif string.match(l,"[%a_]")then
-local m=string.match(e,"^[%a_][%w_]*",k)
-i("name",m)
-k=k+#m
-elseif c(e,k)then
-local m=c(e,k)
-i("number",m)
-k=k+#m
+elseif string.match(j,"[%a_]")then
+local k=string.match(c,"^[%a_][%w_]*",i)
+g("name",k)
+i=i+#k
+elseif am(c,i)then
+local k=am(c,i)
+g("number",k)
+i=i+#k
 else
-local m=d(e,k)or l
-i(if ag[l]then"symbol"else"other",m)
-k=k+#m
+local k=b(c,i)or j
+g(if ag[j]then"symbol"else"other",k)
+i=i+#k
 end
 end
 
-return f end local f=function(
+return d end local d=function(
 
 
 
-f, g, h)
-local i=g+h
-while f[i]and f[i].kind=="space"do
-i=i+h
+d, e, f)
+local g=e+f
+while d[g]and d[g].kind=="space"do
+g=g+f
 end
-return f[i]end local g=function(
+return d[g]end local e=function(
 
 
 
-g, h, i)
-if ae[i]then
+e, f, g)
+if ae[g]then
 return ab.boolean
 end
-if ad[i]or af[i]then
+if ad[g]or af[g]then
 return ab.others
 end
 
-local j=f(g,h,-1)
-local k=f(g,h,1)
-local l=if j then j.text else nil
-local m=if k then k.text else nil
+local h=d(e,f,-1)
+local i=d(e,f,1)
+local j=if h then h.text else nil
+local k=if i then i.text else nil
 
-if l=="function"then
+if j=="function"then
 return ab.func
 end
-if l=="."then
-return if m=="("then ab.func else ab.field
+if j=="."then
+return if k=="("then ab.func else ab.field
 end
-if m=="("then
+if k=="("then
 return ab.func
 end
-if l=="{"and m=="="then
+if j=="{"and k=="="then
 return ab.field
 end
 
 
-return nil end local h=function(
+return nil end local f=function(
 
 
-h, i, j)
-if j.kind=="name"then
-return g(h,i,j.text)
+f, g, h)
+if h.kind=="name"then
+return e(f,g,h.text)
 end
-return ai[j.kind]end
+return ai[h.kind]end
 
 
-aj.apply=function(i, j)
-local k=e(tostring(j))
+aj.apply=function(g, h)
+local i=c(tostring(h))
 
 
-local l={}
-for m,n in k do
-local o=h(k,m,n)
-local p=l[#l]
+local j={}
+for k,l in i do
+local m=f(i,k,l)
+local n=j[#j]
 
-if p and p.color==o then
-table.insert(p.texts,n.text)
+if n and n.color==m then
+table.insert(n.texts,l.text)
 else
-table.insert(l,{color=o,texts={n.text}})
+table.insert(j,{color=m,texts={l.text}})
 end
 end
 
-local m={}
-for n,o in l do
-local p=ac.escapeRichText(table.concat(o.texts))
-table.insert(m,if o.color then ac.colorFromRGB(p,o.color)else p)
+local k={}
+for l,m in j do
+local n=ac.escapeRichText(table.concat(m.texts))
+table.insert(k,if m.color then ac.colorFromRGB(n,m.color)else n)
 end
 
-return table.concat(m)end
+return table.concat(k)end
 
 
 aj.new=function()
 return setmetatable({},aj)end
 
 
-return aj end a.dq=function()local ab=a.cache.dq if not ab then ab={c=aa()}a.cache.dq=ab end return ab.c end end do local aa=function()
+return aj end a.dx=function()local ab=a.cache.dx if not ab then ab={c=aa()}a.cache.dx=ab end return ab.c end end do local aa=function()
 
 
 
 
 
 
-local aa=a.dq()
+local aa=a.dx()
 local ab=a.j()
-local ac=a.cz()local ad=function(
+local ac=a.cE()local ad=function(
 ad)
 return aa:apply(ad)end
 
@@ -22378,12 +23380,12 @@ return{
 {"text","The full set of types for the plugin API, in Luau. Copy it to check your plugin files with a Luau type checker, so they use the same names and fields as the API."},
 {"file","plugins/types.luau"},
 },
-}end a.dr=function()local ab=a.cache.dr if not ab then ab={c=aa()}a.cache.dr=ab end return ab.c end end do local aa=function()
+}end a.dy=function()local ab=a.cache.dy if not ab then ab={c=aa()}a.cache.dy=ab end return ab.c end end do local aa=function()
 
-local aa=a.cR().colorFromRGB
-local ab=a.cY().commands
+local aa=a.b5().colorFromRGB
+local ab=a.c4().commands
 
-local ac=a.cZ()local ad=function(
+local ac=a.c5()local ad=function(
 
 ad)
 return ac:apply(ad)end
@@ -22486,7 +23488,7 @@ sections={
 
 ae.pages={
 {id="types",title="Types",sections=ae.sections},
-{id="plugins",title="Plugins",sections=a.dr(),paged=true},
+{id="plugins",title="Plugins",sections=a.dy(),paged=true},
 }
 
 ae.navigation={
@@ -22500,208 +23502,224 @@ loading="Loading...",
 failed="Could not load this code. Open this page again to retry.",
 }
 
-return ae end a.ds=function()local ab=a.cache.ds if not ab then ab={c=aa()}a.cache.ds=ab end return ab.c end end do local aa=function()
+return ae end a.dz=function()local ab=a.cache.dz if not ab then ab={c=aa()}a.cache.dz=ab end return ab.c end end do local aa=function()
 
 
 
-local aa=a.cT()
-local ab=a.cS()
-local ac=a.cV()
-local ad=a.dn()
-local ae=a.dj()
+local aa=a.cX()
+local ab=a.cW()
+local ac=a.c1()
+local ad=a.dv()
+local ae=a.dr()
 
-local af=a.cW()
-local ag=a.aE()
+local af=a.c2()
+local ag=a.aI()
 local ah=a.a()
-local ai=a.cG()
-local aj=a.az()
+local ai=a.cL()
+local aj=a.aD()
 local ak=a.f()
-local b=a.cJ()
+local al=a.cO()
 
-local c=a.ds()
-local d=a.dq()
+local am=a.dz()
+local b=a.dx()
 
-local e=ak.TweenService
+local c=ak.TweenService
 
-local f=500
-local g=20
-local h=28
-local i=4
-
-
-local j=300
-local k=260
-local l=40
-local m=g+h+j
-
-local n=12
-local o=20
-local p=40
+local d=500
+local e=20
+local f=28
+local g=4
 
 
+local h=300
+local i=260
+local j=40
+local k=e+f+h
 
-local q=32
-local r=16
-local s=8
-local t=18
-local u=14
-local v=n+8
-local w=UDim2.new(0,0,0,0)
-local x=UDim2.new(0,0,0,l)
-local y=0.15
-local z=0.15
-
-local A=6
-local B=8
-local C=14
-local D=6
-local E="lucide-clipboard-copy"
-local F=1.5
-
-local G=0.5
-local H=0.25
-local I=0.25
-local J=0.2
-local K=0.12
-local L=0.3
-local M=0.15
-local N=36
-local O=Enum.EasingStyle.Quart
-local P=Enum.EasingDirection.Out
-
-local Q=UDim.new(0.5,0)
-
-local R=UDim2.new(0.5,-f/2,0,-500)
-local S=UDim2.new(0.5,-f/2,0.5,-m/2)
-
-local T={["&"]="&amp;",["<"]="&lt;",[">"]="&gt;"}
-
-local V=c.cases
-local W=c.pages
-local X=#W
-
-local Y={}
-Y.__index=Y
+local l=12
+local m=20
+local n=40
 
 
 
-local Z=setmetatable({},{__mode="k"})local al=function(
+local o=32
+local p=16
+local q=8
+local r=18
+local s=14
+local t=l+8
+local u=UDim2.new(0,0,0,0)
+local v=UDim2.new(0,0,0,j)
+local w=0.15
+local x=0.15
 
-_, al)
-local am=Z[_]
-local an=am and am[al]
-if an==nil then
+local y=6
+local z=8
+local A=14
+local B=6
+local C="lucide-clipboard-copy"
+local D=1.5
+
+local E=0.5
+local F=0.25
+local G=0.25
+local H=0.2
+local I=0.12
+local J=0.3
+local K=0.15
+local L=0.1
+local M=36
+local N=Enum.EasingStyle.Quart
+local O=Enum.EasingDirection.Out
+
+local P=UDim.new(0.5,0)
+
+local Q=UDim2.new(0.5,-d/2,0,-500)
+local R=UDim2.new(0.5,-d/2,0.5,-k/2)
+
+local S={["&"]="&amp;",["<"]="&lt;",[">"]="&gt;"}
+
+local T=am.cases
+local V=am.pages
+local W=#V
+
+local X={}
+X.__index=X
+
+
+
+local Y=setmetatable({},{__mode="k"})local an=function(
+
+Z, _)
+local an=Y[Z]
+local ao=an and an[_]
+if ao==nil then
 return
 end
 
-am[al]=nil
-an:Cancel()end local am=function(
+an[_]=nil
+ao:Cancel()end local ao=function(
 
 
 
 
-am, an, _, ao, ap)
-al(am,an)
+ao, Z, _, ap, aq)
+an(ao,Z)
 
 if _<=0 then
-for aq,ar in ao do
-am[aq]=ar
+for ar,as in ap do
+ao[ar]=as
 end
-if ap then
-ap()
+if aq then
+aq()
 end
 return
 end
 
-local aq=e:Create(am,TweenInfo.new(_,O,P),ao)
-Z[am]=Z[am]or{}
-Z[am][an]=aq
+local ar=c:Create(ao,TweenInfo.new(_,N,O),ap)
+Y[ao]=Y[ao]or{}
+Y[ao][Z]=ar
 
-aq.Completed:Connect(function(ar)
-local as=Z[am]
-if as and as[an]==aq then
-as[an]=nil
+ar.Completed:Connect(function(as)
+local at=Y[ao]
+if at and at[Z]==ar then
+at[Z]=nil
 end
 
-if ar==Enum.PlaybackState.Completed and ap then
-ap()
+if as==Enum.PlaybackState.Completed and aq then
+aq()
 end
 end)
 
-aq:Play()end local an=function(
+ar:Play()end local ap=function(
 
 
 
-an, ao, ap)
-local aq,ar={},{}
-for as in ao do
-if string.sub(as,-6)=="Color3"then
-table.insert(aq,as)
-ar[as]=an[as]
+ap, aq, ar)
+local as,at={},{}
+for Z in aq do
+if string.sub(Z,-6)=="Color3"then
+table.insert(as,Z)
+at[Z]=ap[Z]
 end
 end
 
-ab:addObject(an,ao)
+ab:addObject(ap,aq)
 
+local Z={}
+for _,au in as do
+Z[au]=ap[au]
+ap[au]=at[au]
+end
+
+ao(ap,"color",ar,Z)end local aq=function(
+
+
+
+
+aq, ar, as)
+for at,au in aq:GetDescendants()do
+if au.Name=="Code"and au:IsA("Frame")then
+ao(au,"fade",ar,{BackgroundTransparency=as})
+
+local Z=au:FindFirstChild("Copy")
+if Z and Z:IsA("ImageButton")then
+ao(Z,"fade",ar,{ImageTransparency=as})
+end
+end
+end end local ar=function(
+
+
+
+ar)
 local as={}
-for _,at in aq do
-as[at]=an[at]
-an[at]=ar[at]
-end
-
-am(an,"color",ap,as)end local ao=function(
-
-
-
-ao)
-local ap={}
-for aq,ar in ao:GetDescendants()do
-if ar.ClassName=="TextLabel"or ar.ClassName=="TextButton"then
-table.insert(ap,ar)
+for at,au in ar:GetDescendants()do
+if au.ClassName=="TextLabel"or au.ClassName=="TextButton"then
+table.insert(as,au)
 end
 end
-return ap end local ap=function(
+return as end local as=function(
 
 
-ap)
-return(ap:gsub("[&<>]",T))end local aq=function(
+as)
+return(as:gsub("[&<>]",S))end local at=function(
 
 
-aq)
+at)
 return aa.new("TextLabel","Header",{
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundTransparency=1,
 Size=UDim2.new(1,0,0,0),
-Text=aq,
+Text=at,
 TextSize=20,
 TextXAlignment=Enum.TextXAlignment.Left,
 ThemeTag={
 Font="Font.Bold",
 TextColor3="Colors.Text.Default",
 },
-})end local ar=function(
+})end local au=function(
 
 
-ar, as)
-return aa.new("TextLabel",as and"Bold"or"Text",{
+au, Z)
+return aa.new("TextLabel",Z and"Bold"or"Text",{
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundTransparency=1,
 Size=UDim2.new(1,0,0,0),
-Text=ar,
+Text=au,
 TextSize=14,
 TextWrapped=true,
 RichText=true,
 TextXAlignment=Enum.TextXAlignment.Left,
 TextYAlignment=Enum.TextYAlignment.Top,
 ThemeTag={
-Font=as and"Font.Bold"or"Font.Normal",
+Font=Z and"Font.Bold"or"Font.Normal",
 TextColor3="Colors.Text.Default",
 },
-})end local as=function()
+})end local av=function()
 
 
 
-local as=aa.new("Frame","Cases",{
+local Z=aa.new("Frame","Cases",{
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundTransparency=1,
 Size=UDim2.new(1,0,0,0),
@@ -22711,16 +23729,16 @@ SortOrder=Enum.SortOrder.LayoutOrder,
 }),
 })
 
-for at,_ in V do
-local au,av=_[1],_[2]
+for _,av in T do
+local aw,ax=av[1],av[2]
 
-aa.new("TextLabel","Case",as,{
+aa.new("TextLabel","Case",Z,{
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundTransparency=1,
-LayoutOrder=at,
+LayoutOrder=_,
 RichText=true,
 Size=UDim2.new(1,0,0,0),
-Text=`<b>{ap(au)}</b> {ap(av)}`,
+Text=`<b>{as(aw)}</b> {as(ax)}`,
 TextSize=14,
 TextWrapped=true,
 TextXAlignment=Enum.TextXAlignment.Left,
@@ -22732,37 +23750,37 @@ TextColor3="Colors.Text.Default",
 })
 end
 
-return as end local at=function(
+return Z end local aw=function(
 
 
 
-at, au)
-am(at,"text",0,{TextTransparency=1})
-at.Text=au
-am(at,"text",L,{TextTransparency=0})end local au=function(
+aw, ax)
+ao(aw,"text",0,{TextTransparency=1})
+aw.Text=ax
+ao(aw,"text",J,{TextTransparency=0})end local ax=function(
 
 
 
 
 
-au, av, _)
-local aw=if au=="code"then av else nil
-local ax=false
+ax, Z, _)
+local ay=if ax=="code"then Z else nil
+local az=false
 
-local ay=aa.new("Frame","Code",{
+local aA=aa.new("Frame","Code",{
 AutomaticSize=Enum.AutomaticSize.Y,
 BorderSizePixel=0,
 Size=UDim2.new(1,0,0,0),
 ThemeTag={BackgroundColor3="Colors.Buttons.Default"},
-aa.new("UICorner",{CornerRadius=UDim.new(0,A)}),
+aa.new("UICorner",{CornerRadius=UDim.new(0,y)}),
 })
 
 
-local az=aa.new("TextLabel","Source",ay,{
+local aB=aa.new("TextLabel","Source",aA,{
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundTransparency=1,
 Size=UDim2.new(1,0,0,0),
-Text=if aw then d:apply(aw)else c.labels.loading,
+Text=if ay then b:apply(ay)else am.labels.loading,
 TextSize=13,
 TextWrapped=true,
 RichText=true,
@@ -22773,70 +23791,70 @@ Font="Font.MonoSpace",
 TextColor3="Colors.Text.Default",
 },
 aa.new("UIPadding",{
-PaddingTop=UDim.new(0,B),
-PaddingBottom=UDim.new(0,B),
-PaddingLeft=UDim.new(0,B),
+PaddingTop=UDim.new(0,z),
+PaddingBottom=UDim.new(0,z),
+PaddingLeft=UDim.new(0,z),
 
-PaddingRight=UDim.new(0,C+D+B),
+PaddingRight=UDim.new(0,A+B+z),
 }),
 })
 
-local aA=aa.new("ImageButton","Copy",ay,{
+local aC=aa.new("ImageButton","Copy",aA,{
 BackgroundTransparency=1,
-Position=UDim2.new(1,-(C+D),0,D),
-Size=UDim2.fromOffset(C,C),
+Position=UDim2.new(1,-(A+B),0,B),
+Size=UDim2.fromOffset(A,A),
 ThemeTag={ImageColor3="Colors.Icons"},
 })
-ac:loadImage(aA,E)
+ac:loadImage(aC,C)
 
 if not ah.setclipboard then
-aA.Visible=false
+aC.Visible=false
 end
 
-local aB
-ag:Connect(aA.Activated,function()
-if aw==nil or not ah.setclipboard then return end
+local aD
+ag:Connect(aC.Activated,function()
+if ay==nil or not ah.setclipboard then return end
 
-ah.setclipboard(aw)
-an(aA,{ImageColor3="Colors.Primary"},b:getScale(M))
+ah.setclipboard(ay)
+ap(aC,{ImageColor3="Colors.Primary"},al:getScale(K))
 
-local aC=tick()
-aB=aC
+local aE=tick()
+aD=aE
 
-task.wait(F)
-if aB~=aC then return end
+task.wait(D)
+if aD~=aE then return end
 
-an(aA,{ImageColor3="Colors.Icons"},b:getScale(M))
+ap(aC,{ImageColor3="Colors.Icons"},al:getScale(K))
 end)
 
-if au=="file"then
+if ax=="file"then
 table.insert(_,function()
-if aw~=nil or ax then return end
-ax=true
+if ay~=nil or az then return end
+az=true
 
 task.spawn(function()
-local aC=ai.fetchReference(av)
-ax=false
+local aE=ai.fetchReference(Z)
+az=false
 
-if aC==nil then
-az.Text=c.labels.failed
+if aE==nil then
+aB.Text=am.labels.failed
 return
 end
 
-aw=aC
-at(az,d:apply(aC))
+ay=aE
+aw(aB,b:apply(aE))
 end)
 end)
 end
 
-return ay end local av=function(
+return aA end local ay=function(
 
 
-av)
-local aw=aa.new("TextButton","InviteButton",{
+ay)
+local az=aa.new("TextButton","InviteButton",{
 BorderSizePixel=0,
 Size=UDim2.new(1,0,0,25),
-Text=`Copy Discord Invite Link ({av})`,
+Text=`Copy Discord Invite Link ({ay})`,
 TextSize=16,
 ThemeTag={
 BackgroundColor3="Colors.Primary",
@@ -22845,51 +23863,51 @@ TextColor3="Colors.Text.Default",
 },
 })
 
-local ax=aw.Text
-local ay
+local aA=az.Text
+local aB
 
-ag:Connect(aw.Activated,function()
+ag:Connect(az.Activated,function()
 if ah.setclipboard then
-ah.setclipboard(av)
-aw.Text="Copied"
+ah.setclipboard(ay)
+az.Text="Copied"
 else
-aw.Text="No Clipboard Function, type out the link"
+az.Text="No Clipboard Function, type out the link"
 end
 
-local az=tick()
-ay=az
+local aC=tick()
+aB=aC
 
-task.wait(F)
-if ay~=az then return end
+task.wait(D)
+if aB~=aC then return end
 
-aw.Text=ax
+az.Text=aA
 end)
 
-return aw end local aw=function(
+return az end local az=function(
 
 
 
-aw, ax)
-local ay=aw[1]
+az, aA)
+local aB=az[1]
 
-if ay=="title"then
-return aq(aw[2])
-elseif ay=="cases"then
-return as()
-elseif ay=="invite"then
-return av(aj.links.discord)
-elseif ay=="code"or ay=="file"then
-return au(ay,aw[2],ax)
+if aB=="title"then
+return at(az[2])
+elseif aB=="cases"then
+return av()
+elseif aB=="invite"then
+return ay(aj.links.discord)
+elseif aB=="code"or aB=="file"then
+return ax(aB,az[2],aA)
 end
 
-return ar(aw[2],ay=="bold")end local ax=function(
+return au(az[2],aB=="bold")end local aA=function(
 
 
-ax, ay, az, aA)
-local aB=aa.new("Frame","Section",{
+aA, aB, aC, aD)
+local aE=aa.new("Frame","Section",{
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundTransparency=1,
-LayoutOrder=ax,
+LayoutOrder=aA,
 Size=UDim2.new(1,0,0,0),
 aa.new("UIPadding",{
 PaddingBottom=UDim.new(0,8),
@@ -22903,16 +23921,16 @@ SortOrder=Enum.SortOrder.LayoutOrder,
 }),
 })
 
-for aC,_ in ay do
-local aD=aw(_,aA)
-aD.LayoutOrder=aC
-aD.Parent=aB
+for Z,_ in aB do
+local aF=az(_,aD)
+aF.LayoutOrder=Z
+aF.Parent=aE
 end
 
-if not az then
-aa.new("Frame","Line",aB,{
+if not aC then
+aa.new("Frame","Line",aE,{
 BorderSizePixel=0,
-LayoutOrder=#ay+1,
+LayoutOrder=#aB+1,
 Size=UDim2.new(1,0,0,1),
 ThemeTag={
 BackgroundColor3="Colors.Stroke",
@@ -22920,253 +23938,269 @@ BackgroundColor3="Colors.Stroke",
 })
 end
 
-return aB end local ay=function(
+return aE end local aB=function(
 
 
 
-ay, az, aA, aB, aC, aD)
-local _=aa.new("TextButton",az,ay,{
+aB, aC, aD, aE, aF, Z)
+local _=aa.new("TextButton",aC,aB,{
 AutoButtonColor=false,
 AutomaticSize=Enum.AutomaticSize.X,
 BorderSizePixel=0,
-LayoutOrder=aD,
-Size=UDim2.new(0,0,0,q),
+LayoutOrder=Z,
+Size=UDim2.new(0,0,0,o),
 Text="",
 ThemeTag={BackgroundColor3="Colors.Tonal.Default"},
 aa.new("UICorner",{CornerRadius=UDim.new(0.5,0)}),
 aa.new("UIPadding",{
-PaddingLeft=UDim.new(0,r),
-PaddingRight=UDim.new(0,r),
+PaddingLeft=UDim.new(0,p),
+PaddingRight=UDim.new(0,p),
 }),
 aa.new("UIListLayout",{
 FillDirection=Enum.FillDirection.Horizontal,
-Padding=UDim.new(0,s),
+Padding=UDim.new(0,q),
 SortOrder=Enum.SortOrder.LayoutOrder,
 VerticalAlignment=Enum.VerticalAlignment.Center,
 }),
 })
 
-local aE=aa.new("ImageLabel","Icon",_,{
+local aG=aa.new("ImageLabel","Icon",_,{
 BackgroundTransparency=1,
-LayoutOrder=if aC then 1 else 2,
-Size=UDim2.fromOffset(t,t),
+LayoutOrder=if aF then 1 else 2,
+Size=UDim2.fromOffset(r,r),
 ThemeTag={ImageColor3="Colors.Tonal.Text"},
 })
-ac:loadImage(aE,aB)
+ac:loadImage(aG,aE)
 
-local aF=aa.new("TextLabel","Label",_,{
+local aH=aa.new("TextLabel","Label",_,{
 AutomaticSize=Enum.AutomaticSize.X,
 BackgroundTransparency=1,
-LayoutOrder=if aC then 2 else 1,
+LayoutOrder=if aF then 2 else 1,
 Size=UDim2.new(0,0,1,0),
-Text=aA,
-TextSize=u,
+Text=aD,
+TextSize=s,
 ThemeTag={
 Font="Font.Medium",
 TextColor3="Colors.Tonal.Text",
 },
 })
 
-return{button=_,label=aF,icon=aE,enabled=false}end local az=function(
+return{button=_,label=aH,icon=aG,enabled=false}end local aC=function(
 
 
 
-az, aA, aB)
-local aC=if aA then"Colors.Tonal.Default"else"Colors.Tonal.Disabled"
-local aD=if aA then"Colors.Tonal.Text"else"Colors.Tonal.DisabledText"
+aC, aD, aE)
+local aF=if aD then"Colors.Tonal.Default"else"Colors.Tonal.Disabled"
+local aG=if aD then"Colors.Tonal.Text"else"Colors.Tonal.DisabledText"
 
 
-if not az.painted then
-aB=0
-az.painted=true
+if not aC.painted then
+aE=0
+aC.painted=true
 end
 
-az.enabled=aA
-an(az.button,{BackgroundColor3=aC},aB)
+aC.enabled=aD
+ap(aC.button,{BackgroundColor3=aF},aE)
 
-an(az.label,{Font="Font.Medium",TextColor3=aD},aB)
-an(az.icon,{ImageColor3=aD},aB)
-
-
-am(az.button,"transparency",aB,{BackgroundTransparency=0})end local aA=function(
+ap(aC.label,{Font="Font.Medium",TextColor3=aG},aE)
+ap(aC.icon,{ImageColor3=aG},aE)
 
 
-aA, aB)
-local aC=if aB and aA.enabled then z else 0
-am(aA.button,"transparency",b:getScale(K),{BackgroundTransparency=aC})end local aB=function(
+ao(aC.button,"transparency",aE,{BackgroundTransparency=0})end local aD=function(
+
+
+aD, aE)
+local aF=if aE and aD.enabled then x else 0
+ao(aD.button,"transparency",al:getScale(I),{BackgroundTransparency=aF})end local aE=function(
 
 
 
-aB, aC, aD)
-am(aB,"position",aD,{Position=UDim2.new((aC-1)/X,0,0,0)})end
+aE, aF, aG)
+ao(aE,"position",aG,{Position=UDim2.new((aF-1)/W,0,0,0)})end
 
 
-Y.new=function()
+X.new=function()
 return setmetatable({
 isOpen=false,
 pages={},
 onOpenChanged=nil,
-},Y)end
+},X)end
 
 
-Y.setOpen=function(aC, aD)
-aC.isOpen=aD
+X.setOpen=function(aF, aG)
+aF.isOpen=aG
 
-if aC.onOpenChanged then
-aC.onOpenChanged(aD)
+if aF.onOpenChanged then
+aF.onOpenChanged(aG)
 end end
 
 
-Y.open=function(aC)
-aC:setOpen(true)
-aC.frame:TweenPosition(S,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,G,true)end
+X.open=function(aF)
+aF:setOpen(true)
+aF.frame:TweenPosition(R,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,E,true)end
 
 
-Y.close=function(aC)
-aC:setOpen(false)
-aC.frame:TweenPosition(R,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,G,true)end
+X.close=function(aF)
+aF:setOpen(false)
+aF.frame:TweenPosition(Q,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,E,true)end
 
 
-Y.refreshScroll=function(aC)
-local aD=aC.activeEntry
-if not aD then return end
+X.refreshScroll=function(aF)
+local aG=aF.activeEntry
+if not aG then return end
 
-local aE=math.max(af:getScale(),0.01)
-aC.scrollBar:setTotalSpace(math.ceil(aD.body.AbsoluteSize.Y/aE))
-aC.scrollBar:setVisibleSpace(math.ceil(aC.container.AbsoluteSize.Y/aE))
-aD.body.Position=UDim2.fromOffset(0,-aC.scrollBar.index)end
+local aH=math.max(af:getScale(),0.01)
+aF.scrollBar:setTotalSpace(math.ceil(aG.body.AbsoluteSize.Y/aH))
+aF.scrollBar:setVisibleSpace(math.ceil(aF.container.AbsoluteSize.Y/aH))
+aG.body.Position=UDim2.fromOffset(0,-aF.scrollBar.index)end
 
 
-Y.loadEntry=function(aC, aD)
-for aE,aF in aD.loaders do
-aF()
+X.loadEntry=function(aF, aG)
+for aH,Z in aG.loaders do
+Z()
 end end
 
 
-Y.updateNavigation=function(aC, aD, aE)
-local aF=if aE then b:getScale(J)else 0
+X.updateNavigation=function(aF, aG, aH)
+local Z=if aH then al:getScale(H)else 0
 
-az(aC.nav.back,aD.index>1,aF)
-az(aC.nav.forward,aD.index<#aD.entries,aF)
-aC.counter.Text=`{aD.index} / {#aD.entries}`end
-
-
+aC(aF.nav.back,aG.index>1,Z)
+aC(aF.nav.forward,aG.index<#aG.entries,Z)
+aF.counter.Text=`{aG.index} / {#aG.entries}`end
 
 
-Y.transitionTo=function(aC, aD, aE, aF)
-local _=aD.entries[aE]
-local aG=aC.activeEntry
-if _==nil or _==aG then return end
 
-local aH=if aF==0 or aG==nil then 0 else b:getScale(H)
 
-aC.activeEntry=_
-aD.index=aE
+X.transitionTo=function(aF, aG, aH, Z)
+local _=aG.entries[aH]
+local aI=aF.activeEntry
+if _==nil or _==aI then return end
+
+local aJ=if Z==0 or aI==nil then 0 else al:getScale(F)
+
+aF.activeEntry=_
+aG.index=aH
+_.leaving=nil
 
 _.slide.Visible=true
-aC:loadEntry(_)
-if aD.paged then
-aC:updateNavigation(aD,aH>0)
+aF:loadEntry(_)
+if aG.paged then
+aF:updateNavigation(aG,aJ>0)
 end
 
 
-am(_.slide,"position",0,{Position=UDim2.new(0,aF*N,0,0)})
-am(_.slide,"position",aH,{Position=UDim2.new(0,0,0,0)})
-for aI,aJ in ao(_.slide)do
-am(aJ,"text",0,{TextTransparency=1})
-am(aJ,"text",aH,{TextTransparency=0})
+ao(_.slide,"position",0,{Position=UDim2.new(0,Z*M,0,0)})
+ao(_.slide,"position",aJ,{Position=UDim2.new(0,0,0,0)})
+for aK,aL in ar(_.slide)do
+ao(aL,"text",0,{TextTransparency=1})
+ao(aL,"text",aJ,{TextTransparency=0})
 end
+aq(_.slide,0,1)
+aq(_.slide,aJ,0)
 
 
-if aG then
-am(aG.slide,"position",aH,{Position=UDim2.new(0,-aF*N,0,0)},function()
-if aC.activeEntry~=aG then
-aG.slide.Visible=false
+
+if aI then
+local aK={}
+aI.leaving=aK
+
+ao(aI.slide,"position",aJ,{Position=UDim2.new(0,-Z*M,0,0)},function()
+if aF.activeEntry~=aI then
+aI.slide.Visible=false
 end
 end)
-for aI,aJ in ao(aG.slide)do
-am(aJ,"text",aH,{TextTransparency=1})
+
+for aL,aM in ar(aI.slide)do
+ao(aM,"text",aJ,{TextTransparency=1})
 end
+aq(aI.slide,aJ,1)
+
+
+task.delay(aJ+L,function()
+if aI.leaving==aK and aF.activeEntry~=aI then
+aI.slide.Visible=false
+end
+end)
 end
 
-aC.scrollBar:scrollTo(0)
-aC:refreshScroll()end
+aF.scrollBar:scrollTo(0)
+aF:refreshScroll()end
 
 
-Y.turnPage=function(aC, aD)
-local aE=aC.activePage
-if not aE or not aE.paged then return end
+X.turnPage=function(aF, aG)
+local aH=aF.activePage
+if not aH or not aH.paged then return end
 
-local aF=aE.index+aD
-if aF<1 or aF>#aE.entries then return end
+local aI=aH.index+aG
+if aI<1 or aI>#aH.entries then return end
 
-aC:transitionTo(aE,aF,aD)end
-
-
+aF:transitionTo(aH,aI,aG)end
 
 
-Y.setPaged=function(aC, aD, aE)
-local aF=if aE then 0 else b:getScale(I)
-local aG=aC.navigation
 
-am(aC.holder,"size",aF,{
-Size=UDim2.new(1,0,0,if aD then k else j),
+
+X.setPaged=function(aF, aG, aH)
+local aI=if aH then 0 else al:getScale(G)
+local aJ=aF.navigation
+
+ao(aF.holder,"size",aI,{
+Size=UDim2.new(1,0,0,if aG then i else h),
 })
 
-if aD then
-al(aG,"position")
-if aF>0 then
-aG.Position=x
+if aG then
+an(aJ,"position")
+if aI>0 then
+aJ.Position=v
 end
-aG.Visible=true
-am(aG,"position",aF,{Position=w})
+aJ.Visible=true
+ao(aJ,"position",aI,{Position=u})
 else
-am(aG,"position",aF,{Position=x},function()
-if not aC.activePage or not aC.activePage.paged then
-aG.Visible=false
+ao(aJ,"position",aI,{Position=v},function()
+if not aF.activePage or not aF.activePage.paged then
+aJ.Visible=false
 end
 end)
 end end
 
 
-Y.selectPage=function(aC, aD)
-local aE=aC.pages[aD]
-if not aE then return false end
-if aC.activePage==aE then return true end
+X.selectPage=function(aF, aG)
+local aH=aF.pages[aG]
+if not aH then return false end
+if aF.activePage==aH then return true end
 
-local aF=aC.activePage
-local aG=aF==nil
-local aH=if aG then 0 elseif aE.order>aF.order then 1 else-1
+local aI=aF.activePage
+local aJ=aI==nil
+local aK=if aJ then 0 elseif aH.order>aI.order then 1 else-1
 
-aC.activePage=aE
-aC.pageId=aD
+aF.activePage=aH
+aF.pageId=aG
 
-aB(aC.thumb,aE.order,if aG then 0 else b:getScale(I))
-aC:setPaged(aE.paged,aG)
-aC:transitionTo(aE,aE.index,aH)
+aE(aF.thumb,aH.order,if aJ then 0 else al:getScale(G))
+aF:setPaged(aH.paged,aJ)
+aF:transitionTo(aH,aH.index,aK)
 return true end
 
 
-Y.create=function(aC)
-local aD=aa.new("Frame","ReferenceFrame",{
+X.create=function(aF)
+local aG=aa.new("Frame","ReferenceFrame",{
 Active=true,
 BorderSizePixel=0,
-Position=R,
-Size=UDim2.fromOffset(f,m),
+Position=Q,
+Size=UDim2.fromOffset(d,k),
 ThemeTag={
 BackgroundColor3="Colors.Background",
 },
 })
 
-local aE=aa.new("Frame","TopBar",aD,{
+local aH=aa.new("Frame","TopBar",aG,{
 BorderSizePixel=0,
-Size=UDim2.new(1,0,0,g),
+Size=UDim2.new(1,0,0,e),
 ThemeTag={
 BackgroundColor3="Colors.Background",
 },
 })
 
-aa.new("TextLabel","Title",aE,{
+aa.new("TextLabel","Title",aH,{
 BackgroundTransparency=1,
 Size=UDim2.fromScale(1,1),
 Text="Reference",
@@ -23177,14 +24211,14 @@ TextColor3="Colors.Text.Default",
 },
 })
 
-local aF=aa.new("TextButton","Close",aE,{
+local aI=aa.new("TextButton","Close",aH,{
 BackgroundTransparency=1,
-Position=UDim2.new(1,-g,0,0),
-Size=UDim2.fromOffset(g,g),
+Position=UDim2.new(1,-e,0,0),
+Size=UDim2.fromOffset(e,e),
 Text="",
 })
 
-local aG=aa.new("ImageLabel","Icon",aF,{
+local aJ=aa.new("ImageLabel","Icon",aI,{
 BackgroundTransparency=1,
 Position=UDim2.fromOffset(5,5),
 Size=UDim2.fromOffset(10,10),
@@ -23194,140 +24228,140 @@ ImageColor3="Colors.Icons",
 })
 
 
-local aH=aa.new("Frame","Tabs",aD,{
+local aK=aa.new("Frame","Tabs",aG,{
 BackgroundTransparency=1,
-Position=UDim2.fromOffset(0,g),
-Size=UDim2.new(1,0,0,h),
+Position=UDim2.fromOffset(0,e),
+Size=UDim2.new(1,0,0,f),
 })
 
-local aI=aa.new("Frame","Track",aH,{
+local aL=aa.new("Frame","Track",aK,{
 BorderSizePixel=0,
-Position=UDim2.fromOffset(i,i),
-Size=UDim2.new(1,-i*2,1,-i*2),
+Position=UDim2.fromOffset(g,g),
+Size=UDim2.new(1,-g*2,1,-g*2),
 ThemeTag={
 BackgroundColor3="Colors.Buttons.Default",
 },
-aa.new("UICorner",{CornerRadius=Q}),
+aa.new("UICorner",{CornerRadius=P}),
 })
 
-local aJ=aa.new("Frame","Thumb",aI,{
+local aM=aa.new("Frame","Thumb",aL,{
 BorderSizePixel=0,
-Size=UDim2.new(1/X,0,1,0),
+Size=UDim2.new(1/W,0,1,0),
 ThemeTag={
 BackgroundColor3="Colors.Border.Holding",
 },
-aa.new("UICorner",{CornerRadius=Q}),
+aa.new("UICorner",{CornerRadius=P}),
 })
-aC.thumb=aJ
+aF.thumb=aM
 
-local _=ae.new({
+local Z=ae.new({
 isHorizontal=false,
-barThickness=n,
-increment=o,
-wheelIncrement=p,
+barThickness=l,
+increment=m,
+wheelIncrement=n,
 })
 
-local aK=_:create()
-local aL=_.container
+local _=Z:create()
+local aN=Z.container
 
-local aM=aa.new("Frame","ScrollHolder",aD,{
+local aO=aa.new("Frame","ScrollHolder",aG,{
 Active=true,
 BackgroundTransparency=1,
-Position=UDim2.fromOffset(0,g+h),
-Size=UDim2.new(1,0,0,j),
+Position=UDim2.fromOffset(0,e+f),
+Size=UDim2.new(1,0,0,h),
 
-aK,
-aL,
+_,
+aN,
 })
 
 
-local aN=aa.new("Frame","Footer",aD,{
+local aP=aa.new("Frame","Footer",aG,{
 BackgroundTransparency=1,
 ClipsDescendants=true,
-Position=UDim2.fromOffset(0,g+h+k),
-Size=UDim2.new(1,0,0,l),
+Position=UDim2.fromOffset(0,e+f+i),
+Size=UDim2.new(1,0,0,j),
 })
 
 
-local aO=aa.new("Frame","Navigation",aN,{
+local aQ=aa.new("Frame","Navigation",aP,{
 BackgroundTransparency=1,
-Position=x,
+Position=v,
 Size=UDim2.new(1,0,1,0),
 Visible=false,
-aa.new("UIPadding",{PaddingRight=UDim.new(0,v)}),
+aa.new("UIPadding",{PaddingRight=UDim.new(0,t)}),
 aa.new("UIListLayout",{
 FillDirection=Enum.FillDirection.Horizontal,
 HorizontalAlignment=Enum.HorizontalAlignment.Right,
-Padding=UDim.new(0,s),
+Padding=UDim.new(0,q),
 SortOrder=Enum.SortOrder.LayoutOrder,
 VerticalAlignment=Enum.VerticalAlignment.Center,
 }),
 })
 
-local aP=ay(aO,"Back",c.navigation.back,"lucide-arrow-left",true,1)
+local aR=aB(aQ,"Back",am.navigation.back,"lucide-arrow-left",true,1)
 
-local aQ=aa.new("TextLabel","Counter",aO,{
+local aS=aa.new("TextLabel","Counter",aQ,{
 AutomaticSize=Enum.AutomaticSize.X,
 BackgroundTransparency=1,
 LayoutOrder=2,
-Size=UDim2.new(0,0,0,q),
+Size=UDim2.new(0,0,0,o),
 Text="1 / 1",
-TextSize=u,
+TextSize=s,
 ThemeTag={
 Font="Font.Medium",
 TextColor3="Colors.Text.Dark",
 },
 })
 
-local aR=ay(aO,"Next",c.navigation.next,"lucide-arrow-right",false,3)
+local aT=aB(aQ,"Next",am.navigation.next,"lucide-arrow-right",false,3)
 
-for aS,aT in{aP,aR}do
-ag:Connect(aT.button.MouseEnter,function()
-aA(aT,true)
+for aU,aV in{aR,aT}do
+ag:Connect(aV.button.MouseEnter,function()
+aD(aV,true)
 end)
-ag:Connect(aT.button.MouseLeave,function()
-aA(aT,false)
+ag:Connect(aV.button.MouseLeave,function()
+aD(aV,false)
 end)
 end
 
-aC.scrollBar=_
-aC.container=aL
-aC.holder=aM
-aC.footer=aN
-aC.navigation=aO
-aC.counter=aQ
-aC.nav={back=aP,forward=aR}local aS=function(
+aF.scrollBar=Z
+aF.container=aN
+aF.holder=aO
+aF.footer=aP
+aF.navigation=aQ
+aF.counter=aS
+aF.nav={back=aR,forward=aT}local aU=function(
 
 
 
-aS, aT, aU)
-local aV=aa.new("Frame","Slide",aL,{
+aU, aV, aW)
+local aX=aa.new("Frame","Slide",aN,{
 BackgroundTransparency=1,
 Size=UDim2.new(1,0,1,0),
 Visible=false,
 })
-aT.Parent=aV
+aV.Parent=aX
 
-local aW={slide=aV,body=aT,loaders=aU}
-table.insert(aS.entries,aW)
+local aY={slide=aX,body=aV,loaders=aW}
+table.insert(aU.entries,aY)
 
-ag:Connect(aT:GetPropertyChangedSignal("AbsoluteSize"),function()
-if aC.activeEntry==aW then
-aC:refreshScroll()
+ag:Connect(aV:GetPropertyChangedSignal("AbsoluteSize"),function()
+if aF.activeEntry==aY then
+aF:refreshScroll()
 end
 end)end
 
 
 
 
-for aT,aU in W do
-local aV=aa.new("TextButton",aU.id,aI,{
+for aV,aW in V do
+local aX=aa.new("TextButton",aW.id,aL,{
 AutoButtonColor=false,
 BackgroundTransparency=1,
 BorderSizePixel=0,
-Position=UDim2.new((aT-1)/X,0,0,0),
-Size=UDim2.new(1/X,0,1,0),
-Text=aU.title,
+Position=UDim2.new((aV-1)/W,0,0,0),
+Size=UDim2.new(1/W,0,1,0),
+Text=aW.title,
 TextSize=13,
 ThemeTag={
 Font="Font.Bold",
@@ -23335,89 +24369,89 @@ TextColor3="Colors.Text.Default",
 },
 })
 
-local aW=aU.paged==true
-local aX={
-id=aU.id,
-order=aT,
-button=aV,
-paged=aW,
+local aY=aW.paged==true
+local aZ={
+id=aW.id,
+order=aV,
+button=aX,
+paged=aY,
 entries={},
 index=1,
 }
 
-if aW then
-for aY,aZ in aU.sections do
-local a_={}
-aS(aX,ax(aY,aZ,true,a_),a_)
+if aY then
+for a_,a0 in aW.sections do
+local a1={}
+aU(aZ,aA(a_,a0,true,a1),a1)
 end
 else
-local aY={}
-local aZ=aa.new("Frame","Content",{
+local a_={}
+local a0=aa.new("Frame","Content",{
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundTransparency=1,
 Size=UDim2.new(1,0,0,0),
 aa.new("UIListLayout",{SortOrder=Enum.SortOrder.LayoutOrder}),
 })
 
-for a_,a0 in aU.sections do
-local a1=ax(a_,a0,a_==#aU.sections,aY)
-a1.Parent=aZ
+for a1,a2 in aW.sections do
+local a3=aA(a1,a2,a1==#aW.sections,a_)
+a3.Parent=a0
 end
 
-aS(aX,aZ,aY)
+aU(aZ,a0,a_)
 end
 
-aC.pages[aU.id]=aX
+aF.pages[aW.id]=aZ
 
-ag:Connect(aV.Activated,function()
-aC:selectPage(aU.id)
+ag:Connect(aX.Activated,function()
+aF:selectPage(aW.id)
 end)
 end
 
-ag:Connect(aP.button.Activated,function()
-aC:turnPage(-1)
-end)
 ag:Connect(aR.button.Activated,function()
-aC:turnPage(1)
-end)local aT=function(
+aF:turnPage(-1)
+end)
+ag:Connect(aT.button.Activated,function()
+aF:turnPage(1)
+end)local aV=function(
 
 
-aT)
-if aC.activeEntry then
-aC.activeEntry.body.Position=UDim2.fromOffset(0,-aT)
+aV)
+if aF.activeEntry then
+aF.activeEntry.body.Position=UDim2.fromOffset(0,-aV)
 end end
 
 
-ag:Connect(_.scrolledSignal,aT)
-ag:Connect(aL:GetPropertyChangedSignal("AbsoluteSize"),function()
-aC:refreshScroll()
+ag:Connect(Z.scrolledSignal,aV)
+ag:Connect(aN:GetPropertyChangedSignal("AbsoluteSize"),function()
+aF:refreshScroll()
 end)
 
-ag:Connect(aF.Activated,function()
-aC:close()
+ag:Connect(aI.Activated,function()
+aF:close()
 end)
 
-ad:addGuiObject(aD)
+ad:addGuiObject(aG)
 
-ad.dragStarted:Connect(function(aU)
-if aU~=aD then return end
-_:disableScroll()
+ad.dragStarted:Connect(function(aW)
+if aW~=aG then return end
+Z:disableScroll()
 end)
 
-ad.dragEnded:Connect(function(aU)
-if aU~=aD then return end
-_:enableScroll()
+ad.dragEnded:Connect(function(aW)
+if aW~=aG then return end
+Z:enableScroll()
 end)
 
-aC:selectPage(W[1].id)
+aF:selectPage(V[1].id)
 
-aC.frame=aD
-aC.closeIcon=aG
+aF.frame=aG
+aF.closeIcon=aJ
 
-return aD end
+return aG end
 
 
-return Y end a.dt=function()local ab=a.cache.dt if not ab then ab={c=aa()}a.cache.dt=ab end return ab.c end end do local aa=function()
+return X end a.dA=function()local ab=a.cache.dA if not ab then ab={c=aa()}a.cache.dA=ab end return ab.c end end do local aa=function()
 
 
 
@@ -23484,27 +24518,27 @@ unknownPlace="Unknown",
 alreadyEnabled="the info menu is already enabled",
 noClipboard="this executor doesn't support clipboard",
 },
-}end a.du=function()local ab=a.cache.du if not ab then ab={c=aa()}a.cache.du=ab end return ab.c end end do local aa=function()
+}end a.dB=function()local ab=a.cache.dB if not ab then ab={c=aa()}a.cache.dB=ab end return ab.c end end do local aa=function()
 
 
-local aa=a.cT()
-local ab=a.cV()
-local ac=a.cS()
+local aa=a.cX()
+local ab=a.c1()
+local ac=a.cW()
 
-local ad=a.dn()
-local ae=a.c_()
+local ad=a.dv()
+local ae=a.c6()
 
-local af=a.cR()
+local af=a.b5()
 
-local ag=a.cW()
-local ah=a.aE()
+local ag=a.c2()
+local ah=a.aI()
 local ai=a.a()
 local aj=a.g()
 local ak=a.f()
 local al=a.b()
 
-local am=a.du()
-local an=a.cZ()
+local am=a.dB()
+local an=a.c5()
 
 local ao=UDim2.new(0.5,-am.window.width/2,0,am.window.shownY)
 local ap=UDim2.new(0.5,-am.window.width/2,0,am.window.hiddenY)
@@ -23838,7 +24872,7 @@ aD.frame:Destroy()
 end)end
 
 
-return aq end a.dv=function()local ab=a.cache.dv if not ab then ab={c=aa()}a.cache.dv=ab end return ab.c end end do local aa=function()
+return aq end a.dC=function()local ab=a.cache.dC if not ab then ab={c=aa()}a.cache.dC=ab end return ab.c end end do local aa=function()
 
 
 return{
@@ -23898,27 +24932,27 @@ chatCopied="Message copied to the clipboard",
 joinCopied="User ID copied to the clipboard:",
 noClipboard="Your executor has no clipboard function",
 },
-}end a.dw=function()local ab=a.cache.dw if not ab then ab={c=aa()}a.cache.dw=ab end return ab.c end end do local aa=function()
+}end a.dD=function()local ab=a.cache.dD if not ab then ab={c=aa()}a.cache.dD=ab end return ab.c end end do local aa=function()
 
 
 
-local aa=a.cT()
-local ab=a.cV()
-local ac=a.cS()
-local ad=a.dn()
-local ae=a.cW()
-local af=a.dj()
-local ag=a.c_()
+local aa=a.cX()
+local ab=a.c1()
+local ac=a.cW()
+local ad=a.dv()
+local ae=a.c2()
+local af=a.dr()
+local ag=a.c6()
 
 local ah=a.b()
-local ai=a.dw()
+local ai=a.dD()
 local aj=a.f()
 local ak=a.a()
-local al=a.cJ()
-local am=a.bJ()
-local an=a.cY().args
-local ao=a.cZ()
-local ap=a.cR()
+local al=a.cO()
+local am=a.bN()
+local an=a.c4().args
+local ao=a.c5()
+local ap=a.b5()
 local aq=a.n()
 
 local ar=ai.window
@@ -24075,8 +25109,8 @@ aV(aY)
 end)end local aZ=function(
 
 
-aZ, a_, a0, a1, b)
-local c=aa.new("TextButton",a_,aZ,{
+aZ, a_, a0, a1, a2)
+local a3=aa.new("TextButton",a_,aZ,{
 AutoButtonColor=false,
 BorderSizePixel=0,
 Text=a0,
@@ -24092,8 +25126,8 @@ CornerRadius=UDim.new(0,ar.buttonCorner),
 }),
 })
 
-aK(c,a1,b)
-return c end local a_=function(
+aK(a3,a1,a2)
+return a3 end local a_=function(
 
 
 
@@ -24103,12 +25137,12 @@ a_.Size=UDim2.new(aE,-aG*2,1,-aG*2)end local a0=function(
 
 
 
-a0, a1, b, c)
-local d=aa.new("TextButton",a1,a0,{
+a0, a1, a2, a3)
+local b=aa.new("TextButton",a1,a0,{
 AutoButtonColor=false,
 BackgroundTransparency=1,
 BorderSizePixel=0,
-Text=b,
+Text=a2,
 TextSize=ai.textSizes.tab,
 TextTruncate=Enum.TextTruncate.AtEnd,
 ThemeTag={
@@ -24121,43 +25155,43 @@ CornerRadius=aH,
 }),
 })
 
-a_(d,c)
-return d end local a1=function(
+a_(b,a3)
+return b end local a1=function(
 
 
 a1)
-a1.content.Position=UDim2.fromOffset(0,-a1.scrollBar.index)end local b=function(
+a1.content.Position=UDim2.fromOffset(0,-a1.scrollBar.index)end local a2=function(
 
 
-b)
-local c=ae:getScale()
-b.scrollBar:setTotalSpace(math.ceil(b.content.AbsoluteSize.Y/c))
-b.scrollBar:setVisibleSpace(math.ceil(b.container.AbsoluteSize.Y/c))
-a1(b)end local c=function(
+a2)
+local a3=ae:getScale()
+a2.scrollBar:setTotalSpace(math.ceil(a2.content.AbsoluteSize.Y/a3))
+a2.scrollBar:setVisibleSpace(math.ceil(a2.container.AbsoluteSize.Y/a3))
+a1(a2)end local a3=function(
 
 
-c)
-for d,e in c.labels do
-e:Destroy()
+a3)
+for b,c in a3.labels do
+c:Destroy()
 end
-table.clear(c.labels)end local d=function(
+table.clear(a3.labels)end local b=function(
 
 
-d, e, f)
-d.order=d.order+1
+b, c, d)
+b.order=b.order+1
 
-local g=if d.order%2==1 then ar.stripeTransparency else 1
+local e=if b.order%2==1 then ar.stripeTransparency else 1
 
-local h=aa.new("TextButton","Entry",d.content,{
+local f=aa.new("TextButton","Entry",b.content,{
 AutoButtonColor=false,
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundColor3=Color3.new(1,1,1),
-BackgroundTransparency=g,
+BackgroundTransparency=e,
 BorderSizePixel=0,
-LayoutOrder=d.order,
+LayoutOrder=b.order,
 Size=UDim2.new(1,0,0,0),
 RichText=true,
-Text=aP(e,f),
+Text=aP(c,d),
 TextSize=ai.textSizes.entry,
 TextWrapped=true,
 TextXAlignment=Enum.TextXAlignment.Left,
@@ -24169,51 +25203,51 @@ TextColor3="Colors.Text.Default",
 })
 
 
-h.MouseEnter:Connect(function()
-h.BackgroundTransparency=aI
+f.MouseEnter:Connect(function()
+f.BackgroundTransparency=aI
 end)
-h.MouseLeave:Connect(function()
-h.BackgroundTransparency=g
+f.MouseLeave:Connect(function()
+f.BackgroundTransparency=e
 end)
-h.Activated:Connect(function()
-aR(e,f)
+f.Activated:Connect(function()
+aR(c,d)
 end)
 
-table.insert(d.labels,h)
-while#d.labels>ai.maxLabels do
-table.remove(d.labels,1):Destroy()
+table.insert(b.labels,f)
+while#b.labels>ai.maxLabels do
+table.remove(b.labels,1):Destroy()
 end
 
 
 task.defer(function()
-if d.frame.Parent then
-b(d)
-d.scrollBar:scrollTo(math.huge)
+if b.frame.Parent then
+a2(b)
+b.scrollBar:scrollTo(math.huge)
 end
-end)end local e=function(
+end)end local c=function(
 
 
-e, f)
-c(e)
+c, d)
+a3(c)
 
-for g,h in am.entries[e.tab]do
-d(e,e.tab,h)
+for e,f in am.entries[c.tab]do
+b(c,c.tab,f)
 end
 
-aV(e)
-aU(e,f==true)end local f=function(
+aV(c)
+aU(c,d==true)end local d=function(
 
 
-f)
-local g={
-tab=f,
+d)
+local e={
+tab=d,
 labels={},
 order=0,
 connections={},
 tweens={},
 }
 
-local h=aa.new("Frame","ChatLogs",{
+local f=aa.new("Frame","ChatLogs",{
 Active=true,
 BorderSizePixel=0,
 Position=av,
@@ -24222,10 +25256,10 @@ ThemeTag={
 BackgroundColor3="Colors.Background",
 },
 })
-g.frame=h
+e.frame=f
 
 
-local i=aa.new("Frame","TopBar",h,{
+local g=aa.new("Frame","TopBar",f,{
 BorderSizePixel=0,
 Size=UDim2.new(1,0,0,as),
 ThemeTag={
@@ -24233,7 +25267,7 @@ BackgroundColor3="Colors.Background",
 },
 })
 
-aa.new("TextLabel","Title",i,{
+aa.new("TextLabel","Title",g,{
 BackgroundTransparency=1,
 Size=UDim2.fromScale(1,1),
 Text=ai.title,
@@ -24244,14 +25278,14 @@ TextColor3="Colors.Text.Default",
 },
 })
 
-local j=aa.new("TextButton","Close",i,{
+local h=aa.new("TextButton","Close",g,{
 BackgroundTransparency=1,
 Position=UDim2.new(1,-as,0,0),
 Size=UDim2.fromOffset(as,as),
 Text="",
 })
 
-local k=aa.new("ImageLabel","Icon",j,{
+local i=aa.new("ImageLabel","Icon",h,{
 BackgroundTransparency=1,
 Position=UDim2.fromOffset(5,5),
 Size=UDim2.fromOffset(ar.closeIconSize,ar.closeIconSize),
@@ -24259,21 +25293,21 @@ ThemeTag={
 ImageColor3="Colors.Icons",
 },
 })
-ab:loadImage(k,"lucide-custom-x")
+ab:loadImage(i,"lucide-custom-x")
 
 
-local l=aa.new("Frame","Controls",h,{
+local j=aa.new("Frame","Controls",f,{
 BackgroundTransparency=1,
 Position=UDim2.fromOffset(0,as),
 Size=UDim2.new(1,0,0,ar.rowHeight),
 })
 
-local m=aZ(l,"Clear",ai.controls.clear,aw,ax)
-local n=aZ(l,"Save",ai.controls.save,ay,az)
-g.toggle=aZ(l,"Toggle",ai.controls.enabled,aA,aB)
+local k=aZ(j,"Clear",ai.controls.clear,aw,ax)
+local l=aZ(j,"Save",ai.controls.save,ay,az)
+e.toggle=aZ(j,"Toggle",ai.controls.enabled,aA,aB)
 
 
-local o=aa.new("Frame","Switch",l,{
+local m=aa.new("Frame","Switch",j,{
 BorderSizePixel=0,
 ThemeTag={
 BackgroundColor3="Colors.Buttons.Default",
@@ -24283,9 +25317,9 @@ aa.new("UICorner",{
 CornerRadius=aH,
 }),
 })
-aK(o,aC,aD)
+aK(m,aC,aD)
 
-g.thumb=aa.new("Frame","Thumb",o,{
+e.thumb=aa.new("Frame","Thumb",m,{
 BorderSizePixel=0,
 ThemeTag={
 BackgroundColor3="Colors.Border.Holding",
@@ -24295,25 +25329,25 @@ aa.new("UICorner",{
 CornerRadius=aH,
 }),
 })
-a_(g.thumb,aF.chat)
+a_(e.thumb,aF.chat)
 
-local p=a0(o,"ChatTab",ai.tabs.chat,aF.chat)
-local q=a0(o,"JoinTab",ai.tabs.join,aF.join)
+local n=a0(m,"ChatTab",ai.tabs.chat,aF.chat)
+local o=a0(m,"JoinTab",ai.tabs.join,aF.join)
 
-g.tabButtons={chat=p,join=q}
-g.actions={n,m}
+e.tabButtons={chat=n,join=o}
+e.actions={l,k}
 
 
-local r=af.new({
+local p=af.new({
 isHorizontal=false,
 barThickness=ai.scrollBar.barThickness,
 increment=ai.scrollBar.increment,
 wheelIncrement=ai.scrollBar.wheelIncrement,
 })
-local s=r:create()
-local t=r.container
+local q=p:create()
+local r=p.container
 
-local u=aa.new("Frame","Content",t,{
+local s=aa.new("Frame","Content",r,{
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundTransparency=1,
 Size=UDim2.new(1,0,0,0),
@@ -24323,83 +25357,83 @@ SortOrder=Enum.SortOrder.LayoutOrder,
 }),
 })
 
-aa.new("Frame","ScrollHolder",h,{
+aa.new("Frame","ScrollHolder",f,{
 Active=true,
 BackgroundTransparency=1,
 Position=UDim2.fromOffset(0,at),
 Size=UDim2.new(1,0,1,-at),
 
-s,
-t,
+q,
+r,
 })
 
-g.scrollBar=r
-g.container=t
-g.content=u
+e.scrollBar=p
+e.container=r
+e.content=s
 
-aX(g,r.scrolledSignal,function()
-a1(g)
+aX(e,p.scrolledSignal,function()
+a1(e)
 end)
-aX(g,u:GetPropertyChangedSignal("AbsoluteSize"),function()
-b(g)
+aX(e,s:GetPropertyChangedSignal("AbsoluteSize"),function()
+a2(e)
 end)
-aX(g,t:GetPropertyChangedSignal("AbsoluteSize"),function()
-b(g)
+aX(e,r:GetPropertyChangedSignal("AbsoluteSize"),function()
+a2(e)
 end)
-aX(g,ad.dragStarted,function(v)
-if v==h then
-r:disableScroll()
+aX(e,ad.dragStarted,function(t)
+if t==f then
+p:disableScroll()
 end
 end)
-aX(g,ad.dragEnded,function(v)
-if v==h then
-r:enableScroll()
+aX(e,ad.dragEnded,function(t)
+if t==f then
+p:enableScroll()
 end
 end)
 
-aX(g,j.Activated,function()
+aX(e,h.Activated,function()
 aJ:close()
 end)
 
-aX(g,p.Activated,function()
+aX(e,n.Activated,function()
 aJ:select("chat")
 end)
 
-aX(g,q.Activated,function()
+aX(e,o.Activated,function()
 aJ:select("join")
 end)
 
-aX(g,g.toggle.Activated,function()
-local v=aM(g.tab)
-if g.tab=="chat"then
-am.setChat(not v)
+aX(e,e.toggle.Activated,function()
+local t=aM(e.tab)
+if e.tab=="chat"then
+am.setChat(not t)
 else
-am.setJoin(not v)
+am.setJoin(not t)
 end
 
-aN(g.tab,not v)
-aV(g)
+aN(e.tab,not t)
+aV(e)
 end)
 
-aX(g,n.Activated,function()
-local v,w=am.save(g.tab)
-if v then
-ag:notify(ai.messages.saved,w)
+aX(e,l.Activated,function()
+local t,u=am.save(e.tab)
+if t then
+ag:notify(ai.messages.saved,u)
 else
-ag:notify(ai.messages.saveFailed,w)
+ag:notify(ai.messages.saveFailed,u)
 end
 end)
 
-aX(g,m.Activated,function()
-am.clear(g.tab)
-c(g)
+aX(e,k.Activated,function()
+am.clear(e.tab)
+a3(e)
 end)
 
-for v,w in{p,q,g.toggle,n,m}do
-aY(g,w)
+for t,u in{n,o,e.toggle,l,k}do
+aY(e,u)
 end
 
-return g end local g=function()
+return e end local e=function()
 
 
 
@@ -24409,93 +25443,93 @@ return
 end
 aJ.listening=true
 
-am.onEntry(function(g,h)
-local i=aJ.window
-if i and i.tab==g then
-d(i,g,h)
+am.onEntry(function(e,f)
+local g=aJ.window
+if g and g.tab==e then
+b(g,e,f)
 end
 end)end
 
 
-aJ.restore=function(h)
+aJ.restore=function(f)
 aO("chat",am.setChat)
 aO("join",am.setJoin)end
 
 
-aJ.open=function(h, i)
-h:restore()
+aJ.open=function(f, g)
+f:restore()
 
-g()
+e()
 
-local j=h.window
-if j then
-h:select(i)
-return j
+local h=f.window
+if h then
+f:select(g)
+return h
 end
 
-j=f(i)
-h.window=j
+h=d(g)
+f.window=h
 
-j.frame.Parent=ah.screenGui
-j.frame:TweenPosition(au,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,ar.tweenTime,true)
-ad:addGuiObject(j.frame)
+h.frame.Parent=ah.screenGui
+h.frame:TweenPosition(au,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,ar.tweenTime,true)
+ad:addGuiObject(h.frame)
 
-e(j)
-return j end
+c(h)
+return h end
 
 
-aJ.select=function(h, i)
-local j=h.window
-if not j then
+aJ.select=function(f, g)
+local h=f.window
+if not h then
 return
 end
 
-j.tab=i
-e(j,true)end
+h.tab=g
+c(h,true)end
 
 
-aJ.close=function(h)
-local i=h.window
-if not i then
+aJ.close=function(f)
+local g=f.window
+if not g then
 return
 end
 
-h.window=nil
-aW(i)
-aT(i)
+f.window=nil
+aW(g)
+aT(g)
 
-i.frame:TweenPosition(av,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,ar.tweenTime,true)
+g.frame:TweenPosition(av,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,ar.tweenTime,true)
 task.delay(ar.tweenTime,function()
-i.frame:Destroy()
+g.frame:Destroy()
 end)end
 
 
 
-aJ.reset=function(h)
-local i=h.window
-if i then
-aW(i)
-aT(i)
+aJ.reset=function(f)
+local g=f.window
+if g then
+aW(g)
+aT(g)
 end
-h.window=nil end
+f.window=nil end
 
 
-return aJ end a.dx=function()local ab=a.cache.dx if not ab then ab={c=aa()}a.cache.dx=ab end return ab.c end end do local aa=function()
-
-
-
+return aJ end a.dE=function()local ab=a.cache.dE if not ab then ab={c=aa()}a.cache.dE=ab end return ab.c end end do local aa=function()
 
 
 
 
-local aa=a.cT()
-local ab=a.cV()
-local ac=a.cS()
-local ad=a.aH()
+
+
+
+local aa=a.cX()
+local ab=a.c1()
+local ac=a.cW()
+local ad=a.aL()
 local ae=a.f()
-local af=a.di()
-local ag=a.cW()
-local ah=a.db()
+local af=a.dq()
+local ag=a.c2()
+local ah=a.di()
 
 local ai=ah.panel
 local aj=ah.row
@@ -24603,16 +25637,12 @@ ThemeTag={
 Font="Font.MonoSpace",
 TextColor3="Colors.Text.Darker",
 },
-})end
+})end local as=function(
 
 
 
-ap.row=function(as)
-as.order=as.order+1
-as.index=as.index+1
 
-local at=if as.index%2==1 then ai.stripeTransparency else 1
-
+as, at)
 local au=aa.new("TextButton","Option",as.parent,{
 AutoButtonColor=false,
 BackgroundTransparency=at,
@@ -24638,37 +25668,106 @@ return au end
 
 
 
-ap.pageTop=function(as, at, au)
-local av=ap.row(as)
-av.Name="BackRow"
-ap.icon(av,ah.pages.backIcon)
-ap.label(av,ah.pages.back,0)
-av.Activated:Connect(au)
+ap.row=function(at)
+at.order=at.order+1
+at.index=at.index+1
 
-if at then
-ap.header(as,at)
+return as(at,if at.index%2==1 then ai.stripeTransparency else 1)end
+
+
+
+ap.actionRow=function(at)
+at.order=at.order+1
+at.index=at.index+1
+
+return as(at,0)end
+
+
+
+
+
+ap.buttonRow=function(at, au)
+at.order=at.order+1
+
+local av=aa.new("Frame","Buttons",at.parent,{
+BackgroundTransparency=1,
+BorderSizePixel=0,
+LayoutOrder=at.order,
+Size=UDim2.new(1,0,0,ai.rowHeight),
+})
+
+local aw=#au
+local ax=ai.rowGap
+local ay={}
+
+for az,aA in au do
+local aB=aa.new("TextButton","Button",av,{
+AutoButtonColor=false,
+BorderSizePixel=0,
+
+Position=UDim2.new((az-1)/aw,(az-1)*ax/aw),
+Size=UDim2.new(1/aw,-ax*(aw-1)/aw,1,0),
+Text="",
+ThemeTag={
+BackgroundColor3="Colors.Buttons.Default",
+},
+
+aa.new("UICorner",{
+CornerRadius=UDim.new(0,al.cornerRadius),
+}),
+})
+
+ap.icon(aB,aA.icon)
+ap.label(aB,aA.text,ai.padding)
+
+aB.MouseEnter:Connect(function()
+ac:updateObjectProperties(aB,{BackgroundColor3="Colors.Buttons.Holding"})
+end)
+
+aB.MouseLeave:Connect(function()
+ac:updateObjectProperties(aB,{BackgroundColor3="Colors.Buttons.Default"})
+end)
+
+aB.Activated:Connect(aA.onTap)
+
+table.insert(ay,aB)
+end
+
+return ay end
+
+
+
+ap.pageTop=function(at, au, av)
+local aw=ap.row(at)
+aw.Name="BackRow"
+ap.icon(aw,ah.pages.backIcon)
+ap.label(aw,ah.pages.back,0)
+aw.Activated:Connect(av)
+
+if au then
+ap.header(at,au)
 end end
 
 
 
-ap.label=function(as, at, au, av)
-return aa.new("TextLabel","Label",as,{
+ap.label=function(at, au, av, aw)
+return aa.new("TextLabel","Label",at,{
 BackgroundTransparency=1,
 Position=UDim2.fromOffset(aj.labelInset,0),
-Size=UDim2.new(1,-(aj.labelInset+au),1,0),
-Text=at,
+Size=UDim2.new(1,-(aj.labelInset+av),1,0),
+Text=au,
 TextSize=am.label,
 TextTruncate=Enum.TextTruncate.AtEnd,
 TextXAlignment=Enum.TextXAlignment.Left,
 ThemeTag={
 Font="Font.Normal",
-TextColor3=av or"Colors.Text.Default",
+TextColor3=aw or"Colors.Text.Default",
 },
 })end
 
 
-ap.icon=function(as, at)
-local au=aa.new("ImageLabel","Icon",as,{
+ap.icon=function(at, au)
+local av=aa.new("ImageLabel","Icon",at,{
 AnchorPoint=Vector2.new(0,0.5),
 BackgroundTransparency=1,
 Position=UDim2.new(0,aj.iconInset,0.5,0),
@@ -24678,13 +25777,13 @@ ImageColor3="Colors.Icons",
 },
 })
 
-ab:loadImage(au,at)
-return au end
+ab:loadImage(av,au)
+return av end
 
 
 
-ap.chevron=function(as)
-local at=aa.new("ImageLabel","Chevron",as,{
+ap.chevron=function(at)
+local au=aa.new("ImageLabel","Chevron",at,{
 AnchorPoint=Vector2.new(1,0.5),
 BackgroundTransparency=1,
 Position=UDim2.new(1,-ai.padding,0.5,0),
@@ -24695,22 +25794,22 @@ ImageColor3="Colors.Text.Darker",
 },
 })
 
-ab:loadImage(at,ah.pages.backIcon)
-return at end
+ab:loadImage(au,ah.pages.backIcon)
+return au end
 
 
 
 
 
 
-ap.rowButton=function(as, at, au, av)
-local aw=aa.new("TextButton","RowButton",as,{
+ap.rowButton=function(at, au, av, aw)
+local ax=aa.new("TextButton","RowButton",at,{
 AnchorPoint=Vector2.new(1,0.5),
 AutoButtonColor=false,
 BorderSizePixel=0,
-Position=UDim2.new(1,-au,0.5,0),
-Size=UDim2.fromOffset(av,al.height+4),
-Text=at,
+Position=UDim2.new(1,-av,0.5,0),
+Size=UDim2.fromOffset(aw,al.height+4),
+Text=au,
 TextSize=am.value,
 ThemeTag={
 BackgroundColor3="Colors.Background",
@@ -24723,24 +25822,24 @@ CornerRadius=UDim.new(0,al.cornerRadius),
 }),
 })
 
-aw.MouseEnter:Connect(function()
-ac:updateObjectProperties(aw,{
+ax.MouseEnter:Connect(function()
+ac:updateObjectProperties(ax,{
 BackgroundColor3="Colors.Primary",
 })
 end)
 
-aw.MouseLeave:Connect(function()
-ac:updateObjectProperties(aw,{
+ax.MouseLeave:Connect(function()
+ac:updateObjectProperties(ax,{
 BackgroundColor3="Colors.Background",
 })
 end)
 
-return aw end
+return ax end
 
 
 
-ap.box=function(as)
-local at=aa.new("Frame","Box",as,{
+ap.box=function(at)
+local au=aa.new("Frame","Box",at,{
 AnchorPoint=Vector2.new(1,0.5),
 BorderSizePixel=0,
 Position=UDim2.new(1,-ai.padding,0.5,0),
@@ -24761,7 +25860,7 @@ Color="Colors.Border.Default",
 }),
 })
 
-local au=aa.new("Frame","Fill",at,{
+local av=aa.new("Frame","Fill",au,{
 BorderSizePixel=0,
 Position=UDim2.fromOffset(ak.inset,ak.inset),
 Size=UDim2.new(1,-2*ak.inset,1,-2*ak.inset),
@@ -24774,16 +25873,16 @@ CornerRadius=UDim.new(0,ak.fillCornerRadius),
 }),
 })
 
-return at,au end
+return au,av end
 
 
 
-ap.value=function(as, at, au)
-local av=aa.new("Frame","Value",as,{
+ap.value=function(at, au, av)
+local aw=aa.new("Frame","Value",at,{
 AnchorPoint=Vector2.new(1,0.5),
 BorderSizePixel=0,
 Position=UDim2.new(1,-ai.padding,0.5,0),
-Size=UDim2.fromOffset(au,al.height),
+Size=UDim2.fromOffset(av,al.height),
 ThemeTag={
 BackgroundColor3="Colors.Buttons.Default",
 },
@@ -24793,10 +25892,10 @@ CornerRadius=UDim.new(0,al.cornerRadius),
 }),
 })
 
-local aw=aa.new("TextLabel","Text",av,{
+local ax=aa.new("TextLabel","Text",aw,{
 BackgroundTransparency=1,
 Size=UDim2.fromScale(1,1),
-Text=at,
+Text=au,
 TextSize=am.value,
 TextTruncate=Enum.TextTruncate.AtEnd,
 ThemeTag={
@@ -24805,18 +25904,18 @@ TextColor3="Colors.Text.Default",
 },
 })
 
-return av,aw end
+return aw,ax end
 
 
 
-ap.valueInput=function(as, at, au)
-return aa.new("TextBox","ValueInput",as,{
+ap.valueInput=function(at, au, av)
+return aa.new("TextBox","ValueInput",at,{
 AnchorPoint=Vector2.new(1,0.5),
 BorderSizePixel=0,
 ClearTextOnFocus=false,
 Position=UDim2.new(1,-ai.padding,0.5,0),
-Size=UDim2.fromOffset(au,al.height),
-Text=at,
+Size=UDim2.fromOffset(av,al.height),
+Text=au,
 TextSize=am.value,
 TextXAlignment=Enum.TextXAlignment.Center,
 ThemeTag={
@@ -24835,10 +25934,11 @@ CornerRadius=UDim.new(0,al.cornerRadius),
 
 
 
-ap.slider=function(as, at, au, av)
-ap.label(as,at,ao.width+ao.valueWidth+ai.rowGap+ai.padding)
 
-local aw=aa.new("TextButton","Track",as,{
+ap.slider=function(at, au, av, aw, ax)
+ap.label(at,au,ao.width+ao.valueWidth+ai.rowGap+ai.padding)
+
+local ay=aa.new("TextButton","Track",at,{
 AnchorPoint=Vector2.new(1,0.5),
 AutoButtonColor=false,
 BackgroundTransparency=1,
@@ -24847,7 +25947,7 @@ Size=UDim2.fromOffset(ao.width,ao.hitHeight),
 Text="",
 })
 
-local ax=aa.new("Frame","Bar",aw,{
+local az=aa.new("Frame","Bar",ay,{
 AnchorPoint=Vector2.new(0,0.5),
 BorderSizePixel=0,
 Position=UDim2.fromScale(0,0.5),
@@ -24861,7 +25961,7 @@ CornerRadius=UDim.new(0,ao.barHeight/2),
 }),
 })
 
-local ay=aa.new("Frame","Fill",ax,{
+local aA=aa.new("Frame","Fill",az,{
 BorderSizePixel=0,
 Size=UDim2.fromScale(0,1),
 ThemeTag={
@@ -24873,7 +25973,7 @@ CornerRadius=UDim.new(0,ao.barHeight/2),
 }),
 })
 
-local az=aa.new("Frame","Knob",aw,{
+local aB=aa.new("Frame","Knob",ay,{
 AnchorPoint=Vector2.new(0.5,0.5),
 BorderSizePixel=0,
 Position=UDim2.fromScale(0,0.5),
@@ -24887,7 +25987,7 @@ CornerRadius=UDim.new(1,0),
 }),
 })
 
-local aA=aa.new("TextLabel","Value",as,{
+local aC=aa.new("TextLabel","Value",at,{
 AnchorPoint=Vector2.new(1,0.5),
 BackgroundTransparency=1,
 Position=UDim2.new(1,-(ai.padding+ao.width+ai.rowGap),0.5,0),
@@ -24899,150 +25999,150 @@ ThemeTag={
 Font="Font.MonoSpace",
 TextColor3="Colors.Text.Darker",
 },
-})local aB=function(
+})local aD=function(
 
 
-aB)
-ay.Size=UDim2.fromScale(aB,1)
-az.Position=UDim2.fromScale(aB,0.5)
-aA.Text=`{math.round(aB*100)}%`end
+aD)
+aA.Size=UDim2.fromScale(aD,1)
+aB.Position=UDim2.fromScale(aD,0.5)
+aC.Text=if ax then ax(aD)else`{math.round(aD*100)}%`end
 
 
-aB(math.clamp(au,0,1))
+aD(math.clamp(av,0,1))
 
 
-local aC local aD=function()
+local aE local aF=function()
 
 
-local aD=aC
-if aD==nil then return end
+local aF=aE
+if aF==nil then return end
 
-aC=nil
-aD.moved:Disconnect()
-aD.released:Disconnect()
+aE=nil
+aF.moved:Disconnect()
+aF.released:Disconnect()
 
-if aD.scroller then
-aD.scroller.ScrollingEnabled=aD.wasScrolling
-end end local aE=function(
-
-
-aE)
-local aF=aC
-if aF==nil or aF.width<=0 then return end
+if aF.scroller then
+aF.scroller.ScrollingEnabled=aF.wasScrolling
+end end local aG=function(
 
 
-
-local aG=(aE-aF.left)/aF.scale
-local aH=aF.width/aF.scale
-
-local aI=math.clamp(aG/aH,0,1)
-
-aB(aI)
-av(aI)end
+aG)
+local aH=aE
+if aH==nil or aH.width<=0 then return end
 
 
-aw.InputBegan:Connect(function(aF)
-if aC~=nil or not af.isPressingInput(aF)then return end
+
+local aI=(aG-aH.left)/aH.scale
+local aJ=aH.width/aH.scale
+
+local aK=math.clamp(aI/aJ,0,1)
+
+aD(aK)
+aw(aK)end
 
 
-local aG=aw:FindFirstAncestorWhichIsA("ScrollingFrame")
+ay.InputBegan:Connect(function(aH)
+if aE~=nil or not af.isPressingInput(aH)then return end
 
-aC={
+
+local aI=ay:FindFirstAncestorWhichIsA("ScrollingFrame")
+
+aE={
 scale=ag:getScale(),
-left=aw.AbsolutePosition.X,
-width=aw.AbsoluteSize.X,
-scroller=aG,
-wasScrolling=if aG then aG.ScrollingEnabled else false,
+left=ay.AbsolutePosition.X,
+width=ay.AbsoluteSize.X,
+scroller=aI,
+wasScrolling=if aI then aI.ScrollingEnabled else false,
 }
 
-if aG then
-aG.ScrollingEnabled=false
+if aI then
+aI.ScrollingEnabled=false
 end
 
-aC.moved=ae.UserInputService.InputChanged:Connect(function(aH)
-if not af.isMovingInput(aH)then return end
+aE.moved=ae.UserInputService.InputChanged:Connect(function(aJ)
+if not af.isMovingInput(aJ)then return end
 
 
-if aw.Parent==nil then
-aD()
+if ay.Parent==nil then
+aF()
 return
 end
 
-aE(aH.Position.X)
+aG(aJ.Position.X)
 end)
 
-aC.released=ae.UserInputService.InputEnded:Connect(function(aH)
-if af.isPressingInput(aH)then
-aD()
+aE.released=ae.UserInputService.InputEnded:Connect(function(aJ)
+if af.isPressingInput(aJ)then
+aF()
 end
 end)
 
-aE(aF.Position.X)
+aG(aH.Position.X)
 end)end
 
 
 
 
 
-ap.keybind=function(as, at, au)
-local av,aw=ap.value(as,"",al.keybindWidth)
-local ax local ay=function()
+ap.keybind=function(at, au, av)
+local aw,ax=ap.value(at,"",al.keybindWidth)
+local ay local az=function()
 
 
-local ay=ax~=nil
+local az=ay~=nil
 
-aw.Text=if ay then"press a key"else ad:getBindingName(at)
-ac:updateObjectProperties(av,{
-BackgroundColor3=if ay then"Colors.Primary"else"Colors.Buttons.Default",
-})end local az=function()
+ax.Text=if az then"press a key"else ad:getBindingName(au)
+ac:updateObjectProperties(aw,{
+BackgroundColor3=if az then"Colors.Primary"else"Colors.Buttons.Default",
+})end local aA=function()
 
 
 
-if ax then
-local az=ax
-ax=nil
-az()
+if ay then
+local aA=ay
+ay=nil
+aA()
 end
 
-ay()end
+az()end
 
 
-as.Activated:Connect(function()
-if ax then
-az()
+at.Activated:Connect(function()
+if ay then
+aA()
 return
 end
 
-ax=ad:capture(function(aA)
-ax=nil
-ad:setBinding(at,aA)
-ay()
+ay=ad:capture(function(aB)
+ay=nil
+ad:setBinding(au,aB)
+az()
 
-if au then
-au()
+if av then
+av()
 end
 end,function()
 
-ax=nil
-ay()
+ay=nil
+az()
 end)
 
-ay()
+az()
 end)
 
-ay()
-return ay,az end
+az()
+return az,aA end
 
 
 
-ap.textBox=function(as, at)
-as.order=as.order+1
+ap.textBox=function(at, au)
+at.order=at.order+1
 
-return aa.new("TextBox","Input",as.parent,{
+return aa.new("TextBox","Input",at.parent,{
 BorderSizePixel=0,
 ClearTextOnFocus=false,
-LayoutOrder=as.order,
-PlaceholderText=at,
+LayoutOrder=at.order,
+PlaceholderText=au,
 Size=UDim2.new(1,0,0,ai.rowHeight),
 Text="",
 TextSize=am.value,
@@ -25061,12 +26161,12 @@ PaddingRight=UDim.new(0,ai.padding),
 aa.new("UICorner",{
 CornerRadius=UDim.new(0,al.cornerRadius),
 }),
-})end local as=function(
+})end local at=function(
 
 
 
-as)
-return aa.new("TextLabel","Badge",as,{
+at)
+return aa.new("TextLabel","Badge",at,{
 AnchorPoint=Vector2.new(1,0),
 AutomaticSize=Enum.AutomaticSize.X,
 BorderSizePixel=0,
@@ -25075,7 +26175,7 @@ Size=UDim2.fromOffset(0,an.height),
 Text="",
 TextSize=am.badge,
 Visible=false,
-ZIndex=as.ZIndex+1,
+ZIndex=at.ZIndex+1,
 ThemeTag={
 BackgroundColor3="Colors.Primary",
 Font="Font.MonoSpace",
@@ -25102,41 +26202,41 @@ Color="Colors.Background",
 
 
 
-ap.choices=function(at, au, av, aw)
-at.order=at.order+1
+ap.choices=function(au, av, aw, ax)
+au.order=au.order+1
 
-local ax=ai.rowGap
-local ay=aa.new("Frame","Choices",at.parent,{
+local ay=ai.rowGap
+local az=aa.new("Frame","Choices",au.parent,{
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundTransparency=1,
 BorderSizePixel=0,
-LayoutOrder=at.order,
+LayoutOrder=au.order,
 Size=UDim2.new(1,0,0,0),
 
 aa.new("UIGridLayout",{
-CellPadding=UDim2.fromOffset(ax,ax),
-CellSize=UDim2.new(1/aw,-ax*(aw-1)/aw-1,0,ai.rowHeight-3),
+CellPadding=UDim2.fromOffset(ay,ay),
+CellSize=UDim2.new(1/ax,-ay*(ax-1)/ax-1,0,ai.rowHeight-3),
 SortOrder=Enum.SortOrder.LayoutOrder,
 }),
 })
 
-local az={}
-local aA={}local aB=function(
+local aA={}
+local aB={}local aC=function(
 
-aB)
-for aC,aD in az do
-ac:updateObjectProperties(aD,{
-BackgroundColor3=if aC==aB then"Colors.Primary"else"Colors.Buttons.Default",
+aC)
+for aD,aE in aA do
+ac:updateObjectProperties(aE,{
+BackgroundColor3=if aD==aC then"Colors.Primary"else"Colors.Buttons.Default",
 })
 end end
 
 
-for aC,aD in au do
-local aE=aa.new("TextButton","Choice",ay,{
+for aD,aE in av do
+local aF=aa.new("TextButton","Choice",az,{
 AutoButtonColor=false,
 BorderSizePixel=0,
-LayoutOrder=aC,
-Text=aD,
+LayoutOrder=aD,
+Text=aE,
 TextSize=am.value,
 TextTruncate=Enum.TextTruncate.AtEnd,
 ThemeTag={
@@ -25150,40 +26250,40 @@ CornerRadius=UDim.new(0,al.cornerRadius),
 }),
 })
 
-az[aC]=aE
-aA[aC]=as(aE)
+aA[aD]=aF
+aB[aD]=at(aF)
 
-aE.Activated:Connect(function()
-aB(aC)
-av(aC)
+aF.Activated:Connect(function()
+aC(aD)
+aw(aD)
 end)
-end local aC=function(
+end local aD=function(
 
 
-aC, aD)
-local aE=aA[aC]
-if not aE then return end
+aD, aE)
+local aF=aB[aD]
+if not aF then return end
 
-aE.Text=tostring(aD)
-aE.Visible=aD>0 end
-
-
-return aB,aC end
+aF.Text=tostring(aE)
+aF.Visible=aE>0 end
 
 
+return aC,aD end
 
-ap.inputRow=function(at, au, av, aw)
-local ax=ap.row(at)
-ap.label(ax,au,al.inputWidth+2*ai.padding)
 
-local ay=aa.new("TextBox","Input",ax,{
+
+ap.inputRow=function(au, av, aw, ax)
+local ay=ap.row(au)
+ap.label(ay,av,al.inputWidth+2*ai.padding)
+
+local az=aa.new("TextBox","Input",ay,{
 AnchorPoint=Vector2.new(1,0.5),
 BorderSizePixel=0,
 ClearTextOnFocus=false,
-PlaceholderText=av,
+PlaceholderText=aw,
 Position=UDim2.new(1,-ai.padding,0.5,0),
 Size=UDim2.fromOffset(al.inputWidth,al.height),
-Text=aw or"",
+Text=ax or"",
 TextSize=am.value,
 TextTruncate=Enum.TextTruncate.AtEnd,
 ThemeTag={
@@ -25202,33 +26302,33 @@ CornerRadius=UDim.new(0,al.cornerRadius),
 }),
 })
 
-return ax,ay end
+return ay,az end
 
 
 
 
-ap.formRow=function(at, au, av, aw, ax)
-at.order=at.order+1
+ap.formRow=function(au, av, aw, ax, ay)
+au.order=au.order+1
 
-local ay=ai.rowGap
-local az=al.addWidth
-local aA=ax or al.formDelayWidth
+local az=ai.rowGap
+local aA=al.addWidth
+local aB=ay or al.formDelayWidth
 
-local aB=aa.new("Frame","Form",at.parent,{
+local aC=aa.new("Frame","Form",au.parent,{
 BackgroundTransparency=1,
 BorderSizePixel=0,
-LayoutOrder=at.order,
+LayoutOrder=au.order,
 Size=UDim2.new(1,0,0,ai.rowHeight),
-})local aC=function(
+})local aD=function(
 
-aC, aD, aE, aF, aG)
-return aa.new("TextBox",aC,aB,{
-AnchorPoint=aE,
+aD, aE, aF, aG, aH)
+return aa.new("TextBox",aD,aC,{
+AnchorPoint=aF,
 BorderSizePixel=0,
 ClearTextOnFocus=false,
-PlaceholderText=aD,
-Position=aF,
-Size=aG,
+PlaceholderText=aE,
+Position=aG,
+Size=aH,
 Text="",
 TextSize=am.value,
 TextTruncate=Enum.TextTruncate.AtEnd,
@@ -25250,18 +26350,18 @@ CornerRadius=UDim.new(0,al.cornerRadius),
 })end
 
 
-local aD=aC("Command",au,Vector2.zero,UDim2.fromOffset(0,0),
-UDim2.new(1,-(az+aA+2*ay),1,0))
-local aE=aC("Delay",av,Vector2.new(1,0),UDim2.new(1,-(az+ay),0,0),
-UDim2.new(0,aA,1,0))
+local aE=aD("Command",av,Vector2.zero,UDim2.fromOffset(0,0),
+UDim2.new(1,-(aA+aB+2*az),1,0))
+local aF=aD("Delay",aw,Vector2.new(1,0),UDim2.new(1,-(aA+az),0,0),
+UDim2.new(0,aB,1,0))
 
-local aF=aa.new("TextButton","Add",aB,{
+local aG=aa.new("TextButton","Add",aC,{
 AnchorPoint=Vector2.new(1,0),
 AutoButtonColor=false,
 BorderSizePixel=0,
 Position=UDim2.fromScale(1,0),
-Size=UDim2.new(0,az,1,0),
-Text=aw,
+Size=UDim2.new(0,aA,1,0),
+Text=ax,
 TextSize=am.label,
 ThemeTag={
 BackgroundColor3="Colors.Primary",
@@ -25274,19 +26374,19 @@ CornerRadius=UDim.new(0,al.cornerRadius),
 }),
 })
 
-return aD,aE,aF end
+return aE,aF,aG end
 
 
 
 
-ap.footer=function(at, au)
-at.order=at.order+1
+ap.footer=function(au, av)
+au.order=au.order+1
 
-return aa.new("TextLabel","Footer",at.parent,{
+return aa.new("TextLabel","Footer",au.parent,{
 BackgroundTransparency=1,
-LayoutOrder=at.order,
+LayoutOrder=au.order,
 Size=UDim2.new(1,0,0,ai.headerHeight),
-Text=au,
+Text=av,
 TextSize=am.footer,
 TextXAlignment=Enum.TextXAlignment.Center,
 ThemeTag={
@@ -25297,15 +26397,15 @@ TextColor3="Colors.Text.Darker",
 
 
 
-ap.note=function(at, au)
-at.order=at.order+1
+ap.note=function(au, av)
+au.order=au.order+1
 
-return aa.new("TextLabel","Note",at.parent,{
+return aa.new("TextLabel","Note",au.parent,{
 AutomaticSize=Enum.AutomaticSize.Y,
 BackgroundTransparency=1,
-LayoutOrder=at.order,
+LayoutOrder=au.order,
 Size=UDim2.new(1,0,0,0),
-Text=au,
+Text=av,
 TextSize=am.value,
 TextWrapped=true,
 TextXAlignment=Enum.TextXAlignment.Left,
@@ -25322,7 +26422,7 @@ PaddingLeft=UDim.new(0,aj.labelInset),
 })end
 
 
-return ap end a.dy=function()local ab=a.cache.dy if not ab then ab={c=aa()}a.cache.dy=ab end return ab.c end end do local aa=function()
+return ap end a.dF=function()local ab=a.cache.dF if not ab then ab={c=aa()}a.cache.dF=ab end return ab.c end end do local aa=function()
 
 
 
@@ -25330,10 +26430,10 @@ return ap end a.dy=function()local ab=a.cache.dy if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.dc()
-local ab=a.c_()
-local ac=a.dy()
-local ad=a.db()
+local aa=a.dj()
+local ab=a.c6()
+local ac=a.dF()
+local ad=a.di()
 
 local ae=ad.pages.background
 
@@ -25427,7 +26527,7 @@ aa:setOpacity(an)
 end)end
 
 
-return af end a.dz=function()local ab=a.cache.dz if not ab then ab={c=aa()}a.cache.dz=ab end return ab.c end end do local aa=function()
+return af end a.dG=function()local ab=a.cache.dG if not ab then ab={c=aa()}a.cache.dG=ab end return ab.c end end do local aa=function()
 
 
 
@@ -25438,41 +26538,44 @@ return af end a.dz=function()local ab=a.cache.dz if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.cT()
-local ab=a.cS()
+local aa=a.cX()
+local ab=a.cW()
 local ac=a.n()
-local ad=a.db()
-local ae=a.dy()
-local af=a.dz()
+local ad=a.di()
+local ae=a.dF()
+local af=a.dG()
+local ag=a.a()
+local ah=a.c1()
+local ai=a.c6()
 
-local ag=ad.panel
-local ah=ad.box
-local ai=ad.textSizes
+local aj=ad.panel
+local ak=ad.box
+local al=ad.textSizes
 
-local aj=14
-local ak=20
-local al=4 local am=function(
+local am=14
+local an=20
+local ao=4 local ap=function(
 
 
-am, an, ao)
-am.order=am.order+1
+ap, aq, ar)
+ap.order=ap.order+1
 
-local ap=ab:getPrimaryOptions()
+local as=ab:getPrimaryOptions()
 
-local aq=aa.new("Frame","Primary",am.parent,{
+local at=aa.new("Frame","Primary",ap.parent,{
 BackgroundTransparency=1,
 BorderSizePixel=0,
-LayoutOrder=am.order,
-Size=UDim2.new(1,0,0,ag.rowHeight),
+LayoutOrder=ap.order,
+Size=UDim2.new(1,0,0,aj.rowHeight),
 Visible=false,
 })
 
-aa.new("TextLabel","Label",aq,{
+aa.new("TextLabel","Label",at,{
 BackgroundTransparency=1,
 Position=UDim2.fromOffset(ad.row.labelInset,0),
 Size=UDim2.new(1,-ad.row.labelInset,1,0),
 Text=ad.pages.theme.primary,
-TextSize=ai.value,
+TextSize=al.value,
 TextXAlignment=Enum.TextXAlignment.Left,
 ThemeTag={
 Font="Font.MonoSpace",
@@ -25480,133 +26583,165 @@ TextColor3="Colors.Text.Darker",
 },
 })
 
-local ar={}
+local au={}
 
-for as,at in ap do
+for av,aw in as do
 
-local au=#ap-as
+local ax=#as-av
 
-local av=aa.new("TextButton","Pick",aq,{
+local ay=aa.new("TextButton","Pick",at,{
 AnchorPoint=Vector2.new(1,0.5),
 AutoButtonColor=false,
 BackgroundTransparency=1,
-Position=UDim2.new(1,-(ag.padding+au*(ak+al)),0.5,0),
-Size=UDim2.fromOffset(ak,ak),
+Position=UDim2.new(1,-(aj.padding+ax*(an+ao)),0.5,0),
+Size=UDim2.fromOffset(an,an),
 Text="",
 })
 
-local aw=aa.new("Frame","Check",av,{
+local az=aa.new("Frame","Check",ay,{
 AnchorPoint=Vector2.new(0.5,0.5),
-BackgroundColor3=ab:getPrimaryColor(an.theme,at.key),
+BackgroundColor3=ab:getPrimaryColor(aq.theme,aw.key),
 BackgroundTransparency=1,
 BorderSizePixel=0,
 Position=UDim2.fromScale(0.5,0.5),
-Size=UDim2.fromOffset(aj,aj),
+Size=UDim2.fromOffset(am,am),
 
 aa.new("UICorner",{
-CornerRadius=UDim.new(0,ah.cornerRadius),
+CornerRadius=UDim.new(0,ak.cornerRadius),
 }),
 aa.new("UIStroke",{
 ApplyStrokeMode=Enum.ApplyStrokeMode.Border,
-Color=ab:getPrimaryColor(an.theme,at.key),
+Color=ab:getPrimaryColor(aq.theme,aw.key),
 Thickness=1.5,
 }),
 })
 
-ar[at.key]=aw
+au[aw.key]=az
 
-av.Activated:Connect(function()
-ao(at.key)
+ay.Activated:Connect(function()
+ar(aw.key)
 end)
-end local as=function()
+end local av=function()
 
 
-local as=ab:getPrimaryKey(an.key)
+local av=ab:getPrimaryKey(aq.key)
 
-for at,au in ar do
-au.BackgroundTransparency=if at==as then 0 else 1
+for aw,ax in au do
+ax.BackgroundTransparency=if aw==av then 0 else 1
 end end
 
 
-return aq,as end local an=function(
+return at,av end local aq=function(
 
 
-an, ao)
-local ap=ae.list(an)
-ae.pageTop(ap,ad.pages.theme.title,ao.back)
+aq, ar)
+local as=ae.list(aq)
 
-local aq={}local ar=function()
+ae.pageTop(as,nil,ar.back)
+
+ae.header(as,ad.pages.theme.iconsTitle)
 
 
-local ar=ab.selectedKey
 
-for as,at in aq do
-local au=ar==at.entry.key
+local at=ae.row(as)
+ae.icon(at,ad.pages.theme.legacyIcon)
+ae.label(at,ad.pages.theme.legacyIcons,ak.size+2*aj.padding)
 
-at.fill.Visible=au
-at.swatchRow.Visible=au
+local au,av=ae.box(at)local aw=function()
 
-if au and at.redrawSwatches then
-at.redrawSwatches()
+
+av.Visible=ac:getValue(ad.keys.legacyIcons)==true end
+
+
+at.Activated:Connect(function()
+local ax=ac:getValue(ad.keys.legacyIcons)~=true
+
+
+if ax and ag.getcustomasset==nil then
+ai:notify(ad.pages.theme.legacyTitle,ad.pages.theme.legacyNoCustomAsset)
 end
-end end local as=function(
 
-
-as)
-ab:selectTheme(as.key)
-
-ac:setValue(ad.keys.theme,as.key)
+ac:setValue(ad.keys.legacyIcons,ax)
 ac:save()
 
-ar()end
+ah:refresh()
+aw()
+end)
+
+aw()
+
+ae.header(as,ad.pages.theme.title)
+
+local ax={}local ay=function()
 
 
-for at,au in ab:getThemes()do
-local av=ae.row(ap)
+local ay=ab.selectedKey
 
-if au.usable then
-ae.label(av,au.name,ah.size+2*ag.padding)
-av.Activated:Connect(function()
-as(au)
+for az,aA in ax do
+local aB=ay==aA.entry.key
+
+aA.fill.Visible=aB
+aA.swatchRow.Visible=aB
+
+if aB and aA.redrawSwatches then
+aA.redrawSwatches()
+end
+end end local az=function(
+
+
+az)
+ab:selectTheme(az.key)
+
+ac:setValue(ad.keys.theme,az.key)
+ac:save()
+
+ay()end
+
+
+for aA,aB in ab:getThemes()do
+local aC=ae.row(as)
+
+if aB.usable then
+ae.label(aC,aB.name,ak.size+2*aj.padding)
+aC.Activated:Connect(function()
+az(aB)
 end)
 else
-ae.label(av,`{au.name} {ad.pages.theme.incomplete}`,ah.size+2*ag.padding,"Colors.Text.Darker")
+ae.label(aC,`{aB.name} {ad.pages.theme.incomplete}`,ak.size+2*aj.padding,"Colors.Text.Darker")
 end
 
-local aw,ax=ae.box(av)
+local aD,aE=ae.box(aC)
 
-local ay={entry=au,fill=ax}
+local aF={entry=aB,fill=aE}
 
-if au.usable then
-local az,aA=am(ap,au,function(az)
-ab:setPrimary(au.key,az)
-ar()
+if aB.usable then
+local aG,aH=ap(as,aB,function(aG)
+ab:setPrimary(aB.key,aG)
+ay()
 end)
 
-ay.swatchRow=az
-ay.redrawSwatches=aA
+aF.swatchRow=aG
+aF.redrawSwatches=aH
 else
 
-local az=aa.new("Frame","Primary",ap.parent,{
+local aG=aa.new("Frame","Primary",as.parent,{
 Visible=false,
 Size=UDim2.new(1,0,0,0),
 BackgroundTransparency=1,
 })
 
-ay.swatchRow=az
+aF.swatchRow=aG
 end
 
-table.insert(aq,ay)
+table.insert(ax,aF)
 end
 
-af.addSection(ap)
+af.addSection(as)
 
-ar()end
-
-
-return an end a.dA=function()local ab=a.cache.dA if not ab then ab={c=aa()}a.cache.dA=ab end return ab.c end end do local aa=function()
+ay()end
 
 
+return aq end a.dH=function()local ab=a.cache.dH if not ab then ab={c=aa()}a.cache.dH=ab end return ab.c end end do local aa=function()
 
 
 
@@ -25614,10 +26749,13 @@ return an end a.dA=function()local ab=a.cache.dA if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.aH()
-local ab=a.aF()
-local ac=a.db()
-local ad=a.dy()
+
+
+
+local aa=a.aL()
+local ab=a.aJ()
+local ac=a.di()
+local ad=a.dF()
 
 local ae=ac.panel
 local af=ac.value local ag=function(
@@ -25663,57 +26801,76 @@ return ai end local ai=function(
 
 
 
+
 ai)
 return function(aj,ak)
 local al=ad.list(aj)
 ad.pageTop(al,ai.title,ak.back)
 
 local am={}
-local an={}
+local an={}local ao=function()
 
-for ao,ap in ai.groups do
-if ap.title then
-ad.header(al,ap.title)
+
+
+local ao=ad.actionRow(al)
+if ai.resetIcon then
+ad.icon(ao,ai.resetIcon)
+end
+ad.label(ao,ai.reset,0)
+
+ao.Activated:Connect(function()
+
+for ap,aq in ak.stoppers do
+aq()
 end
 
-table.insert(an,ap.key)
-
-for aq,ar in ag(ap.key)do
-local as=ab.bindings[ar]
-local at=ad.row(al)
-
-ad.label(at,as.label or ar,af.keybindWidth+2*ae.padding)
-
-local au,av=ad.keybind(at,ar)
-table.insert(am,au)
-table.insert(ak.stoppers,av)
-end
-end
-
-local ao=ah(an)
-if#ao>0 then
-ad.note(al,table.concat(ao,"\n"))
-end
-
-local ap=ad.row(al)
-ad.label(ap,ai.reset,0)
-
-ap.Activated:Connect(function()
-
-for aq,ar in ak.stoppers do
-ar()
-end
-
-for aq,ar in an do
-for as,at in ag(ar)do
-aa:resetBinding(at)
+for ap,aq in an do
+for ar,as in ag(aq)do
+aa:resetBinding(as)
 end
 end
 
-for aq,ar in am do
-ar()
+for ap,aq in am do
+aq()
 end
-end)
+end)end
+
+
+if ai.resetAtTop then
+ao()
+end
+
+for ap,aq in ai.groups do
+if aq.title then
+ad.header(al,aq.title)
+end
+
+table.insert(an,aq.key)
+
+for ar,as in ag(aq.key)do
+local at=ab.bindings[as]
+local au=ad.row(al)
+
+if at.icon then
+ad.icon(au,at.icon)
+end
+
+ad.label(au,at.label or as,af.keybindWidth+2*ae.padding)
+
+local av,aw=ad.keybind(au,as)
+table.insert(am,av)
+table.insert(ak.stoppers,aw)
+end
+end
+
+local ap=ah(an)
+if#ap>0 then
+ad.note(al,table.concat(ap,"\n"))
+end
+
+if not ai.resetAtTop then
+ao()
+end
 end end
 
 
@@ -25722,6 +26879,7 @@ return{
 interface=ai({
 title=ac.pages.keybinds.title,
 reset=ac.pages.keybinds.reset,
+resetIcon=ac.pages.keybinds.resetIcon,
 groups={
 {key="interface"},
 },
@@ -25730,9 +26888,11 @@ groups={
 commands=ai({
 title=ac.pages.commands.title,
 reset=ac.pages.commands.reset,
+resetIcon=ac.pages.commands.resetIcon,
+resetAtTop=true,
 groups=ab.groups,
 }),
-}end a.dB=function()local ab=a.cache.dB if not ab then ab={c=aa()}a.cache.dB=ab end return ab.c end end do local aa=function()
+}end a.dI=function()local ab=a.cache.dI if not ab then ab={c=aa()}a.cache.dI=ab end return ab.c end end do local aa=function()
 
 
 
@@ -25741,13 +26901,15 @@ groups=ab.groups,
 
 
 
-local aa=a.cS()
-local ab=a.c_()
-local ac=a.dy()
 
-local ad=a.az()
+
+local aa=a.cW()
+local ab=a.c6()
+local ac=a.dF()
+
+local ad=a.aD()
 local ae=a.a()
-local af=a.db()
+local af=a.di()
 local ag=a.t()
 local ah=a.i()
 
@@ -25780,89 +26942,108 @@ return false end local am=function(
 
 
 
+
 am)
 if am:match("^%s*$")then
-return nil,ai.empty
+return nil,nil,ai.empty
 end
 
 local an=ah.decode(am,"import")
 if type(an)~="table"then
-return nil,ai.notAnExport
+return nil,nil,ai.notAnExport
 end
 
 local ao={}
 
 for ap,aq in aj do
 if type(an[aq])=="table"then
-ag[aq]:replaceData(an[aq])
 table.insert(ao,aq)
 end
 end
 
 if#ao==0 then
-return nil,ai.notAnExport
+return nil,nil,ai.notAnExport
 end
 
+return an,ao end local an=function(
+
+
+
+an, ao)
+for ap,aq in ao do
+ag[aq]:replaceData(an[aq])
+end
 
 local ap=ag.settings:getValue(af.keys.theme)
 if al(ap)then
 aa:selectTheme(ap)
+end end local ao=function(
+
+
+ao, ap)
+local aq=ac.list(ao)
+ac.pageTop(aq,ai.title,ap.back)
+
+
+local ar local as=function()
+
+
+local as=ak()
+
+if ae.setclipboard then
+ae.setclipboard(as)
+ab:notify(ai.notifyTitle,ai.copied,nil,{copy=true,copyText=as})
+else
+
+ar.Text=as
+ab:notify(ai.notifyTitle,ai.copyFailed)
+end end local at=function()
+
+
+
+local at,au,av=am(ar.Text)
+
+if not at or not au then
+ab:notify(ai.notifyTitle,av or ai.notAnExport)
+return
 end
 
-return ao end local an=function(
+ab:ask(ai.confirmTitle,string.format(ai.confirmMessage,table.concat(au,", ")),{
+{
+text=ai.confirmButton,
+primary=true,
+onTap=function()
+an(at,au)
+ar.Text=""
+
+ab:notify(
+ai.notifyTitle,
+string.format(ai.imported,table.concat(au,", "))..". "..ai.restartNote
+)
+end,
+},
+{
+text=ai.cancel,
+onTap=function()end,
+},
+},ai.confirmTime)end
 
 
-an, ao)
-local ap=ac.list(an)
-ac.pageTop(ap,ai.title,ao.back)
+ac.buttonRow(aq,{
+{icon=ai.exportIcon,text=ai.exportRow,onTap=as},
+{icon=ai.importIcon,text=ai.importRow,onTap=at},
+})
 
-ac.header(ap,ai.exportTitle)
-
-local aq=ac.row(ap)
-ac.label(aq,ai.exportRow,0)
-
-ac.note(ap,ai.exportHint)
-
-ac.header(ap,ai.importTitle)
-
-local ar=ac.textBox(ap,ai.placeholder)
+ar=ac.textBox(aq,ai.placeholder)
 ar.MultiLine=true
 ar.TextWrapped=true
 ar.TextYAlignment=Enum.TextYAlignment.Top
 ar.Size=UDim2.new(1,0,0,96)
 
-local as=ac.row(ap)
-ac.label(as,ai.importRow,0)
-
-ac.note(ap,ai.importHint)
-ac.note(ap,ai.restartNote)
-
-aq.Activated:Connect(function()
-local at=ak()
-
-if ae.setclipboard then
-ae.setclipboard(at)
-ab:notify(ai.notifyTitle,ai.copied)
-else
-
-ar.Text=at
-ab:notify(ai.notifyTitle,ai.copyFailed)
-end
-end)
-
-as.Activated:Connect(function()
-local at,au=am(ar.Text)
-
-if at then
-ar.Text=""
-ab:notify(ai.notifyTitle,string.format(ai.imported,table.concat(at,", ")))
-else
-ab:notify(ai.notifyTitle,au or ai.notAnExport)
-end
-end)end
+ac.note(aq,ai.hint)end
 
 
-return an end a.dC=function()local ab=a.cache.dC if not ab then ab={c=aa()}a.cache.dC=ab end return ab.c end end do local aa=function()
+return ao end a.dJ=function()local ab=a.cache.dJ if not ab then ab={c=aa()}a.cache.dJ=ab end return ab.c end end do local aa=function()
 
 
 
@@ -25873,11 +27054,11 @@ return an end a.dC=function()local ab=a.cache.dC if not ab then ab={c=aa()}a.cac
 
 
 local aa=a.p()
-local ab=a.cx()
-local ac=a.cD()
-local ad=a.db()
-local ae=a.c_()
-local af=a.dy()
+local ab=a.cC()
+local ac=a.cI()
+local ad=a.di()
+local ae=a.c6()
+local af=a.dF()
 
 local ag=ad.panel
 local ah=ad.value
@@ -26024,7 +27205,7 @@ end)
 at()end
 
 
-return al end a.dD=function()local ab=a.cache.dD if not ab then ab={c=aa()}a.cache.dD=ab end return ab.c end end do local aa=function()
+return al end a.dK=function()local ab=a.cache.dK if not ab then ab={c=aa()}a.cache.dK=ab end return ab.c end end do local aa=function()
 
 
 
@@ -26038,11 +27219,11 @@ return al end a.dD=function()local ab=a.cache.dD if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.bl()
-local ab=a.af()
-local ac=a.db()
-local ad=a.c_()
-local ae=a.dy()
+local aa=a.bp()
+local ab=a.ae()
+local ac=a.di()
+local ad=a.c6()
+local ae=a.dF()
 
 local af=ac.panel
 local ag=ac.box
@@ -26294,7 +27475,7 @@ end)
 aD()end
 
 
-return al end a.dE=function()local ab=a.cache.dE if not ab then ab={c=aa()}a.cache.dE=ab end return ab.c end end do local aa=function()
+return al end a.dL=function()local ab=a.cache.dL if not ab then ab={c=aa()}a.cache.dL=ab end return ab.c end end do local aa=function()
 
 
 
@@ -26307,12 +27488,12 @@ return al end a.dE=function()local ab=a.cache.dE if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.cB()
-local ab=a.cD()
-local ac=a.db()
-local ad=a.cz()
-local ae=a.c_()
-local af=a.dy()
+local aa=a.cG()
+local ab=a.cI()
+local ac=a.di()
+local ad=a.cE()
+local ae=a.c6()
+local af=a.dF()
 
 local ag=ac.panel
 local ah=ac.value
@@ -26475,25 +27656,19 @@ local aC=af.row(aA)
 af.label(aC,string.format(ai.addAll,#ay),0)
 
 aC.Activated:Connect(function()
-local aD=0
-local aE={}
+local aD,aE=aa.addAll(ab)
 
-for aF,aG in ay do
-local aH,aI=aa.add(ab,aG)
-
-if aH then
-aD=aD+1
-else
-table.insert(aE,`{aG}: {aI}`)
-end
+if not aD then
+au(aE or"")
+return
 end
 
-local aF=string.format(ai.addedAll,aD)
+local aF=string.format(ai.addedAll,#aD.added)
 
-if#aE>0 then
-aF=aF..string.format(ai.failedAll,#aE)
+if#aD.failed>0 then
+aF=aF..string.format(ai.failedAll,#aD.failed)
 
-for aG,aH in aE do
+for aG,aH in aD.failed do
 warn(`plugin {aH}`)
 end
 end
@@ -26533,7 +27708,7 @@ end)
 at()end
 
 
-return ak end a.dF=function()local ab=a.cache.dF if not ab then ab={c=aa()}a.cache.dF=ab end return ab.c end end do local aa=function()
+return ak end a.dM=function()local ab=a.cache.dM if not ab then ab={c=aa()}a.cache.dM=ab end return ab.c end end do local aa=function()
 
 
 
@@ -26546,10 +27721,10 @@ return ak end a.dF=function()local ab=a.cache.dF if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.c8()
-local ab=a.db()
-local ac=a.c_()
-local ad=a.dy()
+local aa=a.df()
+local ab=a.di()
+local ac=a.c6()
+local ad=a.dF()
 
 local ae=ab.panel
 local af=ab.value
@@ -26813,7 +27988,7 @@ end
 av()end
 
 
-return am end a.dG=function()local ab=a.cache.dG if not ab then ab={c=aa()}a.cache.dG=ab end return ab.c end end do local aa=function()
+return am end a.dN=function()local ab=a.cache.dN if not ab then ab={c=aa()}a.cache.dN=ab end return ab.c end end do local aa=function()
 
 
 
@@ -26823,44 +27998,149 @@ return am end a.dG=function()local ab=a.cache.dG if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.cT()
-local ab=a.aE()
+
+local aa=a.aD()
+local ab=a.n()
+local ac=a.di()
+local ad=a.dF()
+
+local ae=ac.panel
+local af=ac.box
+local ag=ac.pages.interface
+
+local ah=aa.ui.scale local ai=function(
+
+
+ai)
+local aj=ah.minScale+ai*(ah.maxScale-ah.minScale)
+return math.round(aj*100)/100 end local aj=function(
+
+
+aj)
+return math.clamp((aj-ah.minScale)/(ah.maxScale-ah.minScale),0,1)end local ak=function(
+
+
+ak, al)
+ab:setValue(ak,al)
+ab:save()end local al=function(
+
+
+al)
+return ab:getValue(al)==true end local am=function(
+
+
+
+am, an, ao, ap, aq)
+local ar=ad.row(am)
+ad.icon(ar,ao)
+ad.label(ar,an,af.size+2*ae.padding)
+
+local as,at=ad.box(ar)local au=function()
+
+
+at.Visible=ap()end
+
+
+ar.Activated:Connect(function()
+aq(not ap())
+au()
+end)
+
+au()end local an=function(
+
+
+an, ao)
+local ap=ad.list(an)
+ad.pageTop(ap,ag.title,ao.back)
+
+local aq=ao.actions
+
+am(ap,ag.keepMenuOpen,ag.icons.keepMenuOpen,function()
+return al(ac.keys.keepMenuOpen)
+end,function(ar)
+ak(ac.keys.keepMenuOpen,ar)
+
+if ao.onSwitch then
+ao.onSwitch("keepMenuOpen",ar)
+end
+end)
+
+local ar=ad.row(ap)
+ad.icon(ar,ag.icons.uiScale)
+
+ad.slider(ar,ag.uiScale,aj(aq.getScale()),function(as)
+aq.setScale(ai(as))
+end,function(as)
+return`{math.round(ai(as)*100)}%`
+end)
+
+am(ap,ag.transparent,ag.icons.transparent,function()
+return al(ac.keys.transparentMinimized)
+end,function(as)
+ak(ac.keys.transparentMinimized,as)
+
+if ao.onSwitch then
+ao.onSwitch("transparentWhenMinimized",as)
+end
+end)
+
+am(ap,ag.hide,ag.icons.hide,function()
+return aq.isHidden()
+end,function(as)
+aq.setHidden(as)
+end)end
+
+
+return an end a.dO=function()local ab=a.cache.dO if not ab then ab={c=aa()}a.cache.dO=ab end return ab.c end end do local aa=function()
+
+
+
+
+
+
+
+
+
+local aa=a.cX()
+local ab=a.aI()
 local ac=a.n()
-local ad=a.db()
-local ae=a.az()
+local ad=a.di()
+local ae=a.aD()
 local af=a.f()
-local ag=a.cJ()
+local ag=a.cO()
 local ah=a.t()
 
-local ai=a.dy()
-local aj=a.dA()
-local ak=a.dB()
-local al=a.dC()
-local am=a.dD()
-local an=a.dE()
-local ao=a.dF()
-local ap=a.dG()
+local ai=a.dF()
+local aj=a.dH()
+local ak=a.dI()
+local al=a.dJ()
+local am=a.dK()
+local an=a.dL()
+local ao=a.dM()
+local ap=a.dN()
+local aq=a.dO()
 
-local aq=ad.panel
-local ar=ad.box
-local as=ad.row
-local at=ad.value
+local ar=ad.panel
+local as=ad.box
+local at=ad.row
+local au=ad.value
 
-local au=af.TweenService
+local av=af.TweenService
 
-local av=aq.shownY
-local aw=aq.hiddenY
-
-
-
-local ax=aq.floatBackSize
-local ay=UDim2.new(1,-(aq.floatBackMargin+aq.scrollBarThickness),0,aq.floatBackMargin)
-local az=UDim2.fromOffset(ax,ax)
-local aA=UDim2.fromOffset(ax*aq.floatBackFlat,ax)
-local aB=UDim2.new(1,0,0,-ax*aq.floatBackOut)
+local aw=ar.shownY
+local ax=ar.hiddenY
 
 
-local aC={
+
+local ay=ar.floatBackSize
+local az=UDim2.new(1,-(ar.floatBackMargin+ar.scrollBarThickness),0,ar.floatBackMargin)
+local aA=UDim2.fromOffset(ay,ay)
+local aB=UDim2.fromOffset(ay*ar.floatBackFlat,ay)
+local aC=UDim2.new(1,0,0,-ay*ar.floatBackOut)
+
+
+local aD={
+interface=aq,
 theme=aj,
 keybinds=ak.interface,
 commands=ak.commands,
@@ -26871,128 +28151,132 @@ plugins=ao,
 eventBinds=ap,
 }
 
-local aD={}
-aD.__index=aD local aE=function(
+local aE={}
+aE.__index=aE local aF=function(
 
-aE, aF)
-ac:setValue(aE,aF==true)
-ac:save()end local aF=function(
-
-
-aF)
-return ac:getValue(aF)==true end local aG=function(
+aF, aG)
+ac:setValue(aF,aG==true)
+ac:save()end local aG=function(
 
 
-aG, aH, aI)
-aG:TweenPosition(aH,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,aq.tweenTime,true,aI)end local aH=function(
+aG)
+return ac:getValue(aG)==true end local aH=function(
+
+
+aH, aI, aJ)
+aH:TweenPosition(aI,Enum.EasingDirection.InOut,Enum.EasingStyle.Quart,ar.tweenTime,true,aJ)end local aI=function(
 
 
 
 
-aH, aI)
-if type(aH)~="number"then
+aI, aJ)
+if type(aI)~="number"then
 return ad.userData.missing
 end
 
-if aI.date then
-return os.date(ad.userData.dateFormat,aH)
+if aJ.date then
+return os.date(ad.userData.dateFormat,aI)
 end
 
-return tostring(aH)end local aI=function(
+return tostring(aI)end local aJ=function(
 
 
 
 
-aI)
-if aI.placeCounts then
-local aJ=ah.user:getValue(aI.placeCounts)
+aJ)
+if aJ.placeCounts then
+local aK=ah.user:getValue(aJ.placeCounts)
 
-if type(aJ)~="table"then
+if type(aK)~="table"then
 return nil
 end
 
-return aJ[tostring(game.GameId)]
+return aK[tostring(game.GameId)]
 end
 
-return ah.user:getValue(aI.key)end
+return ah.user:getValue(aJ.key)end
 
 
-aD.isKeepMenuOpen=function()
-return aF(ad.keys.keepMenuOpen)end
+aE.isKeepMenuOpen=function()
+return aG(ad.keys.keepMenuOpen)end
 
 
-aD.setKeepMenuOpen=function(aJ)
-aE(ad.keys.keepMenuOpen,aJ)end
+aE.isTransparentWhenMinimized=function()
+return aG(ad.keys.transparentMinimized)end
 
 
-aD.isKeepIY=function()
-return aF(ad.keys.keepIY)end
+aE.setKeepMenuOpen=function(aK)
+aF(ad.keys.keepMenuOpen,aK)end
 
 
-aD.setKeepIY=function(aJ)
-aE(ad.keys.keepIY,aJ)end
+aE.isKeepIY=function()
+return aG(ad.keys.keepIY)end
+
+
+aE.setKeepIY=function(aK)
+aF(ad.keys.keepIY,aK)end
 
 
 
-aD.createOption=function(aJ, aK, aL)
-if aL.kind=="expand"then
-aJ:createExpandOption(aK,aL)
+aE.createOption=function(aK, aL, aM)
+if aM.kind=="expand"then
+aK:createExpandOption(aL,aM)
 return nil
 end
 
-local aM=ai.row(aK)
+local aN=ai.row(aL)
 
-if aL.icon then
-ai.icon(aM,aL.icon)
+if aM.icon then
+ai.icon(aN,aM.icon)
 end
 
-if aL.kind=="switch"then
-local aN=ad.keys[aL.setting]
-ai.label(aM,aL.label,ar.size+2*aq.padding)
+if aM.kind=="switch"then
+local aO=ad.keys[aM.setting]
+ai.label(aN,aM.label,as.size+2*ar.padding)
 
-local aO,aP=ai.box(aM)local aQ=function()
-
-
-aP.Visible=aF(aN)end
+local aP,aQ=ai.box(aN)local aR=function()
 
 
-aM.Activated:Connect(function()
-local aR=not aF(aN)
-aE(aN,aR)
-aQ()
+aQ.Visible=aG(aO)end
 
-if aJ.onSwitch then
-aJ.onSwitch(aL.setting,aR)
+
+aN.Activated:Connect(function()
+local aS=not aG(aO)
+aF(aO,aS)
+aR()
+
+if aK.onSwitch then
+aK.onSwitch(aM.setting,aS)
 end
 end)
 
-aQ()
-return aQ
+aR()
+return aR
 end
 
-if aL.kind=="keybind"then
-ai.label(aM,aL.label,at.keybindWidth+2*aq.padding)
+if aM.kind=="keybind"then
+ai.label(aN,aM.label,au.keybindWidth+2*ar.padding)
 
-local aN,aO=ai.keybind(aM,aL.binding)
-table.insert(aJ.stoppers,aO)
+local aO,aP=ai.keybind(aN,aM.binding)
+table.insert(aK.stoppers,aP)
 
-return aN
+return aO
 end
 
 
-local aN=aC[aL.action]~=nil
+local aO=aD[aM.action]~=nil
 
-if aN then
-ai.chevron(aM)
+if aO then
+ai.chevron(aN)
 end
 
-ai.label(aM,aL.label,if aN then as.chevronSize+2*aq.padding else 0)
+ai.label(aN,aM.label,if aO then at.chevronSize+2*ar.padding else 0)
 
-aM.Activated:Connect(function()
-if aC[aL.action]then
-aJ:openPage(aL.action)
-elseif aJ.onButton then
-aJ.onButton(aL.action)
+aN.Activated:Connect(function()
+if aD[aM.action]then
+aK:openPage(aM.action)
+elseif aK.onButton then
+aK.onButton(aM.action)
 end
 end)
 
@@ -27001,93 +28285,94 @@ return nil end
 
 
 
-aD.createExpandOption=function(aJ, aK, aL)
-local aM=ai.row(aK)
+aE.createExpandOption=function(aK, aL, aM)
+local aN=ai.row(aL)
 
-if aL.icon then
-ai.icon(aM,aL.icon)
+if aM.icon then
+ai.icon(aN,aM.icon)
 end
 
-ai.label(aM,aL.label,as.chevronSize+2*aq.padding)
-local aN=ai.chevron(aM)
+ai.label(aN,aM.label,at.chevronSize+2*ar.padding)
+local aO=ai.chevron(aN)
 
-local aO=ai.group(aK)
-aO.Visible=false
+local aP=ai.group(aL)
+aP.Visible=false
 
-local aP=ai.list(aO)
-local aQ={}
+local aQ=ai.list(aP)
+local aR={}
 
-for aR,aS in aL.items do
-local aT=ai.row(aP)
-ai.label(aT,aS.label,at.userWidth+2*aq.padding)
+for aS,aT in aM.items do
+local aU=ai.row(aQ)
+ai.label(aU,aT.label,au.userWidth+2*ar.padding)
 
-local aU,aV=ai.value(aT,"",at.userWidth)
-table.insert(aQ,{item=aS,text=aV})
-end local aR=function()
+local aV,aW=ai.value(aU,"",au.userWidth)
+table.insert(aR,{item=aT,text=aW})
+end local aS=function()
 
 
-for aR,aS in aQ do
-aS.text.Text=aH(aI(aS.item),aS.item)
+for aS,aT in aR do
+aT.text.Text=aI(aJ(aT.item),aT.item)
 end end
 
 
-local aS=false
+local aT=false
 
-aM.Activated:Connect(function()
-aS=not aS
+aN.Activated:Connect(function()
+aT=not aT
 
 
-aN.Rotation=if aS then 270 else 180
-aO.Visible=aS
+aO.Rotation=if aT then 270 else 180
+aP.Visible=aT
 
-if aS then
-aR()
+if aT then
+aS()
 end
 end)end
 
 
-aD.createOptions=function(aJ)
-local aK=ai.list(aJ.panel)
+aE.createOptions=function(aK)
+local aL=ai.list(aK.panel)
 
-for aL,aM in ad.sections do
-ai.header(aK,aM.title)
+for aM,aN in ad.sections do
+ai.header(aL,aN.title)
 
-for aN,aO in aM.options do
-local aP=aJ:createOption(aK,aO)
+for aO,aP in aN.options do
+local aQ=aK:createOption(aL,aP)
 
-if aP then
-table.insert(aJ.refreshers,aP)
+if aQ then
+table.insert(aK.refreshers,aQ)
 end
 end
 end
 
 
-local aL=ad.footer
+local aM=ad.footer
 :gsub("{name}",ae.applicationName)
 :gsub("{version}",ae.version)
 
-ai.footer(aK,aL)end
+ai.footer(aL,aM)end
 
 
-aD.createPages=function(aJ)
-for aK,aL in aC do
-local aM=ai.page(aJ.holder,`{aK}Page`,UDim2.fromScale(1,aw))
+aE.createPages=function(aK)
+for aL,aM in aD do
+local aN=ai.page(aK.holder,`{aL}Page`,UDim2.fromScale(1,ax))
 
 
-aM.Visible=false
+aN.Visible=false
 
-aJ.pages[aK]={
-frame=aM,
-build=aL,
+aK.pages[aL]={
+frame=aN,
+build=aM,
 }
 end end
 
 
-aD.new=function(aJ)
+aE.new=function(aK)
 return setmetatable({
-onSwitch=aJ.onSwitch,
-onButton=aJ.onButton,
-onOpenChanged=aJ.onOpenChanged,
+onSwitch=aK.onSwitch,
+onButton=aK.onButton,
+onOpenChanged=aK.onOpenChanged,
+actions=aK.interface or{},
 isOpen=false,
 isShown=false,
 holder=nil,
@@ -27106,45 +28391,45 @@ floatingIcon=nil,
 floatingShown=false,
 floatingTween=nil,
 backIcon=nil,
-},aD)end
+},aE)end
 
 
 
-aD.create=function(aJ, aK, aL, aM)
-local aN=aa.new("Frame","SettingsHolder",aK,{
-AnchorPoint=aL.AnchorPoint,
+aE.create=function(aK, aL, aM, aN)
+local aO=aa.new("Frame","SettingsHolder",aL,{
+AnchorPoint=aM.AnchorPoint,
 BackgroundTransparency=1,
 ClipsDescendants=true,
-Position=aL.Position,
-Size=aL.Size,
+Position=aM.Position,
+Size=aM.Size,
 
 
 ZIndex=0,
 Visible=false,
 })
 
-aJ.holder=aN
-aJ.listArea=aL
-aJ.listParts=aM or{}
-aJ.panel=ai.page(aN,"Settings",UDim2.fromScale(0,aw))
-aJ.current=aJ.panel
+aK.holder=aO
+aK.listArea=aM
+aK.listParts=aN or{}
+aK.panel=ai.page(aO,"Settings",UDim2.fromScale(0,ax))
+aK.current=aK.panel
 
-aJ:createOptions()
-aJ:createPages()
-aJ:createFloatingBack(aN)
+aK:createOptions()
+aK:createPages()
+aK:createFloatingBack(aO)
 
-return aN end
-
-
+return aO end
 
 
-aD.createFloatingBack=function(aJ, aK)
-local aL=aa.new("TextButton","FloatingBack",aK,{
+
+
+aE.createFloatingBack=function(aK, aL)
+local aM=aa.new("TextButton","FloatingBack",aL,{
 AnchorPoint=Vector2.new(1,0),
 AutoButtonColor=false,
 BorderSizePixel=0,
-Position=ay,
-Size=az,
+Position=az,
+Size=aA,
 Text="",
 Visible=false,
 ZIndex=2,
@@ -27153,7 +28438,7 @@ BackgroundColor3="Colors.Buttons.Holding",
 },
 
 aa.new("UICorner",{
-CornerRadius=UDim.new(0,at.cornerRadius),
+CornerRadius=UDim.new(0,au.cornerRadius),
 }),
 aa.new("UIStroke",{
 ApplyStrokeMode=Enum.ApplyStrokeMode.Border,
@@ -27165,308 +28450,310 @@ Color="Colors.Border.Default",
 })
 
 
-local aM=ai.icon(aL,ad.pages.backIcon)
-aM.AnchorPoint=Vector2.new(0.5,0.5)
-aM.Position=UDim2.fromScale(0.5,0.5)
-aM.Size=UDim2.fromScale(as.iconSize/aq.floatBackSize,as.iconSize/aq.floatBackSize)
-aM.ZIndex=aL.ZIndex+1
+local aN=ai.icon(aM,ad.pages.backIcon)
+aN.AnchorPoint=Vector2.new(0.5,0.5)
+aN.Position=UDim2.fromScale(0.5,0.5)
+aN.Size=UDim2.fromScale(at.iconSize/ar.floatBackSize,at.iconSize/ar.floatBackSize)
+aN.ZIndex=aM.ZIndex+1
 
-aL.Activated:Connect(function()
-aJ:back()
+aM.Activated:Connect(function()
+aK:back()
 end)
 
-aJ.floatingBack=aL
-aJ.floatingIcon=aM end
+aK.floatingBack=aM
+aK.floatingIcon=aN end
 
 
 
-aD.syncFloatingIcon=function(aJ)
-local aK,aL=aJ.floatingIcon,aJ.backIcon
+aE.syncFloatingIcon=function(aK)
+local aL,aM=aK.floatingIcon,aK.backIcon
 
-if aK and aL and aL.Image~=""and aK.Image~=aL.Image then
-aK.Image=aL.Image
+if aL and aM and aM.Image~=""and aL.Image~=aM.Image then
+aL.Image=aM.Image
 end end
 
 
 
 
-aD.updateFloatingBack=function(aJ)
-local aK=aJ.floatingBack
-if not aK then return end
+aE.updateFloatingBack=function(aK)
+local aL=aK.floatingBack
+if not aL then return end
 
-local aL=aJ.current
-local aM=aJ.backRow
-local aN=false
+local aM=aK.current
+local aN=aK.backRow
+local aO=false
 
-if aJ.isShown and aL~=aJ.panel and aM and aM.Parent then
-aN=aM.AbsolutePosition.Y+aM.AbsoluteSize.Y<=aL.AbsolutePosition.Y
+if aK.isShown and aM~=aK.panel and aN and aN.Parent then
+aO=aN.AbsolutePosition.Y+aN.AbsoluteSize.Y<=aM.AbsolutePosition.Y
 end
 
-if aN then
-aJ:syncFloatingIcon()
+if aO then
+aK:syncFloatingIcon()
 end
 
-if aN==aJ.floatingShown then return end
+if aO==aK.floatingShown then return end
 
-aJ.floatingShown=aN
+aK.floatingShown=aO
 
-if aN then
-aJ:showFloatingBack()
+if aO then
+aK:showFloatingBack()
 else
-aJ:hideFloatingBack()
+aK:hideFloatingBack()
 end end
 
 
 
-aD.showFloatingBack=function(aJ)
-local aK=aJ.floatingBack
+aE.showFloatingBack=function(aK)
+local aL=aK.floatingBack
 
 
-if not aK.Visible then
-aK.Position=aB
-aK.Size=aA
-aK.Visible=true
+if not aL.Visible then
+aL.Position=aC
+aL.Size=aB
+aL.Visible=true
 end
 
-aJ:tweenFloatingBack(ay,az,Enum.EasingStyle.Back,Enum.EasingDirection.Out)end
+aK:tweenFloatingBack(az,aA,Enum.EasingStyle.Back,Enum.EasingDirection.Out)end
 
 
 
-aD.hideFloatingBack=function(aJ)
-local aK=aJ.floatingBack
-if not aK.Visible then return end
+aE.hideFloatingBack=function(aK)
+local aL=aK.floatingBack
+if not aL.Visible then return end
 
-aJ:tweenFloatingBack(aB,aA,Enum.EasingStyle.Quart,Enum.EasingDirection.In,function()
-aK.Visible=false
+aK:tweenFloatingBack(aC,aB,Enum.EasingStyle.Quart,Enum.EasingDirection.In,function()
+aL.Visible=false
 end)end
 
 
 
 
-aD.tweenFloatingBack=function(aJ, aK, aL, aM, aN, aO)
-local aP=aJ.floatingBack
-aJ:stopFloatingTween()
+aE.tweenFloatingBack=function(aK, aL, aM, aN, aO, aP)
+local aQ=aK.floatingBack
+aK:stopFloatingTween()
 
-local aQ=ag:getScale(aq.floatBackTime)
+local aR=ag:getScale(ar.floatBackTime)
 
-if aQ<=0 then
-aP.Position=aK
-aP.Size=aL
+if aR<=0 then
+aQ.Position=aL
+aQ.Size=aM
 
-if aO then
-aO()
+if aP then
+aP()
 end
 
 return
 end
 
-local aR=au:Create(aP,TweenInfo.new(aQ,aM,aN),{
-Position=aK,
-Size=aL,
+local aS=av:Create(aQ,TweenInfo.new(aR,aN,aO),{
+Position=aL,
+Size=aM,
 })
 
-aJ.floatingTween=aR
+aK.floatingTween=aS
 
-aR.Completed:Connect(function(aS)
+aS.Completed:Connect(function(aT)
 
-if aS~=Enum.PlaybackState.Completed then return end
+if aT~=Enum.PlaybackState.Completed then return end
 
-if aJ.floatingTween==aR then
-aJ.floatingTween=nil
+if aK.floatingTween==aS then
+aK.floatingTween=nil
 end
 
-if aO then
-aO()
+if aP then
+aP()
 end
 end)
 
-aR:Play()end
+aS:Play()end
 
 
-aD.stopFloatingTween=function(aJ)
-local aK=aJ.floatingTween
-if not aK then return end
+aE.stopFloatingTween=function(aK)
+local aL=aK.floatingTween
+if not aL then return end
 
-aJ.floatingTween=nil
-aK:Cancel()end
+aK.floatingTween=nil
+aL:Cancel()end
 
 
-aD.refresh=function(aJ)
-for aK,aL in aJ.refreshers do
-aL()
+aE.refresh=function(aK)
+for aL,aM in aK.refreshers do
+aM()
 end end
 
 
 
-aD.stopWaiting=function(aJ)
-for aK,aL in aJ.stoppers do
-aL()
+aE.stopWaiting=function(aK)
+for aL,aM in aK.stoppers do
+aM()
 end
 
-for aK,aL in aJ.pageStoppers do
-aL()
+for aL,aM in aK.pageStoppers do
+aM()
 end end
 
 
 
-aD.buildPage=function(aJ, aK)
-ai.clear(aK.frame)
-aJ.pageStoppers={}
+aE.buildPage=function(aK, aL)
+ai.clear(aL.frame)
+aK.pageStoppers={}
 
-for aL,aM in aJ.pageConnections do
-aM:Disconnect()
+for aM,aN in aK.pageConnections do
+aN:Disconnect()
 end
-table.clear(aJ.pageConnections)
+table.clear(aK.pageConnections)
 
-aK.build(aK.frame,{
+aL.build(aL.frame,{
 back=function()
-aJ:back()
+aK:back()
 end,
-stoppers=aJ.pageStoppers,
+stoppers=aK.pageStoppers,
+actions=aK.actions,
+onSwitch=aK.onSwitch,
 })
 
-aJ.backRow=aK.frame:FindFirstChild("BackRow")
-aJ.backIcon=if aJ.backRow then aJ.backRow:FindFirstChild("Icon")else nil
+aK.backRow=aL.frame:FindFirstChild("BackRow")
+aK.backIcon=if aK.backRow then aK.backRow:FindFirstChild("Icon")else nil
 
-if aJ.backIcon then
+if aK.backIcon then
 
-table.insert(aJ.pageConnections,aJ.backIcon:GetPropertyChangedSignal("Image"):Connect(function()
-aJ:syncFloatingIcon()
+table.insert(aK.pageConnections,aK.backIcon:GetPropertyChangedSignal("Image"):Connect(function()
+aK:syncFloatingIcon()
 end))
 
-aJ:syncFloatingIcon()
+aK:syncFloatingIcon()
 end
 
-table.insert(aJ.pageConnections,aK.frame:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
-aJ:updateFloatingBack()
+table.insert(aK.pageConnections,aL.frame:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
+aK:updateFloatingBack()
 end))end
 
 
 
 
 
-aD.hideWhenGone=function(aJ, aK)
-return function(aL)
-if aL and aK~=aJ.current then
-aK.Visible=false
+aE.hideWhenGone=function(aK, aL)
+return function(aM)
+if aM and aL~=aK.current then
+aL.Visible=false
 end
 end end
 
 
 
-aD.openPage=function(aJ, aK)
-local aL=aJ.pages[aK]
-if not aL or not aJ.isShown or aJ.current~=aJ.panel then return end
+aE.openPage=function(aK, aL)
+local aM=aK.pages[aL]
+if not aM or not aK.isShown or aK.current~=aK.panel then return end
 
-aJ:stopWaiting()
-
-
-aL.frame.Visible=true
-aJ:buildPage(aL)
-
-aL.frame.CanvasPosition=Vector2.zero
-aL.frame.Position=UDim2.fromScale(1,av)
-aJ.current=aL.frame
-
-aG(aJ.panel,UDim2.fromScale(-1,av),aJ:hideWhenGone(aJ.panel))
-aG(aL.frame,UDim2.fromScale(0,av))
-
-aJ:updateFloatingBack()end
+aK:stopWaiting()
 
 
+aM.frame.Visible=true
+aK:buildPage(aM)
 
-aD.back=function(aJ)
-if aJ.current==aJ.panel then return end
+aM.frame.CanvasPosition=Vector2.zero
+aM.frame.Position=UDim2.fromScale(1,aw)
+aK.current=aM.frame
 
-aJ:stopWaiting()
+aH(aK.panel,UDim2.fromScale(-1,aw),aK:hideWhenGone(aK.panel))
+aH(aM.frame,UDim2.fromScale(0,aw))
 
-local aK=aJ.current
-aJ.panel.Visible=true
-
-aG(aK,UDim2.fromScale(1,av),aJ:hideWhenGone(aK))
-aG(aJ.panel,UDim2.fromScale(0,av))
-aJ.current=aJ.panel
-
-aJ:updateFloatingBack()end
+aK:updateFloatingBack()end
 
 
 
-aD.reset=function(aJ)
-aJ.current=aJ.panel
-aJ.panel.Visible=true
-aJ.panel.Position=UDim2.fromScale(0,aw)
+aE.back=function(aK)
+if aK.current==aK.panel then return end
 
-for aK,aL in aJ.pages do
-aL.frame.Visible=false
-aL.frame.Position=UDim2.fromScale(1,aw)
+aK:stopWaiting()
+
+local aL=aK.current
+aK.panel.Visible=true
+
+aH(aL,UDim2.fromScale(1,aw),aK:hideWhenGone(aL))
+aH(aK.panel,UDim2.fromScale(0,aw))
+aK.current=aK.panel
+
+aK:updateFloatingBack()end
+
+
+
+aE.reset=function(aK)
+aK.current=aK.panel
+aK.panel.Visible=true
+aK.panel.Position=UDim2.fromScale(0,ax)
+
+for aL,aM in aK.pages do
+aM.frame.Visible=false
+aM.frame.Position=UDim2.fromScale(1,ax)
 end end
 
 
-aD.toggle=function(aJ)
-aJ.isOpen=not aJ.isOpen
-aJ:setShown(aJ.isOpen)
+aE.toggle=function(aK)
+aK.isOpen=not aK.isOpen
+aK:setShown(aK.isOpen)
 
 
-if aJ.onOpenChanged then
-aJ.onOpenChanged(aJ.isOpen)
+if aK.onOpenChanged then
+aK.onOpenChanged(aK.isOpen)
 end end
 
 
 
 
-aD.setListShown=function(aJ, aK)
-for aL,aM in aJ.listParts do
-aM.Visible=aK
+aE.setListShown=function(aK, aL)
+for aM,aN in aK.listParts do
+aN.Visible=aL
 end
 
-aJ.listArea.Active=aK end
+aK.listArea.Active=aL end
 
 
-aD.setShown=function(aJ, aK)
-if not aJ.panel or aJ.isShown==aK then return end
+aE.setShown=function(aK, aL)
+if not aK.panel or aK.isShown==aL then return end
 
-aJ.isShown=aK
-local aL=aJ.current
+aK.isShown=aL
+local aM=aK.current
 
-aJ:updateFloatingBack()
+aK:updateFloatingBack()
 
-if aK then
-aJ.holder.Visible=true
+if aL then
+aK.holder.Visible=true
 
 
-aJ:setListShown(false)
-aG(aL,UDim2.fromScale(0,av))
+aK:setListShown(false)
+aH(aM,UDim2.fromScale(0,aw))
 return
 end
 
-aJ:stopWaiting()
+aK:stopWaiting()
 
-aG(aL,UDim2.fromScale(0,aw),function(aM)
-if aM and not aJ.isShown then
-aJ.holder.Visible=false
-
-
-aJ:setListShown(true)
+aH(aM,UDim2.fromScale(0,ax),function(aN)
+if aN and not aK.isShown then
+aK.holder.Visible=false
 
 
-if not aJ.isOpen then
-aJ:reset()
+aK:setListShown(true)
+
+
+if not aK.isOpen then
+aK:reset()
 end
 end
 end)end
 
 
-aD.watchCommandBar=function(aJ, aK)
-ab:Connect(aK.Focused,function()
-aJ:setShown(false)
+aE.watchCommandBar=function(aK, aL)
+ab:Connect(aL.Focused,function()
+aK:setShown(false)
 end)
 
-ab:Connect(aK.FocusLost,function()
-aJ:setShown(aJ.isOpen)
+ab:Connect(aL.FocusLost,function()
+aK:setShown(aK.isOpen)
 end)end
 
 
-return aD end a.dH=function()local ab=a.cache.dH if not ab then ab={c=aa()}a.cache.dH=ab end return ab.c end end do local aa=function()
+return aE end a.dP=function()local ab=a.cache.dP if not ab then ab={c=aa()}a.cache.dP=ab end return ab.c end end do local aa=function()
 
 
 
@@ -27525,7 +28812,7 @@ noPart="select a part first",
 noPath="select a part to copy its path",
 noClipboard="this executor doesn't support clipboard",
 },
-}end a.dI=function()local ab=a.cache.dI if not ab then ab={c=aa()}a.cache.dI=ab end return ab.c end end do local aa=function()
+}end a.dQ=function()local ab=a.cache.dQ if not ab then ab={c=aa()}a.cache.dQ=ab end return ab.c end end do local aa=function()
 
 
 
@@ -27597,7 +28884,7 @@ end
 return ah end
 
 
-return ae end a.dJ=function()local ab=a.cache.dJ if not ab then ab={c=aa()}a.cache.dJ=ab end return ab.c end end do local aa=function()
+return ae end a.dR=function()local ab=a.cache.dR if not ab then ab={c=aa()}a.cache.dR=ab end return ab.c end end do local aa=function()
 
 
 
@@ -27605,21 +28892,21 @@ return ae end a.dJ=function()local ab=a.cache.dJ if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.cT()
-local ab=a.cV()
-local ac=a.cS()
-local ad=a.c_()
-local ae=a.dn()
-local af=a.b0()
+local aa=a.cX()
+local ab=a.c1()
+local ac=a.cW()
+local ad=a.c6()
+local ae=a.dv()
+local af=a.b4()
 
-local ag=a.aE()
-local ah=a.af()
+local ag=a.aI()
+local ah=a.ae()
 local ai=a.a()
-local aj=a.dI()
+local aj=a.dQ()
 
-local ak=a.dJ()
-local al=a.cZ()
-local am=a.cR()
+local ak=a.dR()
+local al=a.c5()
+local am=a.b5()
 
 local an=aj.window
 local ao=aj.textSizes
@@ -28097,7 +29384,15 @@ aA.pathLabel=nil
 aA.copyButton=nil end
 
 
-return au end a.dK=function()local ab=a.cache.dK if not ab then ab={c=aa()}a.cache.dK=ab end return ab.c end end do local aa=function()
+return au end a.dS=function()local ab=a.cache.dS if not ab then ab={c=aa()}a.cache.dS=ab end return ab.c end end do local aa=function()
+
+
+
+
+
+
+
+
 
 
 
@@ -28138,34 +29433,39 @@ return au end a.dK=function()local ab=a.cache.dK if not ab then ab={c=aa()}a.cac
 
 
 local aa=a.f()
-local ab=a.aE()
-local ac=a.cJ()
+local ab=a.aI()
+local ac=a.cO()
 
 local ad=aa.TweenService
 local ae=aa.UserInputService
 local af=aa.RunService
 
 local ag=0.32
-local ah=0.1
-local ai=10
-local aj=50
-local ak=0.3
-local al=20
-local am=3
-local an=0.5
+local ah=0.5
+local ai=0.1
+local aj=10
+local ak=30
+local al=10
+local am=2
+local an=1
+local ao=800
+local ap=0.3
+local aq=20
+local ar=3
+local as=0.5
 
 
-local ao=0.2
-local ap=0.5
-local aq=1
+local at=0.2
+local au=0.5
+local av=1
 
-local ar={
+local aw={
 [Enum.UserInputType.MouseButton1]=true,
 [Enum.UserInputType.Touch]=true,
 }
 
-local as={}
-as.__index=as
+local ax={}
+ax.__index=ax
 
 
 
@@ -28180,27 +29480,30 @@ as.__index=as
 
 
 
-as.new=function(at)
-local au=setmetatable({
-frame=at.frame,
-screenGui=at.screenGui,
-topBarHeight=at.topBarHeight,
-clampPosition=at.clampPosition,
-getScale=at.getScale,
-onMinimize=at.onMinimize,
-onInteractive=at.onInteractive,
 
-hoverToOpen=at.hoverToOpen==true and ae.MouseEnabled,
-commandBarInUse=at.commandBarInUse,
-isMoving=at.isMoving,
+ax.new=function(ay)
+local az=setmetatable({
+frame=ay.frame,
+screenGui=ay.screenGui,
+topBarHeight=ay.topBarHeight,
+clampPosition=ay.clampPosition,
+getScale=ay.getScale,
+onMinimize=ay.onMinimize,
+onInteractive=ay.onInteractive,
+
+hoverToOpen=ay.hoverToOpen==true and ae.MouseEnabled,
+commandBarInUse=ay.commandBarInUse,
+isMoving=ay.isMoving,
 lastMovingAt=-math.huge,
+transparentWhenMinimized=ay.transparentWhenMinimized==true,
+fade=nil,
 
 state="minimized",
 interactive=nil,
 hovering=false,
 hoverRequest=0,
 dragging=false,
-keepOpen=at.keepOpen==true,
+keepOpen=ay.keepOpen==true,
 windowParts={},
 tween=nil,
 press=nil,
@@ -28209,110 +29512,64 @@ outsideTouches={},
 swipeLocked=false,
 lastInteractionAt=-math.huge,
 connections={},
-},as)
+},ax)
 
-au.frame.Position=au:targetFor("minimized")
+az.frame.Position=az:targetFor("minimized")
+az:fadeTo("minimized")
 
-table.insert(au.connections,ab:Connect(ae.InputBegan,function(av)
-au:onInputBegan(av)
+table.insert(az.connections,ab:Connect(ae.InputBegan,function(aA)
+az:onInputBegan(aA)
 end))
 
-table.insert(au.connections,ab:Connect(ae.InputEnded,function(av)
-au:onInputEnded(av)
+table.insert(az.connections,ab:Connect(ae.InputEnded,function(aA)
+az:onInputEnded(aA)
 end))
 
-table.insert(au.connections,ab:Connect(ae.InputChanged,function(av)
-au:onInputChanged(av)
+table.insert(az.connections,ab:Connect(ae.InputChanged,function(aA)
+az:onInputChanged(aA)
 end))
 
 
-table.insert(au.connections,ab:Connect(af.Heartbeat,function()
-if au.isMoving and au.isMoving()then
-au.lastMovingAt=os.clock()
+table.insert(az.connections,ab:Connect(af.Heartbeat,function()
+if az.isMoving and az.isMoving()then
+az.lastMovingAt=os.clock()
 end
 
-au:checkLockIdle()
+az:checkLockIdle()
 end))
 
-au:setInteractive(false)
+az:setInteractive(false)
 
-if au.hoverToOpen then
+if az.hoverToOpen then
 
-table.insert(au.connections,ab:Connect(au.frame.MouseEnter,function()
-if au.frame.Visible then au:setHovering(true)end
+table.insert(az.connections,ab:Connect(az.frame.MouseEnter,function()
+if az.frame.Visible then az:setHovering(true)end
 end))
 
-table.insert(au.connections,ab:Connect(au.frame.MouseLeave,function()
-au:setHovering(false)
+table.insert(az.connections,ab:Connect(az.frame.MouseLeave,function()
+az:setHovering(false)
 end))
 end
 
-return au end local at=function(
+return az end local ay=function(
 
 
-at, au)
-local av=at.AbsolutePosition
-local aw=at.AbsoluteSize
+ay, az)
+local aA=ay.AbsolutePosition
+local aB=ay.AbsoluteSize
 
-return au.X>=av.X and au.X<=av.X+aw.X
-and au.Y>=av.Y and au.Y<=av.Y+aw.Y end
+return az.X>=aA.X and az.X<=aA.X+aB.X
+and az.Y>=aA.Y and az.Y<=aA.Y+aB.Y end
 
 
 
-as.isOverWindow=function(au, av)
-if at(au.frame,av)then
+ax.isOverWindow=function(az, aA)
+if ay(az.frame,aA)then
 return true
 end
 
-for aw,ax in au.windowParts do
-if at(ax,av)then
-return true
-end
-end
-
-return false end
-
-
-
-as.addWindowPart=function(au, av)
-table.insert(au.windowParts,av)end
-
-
-
-as.setKeepOpen=function(au, av)
-au.keepOpen=av==true
-
-if au.keepOpen and au.state=="minimized"then
-au:expand()
-end end
-
-
-
-as.reveal=function(au)
-
-au:lockSwipe()
-
-if au.state=="minimized"then
-au:expand()
-end end
-
-
-
-
-
-
-as.lockSwipe=function(au)
-if au.hoverToOpen then return end
-if not au:fingerOutsideWindow()then return end
-
-au.swipeLocked=true
-au.lastInteractionAt=os.clock()end
-
-
-
-as.fingerOutsideWindow=function(au)
-for av,aw in au.touches do
-if not au:isOverWindow(aw)then
+for aB,aC in az.windowParts do
+if ay(aC,aA)then
 return true
 end
 end
@@ -28321,202 +29578,262 @@ return false end
 
 
 
-as.unlockSwipe=function(au)
-au.swipeLocked=false end
+ax.addWindowPart=function(az, aA)
+table.insert(az.windowParts,aA)end
 
 
 
+ax.setKeepOpen=function(az, aA)
+az.keepOpen=aA==true
 
-as.noteInteraction=function(au)
-au.lastInteractionAt=os.clock()end
-
-
-
-
-as.checkLockIdle=function(au)
-if au.swipeLocked and os.clock()-au.lastInteractionAt>=am then
-au.swipeLocked=false
+if az.keepOpen and az.state=="minimized"then
+az:expand()
 end end
 
 
 
-as.onSettled=function(au, av)
-local aw=au.tween
+ax.reveal=function(az)
 
-if aw and aw.PlaybackState==Enum.PlaybackState.Playing then
-aw.Completed:Once(av)
+az:lockSwipe()
+
+if az.state=="minimized"then
+az:expand()
+end end
+
+
+
+
+
+
+ax.lockSwipe=function(az)
+if az.hoverToOpen then return end
+if not az:fingerOutsideWindow()then return end
+
+az.swipeLocked=true
+az.lastInteractionAt=os.clock()end
+
+
+
+ax.fingerOutsideWindow=function(az)
+for aA,aB in az.touches do
+if not az:isOverWindow(aB)then
+return true
+end
+end
+
+return false end
+
+
+
+ax.unlockSwipe=function(az)
+az.swipeLocked=false end
+
+
+
+
+ax.noteInteraction=function(az)
+az.lastInteractionAt=os.clock()end
+
+
+
+
+ax.checkLockIdle=function(az)
+if az.swipeLocked and os.clock()-az.lastInteractionAt>=ar then
+az.swipeLocked=false
+end end
+
+
+
+ax.onSettled=function(az, aA)
+local aB=az.tween
+
+if aB and aB.PlaybackState==Enum.PlaybackState.Playing then
+aB.Completed:Once(aA)
 else
-task.defer(av)
+task.defer(aA)
+end end
+
+
+
+ax.targetFor=function(az, aA)
+local aB=az.clampPosition(az.frame.Position).X
+
+if aA=="top"then
+
+return UDim2.new(aB.Scale,aB.Offset,0,0)
+end
+
+if aA=="expanded"then
+
+return UDim2.new(aB.Scale,aB.Offset,1,-az.frame.Size.Y.Offset)
+end
+
+
+return UDim2.new(aB.Scale,aB.Offset,1,-az.topBarHeight)end
+
+
+
+
+ax.clampDrag=function(az, aA)
+local aB=az.clampPosition(aA).X
+
+local aC=math.max(az.getScale(),0.01)
+local aD=az.screenGui.AbsoluteSize.Y/aC
+local aE=math.max(aD-az.topBarHeight,0)
+local aG=math.clamp(aA.Y.Scale*aD+aA.Y.Offset,0,aE)
+
+return UDim2.new(aB.Scale,aB.Offset,0,aG)end
+
+
+
+ax.wasMovingRecently=function(az)
+return os.clock()-az.lastMovingAt<as end
+
+
+
+ax.setInteractive=function(az, aA)
+if az.interactive==aA then return end
+az.interactive=aA
+
+if az.onInteractive then
+az.onInteractive(aA)
+end end
+
+
+ax.cancel=function(az)
+if az.tween then
+az.tween:Cancel()
+az.tween=nil
 end end
 
 
 
 
-
-as.nearestSnap=function(au)
-local av=au.frame
-local aw=av.AbsolutePosition.Y
-local ax=au.screenGui.AbsoluteSize.Y-(av.AbsolutePosition.Y+av.AbsoluteSize.Y)
-
-if aw<=ax then
-return"top"
+ax.transparencyFor=function(az, aA)
+if aA=="minimized"and az.transparentWhenMinimized then
+return ah
 end
 
-if au.state=="expanded"then
-return"expanded"
+return 0 end
+
+
+
+
+ax.fadeTo=function(az, aA, aB)
+if az.fade then
+az.fade:Cancel()
+az.fade=nil
 end
 
-return"minimized"end
+local aC=az:transparencyFor(aA)
 
-
-
-as.targetFor=function(au, av)
-local aw=au.clampPosition(au.frame.Position).X
-
-if av=="top"then
-
-return UDim2.new(aw.Scale,aw.Offset,0,0)
-end
-
-if av=="expanded"then
-
-return UDim2.new(aw.Scale,aw.Offset,1,-au.frame.Size.Y.Offset)
-end
-
-
-return UDim2.new(aw.Scale,aw.Offset,1,-au.topBarHeight)end
-
-
-
-
-as.clampDrag=function(au, av)
-local aw=au.clampPosition(av).X
-
-local ax=math.max(au.getScale(),0.01)
-local ay=au.screenGui.AbsoluteSize.Y/ax
-local az=math.max(ay-au.topBarHeight,0)
-local aA=math.clamp(av.Y.Scale*ay+av.Y.Offset,0,az)
-
-return UDim2.new(aw.Scale,aw.Offset,0,aA)end
-
-
-
-as.wasMovingRecently=function(au)
-return os.clock()-au.lastMovingAt<an end
-
-
-
-as.setInteractive=function(au, av)
-if au.interactive==av then return end
-au.interactive=av
-
-if au.onInteractive then
-au.onInteractive(av)
-end end
-
-
-as.cancel=function(au)
-if au.tween then
-au.tween:Cancel()
-au.tween=nil
-end end
-
-
-as.moveTo=function(au, av, aw, ax)
-
-if av==au.state and au.tween and au.tween.PlaybackState==Enum.PlaybackState.Playing then
+if aB==nil then
+az.frame.GroupTransparency=aC
 return
 end
 
-local ay=au.state=="minimized"
-au.state=av
-au:cancel()
+local aD=ad:Create(az.frame,aB,{GroupTransparency=aC})
+az.fade=aD
+aD:Play()end
 
 
-if av=="minimized"then
-au.swipeLocked=false
-elseif ay then
-au:lockSwipe()
-end
+ax.moveTo=function(az, aA, aB, aC)
 
-
-if av=="minimized"then
-au:setInteractive(false)
-end
-
-local az=au:targetFor(av)
-local aA=ac:getScale(aw or ag)
-
-if aA<=0 then
-au.frame.Position=az
-au:setInteractive(av~="minimized")
+if aA==az.state and az.tween and az.tween.PlaybackState==Enum.PlaybackState.Playing then
 return
 end
 
-local aB=TweenInfo.new(aA,Enum.EasingStyle.Quart,ax or Enum.EasingDirection.Out)
-local aC=ad:Create(au.frame,aB,{Position=az})
-au.tween=aC
+local aD=az.state=="minimized"
+az.state=aA
+az:cancel()
+
+
+if aA=="minimized"then
+az.swipeLocked=false
+elseif aD then
+az:lockSwipe()
+end
+
+
+if aA=="minimized"then
+az:setInteractive(false)
+end
+
+local aE=az:targetFor(aA)
+local aG=ac:getScale(aB or ag)
+
+if aG<=0 then
+az.frame.Position=aE
+az:fadeTo(aA)
+az:setInteractive(aA~="minimized")
+return
+end
+
+local aH=TweenInfo.new(aG,Enum.EasingStyle.Quart,aC or Enum.EasingDirection.Out)
+az:fadeTo(aA,aH)
+local aI=ad:Create(az.frame,aH,{Position=aE})
+az.tween=aI
 
 
 
-aC.Completed:Connect(function(aD)
-if aD~=Enum.PlaybackState.Completed then return end
-if au.tween~=aC or au.state=="minimized"then return end
+aI.Completed:Connect(function(aJ)
+if aJ~=Enum.PlaybackState.Completed then return end
+if az.tween~=aI or az.state=="minimized"then return end
 
-au:setInteractive(true)
+az:setInteractive(true)
 end)
 
-aC:Play()end
+aI:Play()end
 
 
-as.expand=function(au, av, aw)
-au:moveTo("expanded",av,aw)end
+ax.expand=function(az, aA, aB)
+az:moveTo("expanded",aA,aB)end
 
 
 
 
-as.setHovering=function(au, av)
-if av==au.hovering then return end
-au.hovering=av
+ax.setHovering=function(az, aA)
+if aA==az.hovering then return end
+az.hovering=aA
 
 
-if au.dragging then return end
+if az.dragging then return end
 
-if av then
-au:onHoverEnter()
+if aA then
+az:onHoverEnter()
 else
-au:onHoverLeave()
+az:onHoverLeave()
 end end
 
 
 
 
-as.onHoverEnter=function(au)
-au.hoverRequest=au.hoverRequest+1
+ax.onHoverEnter=function(az)
+az.hoverRequest=az.hoverRequest+1
 
-if au.state=="minimized"then
-au:expand(ao,Enum.EasingDirection.InOut)
+if az.state=="minimized"then
+az:expand(at,Enum.EasingDirection.InOut)
 end end
 
 
 
 
-as.onHoverLeave=function(au)
-au.hoverRequest=au.hoverRequest+1
-local av=au.hoverRequest
+ax.onHoverLeave=function(az)
+az.hoverRequest=az.hoverRequest+1
+local aA=az.hoverRequest
 
-if not au:canHoverMinimize()then return end
+if not az:canHoverMinimize()then return end
 
-task.delay(aq,function()
-if av~=au.hoverRequest or not au:canHoverMinimize()then return end
+task.delay(av,function()
+if aA~=az.hoverRequest or not az:canHoverMinimize()then return end
 
-au:minimize(ap,Enum.EasingDirection.InOut)
+az:minimize(au,Enum.EasingDirection.InOut)
 end)end
 
 
 
-as.canHoverMinimize=function(au)
-return au.state=="expanded"and not au.keepOpen and not au:commandBarBusy()end
+ax.canHoverMinimize=function(az)
+return az.state=="expanded"and not az.keepOpen and not az:commandBarBusy()end
 
 
 
@@ -28524,116 +29841,179 @@ return au.state=="expanded"and not au.keepOpen and not au:commandBarBusy()end
 
 
 
-as.onCommandBarClosed=function(au, av)
-if not au.hoverToOpen then return end
+ax.onCommandBarClosed=function(az, aA)
+if not az.hoverToOpen then return end
 
 
-if au:fingerOnWindow()then return end
+if az:fingerOnWindow()then return end
 
-local aw=au.hoverRequest
+local aB=az.hoverRequest
 task.wait()
 
 
-if aw~=au.hoverRequest or au.dragging or not au:canHoverMinimize()then return end
-if au.hovering and not av then return end
-if au:fingerOnWindow()then return end
+if aB~=az.hoverRequest or az.dragging or not az:canHoverMinimize()then return end
+if az.hovering and not aA then return end
+if az:fingerOnWindow()then return end
 
-au:minimize(ap,Enum.EasingDirection.InOut)end
-
-
+az:minimize(au,Enum.EasingDirection.InOut)end
 
 
 
-as.onMobileEnter=function(au, av)
-if au.hoverToOpen then return end
+
+
+ax.onMobileEnter=function(az, aA)
+if az.hoverToOpen then return end
 
 
 
-if not au:wasMovingRecently()then return end
+if not az:wasMovingRecently()then return end
 
 task.wait()
 
-if au.dragging or av()then return end
-if au.state~="expanded"or au.keepOpen then return end
+if az.dragging or aA()then return end
+if az.state~="expanded"or az.keepOpen then return end
 
-au:minimize()end
-
-
+az:minimize()end
 
 
 
-as.setDragging=function(au, av)
-local aw=au.dragging
-au.dragging=av==true
+
+
+ax.setDragging=function(az, aA)
+local aB=az.dragging
+az.dragging=aA==true
 
 
 
-if aw and not au.dragging and au.hoverToOpen and not au.hovering then
-au:onHoverLeave()
+if aB and not az.dragging and az.hoverToOpen and not az.hovering then
+az:onHoverLeave()
 end end
 
 
-as.minimize=function(au, av, aw)
 
-if au.onMinimize then
-au.onMinimize()
+
+ax.setTransparentWhenMinimized=function(az, aA)
+az.transparentWhenMinimized=aA==true
+az:fadeTo(az.state)end
+
+
+ax.minimize=function(az, aA, aB)
+
+if az.onMinimize then
+az.onMinimize()
 end
 
-au:moveTo("minimized",av,aw)end
+az:moveTo("minimized",aA,aB)end
 
 
 
-as.reflow=function(au)
-au:cancel()
-au.frame.Position=au:targetFor(au.state)
-au:setInteractive(au.state~="minimized")end
+ax.reflow=function(az)
+az:cancel()
+az.frame.Position=az:targetFor(az.state)
+az:fadeTo(az.state)
+az:setInteractive(az.state~="minimized")end
 
 
 
 
-as.sleep=function(au)
-au:cancel()
-au.state="minimized"
-au.swipeLocked=false
-au.frame.Position=au:targetFor("minimized")
-au:setInteractive(false)end
+ax.sleep=function(az)
+az:cancel()
+az.state="minimized"
+az.swipeLocked=false
+az.frame.Position=az:targetFor("minimized")
+az:fadeTo("minimized")
+az:setInteractive(false)end
 
 
 
-as.onDragEnded=function(au, av)
-if av.travel<=ai then
 
-au:moveTo(au.state)
+ax.onDragEnded=function(az, aA)
+if aA.travel<=aj then
+
+az:moveTo(az.state)
 return
 end
 
-if av.dy>=aj and not au:commandBarBusy()and not au.swipeLocked then
-au:minimize()
+
+local aB=math.abs(aA.dy)>=am*math.abs(aA.dx)
+local aC=aB and aA.dy<=-al
+local aD=aB and aA.dy>=al
+
+if az.state=="minimized"then
+
+if aC then
+az:moveTo("expanded")
+else
+az:moveTo("minimized")
+end
 return
 end
 
-au:moveTo(au:nearestSnap())end
+
+if aC then
+az:moveTo("top")
+return
+end
+
+
+if aD and az:isSlideDownMinimize(aA)then
+az:minimize()
+return
+end
+
+if aD then
+az:moveTo("expanded")
+return
+end
+
+
+az:moveTo(az.state)end
+
+
+
+
+ax.isSlideDownMinimize=function(az, aA)
+if aA.dy>=ak and aA.velocityY>=ao then
+return true
+end
+
+return az.frame.AbsolutePosition.Y>=az:minimizedTop()-an end
+
+
+
+
+ax.minimizedTop=function(az)
+local aA=math.max(az.getScale(),0.01)
+return az.screenGui.AbsoluteSize.Y-az.topBarHeight*aA end
 
 
 
 
 
-as.onListSwipeDown=function(au)
-if au.hoverToOpen or au.swipeLocked then return end
-if au.state=="minimized"or au:commandBarBusy()then return end
 
-au:minimize()end
+ax.onListSwipeDown=function(az, aA)
+if az.hoverToOpen or az.swipeLocked then return end
+if az.state=="minimized"or az:commandBarBusy()then return end
+
+if az.state=="top"then
+if(aA or 0)>=az:minimizedTop()-an then
+az:minimize()
+end
+return
+end
+
+az:minimize()end
 
 
 
-as.commandBarBusy=function(au)
-return au.commandBarInUse~=nil and au.commandBarInUse()==true end
+ax.commandBarBusy=function(az)
+return az.commandBarInUse~=nil and az.commandBarInUse()==true end
 
 
 
-as.fingerOnWindow=function(au)
-for av,aw in au.touches do
-if au:isOverWindow(aw)then
+ax.fingerOnWindow=function(az)
+for aA,aB in az.touches do
+if az:isOverWindow(aB)then
 return true
 end
 end
@@ -28642,74 +30022,74 @@ return false end
 
 
 
-as.onInputChanged=function(au, av)
-if av.UserInputType~=Enum.UserInputType.Touch then return end
-if au.touches[av]==nil then return end
+ax.onInputChanged=function(az, aA)
+if aA.UserInputType~=Enum.UserInputType.Touch then return end
+if az.touches[aA]==nil then return end
 
-au.touches[av]=av.Position
+az.touches[aA]=aA.Position
 
-if au:isOverWindow(av.Position)then
-au:noteInteraction()
+if az:isOverWindow(aA.Position)then
+az:noteInteraction()
 end
 
-local aw=au.outsideTouches[av]
-if aw and(av.Position-aw).Magnitude>=al then
-au:onOutsideSwipe()
+local aB=az.outsideTouches[aA]
+if aB and(aA.Position-aB).Magnitude>=aq then
+az:onOutsideSwipe()
 end end
 
 
 
 
 
-as.onOutsideSwipe=function(au)
-if au.hoverToOpen or au.dragging or au.swipeLocked then return end
-if au.state~="expanded"or au.keepOpen or au:commandBarBusy()then return end
+ax.onOutsideSwipe=function(az)
+if az.hoverToOpen or az.dragging or az.swipeLocked then return end
+if az.state~="expanded"or az.keepOpen or az:commandBarBusy()then return end
 
-table.clear(au.outsideTouches)
-au:minimize()end
+table.clear(az.outsideTouches)
+az:minimize()end
 
 
-as.onInputBegan=function(au, av)
-if av.UserInputType==Enum.UserInputType.Touch then
-au.touches[av]=av.Position
+ax.onInputBegan=function(az, aA)
+if aA.UserInputType==Enum.UserInputType.Touch then
+az.touches[aA]=aA.Position
 
-if au:isOverWindow(av.Position)then
-au:noteInteraction()
+if az:isOverWindow(aA.Position)then
+az:noteInteraction()
 else
-au.outsideTouches[av]=av.Position
+az.outsideTouches[aA]=aA.Position
 end
 end
 
-if not ar[av.UserInputType]then return end
+if not aw[aA.UserInputType]then return end
 
-au.press={
-type=av.UserInputType,
+az.press={
+type=aA.UserInputType,
 time=os.clock(),
-position=av.Position,
-inside=au:isOverWindow(av.Position),
+position=aA.Position,
+inside=az:isOverWindow(aA.Position),
 
-startedExpanded=au.state=="expanded",
+startedExpanded=az.state=="expanded",
 }end
 
 
 
-as.onInputEnded=function(au, av)
-if av.UserInputType==Enum.UserInputType.Touch then
-au.touches[av]=nil
-au.outsideTouches[av]=nil
+ax.onInputEnded=function(az, aA)
+if aA.UserInputType==Enum.UserInputType.Touch then
+az.touches[aA]=nil
+az.outsideTouches[aA]=nil
 end
 
-local aw=au.press
-if not aw or av.UserInputType~=aw.type then return end
-au.press=nil
+local aB=az.press
+if not aB or aA.UserInputType~=aB.type then return end
+az.press=nil
 
-local ax=os.clock()-aw.time
-local ay=(av.Position-aw.position).Magnitude
+local aC=os.clock()-aB.time
+local aD=(aA.Position-aB.position).Magnitude
 
-if aw.inside then
+if aB.inside then
 
-if ax<=ah and ay<=ai and au.state=="minimized"then
-au:expand()
+if aC<=ai and aD<=aj and az.state=="minimized"then
+az:expand()
 end
 
 return
@@ -28717,308 +30097,332 @@ end
 
 
 
-local az=ax<=ak and ay<=ai
+local aE=aC<=ap and aD<=aj
 
-if az and aw.startedExpanded and not au.hoverToOpen and au.state=="expanded"and not au.keepOpen
-and not au:commandBarBusy()and not au:wasMovingRecently()then
-au:minimize()
+if aE and aB.startedExpanded and not az.hoverToOpen and az.state=="expanded"and not az.keepOpen
+and not az:commandBarBusy()and not az:wasMovingRecently()then
+az:minimize()
 end end
 
 
-as.destroy=function(au)
-au:cancel()
-au.hoverRequest=au.hoverRequest+1
+ax.destroy=function(az)
+az:cancel()
+az.hoverRequest=az.hoverRequest+1
 
-for av,aw in au.connections do
-ab:disconnect(aw)
+for aA,aB in az.connections do
+ab:disconnect(aB)
 end
-table.clear(au.connections)
-table.clear(au.touches)
-table.clear(au.outsideTouches)end
+table.clear(az.connections)
+table.clear(az.touches)
+table.clear(az.outsideTouches)end
 
 
-return as end a.dL=function()local ab=a.cache.dL if not ab then ab={c=aa()}a.cache.dL=ab end return ab.c end end do local aa=function()
+return ax end a.dT=function()local ab=a.cache.dT if not ab then ab={c=aa()}a.cache.dT=ab end return ab.c end end do local aa=function()
 
 
 
-local aa=a.az()
-local ab=a.cX()
+local aa=a.aD()
+local ab=a.c3()
 local ac=a.b()
 local ad=a.a()
-local ae=a.aE()
-local af=a.f()
-local ag=a.b_()
+local ae=a.aI()
+local af=a.aL()
+local ag=a.f()
+local ah=a.b3()
 
-local ah=a.af()
+local ai=a.ae()
 
-local ai=a.n()
-local aj=a.d()
-local ak=a.cR()
+local aj=a.n()
+local ak=a.d()
+local al=a.b5()
 
-local al=a.cT()
-local am=a.cV()
-local an=a.cS()
-local ao=a.dc()
+local am=a.cX()
+local an=a.c1()
+local ao=a.cW()
+local ap=a.dj()
 
-local ap=a.cP()
-local aq=a.b0()
-local ar=a.c_()
+local aq=a.cU()
+local ar=a.b4()
+local as=a.c6()
 
-local as=a.de()
-local at=a.cW()
-local au=a.df()
+local at=a.dl()
+local au=a.c2()
+local av=a.dm()
 
-local av=a.dg()
-local aw=a.dj()
-local ax=a.dl()
+local aw=a.dn()
+local ax=a.dr()
 local ay=a.dt()
-local az=a.dv()
-local aA=a.dx()
-local aB=a.dH()
-local aC=a.dK()
+local az=a.dA()
+local aA=a.dC()
+local aB=a.dE()
+local aC=a.dP()
+local aD=a.dS()
 
-local aD=a.dn()
-local aE=a.dL()
+local aE=a.dv()
+local aG=a.dT()
 
-local aG=450
-local aH=at.uiScale
+local aH=450
+local aI=au.uiScale
 
-local aI={
+local aJ={
 awoken=false,
-}local aJ=function(
+}local aK=function(
 
-aJ)
-local aK=type(aJ)=="string"and ap[aJ:lower()]
+aK)
+local aL=type(aK)=="string"and aq[aK:lower()]
 
-if aK and aK.Colors and aK.Font then
-return aJ
+if aL and aL.Colors and aL.Font then
+return aK
 end
 
-return aa.theme.defaultTheme end local aK=function(
+return aa.theme.defaultTheme end local aL=function(
 
 
-aK, aL, aM, aN)
-local aO=(aK.Scale*aM)/aN+aK.Offset
-local aP=math.floor(aM/aN-aL)
+aL, aM, aN, aO)
+local aP=(aL.Scale*aN)/aO+aL.Offset
+local aQ=math.floor(aN/aO-aM)
 
-if math.floor(aO)>=aP then
-return 1,-aL
+if math.floor(aP)>=aQ then
+return 1,-aM
 end
 
-return 0,math.clamp(math.floor(aO),0,math.max(aP,0))end
+return 0,math.clamp(math.floor(aP),0,math.max(aQ,0))end
 
 
-aI.awake=function(aL)
-if aL.awoken then
-return aL.screenGui
+aJ.awake=function(aM)
+if aM.awoken then
+return aM.screenGui
 end
 
-aL.awoken=true
+aM.awoken=true
 
-aL:setupTheme()
-aL:setupScreenGui()
-aL:setupScale()
-aL:setupMainFrame()
-aL:createQuickCapture()
-aL:createReference()
-aL:createPartPath()
-aL:createNotifications()
-aL:setupListeners()
-aL:updateNotificationsPosition()
+aM:setupTheme()
+aM:setupScreenGui()
+aM:setupScale()
+aM:setupMainFrame()
+aM:createQuickCapture()
+aM:createReference()
+aM:createPartPath()
+aM:createNotifications()
+aM:setupListeners()
+aM:updateNotificationsPosition()
 
-aj:log("interface started")
-return aL.screenGui end
+ak:log("interface started")
+return aM.screenGui end
 
 
-aI.setupTheme=function(aL)
-aj:debug("interface: initializing theme service")
+aJ.setupTheme=function(aM)
+ak:debug("interface: initializing theme service")
 
-an:init({
-theme=aJ(aa.theme.selectedTheme),
+ao:init({
+theme=aK(aa.theme.selectedTheme),
 })end
 
 
-aI.setupScreenGui=function(aL)
-local aM=aL:createScreenGui()
+aJ.setupScreenGui=function(aM)
+local aN=aM:createScreenGui()
 
-aM.Parent=aq
-ac.screenGui=aM
+aN.Parent=ar
+ac.screenGui=aN
 
-aH.Parent=aM end
-
-
-aI.setupScale=function(aL)
-aL:setScale(ai:getValue("interface.uiScale")or 1)end
+aI.Parent=aN end
 
 
-aI.setupMainFrame=function(aL)
-local aM=aL:createMainFrame()
-
-aL:createCommands()
-aL:dragMainFrame(aM)
-aL.commands:enable()
-
-aM.Parent=aL.screenGui end
+aJ.setupScale=function(aM)
+aM:setScale(aj:getValue("interface.uiScale")or 1)end
 
 
-aI.setupListeners=function(aL)
-ae:Connect(aL.screenGui:GetPropertyChangedSignal("AbsoluteSize"),function()
-aL:updateMainFramePosition()
+aJ.setupMainFrame=function(aM)
+local aN=aM:createMainFrame()
+
+aM:createCommands()
+aM:dragMainFrame(aN)
+aM.commands:enable()
+
+aN.Parent=aM.screenGui end
+
+
+aJ.setupListeners=function(aM)
+ae:Connect(aM.screenGui:GetPropertyChangedSignal("AbsoluteSize"),function()
+aM:updateMainFramePosition()
 end)
 
-ae:Connect(aL.mainFrame:GetPropertyChangedSignal("AbsolutePosition"),function()
-aL:updateNotificationsPosition()
+ae:Connect(aM.mainFrame:GetPropertyChangedSignal("AbsolutePosition"),function()
+aM:updateNotificationsPosition()
 end)
 
-ae:Connect(aL.mainFrame:GetPropertyChangedSignal("AbsoluteSize"),function()
-aL:updateNotificationsPosition()
+ae:Connect(aM.mainFrame:GetPropertyChangedSignal("AbsoluteSize"),function()
+aM:updateNotificationsPosition()
 end)
 
-ae:Connect(af.RunService.RenderStepped,function()
-aL:updateNotificationsPosition()
+ae:Connect(ag.RunService.RenderStepped,function()
+aM:updateNotificationsPosition()
 end)end
 
 
-aI.createScreenGui=function(aL)
-local aM=al.new("ScreenGui",{
+aJ.createScreenGui=function(aM)
+local aN=am.new("ScreenGui",{
 IgnoreGuiInset=true,
-Name=ak.randomString(math.random(30,50)),
+Name=al.randomString(math.random(30,50)),
 DisplayOrder=2147483647,
 })
 
-aL.screenGui=aM
-return aM end
+aM.screenGui=aN
+return aN end
 
 
-aI.calculateScale=function(aL, aM)
-return(aL.screenGui.AbsoluteSize.Y/aG)*aM end
+aJ.calculateScale=function(aM, aN)
+return(aM.screenGui.AbsoluteSize.Y/aH)*aN end
 
 
-aI.setScale=function(aL, aM)
-aM=math.abs(aM)
+aJ.setScale=function(aM, aN)
+aN=math.abs(aN)
 
-if aM>=3 then
-aM=aL:calculateScale(aM)
+if aN>=3 then
+aN=aM:calculateScale(aN)
 end
 
-if ai:getValue("interface.uiScale")~=aM then
-ai:setValue("interface.uiScale",aM)
-ai:save()
+if aj:getValue("interface.uiScale")~=aN then
+aj:setValue("interface.uiScale",aN)
+aj:save()
 end
 
-at:setScale(aM)
-aL:updateMainFramePosition()end
+au:setScale(aN)
+aM:updateMainFramePosition()end
 
 
-aI.calculateMainFramePosition=function(aL, aM)
-local aN=aL.mainFrame
-local aO=aL.screenGui
-local aP=at:getScale()
-local aQ=aN.Size
+aJ.calculateMainFramePosition=function(aM, aN)
+local aO=aM.mainFrame
+local aP=aM.screenGui
+local aQ=au:getScale()
+local aR=aO.Size
 
-aM=aM or aN.Position
+aN=aN or aO.Position
 
-local aR,aS=aK(aM.X,aQ.X.Offset,aO.AbsoluteSize.X,aP)
-local aT,aU=aK(aM.Y,aQ.Y.Offset,aO.AbsoluteSize.Y,aP)
+local aS,aT=aL(aN.X,aR.X.Offset,aP.AbsoluteSize.X,aQ)
+local aU,aV=aL(aN.Y,aR.Y.Offset,aP.AbsoluteSize.Y,aQ)
 
-return UDim2.new(aR,aS,aT,aU)end
+return UDim2.new(aS,aT,aU,aV)end
 
 
-aI.updateMainFramePosition=function(aL)
-if not aL.mainFrame then return end
+aJ.updateMainFramePosition=function(aM)
+if not aM.mainFrame then return end
 
-if aL.dock then
-aL.dock:reflow()
+if aM.dock then
+aM.dock:reflow()
 else
-aL.mainFrame.Position=aL:calculateMainFramePosition()
+aM.mainFrame.Position=aM:calculateMainFramePosition()
 end
 
-aL:updateNotificationsPosition()end
+aM:updateNotificationsPosition()end
 
 
-aI.createMainScroll=function(aL, aM)
-local aN=aw.new({
+aJ.createMainScroll=function(aM, aN)
+local aO=ax.new({
 isHorizontal=false,
 barThickness=12,
 })
 
-local aO=aN:create()
-local aP=aN.container
+local aP=aO:create()
+local aQ=aO.container
 
-local aQ=al.new("Frame","ScrollHolder",aM,{
+local aR=am.new("Frame","ScrollHolder",aN,{
 Size=UDim2.new(1,0,0,180),
 Position=UDim2.fromScale(0.5,1),
 AnchorPoint=Vector2.new(0.5,1),
 BackgroundTransparency=1,
 Active=true,
 
-aO,
 aP,
+aQ,
 })
 
-aL.scrollHolder=aQ
-aL.scrollBar=aN
-aL.scrollContainer=aP
-aL.scrollBarFrame=aO
+aM.scrollHolder=aR
+aM.scrollBar=aO
+aM.scrollContainer=aQ
+aM.scrollBarFrame=aP
 
-return aN end
-
-
-aI.createMainFrame=function(aL)
-local aM=av:create()
-local aN=aM.mainFrame
-
-aM.titleLabel.Text=as.getDisplayName()
-
-aL.mainFrame=aN
-aL.topBar=aM.topBar
-aL.buttons=aM.buttons
+return aO end
 
 
-ao:attach(aN)
+aJ.createMainFrame=function(aM)
+local aN=aw:create()
+local aO=aN.mainFrame
 
-am:loadImage(aL.buttons.settings,"lucide-settings")
-am:loadImage(aL.buttons.reference,"lucide-book-open")
+aN.titleLabel.Text=at.getDisplayName()
 
-aL:createMainScroll(aN)
+aM.mainFrame=aO
+aM.topBar=aN.topBar
+aM.buttons=aN.buttons
 
-aL.settings=aB.new({
 
-onOpenChanged=function(aO)
-aL:paintTopButton(aL.buttons.settings,aO)
+ap:attach(aO,aN.background)
+
+an:loadImage(aM.buttons.settings,"lucide-settings")
+an:loadImage(aM.buttons.reference,"lucide-book-open")
+
+aM:createMainScroll(aO)
+
+aM.settings=aC.new({
+
+onOpenChanged=function(aP)
+aM:paintTopButton(aM.buttons.settings,aP)
 end,
 
 
-onSwitch=function(aO,aP)
-if aO=="keepMenuOpen"and aL.dock then
-aL.dock:setKeepOpen(aP)
+onSwitch=function(aP,aQ)
+if aP=="keepMenuOpen"and aM.dock then
+aM.dock:setKeepOpen(aQ)
+end
+
+if aP=="transparentWhenMinimized"and aM.dock then
+aM.dock:setTransparentWhenMinimized(aQ)
 end
 
 
-if aO=="keepIY"and aP and ad.queueteleport==nil then
-aL:setKeepIY(false)
-ar:notify("Keepiy","your exploit does not support queueteleport")
+if aP=="keepIY"and aQ and ad.queueteleport==nil then
+aM:setKeepIY(false)
+as:notify("Keepiy","your exploit does not support queueteleport")
 end
 end,
-})
-aL.settings:create(aN,aL.scrollHolder,{aL.scrollContainer,aL.scrollBarFrame})
 
-ae:Connect(aL.buttons.settings.Activated,function()
-aL.settings:toggle()
+
+interface={
+getScale=function()
+return au:getScale()
+end,
+
+setScale=function(aP)
+aM:setScale(aP)
+end,
+
+isHidden=function()
+return aM:isHidden()
+end,
+
+setHidden=function(aP)
+aM:setHidden(aP)
+end,
+},
+})
+aM.settings:create(aO,aM.scrollHolder,{aM.scrollContainer,aM.scrollBarFrame})
+
+ae:Connect(aM.buttons.settings.Activated,function()
+aM.settings:toggle()
 end)
 
-return aN end
+return aO end
 
 
-aI.createCommands=function(aL)
-local aM=aL.scrollBar
+aJ.createCommands=function(aM)
+local aN=aM.scrollBar
 
-local aN=ax.new({
-scrolledSignal=aM.scrolledSignal,
-scrollContainer=aL.scrollContainer,
-scrollHolder=aL.scrollHolder,
-screenGui=aL.screenGui,
-scrollBar=aM,
+local aO=ay.new({
+scrolledSignal=aN.scrolledSignal,
+scrollContainer=aM.scrollContainer,
+scrollHolder=aM.scrollHolder,
+screenGui=aM.screenGui,
+scrollBar=aN,
 
 configs={
 placeholderText=aa.ui.commands.placeholderText,
@@ -29028,233 +30432,271 @@ textSize=aa.ui.commands.textSize,
 },
 })
 
-aj:log("created commands interface")
-aN:create()
+ak:log("created commands interface")
+aO:create()
 
-aj:log("initialized commands")
-aN:createCommandsData()
+ak:log("initialized commands")
+aO:createCommandsData()
 
-aj:log("awaked commands module")
-aN:awake()
+ak:log("awaked commands module")
+aO:awake()
 
-aL.commands=aN
+aM.commands=aO
 
 
-aN.onCommandSent=function()
-if aL.dock then
-aL.dock:unlockSwipe()
+aO.onCommandSent=function()
+if aM.dock then
+aM.dock:unlockSwipe()
 end
 end
 
 
-aN.onInteraction=function()
-if aL.dock then
-aL.dock:noteInteraction()
+aO.onInteraction=function()
+if aM.dock then
+aM.dock:noteInteraction()
 end
 end
 
-aL.settings:watchCommandBar(aN.searchBox)
+aM.settings:watchCommandBar(aO.searchBox)
 
-if ag then
+if ah then
 
-aN.onSwipeDown=function()
-if aL.dock then
-aL.dock:onListSwipeDown()
+aO.onSwipeDown=function(aP)
+if aM.dock then
+aM.dock:onListSwipeDown(aP)
 end
 end
 
-ae:Connect(aN.searchBox.Focused,function()
-aL.commandBarUsedAt=os.clock()
+ae:Connect(aO.searchBox.Focused,function()
+aM.commandBarUsedAt=os.clock()
 end)
 
-ae:Connect(aN.searchBox.FocusLost,function(aO)
-aL.commandBarUsedAt=os.clock()
+ae:Connect(aO.searchBox.FocusLost,function(aP)
+aM.commandBarUsedAt=os.clock()
 
 
-if aO and aL.dock then
-aL.dock:onMobileEnter(function()
-return aN.searchBox:IsFocused()
+if aP and aM.dock then
+aM.dock:onMobileEnter(function()
+return aO.searchBox:IsFocused()
 end)
 end
 end)
 else
 
-ae:Connect(aN.searchBox.FocusLost,function(aO)
-if aL.dock then
-aL.dock:onCommandBarClosed(aO)
+ae:Connect(aO.searchBox.FocusLost,function(aP)
+if aM.dock then
+aM.dock:onCommandBarClosed(aP)
 end
 end)
 end
 
-return aN end
+return aO end
 
 
-aI.createInfoMenu=function(aL)
-return az:create()end
+aJ.createInfoMenu=function(aM)
+return aA:create()end
 
 
-aI.chatLogs=function(aL, aM)
-return aA:open(aM or"chat")end
+aJ.chatLogs=function(aM, aN)
+return aB:open(aN or"chat")end
 
 
-aI.dragMainFrame=function(aL, aM)
-aM.Size=aa.ui.window.windowSize
+aJ.dragMainFrame=function(aM, aN)
+aN.Size=aa.ui.window.windowSize
 
-aM.Position=UDim2.fromOffset(1e5,1e5)
-aM.Position=aL:calculateMainFramePosition()
+aN.Position=UDim2.fromOffset(1e5,1e5)
+aN.Position=aM:calculateMainFramePosition()
 
-aL.dock=aE.new({
-frame=aM,
-screenGui=aL.screenGui,
-topBarHeight=aL.topBar.Size.Y.Offset,
-keepOpen=aB.isKeepMenuOpen(),
-clampPosition=function(aN)
-return aL:calculateMainFramePosition(aN)
+aM.dock=aG.new({
+frame=aN,
+screenGui=aM.screenGui,
+topBarHeight=aM.topBar.Size.Y.Offset,
+keepOpen=aC.isKeepMenuOpen(),
+transparentWhenMinimized=aC.isTransparentWhenMinimized(),
+clampPosition=function(aO)
+return aM:calculateMainFramePosition(aO)
 end,
 getScale=function()
-return at:getScale()
+return au:getScale()
 end,
 commandBarInUse=function()
-return aL:isCommandBarInUse()
+return aM:isCommandBarInUse()
 end,
 isMoving=function()
-return aL:isCharacterMoving()
+return aM:isCharacterMoving()
 end,
-onInteractive=function(aN)
-if aL.commands then
-aL.commands:setInteractive(aN)
+onInteractive=function(aO)
+if aM.commands then
+aM.commands:setInteractive(aO)
 end
 end,
-hoverToOpen=not ag,
+hoverToOpen=not ah,
 onMinimize=function()
-aL:releaseCommandFocus()
+aM:releaseCommandFocus()
 
 
-if aL.hidden then
-aL:hideWindow()
+if aM.hidden then
+aM:hideWindow()
 end
 end,
 })
 
-aD:addGuiObject(aM)
+aE:addGuiObject(aN)
 
-aD:setFilter(aM,function(aN)
-return aL.dock:clampDrag(aN)
+aE:setFilter(aN,function(aO)
+return aM.dock:clampDrag(aO)
 end)
 
-aD.dragStarted:Connect(function(aN)
-if aN~=aM then return end
+aE.dragStarted:Connect(function(aO)
+if aO~=aN then return end
 
-aL.dock:cancel()
-aL.dock:setDragging(true)
-aL.scrollBar:disableScroll()
+aM.dock:cancel()
+aM.dock:setDragging(true)
+aM.scrollBar:disableScroll()
 end)
 
-aD.dragEnded:Connect(function(aN,aO)
-if aN~=aM then return end
+aE.dragEnded:Connect(function(aO,aP)
+if aO~=aN then return end
 
-aL.scrollBar:enableScroll()
-aL.dock:setDragging(false)
-aL.dock:onDragEnded(aO)
+aM.scrollBar:enableScroll()
+aM.dock:setDragging(false)
+aM.dock:onDragEnded(aP)
 end)end
 
 
 
-local aL=0.3
+local aM=0.3
 
-aI.isCommandBarInUse=function(aM)
-local aN=aM.commands and aM.commands.searchBox
-if aN and aN:IsFocused()then
+aJ.isCommandBarInUse=function(aN)
+local aO=aN.commands and aN.commands.searchBox
+if aO and aO:IsFocused()then
 return true
 end
 
-return os.clock()-(aM.commandBarUsedAt or 0)<aL end
+return os.clock()-(aN.commandBarUsedAt or 0)<aM end
 
 
 
 
-aI.isCharacterMoving=function(aM)
-local aN=ah:getHumanoid()
-if not aN then return false end
-
-if aN.MoveDirection.Magnitude>0.05 then
-return true
-end
-
-local aO=aN.RootPart
+aJ.isCharacterMoving=function(aN)
+local aO=ai:getHumanoid()
 if not aO then return false end
 
-local aP=aO.AssemblyLinearVelocity
-return Vector3.new(aP.X,0,aP.Z).Magnitude>1 end
-
-
-aI.releaseCommandFocus=function(aM)
-local aN=aM.commands and aM.commands.searchBox
-
-if aN and aN:IsFocused()then
-aN:ReleaseFocus()
-end end
-
-
-
-aI.showWindow=function(aM)
-aM.hidden=false
-aM:revealWindow()end
-
-
-
-
-aI.revealWindow=function(aM)
-if not aM.mainFrame then return end
-
-aM.mainFrame.Visible=true
-if aM.dock then
-aM.dock:reveal()
-end end
-
-
-
-aI.hideWindow=function(aM)
-if not aM.mainFrame then return end
-
-aM.hidden=true
-aM.mainFrame.Visible=false
-
-if aM.dock then
-aM.dock:sleep()
+if aO.MoveDirection.Magnitude>0.05 then
+return true
 end
 
-aM:releaseCommandFocus()end
+local aP=aO.RootPart
+if not aP then return false end
+
+local aQ=aP.AssemblyLinearVelocity
+return Vector3.new(aQ.X,0,aQ.Z).Magnitude>1 end
 
 
-aI.showCommandBar=function(aM)
-local aN=aM.commands and aM.commands.searchBox
-if not aN then return end
+aJ.releaseCommandFocus=function(aN)
+local aO=aN.commands and aN.commands.searchBox
 
-aM:revealWindow()
+if aO and aO:IsFocused()then
+aO:ReleaseFocus()
+end end
 
 
 
-aM.dock:onSettled(function()
-if aM.dock.state=="minimized"then return end
+aJ.showWindow=function(aN)
+aN.hidden=false
+aN:stopShowKeys()
+aN:revealWindow()end
 
-aM.commands:ensureFocus()
+
+
+
+aJ.revealWindow=function(aN)
+if not aN.mainFrame then return end
+
+aN.mainFrame.Visible=true
+if aN.dock then
+aN.dock:reveal()
+end end
+
+
+
+aJ.hideWindow=function(aN)
+if not aN.mainFrame then return end
+
+aN.hidden=true
+aN.mainFrame.Visible=false
+
+if aN.dock then
+aN.dock:sleep()
+end
+
+aN:releaseCommandFocus()
+aN:listenForShowKeys()end
+
+
+
+aJ.isHidden=function(aN)
+return aN.hidden==true end
+
+
+
+aJ.setHidden=function(aN, aO)
+if aO then
+aN:hideWindow()
+else
+aN:showWindow()
+end end
+
+
+
+
+aJ.listenForShowKeys=function(aN)
+aN:stopShowKeys()
+
+aN.showKeysConnection=af:onBindingPressed("prefix",function()
+
+if aN.mainFrame and aN.mainFrame.Visible then return end
+
+aN:showCommandBar()
+end)end
+
+
+aJ.stopShowKeys=function(aN)
+local aO=aN.showKeysConnection
+if aO==nil then return end
+
+aN.showKeysConnection=nil
+aO:Disconnect()end
+
+
+aJ.showCommandBar=function(aN)
+local aO=aN.commands and aN.commands.searchBox
+if not aO then return end
+
+aN:revealWindow()
+
+
+
+aN.dock:onSettled(function()
+if aN.dock.state=="minimized"then return end
+
+aN.commands:ensureFocus()
 end)end
 
 
 
-aI.setKeepIY=function(aM, aN)
-aB.setKeepIY(aN)
+aJ.setKeepIY=function(aN, aO)
+aC.setKeepIY(aO)
 
-if aM.settings then
-aM.settings:refresh()
+if aN.settings then
+aN.settings:refresh()
 end end
 
 
-aI.createQuickCapture=function(aM)
-if not ag then return end
+aJ.createQuickCapture=function(aN)
+if not ah then return end
 
-local aN=al.new("TextButton",ak.randomString(math.random(30,50)),aM.screenGui,{
+local aO=am.new("TextButton",al.randomString(math.random(30,50)),aN.screenGui,{
 BackgroundTransparency=0.14,
 Position=UDim2.fromScale(0.5,0.15),
 AnchorPoint=Vector2.new(0.5,0.5),
@@ -29267,136 +30709,137 @@ ThemeTag={
 TextColor3="Colors.Icons",
 BackgroundColor3="Colors.Buttons.Default"
 },
-al.new("UICorner",{
+am.new("UICorner",{
 CornerRadius=UDim.new(0.5,0)
 }),
 })
 
-aM.dock:addWindowPart(aN)
-aD:addGuiObject(aN)
+aN.dock:addWindowPart(aO)
+aE:addGuiObject(aO)
 
-ae:Connect(aN.Activated,function()
-aM:showCommandBar()
+ae:Connect(aO.Activated,function()
+aN:showCommandBar()
 end)
 
-aM.quickCapture=aN
-return aN end
+aN.quickCapture=aO
+return aO end
 
 
 
 
-aI.paintTopButton=function(aM, aN, aO)
-if not aN then return end
+aJ.paintTopButton=function(aN, aO, aP)
+if not aO then return end
 
-an:addObject(aN,{
-ImageColor3=if aO then"Colors.Primary"else"Colors.Icons",
+ao:addObject(aO,{
+ImageColor3=if aP then"Colors.Primary"else"Colors.Icons",
 })end
 
 
-aI.createReference=function(aM)
-local aN=ay.new()
-local aO=aN:create()
+aJ.createReference=function(aN)
+local aO=az.new()
+local aP=aO:create()
 
-aN.onOpenChanged=function(aP)
-aM:paintTopButton(aM.buttons.reference,aP)
+aO.onOpenChanged=function(aQ)
+aN:paintTopButton(aN.buttons.reference,aQ)
 end
 
-am:loadImage(aN.closeIcon,"lucide-custom-x")
+an:loadImage(aO.closeIcon,"lucide-custom-x")
 
-aO.Parent=aM.screenGui
-aM.reference=aN
+aP.Parent=aN.screenGui
+aN.reference=aO
 
-ae:Connect(aM.buttons.reference.Activated,function()
-aN:open()
+ae:Connect(aN.buttons.reference.Activated,function()
+aO:open()
 end)
 
-return aN end
+return aO end
 
 
-aI.createPartPath=function(aM)
-local aN=aC.new()
-local aO=aN:create()
+aJ.createPartPath=function(aN)
+local aO=aD.new()
+local aP=aO:create()
 
-aO.Parent=aM.screenGui
-aM.partPathWindow=aN
+aP.Parent=aN.screenGui
+aN.partPathWindow=aO
 
-return aN end
-
-
+return aO end
 
 
-aI.openPartPath=function(aM, aN)
-if not aM.partPathWindow then return end
-
-aM.partPathWindow:open(aN)end
 
 
-aI.createNotifications=function(aM)
-local aN=ar:getContainer(aM.screenGui)
-aM.notificationsContainer=aN
+aJ.openPartPath=function(aN, aO)
+if not aN.partPathWindow then return end
 
-ar.onLayoutChanged=function()
-aM:updateNotificationsPosition()
+aN.partPathWindow:open(aO)end
+
+
+aJ.createNotifications=function(aN)
+local aO=as:getContainer(aN.screenGui)
+aN.notificationsContainer=aO
+
+as.onLayoutChanged=function()
+aN:updateNotificationsPosition()
 end
 
-aM:updateNotificationsPosition()
-return aN end
+aN:updateNotificationsPosition()
+return aO end
 
 
-aI.updateNotificationsPosition=function(aM)
-local aN=aM.notificationsContainer
-local aO=aM.mainFrame
-local aP=aM.screenGui
-if not(aN and aO and aP)then return end
+aJ.updateNotificationsPosition=function(aN)
+local aO=aN.notificationsContainer
+local aP=aN.mainFrame
+local aQ=aN.screenGui
+if not(aO and aP and aQ)then return end
 
 
 
-local aQ=at:getScale()
-local aR=aP.AbsoluteSize/aQ
+local aR=au:getScale()
+local aS=aQ.AbsoluteSize/aR
 
-local aS=aO.Position
-local aT=au.compute({
-x={scale=aS.X.Scale,offset=aS.X.Offset},
-y={scale=aS.Y.Scale,offset=aS.Y.Offset},
+local aT=aP.Position
+local aU=av.compute({
+x={scale=aT.X.Scale,offset=aT.X.Offset},
+y={scale=aT.Y.Scale,offset=aT.Y.Offset},
+width=aP.Size.X.Offset,
+height=aP.Size.Y.Offset,
+},{
+width=aS.X,
+height=aS.Y,
+},{
 width=aO.Size.X.Offset,
-height=aO.Size.Y.Offset,
-},{
-width=aR.X,
-height=aR.Y,
-},{
-width=aN.Size.X.Offset,
 },ab.gapToWindow)
 
 
-ar:setRoom(aT.room)
+as:setRoom(aU.room)
 
-aN.AnchorPoint=Vector2.new(aT.anchorX,aT.anchorY)
-aN.Position=UDim2.new(aT.x.scale,aT.x.offset,aT.y.scale,aT.y.offset)end
+aO.AnchorPoint=Vector2.new(aU.anchorX,aU.anchorY)
+aO.Position=UDim2.new(aU.x.scale,aU.x.offset,aU.y.scale,aU.y.offset)end
 
 
-aI.destroy=function(aM)
-ar:destroy()
-if aM.dock then
-aM.dock:destroy()
-aM.dock=nil
+aJ.destroy=function(aN)
+aN:stopShowKeys()
+as:destroy()
+if aN.dock then
+aN.dock:destroy()
+aN.dock=nil
 end
 
-aA:reset()
+aB:reset()
 
-if aM.partPathWindow then
-aM.partPathWindow:destroy()
-aM.partPathWindow=nil
+if aN.partPathWindow then
+aN.partPathWindow:destroy()
+aN.partPathWindow=nil
 end
 
-if aM.screenGui then
-aM.screenGui:Destroy()
+if aN.screenGui then
+aN.screenGui:Destroy()
 end
 
-aM.screenGui=nil
-aM.awoken=false end
+aN.screenGui=nil
+aN.awoken=false end
 
 
-return aI end a.dM=function()local ab=a.cache.dM if not ab then ab={c=aa()}a.cache.dM=ab end return ab.c end end do local aa=function()a.e()
+return aJ end a.dU=function()local ab=a.cache.dU if not ab then ab={c=aa()}a.cache.dU=ab end return ab.c end end do local aa=function()a.e()
 
 
 :init()a.u()
@@ -29405,17 +30848,17 @@ return aI end a.dM=function()local ab=a.cache.dM if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.c1()
-local ab=a.c3()
-local ac=a.af()
-local ad=a.cG()
-local ae=a.c9()
-local af=a.cA()
-local ag=a.c7()
+local aa=a.c8()
+local ab=a.da()
+local ac=a.ae()
+local ad=a.cL()
+local ae=a.dg()
+local af=a.cF()
+local ag=a.de()
 
 
 
-local ah=a.dM()
+local ah=a.dU()
 
 local ai={}
 
@@ -29438,7 +30881,7 @@ ah:awake()
 ae.start()end
 
 
-return ai end a.dN=function()local ab=a.cache.dN if not ab then ab={c=aa()}a.cache.dN=ab end return ab.c end end end
+return ai end a.dV=function()local ab=a.cache.dV if not ab then ab={c=aa()}a.cache.dV=ab end return ab.c end end end
 
 
 
@@ -29459,4 +30902,4 @@ return ai end a.dN=function()local ab=a.cache.dN if not ab then ab={c=aa()}a.cac
 
 
 
-return a.dN():boot()
+return a.dV():boot()

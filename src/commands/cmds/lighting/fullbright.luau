@@ -16,6 +16,7 @@ end
 
 return {
 	{
+		client = true,
 		action = "fullbright|fb",
 		description = "Makes the map brighter / more visible (CLIENT)",
 		run = function(self)
@@ -23,6 +24,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "loopfullbright|loopfb",
 		description = "Makes the map brighter / more visible but looped (CLIENT)",
 		run = function(self)
@@ -35,6 +37,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "unloopfullbright|unloopfb",
 		description = "Unloops fullbright",
 		run = function(self)

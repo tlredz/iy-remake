@@ -23,6 +23,7 @@ end
 
 return {
 	{
+		client = true,
 		action = "respawn",
 		description = "Respawns your character in place (client side)",
 		run = function(self)
@@ -30,6 +31,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "refresh|re",
 		description = "Respawns your character and puts you back where you were",
 		run = function(self)
@@ -53,6 +55,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "reset",
 		description = "Resets your character",
 		run = function(self)

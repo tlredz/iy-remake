@@ -20,6 +20,8 @@ local localPlayer = require("../../framework/services/localPlayer")
 
 local isMobile = require("../../framework/environment/isMobile")
 local coreGui = require("../../ui/coreGui")
+local tools = require("../../utils/tools")
+local objectDecoy = require("./objectDecoy")
 
 local ContextActionService = robloxServices.ContextActionService
 local UserInputService = robloxServices.UserInputService
@@ -37,7 +39,7 @@ local GARBAGE_NAME = "freecam"
 local KEYS_ACTION = "freecamKeys"
 local MOUSE_ACTION = "freecamMouse"
 local ACTION_PRIORITY = Enum.ContextActionPriority.High.Value
-local GUI_NAME = "freecamControls"
+local GUI_NAME = tools.randomString(math.random(30, 50))
 
 local MOVE_KEYS = {
 	Enum.KeyCode.W,
@@ -274,13 +276,13 @@ local function freezeCharacter(self, garbage)
 
 	garbage.root = root
 	garbage.rootAnchored = root.Anchored
-	root.Anchored = true
+	objectDecoy.setProperty(root, "Anchored", true)
 end
 
 local function releaseCharacter(garbage)
 	local root = garbage.root
 	if root and root.Parent ~= nil then
-		root.Anchored = garbage.rootAnchored
+		objectDecoy.setProperty(root, "Anchored", garbage.rootAnchored)
 	end
 end
 

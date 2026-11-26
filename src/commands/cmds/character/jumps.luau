@@ -1,3 +1,5 @@
+local objectDecoy = require("../../systems/objectDecoy")
+
 -- Stops a loop that was started with this garbage name
 local function stopLoop(self, name: string)
 	local garbage = self:collectGarbage(name)
@@ -60,7 +62,7 @@ return {
 				if previous ~= state and state == Enum.HumanoidStateType.Freefall and previous ~= Enum.HumanoidStateType.Jumping and garbage.lastCFrame then
 					root.CFrame = garbage.lastCFrame
 					local velocity = root.AssemblyLinearVelocity
-					root.AssemblyLinearVelocity = Vector3.new(velocity.X, humanoid.JumpPower, velocity.Z)
+					root.AssemblyLinearVelocity = Vector3.new(velocity.X, objectDecoy.getProperty(humanoid, "JumpPower"), velocity.Z)
 				end
 
 				garbage.lastCFrame = root.CFrame

@@ -2,6 +2,7 @@
 
 local createService = require("./services/createService")
 local assetsService = require("./services/assetsService")
+local executorEnv = require("../framework/environment/executor")
 local themeService = require("./services/themeService")
 local scaleObject = require("./utils/scaleObject")
 
@@ -32,7 +33,7 @@ local notifier = {
 	room = math.huge,
 }
 
-local function createPopup(parent, order)
+local function createPopup(parent, order, copyable: boolean)
 	local popup = createService.new("Frame", "Notification", parent, {
 		BorderSizePixel = 0,
 		ClipsDescendants = true,
@@ -45,11 +46,13 @@ local function createPopup(parent, order)
 
 	local titleInset = ICON_MARGIN + config.iconSize + TITLE_GAP
 
+	-- the copy button (when there is one) sits left of the close button, so the title leaves it room on the right
+	local copySpace = if copyable then config.iconSize + ICON_MARGIN else 0
+
 	local titleLabel = createService.new("TextLabel", "Title", popup, {
-		AnchorPoint = Vector2.new(0.5, 0),
 		BackgroundTransparency = 1,
-		Position = UDim2.fromScale(0.5, 0),
-		Size = UDim2.new(1, -titleInset * 2, 0, config.titleHeight),
+		Position = UDim2.fromOffset(titleInset, 0),
+		Size = UDim2.new(1, -(titleInset * 2 + copySpace), 0, config.titleHeight),
 		Text = "",
 		TextSize = config.titleTextSize,
 		TextTruncate = Enum.TextTruncate.AtEnd,
@@ -114,7 +117,23 @@ local function createPopup(parent, order)
 	assetsService:loadImage(pinButton, "lucide-pin")
 	assetsService:loadImage(closeButton, "lucide-custom-x")
 	
-	return popup, titleLabel, textLabel, pinButton, closeButton, descHolder
+	-- the copy button of a popup that can copy its text (options.copy): a copy icon left of the close button
+	local copyButton = nil
+	if copyable then
+		copyButton = createService.new("ImageButton", "CopyButton", popup, {
+			AnchorPoint = Vector2.new(1, 0.5),
+			BackgroundTransparency = 1,
+			Position = UDim2.new(1, -(ICON_MARGIN * 2 + config.iconSize), 0, config.titleHeight / 2),
+			Size = UDim2.fromOffset(config.iconSize, config.iconSize),
+			ThemeTag = {
+				ImageColor3 = "Colors.Icons",
+			},
+		})
+
+		assetsService:loadImage(copyButton, "lucide-clipboard-copy")
+	end
+
+	return popup, titleLabel, textLabel, pinButton, closeButton, descHolder, copyButton
 end
 
 -- The row of buttons of a dialog, at the bottom of the body box. Each choice is { text, primary?, onTap? }.
@@ -231,7 +250,7 @@ function notifier:getContainer(screenGui)
 	self.queue = {}
 
 	for _, item in pending do
-		self:add(item.title, item.message, item.duration, item.choices)
+		self:add(item.title, item.message, item.duration, item.choices, item.options)
 	end
 
 	return container
@@ -409,7 +428,7 @@ function notifier:trim()
 	end
 end
 
-function notifier:add(title, message, duration, choices)
+function notifier:add(title, message, duration, choices, options)
 	self.nextOrder += 1
 
 	local item = {
@@ -421,9 +440,16 @@ function notifier:add(title, message, duration, choices)
 		actionsHeight = if choices then config.actionHeight + config.actionsTopGap + TEXT_INSET else 0,
 	}
 
-	local descHolder
-	item.frame, item.titleLabel, item.textLabel, item.pinButton, item.closeButton, descHolder =
-		createPopup(self.container, self.nextOrder)
+	-- the copy button is only there when the popup asks for it (options.copy) and the executor can set the clipboard
+	local copyable = options ~= nil and options.copy == true and executorEnv.setclipboard ~= nil
+
+	local descHolder, copyButton
+	item.frame, item.titleLabel, item.textLabel, item.pinButton, item.closeButton, descHolder, copyButton =
+		createPopup(self.container, self.nextOrder, copyable)
+
+	-- what the copy button copies: options.copyText when it is given, otherwise the message
+	item.copyButton = copyButton
+	item.copyText = tostring(if options and options.copyText ~= nil then options.copyText else message)
 
 	item.titleLabel.Text = title
 	item.textLabel.Text = textHighlight:apply(message)
@@ -431,6 +457,12 @@ function notifier:add(title, message, duration, choices)
 	table.insert(item.connections, connectionService:Connect(item.pinButton.Activated, function()
 		self:pin(item)
 	end))
+
+	if copyButton then
+		table.insert(item.connections, connectionService:Connect(copyButton.Activated, function()
+			self:copy(item)
+		end))
+	end
 
 	-- a dialog without a duration stays until one of its buttons (or the close button) is tapped, so it cannot be pinned
 	-- and is not timed. With a duration it is a notification like the others, with buttons
@@ -490,7 +522,22 @@ function notifier:add(title, message, duration, choices)
 	self:trimToRoom()
 end
 
-function notifier:notify(title, message, duration)
+-- copies the text of a popup (its copyText, or else its message). The copy icon lights up for a moment
+function notifier:copy(item)
+	local setclipboard = executorEnv.setclipboard
+	if setclipboard == nil or item.removed then return end
+
+	setclipboard(item.copyText)
+	themeService:addObject(item.copyButton, { ImageColor3 = "Colors.Primary" })
+
+	task.delay(config.copyFeedbackTime, function()
+		if item.removed then return end
+		themeService:addObject(item.copyButton, { ImageColor3 = "Colors.Icons" })
+	end)
+end
+
+-- options (optional) is a table. copy = true gives the popup a copy button, which copies copyText, or else the message
+function notifier:notify(title, message, duration, options)
 	if message == nil then
 		message = title
 		title = config.defaultTitle
@@ -499,11 +546,11 @@ function notifier:notify(title, message, duration)
 	title = tostring(title)
 
 	if not self.container then
-		table.insert(self.queue, { title = title, message = message, duration = duration })
+		table.insert(self.queue, { title = title, message = message, duration = duration, options = options })
 		return
 	end
 
-	self:add(title, message, duration)
+	self:add(title, message, duration, nil, options)
 end
 
 -- A notification with buttons, to ask the player something (a confirmation, say). choices is a list of

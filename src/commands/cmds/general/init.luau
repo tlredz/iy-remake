@@ -18,7 +18,6 @@ return {
 	require("./saveinstance"),   -- maybe later
 	require("./clearerror"),
 	require("./antigameplaypaused"),
-	require("./clientantikick"),
 	require("./clientantiteleport"),
 	require("./allowrejoin"),
 	require("./cancelteleport"),      -- done

@@ -1,7 +1,8 @@
 -- src/ui/components/settings/keybindsEditor.luau
 -- The keybind pages. Edit Keybinds lists the interface keys (the prefix), and Command Settings lists the keys of the
 -- commands, under a header for each command. Both are made by makePage: a row for each binding of their groups
--- (framework/config/services/keybinds), and a row that puts those bindings back to their default keys.
+-- (framework/config/services/keybinds), and a row that puts those bindings back to their default keys. Command Settings
+-- has that row right under its title, so it is found before the long list.
 --
 -- Pages are built by build(page, ctx): ctx.back goes to the panel, and ctx.stoppers collects the functions that
 -- end a wait for a key. See settings/init.luau.
@@ -54,7 +55,8 @@ local function fixedKeyLines(groups: { string }): { string }
 end
 
 -- pageConfig: title (the page's header), groups ({ key, title? } in order; a title adds a header over the group),
--- reset (the text of the reset row). Returns the build function of the page
+-- reset (the text of the reset row), resetAtTop (the reset row goes right under the title instead of at the end).
+-- Returns the build function of the page
 local function makePage(pageConfig)
 	return function(page: ScrollingFrame, ctx)
 		local list = widgets.list(page)
@@ -62,6 +64,36 @@ local function makePage(pageConfig)
 
 		local refreshers = {}
 		local keys = {}
+
+		-- the row that puts the bindings back to their defaults. It is made first or last, as the page asks
+		local function addReset()
+			local reset = widgets.actionRow(list)
+			if pageConfig.resetIcon then
+				widgets.icon(reset, pageConfig.resetIcon)
+			end
+			widgets.label(reset, pageConfig.reset, 0)
+
+			reset.Activated:Connect(function()
+				-- a wait for a key ends first, so it does not capture the reset keys
+				for _, stop in ctx.stoppers do
+					stop()
+				end
+
+				for _, key in keys do
+					for _, name in namesIn(key) do
+						keyboardService:resetBinding(name)
+					end
+				end
+
+				for _, refresh in refreshers do
+					refresh()
+				end
+			end)
+		end
+
+		if pageConfig.resetAtTop then
+			addReset()
+		end
 
 		for _, group in pageConfig.groups do
 			if group.title then
@@ -73,6 +105,10 @@ local function makePage(pageConfig)
 			for _, name in namesIn(group.key) do
 				local binding = keybindsConfig.bindings[name]
 				local row = widgets.row(list)
+
+				if binding.icon then
+					widgets.icon(row, binding.icon)
+				end
 
 				widgets.label(row, binding.label or name, VALUE.keybindWidth + 2 * PANEL.padding)
 
@@ -87,25 +123,9 @@ local function makePage(pageConfig)
 			widgets.note(list, table.concat(fixedLines, "\n"))
 		end
 
-		local reset = widgets.row(list)
-		widgets.label(reset, pageConfig.reset, 0)
-
-		reset.Activated:Connect(function()
-			-- a wait for a key ends first, so it does not capture the reset keys
-			for _, stop in ctx.stoppers do
-				stop()
-			end
-
-			for _, key in keys do
-				for _, name in namesIn(key) do
-					keyboardService:resetBinding(name)
-				end
-			end
-
-			for _, refresh in refreshers do
-				refresh()
-			end
-		end)
+		if not pageConfig.resetAtTop then
+			addReset()
+		end
 	end
 end
 
@@ -114,6 +134,7 @@ return {
 	interface = makePage({
 		title = config.pages.keybinds.title,
 		reset = config.pages.keybinds.reset,
+		resetIcon = config.pages.keybinds.resetIcon,
 		groups = {
 			{ key = "interface" },
 		},
@@ -122,6 +143,8 @@ return {
 	commands = makePage({
 		title = config.pages.commands.title,
 		reset = config.pages.commands.reset,
+		resetIcon = config.pages.commands.resetIcon,
+		resetAtTop = true,
 		groups = keybindsConfig.groups,
 	}),
 }

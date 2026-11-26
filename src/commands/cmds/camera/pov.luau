@@ -1,5 +1,6 @@
 return {
 	{
+		client = true,
 		action = "firstp",
 		description = "Forces camera to go into first person",
 		run = function(self)
@@ -7,6 +8,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "thirdp",
 		description = "Allows camera to go into third person",
 		run = function(self)

@@ -1,4 +1,5 @@
 local keyboardService = require("../../../framework/services/keyboardService")
+local objectDecoy = require("../../systems/objectDecoy")
 
 local FLOAT_OFFSET = -3.1
 
@@ -9,7 +10,7 @@ local function removeFloat(self)
 	for _, connection in garbage.connections do
 		connection:Disconnect()
 	end
-	garbage.platform:Destroy()
+	objectDecoy.destroy(garbage.platform)
 end
 
 local function startFloat(self)
@@ -25,13 +26,14 @@ local function startFloat(self)
 		return
 	end
 
-	local platform = Instance.new("Part")
-	platform.Name = "IYFloatPlatform"
-	platform.Transparency = 1
-	platform.Size = Vector3.new(2, 0.2, 1.5)
-	platform.Anchored = true
-	platform.CFrame = root.CFrame * CFrame.new(0, FLOAT_OFFSET, 0)
-	platform.Parent = character
+	local platform = objectDecoy.createProtected("Part", {
+		Name = "IYFloatPlatform",
+		Transparency = 1,
+		Size = Vector3.new(2, 0.2, 1.5),
+		Anchored = true,
+		CFrame = root.CFrame * CFrame.new(0, FLOAT_OFFSET, 0),
+		Parent = character,
+	})
 
 	local garbage = self:createGarbage("float")
 	garbage.platform = platform
@@ -45,7 +47,7 @@ local function startFloat(self)
 			return
 		end
 
-		platform.CFrame = currentRoot.CFrame * CFrame.new(0, garbage.offset, 0)
+		objectDecoy.setProperty(platform, "CFrame", currentRoot.CFrame * CFrame.new(0, garbage.offset, 0))
 	end))
 
 	-- Same steps as IY: holding the up key lifts the platform, holding the down key lowers it. The keys are read at

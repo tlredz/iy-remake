@@ -172,30 +172,24 @@ local function build(page: ScrollingFrame, ctx)
 			end)
 		end
 
-		-- adds every file that is listed. The ones that fail are told, and stay out
+		-- adds every file of the folder, the same as addallplugins (plugins.addAll). The ones that fail are told, and stay out
 		local allRow = widgets.row(rows)
 		widgets.label(allRow, string.format(TEXT.addAll, #names), 0)
 
 		allRow.Activated:Connect(function()
-			local added = 0
-			local failed = {}
+			local result, reason = plugins.addAll(commandsList)
 
-			for _, name in names do
-				local success, detail = plugins.add(commandsList, name)
-
-				if success then
-					added += 1
-				else
-					table.insert(failed, `{name}: {detail}`)
-				end
+			if not result then
+				refuse(reason or "")
+				return
 			end
 
-			local message = string.format(TEXT.addedAll, added)
+			local message = string.format(TEXT.addedAll, #result.added)
 
-			if #failed > 0 then
-				message ..= string.format(TEXT.failedAll, #failed)
+			if #result.failed > 0 then
+				message ..= string.format(TEXT.failedAll, #result.failed)
 
-				for _, line in failed do
+				for _, line in result.failed do
 					warn(`plugin {line}`)
 				end
 			end

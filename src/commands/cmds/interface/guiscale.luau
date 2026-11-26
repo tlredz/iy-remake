@@ -1,6 +1,7 @@
 local scaleConfig = require("../../../framework/settings").ui.scale
 
 return {
+	client = true,
 	action = "guiscale|uiscale",
 	description = "Changes the size of the gui. [number] accepts decimals and whole numbers.",
 	args = {

@@ -75,6 +75,10 @@ return createCommands({
 		commands = require("./cmds/general")
 	},
 	{
+		name = "bypass",
+		commands = require("./cmds/bypass")
+	},
+	{
 		name = "interface",
 		commands = require("./cmds/interface")
 	},

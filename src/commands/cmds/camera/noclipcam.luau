@@ -8,6 +8,7 @@ local function getPopper(player)
 end
 
 return {
+	client = true,
 	action = "noclipcam|nccam",
 	description = "Allows camera to go through objects like walls",
 	run = function(self)

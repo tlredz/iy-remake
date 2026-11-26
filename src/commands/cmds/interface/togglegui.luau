@@ -9,6 +9,7 @@ for _, item in Enum.CoreGuiType:GetEnumItems() do
 end
 
 return {
+	client = true,
 	action = "togglecoregui|togglegui|tcgui",
 	description = "Toggles visibility of coregui items",
 	args = {

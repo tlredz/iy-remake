@@ -22,6 +22,7 @@ end
 
 return {
 	{
+		client = true,
 		action = "enable",
 		description = "Enables a CoreGui element (inventory, leaderboard, chat, reset, emotes...)",
 		args = { kind = "string", name = "gui name" },
@@ -30,6 +31,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "disable",
 		description = "Disables a CoreGui element (inventory, leaderboard, chat, reset, emotes...)",
 		args = { kind = "string", name = "gui name" },

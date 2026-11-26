@@ -19,6 +19,7 @@ end
 
 return {
 	{
+		client = true,
 		action = "freecam|fc",
 		description = "Allows you to freely move camera around the game",
 		args = {
@@ -36,6 +37,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "freecampos|fcpos",
 		description = "Moves / opens freecam in a certain position",
 		args = { kind = "vector3" },
@@ -47,6 +49,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "freecamwaypoint|fcwp",
 		description = "Moves / opens freecam to a waypoint",
 		args = {
@@ -64,6 +67,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "freecamgoto|fcgoto|freecamtp|fctp",
 		description = "Moves / opens freecam to a player",
 		args = { kind = "player" },
@@ -79,6 +83,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "unfreecam|unfc|nofreecam|nofc",
 		description = "Disables freecam",
 		run = function(self)
@@ -86,6 +91,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "freecamspeed|fcspeed",
 		description = "Adjusts freecam speed (default is 1)",
 		args = { kind = "number" },
@@ -94,6 +100,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "notifyfreecamposition|notifyfcpos",
 		description = "Noitifies you your freecam coordinates",
 		run = function(self)
@@ -107,6 +114,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "copyfreecamposition|copyfcpos",
 		description = "Copies your freecam coordinates to your clipboard",
 		run = function(self)
@@ -124,6 +132,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "freecamboost|fcboost",
 		description = "Increases the freecam boost (the BOOST button) by an amount, and saves it",
 		args = { kind = "number", name = "amount", optional = true },

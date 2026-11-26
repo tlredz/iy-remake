@@ -13,16 +13,24 @@
 --   - mobile: Enter on the command bar minimizes it only if the character was being moved with the analog stick when
 --     Enter was pressed (onMobileEnter). PC: Enter always minimizes it (onCommandBarClosed), unless a finger is
 --     on the window at that moment (fingerOnWindow): then the window stays as it is
---   - while the command bar is in use, a drag down does not minimize it either (it only snaps)
+--   - a drag of the window is not stopped by the command bar or by the keep open: it is a slide made on purpose. Those
+--     only stop the automatic minimizing (the click outside, the hover, the outside swipe)
 --   - anything added with addWindowPart (the mobile IY button) counts as part of the window
---   - a drag that ends DRAG_DOWN_MIN px lower than it started minimizes it
---   - mobile: a swipe down on the command list, from the top of the list, minimizes it too (onListSwipeDown)
+--   - Transparent When Minimized (Settings > Interface): the whole window fades to MINIMIZED_TRANSPARENCY while it is
+--     minimized, and is opaque in the other states. It is a tween of its own (fadeTo), set at once when the setting changes
+--   - a drag of the window is a slide, up or down, of at least SLIDE_MIN px that moves mostly vertically (at least
+--     VERTICAL_RATIO times more up or down than sideways). A sideways swipe with a little drift up or down keeps the state:
+--       up from minimized   -> expanded (opens it, at the bottom)
+--       up from top or bottom -> top
+--       down from top or bottom -> expanded, at the bottom, open; unless it is a flick (at least DRAG_DOWN_MIN px, at
+--         FLING_SPEED px/s or faster) or it was taken all the way down, to where only its top bar is left: then minimized
+--   - mobile: a swipe down on the command list, from the top of the list, minimizes it too (onListSwipeDown). At the top it
+--     needs the finger to travel all the way down, to the minimized position; a shorter swipe keeps it open
 --   - mobile: opening the window (a tap on it, the command bar, the IY button, quickCapture) while a finger is on the screen
 --     outside it (the camera, the thumbstick) turns on an automatic keep open (lockSwipe): the outside swipe, the swipe down
---     on the list and a drag down do not minimize it. It turns itself off
+--     on the list do not minimize it (a drag of the window still does). It turns itself off
 --     when the command is sent (unlockSwipe), when the window is minimized in any way, or after LOCK_IDLE_TIME seconds
 --     without touching the interface (checkLockIdle). Clicks still minimize it. The manual Keep Menu Open is not affected
---   - a drag that ends snaps to the top if that edge is nearer, otherwise to the bottom (keeping expanded / minimized)
 --   - a window at the top never moves on taps or outside clicks
 --   - the window is interactive (onInteractive) only when it is not minimized AND has stopped moving: it turns off
 --     the moment it is minimized and turns back on when the animation to expanded / top is complete
@@ -33,7 +41,7 @@
 --       command bar loses the focus (Enter, Escape, a click elsewhere) -> the window minimizes, like the original's
 --                      Cmdbar.FocusLost. A press on the window (a command in the list) that took the focus away
 --                      does not count: then the MouseLeave decides
---     Nothing minimizes while kept open or during a drag; a leave during a drag counts when the drag ends.
+--     Nothing minimizes on its own while kept open or during a drag; a leave during a drag counts when the drag ends.
 --     Outside clicks do not minimize on PC. Without a mouse (touch only) hoverToOpen is off and the mobile rules apply
 
 local robloxServices = require("../../framework/services/rbxServices")
@@ -45,9 +53,14 @@ local UserInputService = robloxServices.UserInputService
 local RunService = robloxServices.RunService
 
 local MOVE_TIME = 0.32 -- seconds for expand / minimize / snap
+local MINIMIZED_TRANSPARENCY = 0.5 -- the GroupTransparency of the window while it is minimized, when the setting is on (0 opaque, 1 invisible)
 local TAP_MAX_TIME = 0.1 -- a press this short (or shorter) can be a tap
 local TAP_MAX_TRAVEL = 10 -- ...if the pointer barely moved (px)
-local DRAG_DOWN_MIN = 50 -- a drag ending this many px lower minimizes the window (px)
+local DRAG_DOWN_MIN = 30 -- a flick down must move at least this many px to minimize the window (px)
+local SLIDE_MIN = 10 -- px a drag must move, up or down, to be a slide. Less is a wobble and keeps the state
+local VERTICAL_RATIO = 2 -- a slide counts as up or down only when it moves this many times more vertically than sideways
+local MINIMIZE_TOLERANCE = 1 -- px a window at the top may stop short of its minimized position and still minimize (rounding)
+local FLING_SPEED = 800 -- px per second, over the last movement (dragService). A flick down this fast and at least DRAG_DOWN_MIN px minimizes the window
 local CLICK_MAX_TIME = 0.3 -- an outside press this short (seconds) counts as a click; a held press does not
 local SWIPE_OUTSIDE_MIN = 20 -- px a finger that came down outside the window must slide before it minimizes the window
 local LOCK_IDLE_TIME = 3 -- seconds without touching the interface before the automatic keep open turns itself off
@@ -79,6 +92,7 @@ dock.__index = dock
 --                    Only takes effect when a mouse is connected (UserInputService.MouseEnabled)
 --   commandBarInUse  fn() -> boolean, true while the command bar is in use (nothing minimizes the window then)
 --   isMoving         fn() -> boolean, true while the character is moving (checked every frame, see MOVING_GRACE)
+--   transparentWhenMinimized  boolean, the saved "Transparent When Minimized" setting (see setTransparentWhenMinimized)
 function dock.new(options)
 	local self = setmetatable({
 		frame = options.frame,
@@ -93,6 +107,8 @@ function dock.new(options)
 		commandBarInUse = options.commandBarInUse,
 		isMoving = options.isMoving,
 		lastMovingAt = -math.huge, -- os.clock() of the last frame in which the character was moving
+		transparentWhenMinimized = options.transparentWhenMinimized == true, -- the saved setting (see setTransparentWhenMinimized)
+		fade = nil, -- the tween of the window's transparency, while one plays (see fadeTo)
 
 		state = "minimized",
 		interactive = nil, -- unknown until the first setInteractive below
@@ -111,6 +127,7 @@ function dock.new(options)
 	}, dock)
 
 	self.frame.Position = self:targetFor("minimized")
+	self:fadeTo("minimized")
 
 	table.insert(self.connections, connectionService:Connect(UserInputService.InputBegan, function(input)
 		self:onInputBegan(input)
@@ -249,25 +266,6 @@ function dock:onSettled(fn: () -> ())
 	end
 end
 
--- where a drag that ends right now should go: "top" if that edge is nearer, otherwise the bottom.
--- The bottom keeps the state the window was in (expanded stays expanded, minimized stays minimized),
--- and a window that was at the top goes down to minimized.
-function dock:nearestSnap(): string
-	local frame = self.frame
-	local distanceToTop = frame.AbsolutePosition.Y
-	local distanceToBottom = self.screenGui.AbsoluteSize.Y - (frame.AbsolutePosition.Y + frame.AbsoluteSize.Y)
-
-	if distanceToTop <= distanceToBottom then
-		return "top"
-	end
-
-	if self.state == "expanded" then
-		return "expanded"
-	end
-
-	return "minimized"
-end
-
 -- the Position of the window in a state, keeping its current X
 function dock:targetFor(state: string): UDim2
 	local x = self.clampPosition(self.frame.Position).X
@@ -321,6 +319,36 @@ function dock:cancel()
 	end
 end
 
+-- the GroupTransparency the window has in a state: MINIMIZED_TRANSPARENCY when it is minimized and the setting is on,
+-- and 0 (opaque) otherwise
+function dock:transparencyFor(state: string): number
+	if state == "minimized" and self.transparentWhenMinimized then
+		return MINIMIZED_TRANSPARENCY
+	end
+
+	return 0
+end
+
+-- fades the window to its transparency in a state. Without info it is set at once. It is a tween of its own, not part of
+-- the move, so a change of the setting can replace it without moving the window
+function dock:fadeTo(state: string, info: TweenInfo?)
+	if self.fade then
+		self.fade:Cancel()
+		self.fade = nil
+	end
+
+	local target = self:transparencyFor(state)
+
+	if info == nil then
+		self.frame.GroupTransparency = target
+		return
+	end
+
+	local fade = TweenService:Create(self.frame, info, { GroupTransparency = target })
+	self.fade = fade
+	fade:Play()
+end
+
 function dock:moveTo(state: string, time: number?, direction: Enum.EasingDirection?)
 	-- already heading there: let the current animation finish
 	if state == self.state and self.tween and self.tween.PlaybackState == Enum.PlaybackState.Playing then
@@ -348,11 +376,13 @@ function dock:moveTo(state: string, time: number?, direction: Enum.EasingDirecti
 
 	if duration <= 0 then
 		self.frame.Position = target
+		self:fadeTo(state)
 		self:setInteractive(state ~= "minimized")
 		return
 	end
 
 	local info = TweenInfo.new(duration, Enum.EasingStyle.Quart, direction or Enum.EasingDirection.Out)
+	self:fadeTo(state, info)
 	local tween = TweenService:Create(self.frame, info, { Position = target })
 	self.tween = tween
 
@@ -472,6 +502,13 @@ function dock:setDragging(dragging: boolean)
 	end
 end
 
+-- the saved "Transparent When Minimized" setting changed. The switch is on the window, so the window is expanded then,
+-- and the change applies from the next minimize (or at once, when the window is minimized)
+function dock:setTransparentWhenMinimized(enabled: boolean)
+	self.transparentWhenMinimized = enabled == true
+	self:fadeTo(self.state)
+end
+
 function dock:minimize(time: number?, direction: Enum.EasingDirection?)
 	-- the window is about to go below the screen: whatever is focused inside it has to let go first
 	if self.onMinimize then
@@ -485,6 +522,7 @@ end
 function dock:reflow()
 	self:cancel()
 	self.frame.Position = self:targetFor(self.state)
+	self:fadeTo(self.state)
 	self:setInteractive(self.state ~= "minimized") -- the window is where it should be now, no animation left to wait for
 end
 
@@ -495,10 +533,12 @@ function dock:sleep()
 	self.state = "minimized"
 	self.swipeLocked = false
 	self.frame.Position = self:targetFor("minimized")
+	self:fadeTo("minimized")
 	self:setInteractive(false)
 end
 
--- a drag of the window ended (gesture comes from dragService)
+-- a drag of the window ended (gesture comes from dragService). A drag is a slide made on purpose, so the command bar and
+-- the keep open do not stop it: they only stop the automatic minimizing (see the rules above)
 function dock:onDragEnded(gesture)
 	if gesture.travel <= TAP_MAX_TRAVEL then
 		-- it was not a drag: resume the state it was heading to (a tap may have interrupted an animation)
@@ -506,20 +546,73 @@ function dock:onDragEnded(gesture)
 		return
 	end
 
-	if gesture.dy >= DRAG_DOWN_MIN and not self:commandBarBusy() and not self.swipeLocked then
+	-- a slide only counts when it moves mostly up or down: a sideways swipe that drifts a little up is not a slide up
+	local vertical = math.abs(gesture.dy) >= VERTICAL_RATIO * math.abs(gesture.dx)
+	local up = vertical and gesture.dy <= -SLIDE_MIN
+	local down = vertical and gesture.dy >= SLIDE_MIN
+
+	if self.state == "minimized" then
+		-- a slide up opens it, at the bottom. Anything else leaves it minimized
+		if up then
+			self:moveTo("expanded")
+		else
+			self:moveTo("minimized")
+		end
+		return
+	end
+
+	-- open, at the top or at the bottom: a slide up moves it to the top
+	if up then
+		self:moveTo("top")
+		return
+	end
+
+	-- a slide down minimizes it when it is a flick, or when it was taken all the way down. Otherwise it stays open, at the bottom
+	if down and self:isSlideDownMinimize(gesture) then
 		self:minimize()
 		return
 	end
 
-	self:moveTo(self:nearestSnap())
+	if down then
+		self:moveTo("expanded")
+		return
+	end
+
+	-- a sideways swipe, or a wobble: the window stays as it is
+	self:moveTo(self.state)
+end
+
+-- true when a slide down minimizes the window: a flick (at least DRAG_DOWN_MIN px, moving at FLING_SPEED px/s or faster
+-- at the release), or a drag that took the window all the way down, to where only its top bar is left on the screen
+function dock:isSlideDownMinimize(gesture): boolean
+	if gesture.dy >= DRAG_DOWN_MIN and gesture.velocityY >= FLING_SPEED then
+		return true
+	end
+
+	return self.frame.AbsolutePosition.Y >= self:minimizedTop() - MINIMIZE_TOLERANCE
+end
+
+-- the height of the window's top edge when it is minimized, in pixels: only its top bar is on the screen, at the bottom
+-- edge. The UI scale is applied to the top bar's size, the same way clampDrag does
+function dock:minimizedTop(): number
+	local scale = math.max(self.getScale(), 0.01)
+	return self.screenGui.AbsoluteSize.Y - self.topBarHeight * scale
 end
 
 -- Mobile: a swipe down that started on the command list while the list was at its top. commands calls this when the
--- finger is let go. Same rule as a drag that ends DRAG_DOWN_MIN px lower: the window minimizes, unless the command bar
--- is in use
-function dock:onListSwipeDown()
+-- finger is let go, with the travel of the finger (px). From the bottom edge the window minimizes. At the top it only
+-- minimizes when the finger travels all the way down to the minimized position, so a short swipe keeps it open. The
+-- command bar in use keeps it open too
+function dock:onListSwipeDown(travel: number?)
 	if self.hoverToOpen or self.swipeLocked then return end
 	if self.state == "minimized" or self:commandBarBusy() then return end
+
+	if self.state == "top" then
+		if (travel or 0) >= self:minimizedTop() - MINIMIZE_TOLERANCE then
+			self:minimize()
+		end
+		return
+	end
 
 	self:minimize()
 end

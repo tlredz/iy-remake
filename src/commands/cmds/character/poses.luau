@@ -1,3 +1,4 @@
+local objectDecoy = require("../../systems/objectDecoy")
 local function stopSpasm(self)
 	local garbage = self:collectGarbage("spasm")
 	if garbage and garbage.track then
@@ -87,7 +88,7 @@ return {
 				end
 			end
 			
-			humanoid.HipHeight = humanoid.RigType == Enum.HumanoidRigType.R15 and 0.5 or -1.5
+			objectDecoy.setProperty(humanoid, "HipHeight", humanoid.RigType == Enum.HumanoidRigType.R15 and 0.5 or -1.5)
 		end
 	},
 	{

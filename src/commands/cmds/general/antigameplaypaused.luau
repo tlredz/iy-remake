@@ -9,6 +9,7 @@ end
 
 return {
 	{
+		client = true,
 		action = "antigameplaypaused",
 		description = "Clears the annoying box shown when a game is loading assets due to network lag",
 		run = function(self)
@@ -34,6 +35,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "unantigameplaypaused",
 		description = "Disables antigameplaypaused",
 		run = function(self)

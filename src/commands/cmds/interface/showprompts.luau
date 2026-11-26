@@ -1,5 +1,6 @@
 return {
 	{
+		client = true,
 		action = "noprompts|nopurchaseprompts",
 		description = "Prevents the game from showing you purchase/premium prompts",
 		run = function(self)
@@ -7,6 +8,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "showprompts|showpurchaseprompts",
 		description = "Allows the game to show purchase/premium prompts again",
 		run = function(self)

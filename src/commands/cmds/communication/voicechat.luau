@@ -62,6 +62,7 @@ end
 
 return {
 	{
+		client = true,
 		action = "listento",
 		description = "Listens to the area around a player. Can also eavesdrop with vc",
 		args = { kind = "player", optional = true },
@@ -78,6 +79,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "unlistento",
 		description = "Disables listento",
 		run = function(self)
@@ -85,6 +87,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "muteallvoices|muteallvcs",
 		description = "Mutes voice chat for all players",
 		run = function(self)
@@ -94,6 +97,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "unmuteallvoices|unmuteallvcs",
 		description = "Unmutes voice chat for all players",
 		run = function(self)
@@ -103,6 +107,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "mutevc",
 		description = "Mutes the voice chat of a player",
 		args = { kind = "player" },
@@ -118,6 +123,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "unmutevc",
 		description = "Unmutes the voice chat of a player",
 		args = { kind = "player" },
@@ -133,6 +139,7 @@ return {
 		end
 	},
 	{
+		client = true,
 		action = "phonebook|call",
 		description = "Prompts the Roblox phonebook UI to let you call your friends. Needs voice chat enabled",
 		run = function(self)

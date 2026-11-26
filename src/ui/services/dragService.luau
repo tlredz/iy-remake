@@ -19,6 +19,7 @@ local userInputService = rbxServices.UserInputService
 local LERP_VALUE = 0.28
 local BUTTON_DEBOUNCE = 0.2 -- seconds a press on a button waits to be a click before it can become a drag
 local CLICK_TRAVEL = 10 -- px a press on a button can move and still be a click
+local VELOCITY_SPAN = 0.15 -- seconds of the last movement a release is judged by (see _velocity)
 
 local dragService = {}
 dragService.__index = dragService
@@ -57,6 +58,7 @@ function dragService:_resetDrag()
 	self.lastPos = nil
 	self.pressTime = 0
 	self.travel = 0
+	table.clear(self.samples)
 end
 
 -- the press is over. A drag that began reports how it went (dragEnded gets the object and a gesture). A press that
@@ -69,10 +71,17 @@ function dragService:_endPress(press)
 	local gesture = nil
 
 	if wasDragging then
+		-- the velocity is read before the samples are cleared. It is the speed of the last movement, not the average of
+		-- the whole press: a flick that starts after a pause is still a flick
+		local velocity = self:_velocity()
+
 		gesture = {
 			duration = os.clock() - self.pressTime, -- seconds the press lasted
 			travel = self.travel, -- farthest distance (px) the pointer got from where it started
+			dx = self.lastPos.X - self.dragStart.X, -- net horizontal movement (px), positive = right
 			dy = self.lastPos.Y - self.dragStart.Y, -- net vertical movement (px), positive = downward
+			velocityX = velocity.X, -- px per second over the last movement
+			velocityY = velocity.Y, -- px per second over the last movement, positive = downward
 		}
 	end
 
@@ -123,6 +132,8 @@ function dragService:_startPress(object: GuiObject, input: InputObject)
 	self.startPos = object.Position
 	self.pressTime = os.clock()
 	self.travel = 0
+	table.clear(self.samples)
+	self:_recordSample(input.Position)
 
 	-- the press ends on whichever report arrives first; there is no idle timeout
 	self._pressConnections = {
@@ -169,6 +180,7 @@ function dragService:update(object: GuiObject, input: InputObject)
 
 	self.lastPos = input.Position
 	self.travel = math.max(self.travel, delta.Magnitude)
+	self:_recordSample(input.Position)
 
 	local newPosition: UDim2 = UDim2.new(
 		self.startPos.X.Scale,
@@ -184,6 +196,35 @@ function dragService:update(object: GuiObject, input: InputObject)
 
 	object.Position = object.Position:Lerp(newPosition, LERP_VALUE)
 	self.onDragged:Fire(object)
+end
+
+-- keeps the positions of the press over the last VELOCITY_SPAN seconds (at least two of them, once there are two)
+function dragService:_recordSample(position: Vector3)
+	local now = os.clock()
+	table.insert(self.samples, { time = now, position = position })
+
+	while #self.samples > 2 and now - self.samples[1].time > VELOCITY_SPAN do
+		table.remove(self.samples, 1)
+	end
+end
+
+-- how fast the press is moving now, in px per second, from its last movement. It is zero when the finger has not
+-- moved for VELOCITY_SPAN seconds, so a finger that stopped before it was let go does not count as a flick
+function dragService:_velocity(): Vector2
+	local samples = self.samples
+	local first, last = samples[1], samples[#samples]
+
+	if #samples < 2 or os.clock() - last.time > VELOCITY_SPAN then
+		return Vector2.zero
+	end
+
+	local elapsed = last.time - first.time
+	if elapsed <= 0 then
+		return Vector2.zero
+	end
+
+	local move = last.position - first.position
+	return Vector2.new(move.X / elapsed, move.Y / elapsed)
 end
 
 function dragService:canDragObject(object: GuiObject): boolean
@@ -209,6 +250,7 @@ function dragService.new(uiScale: UIScale?)
 		travel = 0,
 		_press = nil, -- the press being tracked, nil when there is none
 		_pressConnections = {},
+		samples = {}, -- the recent positions of the press, for its velocity (see _recordSample)
 		filters = {},
 
 		onDragged = signal.new(),
