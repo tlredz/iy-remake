@@ -4,15 +4,15 @@
 #      src/ui/themes/icons/raw.luau. An icon built into the code needs no request to the repo (see ui/services/assetsService)
 #   2. darklua bundles main.luau and its modules into compiled.luau, with darklua.json
 #
-# usage: ./build.bash
-# darklua is looked for in DARKLUA (if set), then the PATH, then this folder, then ~/.cargo/bin
+# usage: ./build/build.bash
+# darklua is looked for in DARKLUA (if set), then the PATH, then the project folder, then ~/.cargo/bin
 #
 # Not built into the code: the files in SKIPPED_NAMES, and any image bigger than MAX_BYTES. Those are asked for from the
 # repo when they are needed.
 
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 ASSETS_DIR="$ROOT/assets"

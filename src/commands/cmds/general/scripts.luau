@@ -19,9 +19,6 @@ local function dexExplorer(self, byMoon)
 end
 
 local function emoteMenu(self, args)
-	local notifyChunk = fetchScript(self, "Emote Menu", "backups/emotes/notify.luau", "iy/7yd7/notify.luau", true)
-	local notify = notifyChunk and notifyChunk() or function() end
-
 	local keycode = args:nextValue()
 	local notifyEnabled = args:nextValue()
 
@@ -29,7 +26,7 @@ local function emoteMenu(self, args)
 	if not main then return end
 
 	main({
-		notifyFunction = if notifyEnabled ~= false then notify else function() end,
+		notifyEnabled = notifyEnabled,
 		isMobile = self.isMobile,
 		keycode = keycode,
 	})

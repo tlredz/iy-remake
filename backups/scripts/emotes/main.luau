@@ -28,14 +28,16 @@ local function handleConfig()
 	end
 end
 
-local Notify = assert(config.notifyFunction, "missing notify function")
+local Notify = require("./notify")
 
 if _G.EmotesGUIRunning then
-	Notify({
-		Title = '7yd7 | Emote',
-		Content = '⚠️ It works It actually works',
-		Duration = 5
-	})
+	if config.notifyEnabled ~= false then
+		Notify({
+			Title = '7yd7 | Emote',
+			Content = '⚠️ It works It actually works',
+			Duration = 5
+		})
+	end
 	return
 end
 _G.EmotesGUIRunning = true

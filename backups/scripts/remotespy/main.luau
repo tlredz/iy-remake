@@ -220,8 +220,8 @@ function ErrorPrompt(Message,state)
     end
 end
 
-local Highlight = (isfile and loadfile and isfile("Highlight.lua") and loadfile("Highlight.lua")()) or loadstring(game:HttpGet("https://raw.githubusercontent.com/tlredz/iy-remake/refs/heads/main/backups/remotespy/highlight.luau"))()
-local LazyFix = loadstring(game:HttpGet("https://raw.githubusercontent.com/tlredz/iy-remake/refs/heads/main/backups/remotespy/dataToCode.luau"))()
+local Highlight = require("./highlight")
+local LazyFix = require("./dataToCode")
 
 local SimpleSpy3 = Create("ScreenGui",{ResetOnSpawn = false})
 local Storage = Create("Folder",{})
@@ -1926,8 +1926,7 @@ if not getgenv().SimpleSpyExecuted then
         end
         codebox = Highlight.new(CodeBox)
         logthread(spawn(function()
-            local suc,err = pcall(game.HttpGet,game,"https://raw.githubusercontent.com/tlredz/iy-remake/refs/heads/main/backups/remotespy/update.txt")
-            codebox:setRaw((suc and err) or "")
+            codebox:setRaw(require("./update"))
         end))
         getgenv().SimpleSpy = SimpleSpy
         getgenv().getNil = function(name,class)

@@ -805,81 +805,89 @@ end
 
 
 
-local b=3 local c=function(
+
+
+local b=3
+
+local c={}
 
 
 
-c, d, e, f, g)
-if not g then
-c:notify(d,"started loading")
+
+c.fetch=function(d, e, f, g, h)
+if not h then
+d:notify(e,"started loading")
 end
 
-local h=false
+local i=false
 
 task.delay(b,function()
-if not h then
-c:notify(d,"is taking a while to load, still loading...")
+if not i then
+d:notify(e,"is taking a while to load, still loading...")
 end
 end)
 
-local i=c.fetchService.load(e,f)
-h=true
+local j=d.fetchService.load(f,g)
+i=true
 
-if i==nil then
-c:notify(d,"could not be loaded")
-elseif not g then
-c:notify(d,"finished loading")
+if j==nil then
+d:notify(e,"could not be loaded")
+elseif not h then
+d:notify(e,"finished loading")
 end
 
-return i end local d=function(
+return j end
 
 
-d)
-local e=c(d,"Old Console","backups/oldconsole.luau","iy/oldconsole")
-if e then e()end end local e=function(
+return c end a.y=function()local c=a.cache.y if not c then c={c=b()}a.cache.y=c end return c.c end end do local b=function()
+
+
+
+local b=a.y().fetch local c=function(
+
+c)
+local d=b(c,"Old Console","backups/oldconsole.luau","iy/oldconsole")
+if d then d()end end local d=function(
+
+
+d, e)
+local f
+if e==true then
+f=b(d,"Dex Explorer","backups/explorer.luau","iy/explorer")
+else
+f=b(d,"Dex Explorer","backups/dexPlusPlus.luau","iy/dexPlusPlus")
+end
+
+if f then f()end end local e=function(
 
 
 e, f)
-local g
-if f==true then
-g=c(e,"Dex Explorer","backups/explorer.luau","iy/explorer")
-else
-g=c(e,"Dex Explorer","backups/dexPlusPlus.luau","iy/dexPlusPlus")
-end
+local g=f:nextValue()
+local h=f:nextValue()
 
-if g then g()end end local f=function(
+local i=b(e,"Emote Menu","backups/emotes/main.luau","iy/7yd7/emotes.luau")
+if not i then return end
+
+i({
+notifyEnabled=h,
+isMobile=e.isMobile,
+keycode=g,
+})end local f=function(
 
 
-f, g)
-local h=c(f,"Emote Menu","backups/emotes/notify.luau","iy/7yd7/notify.luau",true)
-local i=h and h()or function()end
-
-local j=g:nextValue()
-local k=g:nextValue()
-
-local l=c(f,"Emote Menu","backups/emotes/main.luau","iy/7yd7/emotes.luau")
-if not l then return end
-
-l({
-notifyFunction=if k~=false then i else function()end,
-isMobile=f.isMobile,
-keycode=j,
-})end local g=function(
+f)
+local g=b(f,"Cobalt","backups/cobalt.luau","iy/cobalt")
+if g then g()end end local g=function(
 
 
 g)
-local h=c(g,"Cobalt","backups/cobalt.luau","iy/cobalt")
+local h=b(g,"Remote Spy","backups/remotespy/main.luau","iy/remotespy")
 if h then h()end end local h=function(
 
 
 h)
-local i=c(h,"Remote Spy","backups/remotespy/main.luau","iy/remotespy")
-if i then i()end end local i=function(
-
-
-i)
-local j=c(i,"Audio Logger","backups/audiologger.luau","iy/audiologger")
-if j then j()end end
+local i=b(h,"Audio Logger","backups/audiologger.luau","iy/audiologger")
+if i then i()end end
 
 
 return{
@@ -887,20 +895,20 @@ return{
 client=true,
 action="oldconsole",
 description="Loads an old-themed Roblox console",
-run=function(j)task.spawn(d,j)end
+run=function(i)task.spawn(c,i)end
 },
 {
 client=true,
 action="explorer|dex",
 description="Opens the dex Explorer",
 args={name="load dex by moon",kind="boolean",optional=true},
-run=function(j,k)task.spawn(e,j,k:nextValue())end
+run=function(i,j)task.spawn(d,i,j:nextValue())end
 },
 {
 client=true,
 action="emotemenu|7yd7",
 description="Opens animations/emotes menu By 7yd7",
-run=function(j,k)task.spawn(f,j,k)end,
+run=function(i,j)task.spawn(e,i,j)end,
 args={
 {kind="keycode",name="open menu",optional=true},
 {kind="boolean",name="notify",optional=true},
@@ -910,21 +918,21 @@ args={
 client=true,
 action="cobalt|remotespy|rspy|cspy",
 description="Opens Cobalt to intercept incoming and outgoing network traffic",
-run=function(j)task.spawn(g,j)end
+run=function(i)task.spawn(f,i)end
 },
 {
 client=true,
 action="simplespy|simplespy|sspy",
 description="Opens Simple Spy V3 to intercept remote calls from the client to the server",
-run=function(j)task.spawn(h,j)end
+run=function(i)task.spawn(g,i)end
 },
 {
 client=true,
 action="audiologger|alogger",
 description="Opens Edges audio logger",
-run=function(j)task.spawn(i,j)end
+run=function(i)task.spawn(h,i)end
 }
-}end a.y=function()local c=a.cache.y if not c then c={c=b()}a.cache.y=c end return c.c end end do local b=function()
+}end a.z=function()local c=a.cache.z if not c then c={c=b()}a.cache.z=c end return c.c end end do local b=function()
 
 return{
 action="serverinfo|info|sinfo",
@@ -932,7 +940,7 @@ description="Gives you info about the server",
 run=function(b)
 b.infiniteYield:createInfoMenu()
 end
-}end a.z=function()local c=a.cache.z if not c then c={c=b()}a.cache.z=c end return c.c end end do local b=function()
+}end a.A=function()local c=a.cache.A if not c then c={c=b()}a.cache.A=c end return c.c end end do local b=function()
 local b={
 kind="boolean",
 name="copy",
@@ -995,7 +1003,7 @@ e(tostring(game.GameId))
 d:notify("Copied","game id copied to your clipboard")
 end
 }
-}end a.A=function()local c=a.cache.A if not c then c={c=b()}a.cache.A=c end return c.c end end do local b=function()local b=function(
+}end a.B=function()local c=a.cache.B if not c then c={c=b()}a.cache.B=c end return c.c end end do local b=function()local b=function(
 
 
 b)
@@ -1028,7 +1036,7 @@ c.localPlayer.UserId=e
 c:notify("Set ID",`Set UserId to '{e}'`)
 end
 }
-}end a.B=function()local c=a.cache.B if not c then c={c=b()}a.cache.B=c end return c.c end end do local b=function()
+}end a.C=function()local c=a.cache.C if not c then c={c=b()}a.cache.C=c end return c.c end end do local b=function()
 
 return{
 action="rejoin|rj",
@@ -1036,7 +1044,7 @@ description="Makes you rejoin the game",
 run=function(b)
 b.playerService:teleportToJobId(game.JobId)
 end
-}end a.C=function()local c=a.cache.C if not c then c={c=b()}a.cache.C=c end return c.c end end do local b=function()
+}end a.D=function()local c=a.cache.D if not c then c={c=b()}a.cache.D=c end return c.c end end do local b=function()
 return{
 action="autorejoin|autorj",
 description="Automatically rejoins the server if you get kicked/disconnected",
@@ -1050,7 +1058,7 @@ b.privateEnv.autoRejoinConn=b:connect(b.guiService.ErrorMessageChanged,function(
 b:run("rejoin")
 end)
 end
-}end a.D=function()local c=a.cache.D if not c then c={c=b()}a.cache.D=c end return c.c end end do local b=function()
+}end a.E=function()local c=a.cache.E if not c then c={c=b()}a.cache.E=c end return c.c end end do local b=function()
 
 
 
@@ -1103,7 +1111,7 @@ d.playerService:teleportToJobId(f[math.random(1,#f)])
 end)
 end
 }
-}end a.E=function()local c=a.cache.E if not c then c={c=b()}a.cache.E=c end return c.c end end do local b=function()
+}end a.F=function()local c=a.cache.F if not c then c={c=b()}a.cache.F=c end return c.c end end do local b=function()
 
 return{
 action="selfkick|kickmyself",
@@ -1117,7 +1125,7 @@ run=function(b,c)
 local d=c:nextValue()
 b.localPlayer:Kick(d)
 end
-}end a.F=function()local c=a.cache.F if not c then c={c=b()}a.cache.F=c end return c.c end end do local b=function()
+}end a.G=function()local c=a.cache.G if not c then c={c=b()}a.cache.G=c end return c.c end end do local b=function()
 local b=tostring(game.PlaceId)
 local c=tostring(game.JobId)
 
@@ -1157,7 +1165,7 @@ local g=e:nextValue()or game.PlaceId
 d.playerService:teleportToJobId(f,g)
 end
 }
-}end a.G=function()local c=a.cache.G if not c then c={c=b()}a.cache.G=c end return c.c end end do local b=function()
+}end a.H=function()local c=a.cache.H if not c then c={c=b()}a.cache.H=c end return c.c end end do local b=function()
 return{
 client=true,
 action="antiafk|antiidle",
@@ -1191,7 +1199,7 @@ end
 
 b:notify("anti AFK is now enabled")
 end
-}end a.H=function()local c=a.cache.H if not c then c={c=b()}a.cache.H=c end return c.c end end do local b=function()
+}end a.I=function()local c=a.cache.I if not c then c={c=b()}a.cache.I=c end return c.c end end do local b=function()
 return{
 client=true,
 action="datalimit",
@@ -1201,7 +1209,7 @@ run=function(b,c)
 local d=c:nextValue()
 b.networkClient:SetOutgoingKBPSLimit(d)
 end
-}end a.I=function()local c=a.cache.I if not c then c={c=b()}a.cache.I=c end return c.c end end do local b=function()
+}end a.J=function()local c=a.cache.J if not c then c={c=b()}a.cache.J=c end return c.c end end do local b=function()
 return{
 client=true,
 action="replicationlag|backtrack",
@@ -1210,7 +1218,7 @@ args={kind="number"},
 run=function(b,c)
 b.gameNetworkSettings.IncomingReplicationLag=c:nextValue()
 end
-}end a.J=function()local c=a.cache.J if not c then c={c=b()}a.cache.J=c end return c.c end end do local b=function()
+}end a.K=function()local c=a.cache.K if not c then c={c=b()}a.cache.K=c end return c.c end end do local b=function()
 return{
 client=true,
 action="setfpscap|fpscap|maxfps",
@@ -1224,7 +1232,7 @@ run=function(b,c)
 local d=c:nextValue()
 b.executorEnv.setfpscap(d)
 end
-}end a.K=function()local c=a.cache.K if not c then c={c=b()}a.cache.K=c end return c.c end end do local b=function()local b=function(
+}end a.L=function()local c=a.cache.L if not c then c={c=b()}a.cache.L=c end return c.c end end do local b=function()local b=function(
 b)
 if not b:IsA("PackageLink")then return end
 
@@ -1252,7 +1260,7 @@ c.privateEnv.adBlockConn=c:connect(workspace.DescendantAdded,function(d)
 task.defer(b,d)
 end)
 end
-}end a.L=function()local c=a.cache.L if not c then c={c=b()}a.cache.L=c end return c.c end end do local b=function()
+}end a.M=function()local c=a.cache.M if not c then c={c=b()}a.cache.M=c end return c.c end end do local b=function()
 
 
 return{
@@ -1276,7 +1284,7 @@ end
 end)
 end
 }
-}end a.M=function()local c=a.cache.M if not c then c={c=b()}a.cache.M=c end return c.c end end do local b=function()
+}end a.N=function()local c=a.cache.N if not c then c={c=b()}a.cache.N=c end return c.c end end do local b=function()
 
 return{
 action="clearerror",
@@ -1284,7 +1292,7 @@ description="Clears the annoying box and blur when a game kicks you",
 run=function(b)
 b.guiService:ClearError()
 end
-}end a.N=function()local c=a.cache.N if not c then c={c=b()}a.cache.N=c end return c.c end end do local b=function()
+}end a.O=function()local c=a.cache.O if not c then c={c=b()}a.cache.O=c end return c.c end end do local b=function()
 
 local b="CoreScripts/NetworkPause"local c=function(
 
@@ -1330,7 +1338,7 @@ run=function(d)
 c(d)
 end
 }
-}end a.O=function()local c=a.cache.O if not c then c={c=b()}a.cache.O=c end return c.c end end do local b=function()
+}end a.P=function()local c=a.cache.P if not c then c={c=b()}a.cache.P=c end return c.c end end do local b=function()
 
 return{
 client=true,
@@ -1380,7 +1388,7 @@ end)
 b.privateEnv.clientAntiTeleport=true
 b:notify("Client AntiTP","Client anti teleport is now active (only effective on localscript teleport)")
 end
-}end a.P=function()local c=a.cache.P if not c then c={c=b()}a.cache.P=c end return c.c end end do local b=function()
+}end a.Q=function()local c=a.cache.Q if not c then c={c=b()}a.cache.Q=c end return c.c end end do local b=function()
 
 return{
 client=true,
@@ -1398,7 +1406,7 @@ end
 b.storage.settings:setValue("allowRejoin",d)
 b:notify("Client AntiTP",`Scripts now {d and"may"or"may not"} make you rejoin the server`)
 end
-}end a.Q=function()local c=a.cache.Q if not c then c={c=b()}a.cache.Q=c end return c.c end end do local b=function()
+}end a.R=function()local c=a.cache.R if not c then c={c=b()}a.cache.R=c end return c.c end end do local b=function()
 
 return{
 action="cancelteleport|canceltp",
@@ -1407,7 +1415,7 @@ run=function(b)
 b.playerService:cancelTween()
 b.teleportService:TeleportCancel()
 end
-}end a.R=function()local c=a.cache.R if not c then c={c=b()}a.cache.R=c end return c.c end end do local b=function()
+}end a.S=function()local c=a.cache.S if not c then c={c=b()}a.cache.S=c end return c.c end end do local b=function()
 
 return{
 client=true,
@@ -1421,7 +1429,7 @@ run=function(b,c)
 local d=1/c:nextValue()
 b.userGameSettings.MasterVolume=d
 end
-}end a.S=function()local c=a.cache.S if not c then c={c=b()}a.cache.S=c end return c.c end end do local b=function()
+}end a.T=function()local c=a.cache.T if not c then c={c=b()}a.cache.T=c end return c.c end end do local b=function()
 local b={
 BasePart={
 CastShadow=false,
@@ -1510,7 +1518,7 @@ end
 e.privateEnv.antiLagEnabled=true
 d(e)
 end
-}end a.T=function()local c=a.cache.T if not c then c={c=b()}a.cache.T=c end return c.c end end do local b=function()
+}end a.U=function()local c=a.cache.U if not c then c={c=b()}a.cache.U=c end return c.c end end do local b=function()
 return{
 {
 client=true,
@@ -1536,7 +1544,7 @@ run=function(b)
 b.guiService:ToggleFullscreen()
 end
 }
-}end a.U=function()local c=a.cache.U if not c then c={c=b()}a.cache.U=c end return c.c end end do local b=function()
+}end a.V=function()local c=a.cache.V if not c then c={c=b()}a.cache.V=c end return c.c end end do local b=function()
 local b={}
 b.__index=b
 
@@ -1572,8 +1580,8 @@ index=1
 },b)end
 
 
-return b end a.V=function()local c=a.cache.V if not c then c={c=b()}a.cache.V=c end return c.c end end do local b=function()
-local b=a.V()
+return b end a.W=function()local c=a.cache.W if not c then c={c=b()}a.cache.W=c end return c.c end end do local b=function()
+local b=a.W()
 
 return{
 action="lastcommand|lastcmd",
@@ -1587,7 +1595,7 @@ end
 
 c:run(d.name,b.new(d.args),true)
 end
-}end a.W=function()local c=a.cache.W if not c then c={c=b()}a.cache.W=c end return c.c end end do local b=function()
+}end a.X=function()local c=a.cache.X if not c then c={c=b()}a.cache.X=c end return c.c end end do local b=function()
 
 return{
 action="notifyping|ping",
@@ -1596,7 +1604,7 @@ run=function(b)
 local c=b.localPlayer:GetNetworkPing()
 b:notify("Ping",`{math.round(c*1000)}ms`)
 end
-}end a.X=function()local c=a.cache.X if not c then c={c=b()}a.cache.X=c end return c.c end end do local b=function()
+}end a.Y=function()local c=a.cache.Y if not c then c={c=b()}a.cache.Y=c end return c.c end end do local b=function()
 return{
 {
 client=true,
@@ -1614,7 +1622,7 @@ run=function(b)
 b.runService:Set3dRenderingEnabled(true)
 end
 }
-}end a.Y=function()local c=a.cache.Y if not c then c={c=b()}a.cache.Y=c end return c.c end end do local b=function()
+}end a.Z=function()local c=a.cache.Z if not c then c={c=b()}a.cache.Z=c end return c.c end end do local b=function()
 return{
 {
 client=true,
@@ -1632,7 +1640,7 @@ run=function(b)
 b.rbxServices.MaterialService.Use2022Materials=false
 end
 }
-}end a.Z=function()local c=a.cache.Z if not c then c={c=b()}a.cache.Z=c end return c.c end end do local b=function()
+}end a._=function()local c=a.cache._ if not c then c={c=b()}a.cache._=c end return c.c end end do local b=function()
 local b={
 [Enum.KeyCode.Comma]=-1,
 [Enum.KeyCode.Period]=1,
@@ -1678,7 +1686,7 @@ end
 d.akConn:Disconnect()
 end
 }
-}end a._=function()local c=a.cache._ if not c then c={c=b()}a.cache._=c end return c.c end end do local b=function()local b=function(
+}end a.aa=function()local c=a.cache.aa if not c then c={c=b()}a.cache.aa=c end return c.c end end do local b=function()local b=function(
 b, c)
 local d=b.localPlayer.PlayerScripts
 local e=d.PlayerModule.CameraModule.MouseLockController
@@ -1709,14 +1717,14 @@ run=function(c)
 b(c,"LeftShift")
 end
 }
-}end a.aa=function()local c=a.cache.aa if not c then c={c=b()}a.cache.aa=c end return c.c end end do local b=function()
+}end a.ab=function()local c=a.cache.ab if not c then c={c=b()}a.cache.ab=c end return c.c end end do local b=function()
 return{
 action="exit|shutdown|leave",
 description="Kills roblox process",
 run=function()
 game:shutdown()
 end
-}end a.ab=function()local c=a.cache.ab if not c then c={c=b()}a.cache.ab=c end return c.c end end do local b=function()
+}end a.ac=function()local c=a.cache.ac if not c then c={c=b()}a.cache.ac=c end return c.c end end do local b=function()
 
 
 return{
@@ -1725,14 +1733,14 @@ description="Stops any cmd loops (100^1^cmd)",
 run=function(b)
 b.loopService:stop()
 end
-}end a.ac=function()local c=a.cache.ac if not c then c={c=b()}a.cache.ac=c end return c.c end end do local b=function()
+}end a.ad=function()local c=a.cache.ad if not c then c={c=b()}a.cache.ad=c end return c.c end end do local b=function()
 return{
 action="notifyjobid",
 description="Notifies the JobId and PlaceId of the current server. Its copy button copies them",
 run=function(b)
 b:notify("JobId / PlaceId",`{game.JobId} / {game.PlaceId}`,nil,{copy=true})
 end
-}end a.ad=function()local c=a.cache.ad if not c then c={c=b()}a.cache.ad=c end return c.c end end do local b=function()
+}end a.ae=function()local c=a.cache.ae if not c then c={c=b()}a.cache.ae=c end return c.c end end do local b=function()
 
 local b=a.f()
 local c=a.g()
@@ -1968,10 +1976,10 @@ task.spawn(c.RequestStreamAroundAsync,c,q,p)
 o:WaitForChild("HumanoidRootPart",p)end
 
 
-return h end a.ae=function()local c=a.cache.ae if not c then c={c=b()}a.cache.ae=c end return c.c end end do local b=function()
+return h end a.af=function()local c=a.cache.af if not c then c={c=b()}a.cache.af=c end return c.c end end do local b=function()
 
 local b=a.f()
-local c=a.ae()
+local c=a.af()
 local d=a.g()local e=function(
 
 
@@ -2366,9 +2374,9 @@ parts=x,
 __call=function(A,B)
 return z(B)
 end,
-})end a.af=function()local c=a.cache.af if not c then c={c=b()}a.cache.af=c end return c.c end end do local b=function()
+})end a.ag=function()local c=a.cache.ag if not c then c={c=b()}a.cache.ag=c end return c.c end end do local b=function()
 
-local b=a.af()
+local b=a.ag()
 
 return{
 {
@@ -2417,7 +2425,7 @@ c.executorEnv.setclipboard(tostring(d))
 c:notify("Copied ID","Copied creator ID to clipboard")
 end
 }
-}end a.ag=function()local c=a.cache.ag if not c then c={c=b()}a.cache.ag=c end return c.c end end do local b=function()
+}end a.ah=function()local c=a.cache.ah if not c then c={c=b()}a.cache.ah=c end return c.c end end do local b=function()
 
 return{
 client=true,
@@ -2434,7 +2442,7 @@ if not d then
 b:notify("Invite Prompt","could not open the invite prompt: "..tostring(e))
 end
 end
-}end a.ah=function()local c=a.cache.ah if not c then c={c=b()}a.cache.ah=c end return c.c end end do local b=function()
+}end a.ai=function()local c=a.cache.ai if not c then c={c=b()}a.cache.ai=c end return c.c end end do local b=function()
 
 local b={inventory=
 Enum.CoreGuiType.Backpack,leaderboard=
@@ -2477,7 +2485,7 @@ run=function(d,e)
 c(d,e:nextValue():lower(),false)
 end
 }
-}end a.ai=function()local c=a.cache.ai if not c then c={c=b()}a.cache.ai=c end return c.c end end do local b=function()
+}end a.aj=function()local c=a.cache.aj if not c then c={c=b()}a.cache.aj=c end return c.c end end do local b=function()
 
 return{
 action="clearnilinstances|nonilinstances|cni",
@@ -2492,7 +2500,7 @@ for c,d in getnilinstances()do
 d:Destroy()
 end
 end
-}end a.aj=function()local c=a.cache.aj if not c then c={c=b()}a.cache.aj=c end return c.c end end do local b=function()
+}end a.ak=function()local c=a.cache.ak if not c then c={c=b()}a.cache.ak=c end return c.c end end do local b=function()
 
 return{
 client=true,
@@ -2502,9 +2510,9 @@ args={kind="number",name="sensitivity"},
 run=function(b,c)
 b.robloxServices.UserInputService.MouseDeltaSensitivity=c:nextValue()
 end
-}end a.ak=function()local c=a.cache.ak if not c then c={c=b()}a.cache.ak=c end return c.c end end do local b=function()
+}end a.al=function()local c=a.cache.al if not c then c={c=b()}a.cache.al=c end return c.c end end do local b=function()
 
-local b=a.af()
+local b=a.ag()
 
 return{
 {
@@ -2527,7 +2535,7 @@ c.localPlayer:RevokeFriendship(f)
 end
 end
 }
-}end a.al=function()local c=a.cache.al if not c then c={c=b()}a.cache.al=c end return c.c end end do local b=function()local b=function(
+}end a.am=function()local c=a.cache.am if not c then c={c=b()}a.cache.am=c end return c.c end end do local b=function()local b=function(
 
 
 b)
@@ -2593,7 +2601,7 @@ run=function(c)
 c.playerService:resetCharacter()
 end
 }
-}end a.am=function()local c=a.cache.am if not c then c={c=b()}a.cache.am=c end return c.c end end do local b=function()
+}end a.an=function()local c=a.cache.an if not c then c={c=b()}a.cache.an=c end return c.c end end do local b=function()
 
 local b=a.d()
 
@@ -2615,7 +2623,7 @@ end
 
 c:notify("debug",tostring(e))
 end
-}end a.an=function()local c=a.cache.an if not c then c={c=b()}a.cache.an=c end return c.c end end do local b=function()
+}end a.ao=function()local c=a.cache.ao if not c then c={c=b()}a.cache.ao=c end return c.c end end do local b=function()
 
 return{
 {
@@ -2650,9 +2658,9 @@ b.localPlayer.Team=e
 end
 end
 }
-}end a.ao=function()local c=a.cache.ao if not c then c={c=b()}a.cache.ao=c end return c.c end end do local b=function()
+}end a.ap=function()local c=a.cache.ap if not c then c={c=b()}a.cache.ap=c end return c.c end end do local b=function()
 
-local b=a.af()
+local b=a.ag()
 
 return{
 {
@@ -2719,7 +2727,7 @@ c:notify("Handle Kill","Stopped!")
 end)
 end
 }
-}end a.ap=function()local c=a.cache.ap if not c then c={c=b()}a.cache.ap=c end return c.c end end do local b=function()
+}end a.aq=function()local c=a.cache.aq if not c then c={c=b()}a.cache.aq=c end return c.c end end do local b=function()
 
 
 
@@ -2821,7 +2829,7 @@ run=function(f)
 d(f,"autokeypress")
 end
 }
-}end a.aq=function()local c=a.cache.aq if not c then c={c=b()}a.cache.aq=c end return c.c end end do local b=function()
+}end a.ar=function()local c=a.cache.ar if not c then c={c=b()}a.cache.ar=c end return c.c end end do local b=function()
 
 
 
@@ -2997,7 +3005,7 @@ k:notify("Friend groups",table.concat(m,", "))
 end
 end
 }
-}end a.ar=function()local c=a.cache.ar if not c then c={c=b()}a.cache.ar=c end return c.c end end do local b=function()
+}end a.as=function()local c=a.cache.as if not c then c={c=b()}a.cache.as=c end return c.c end end do local b=function()
 
 
 
@@ -3037,7 +3045,7 @@ run=function(b)
 b:run("mousetp")
 end
 }
-}end a.as=function()local c=a.cache.as if not c then c={c=b()}a.cache.as=c end return c.c end end do local b=function()local b=function(
+}end a.at=function()local c=a.cache.at if not c then c={c=b()}a.cache.at=c end return c.c end end do local b=function()local b=function(
 
 
 b, c)
@@ -3074,11 +3082,10 @@ run=function(c)
 b(c,"R15")
 end
 }
-}end a.at=function()local c=a.cache.at if not c then c={c=b()}a.cache.at=c end return c.c end end do local b=function()
+}end a.au=function()local c=a.cache.au if not c then c={c=b()}a.cache.au=c end return c.c end end do local b=function()
 
 return{a.w()
 ,a.x()
-,a.y()
 ,a.z()
 ,a.A()
 ,a.B()
@@ -3101,7 +3108,7 @@ return{a.w()
 ,a.S()
 ,a.T()
 ,a.U()
-,a.W()
+,a.V()
 ,a.X()
 ,a.Y()
 ,a.Z()
@@ -3109,9 +3116,9 @@ return{a.w()
 ,a.aa()
 ,a.ab()
 ,a.ac()
-
 ,a.ad()
-,a.ag()
+
+,a.ae()
 ,a.ah()
 ,a.ai()
 ,a.aj()
@@ -3125,8 +3132,9 @@ return{a.w()
 ,a.ar()
 ,a.as()
 ,a.at()
+,a.au()
 
-}end a.au=function()local c=a.cache.au if not c then c={c=b()}a.cache.au=c end return c.c end end do local b=function()
+}end a.av=function()local c=a.cache.av if not c then c={c=b()}a.cache.av=c end return c.c end end do local b=function()
 
 
 
@@ -3504,11 +3512,11 @@ end
 j(r,s,t)end
 
 
-return e end a.av=function()local c=a.cache.av if not c then c={c=b()}a.cache.av=c end return c.c end end do local b=function()
+return e end a.aw=function()local c=a.cache.aw if not c then c={c=b()}a.cache.aw=c end return c.c end end do local b=function()
 
 
 
-local b=a.av()
+local b=a.aw()
 
 return{
 {
@@ -3527,11 +3535,11 @@ run=function(c)
 b.disable(c)
 end
 }
-}end a.aw=function()local c=a.cache.aw if not c then c={c=b()}a.cache.aw=c end return c.c end end do local b=function()
+}end a.ax=function()local c=a.cache.ax if not c then c={c=b()}a.cache.ax=c end return c.c end end do local b=function()
 
 
 
-local b=a.av()
+local b=a.aw()
 
 return{
 {
@@ -3542,7 +3550,7 @@ run=function(c)
 b.runTest(c)
 end
 }
-}end a.ax=function()local c=a.cache.ax if not c then c={c=b()}a.cache.ax=c end return c.c end end do local b=function()
+}end a.ay=function()local c=a.cache.ay if not c then c={c=b()}a.cache.ay=c end return c.c end end do local b=function()
 
 return{
 client=true,
@@ -3585,25 +3593,25 @@ end)
 b.privateEnv.clientAntiKick=true
 b:notify("Client Antikick","Client anti kick is now active (only effective on localscript kick)")
 end
-}end a.ay=function()local c=a.cache.ay if not c then c={c=b()}a.cache.ay=c end return c.c end end do local b=function()
-
-return{a.aw()
-,a.ax()
-,a.ay()
-,
 }end a.az=function()local c=a.cache.az if not c then c={c=b()}a.cache.az=c end return c.c end end do local b=function()
 
-return"v0.10.0"end a.aA=function()local c=a.cache.aA if not c then c={c=b()}a.cache.aA=c end return c.c end end do local b=function()
+return{a.ax()
+,a.ay()
+,a.az()
+,
+}end a.aA=function()local c=a.cache.aA if not c then c={c=b()}a.cache.aA=c end return c.c end end do local b=function()
+
+return"v0.10.1"end a.aB=function()local c=a.cache.aB if not c then c={c=b()}a.cache.aB=c end return c.c end end do local b=function()
 return{
 owner="tlredz",
 repository="iy-remake"
-}end a.aB=function()local c=a.cache.aB if not c then c={c=b()}a.cache.aB=c end return c.c end end do local b=function()
-local b=a.aB()
+}end a.aC=function()local c=a.cache.aC if not c then c={c=b()}a.cache.aC=c end return c.c end end do local b=function()
+local b=a.aC()
 
 return{
 discord="https://discord.gg/78ZuWSq",
 github=`https://github.com/{b.owner}/{b.repository}`
-}end a.aC=function()local c=a.cache.aC if not c then c={c=b()}a.cache.aC=c end return c.c end end do local b=function()
+}end a.aD=function()local c=a.cache.aD if not c then c={c=b()}a.cache.aD=c end return c.c end end do local b=function()
 
 
 local b=a.n()
@@ -3611,7 +3619,7 @@ local b=a.n()
 return{
 applicationName="Infinite Yield RV",
 isRemakeVersion=true,
-version=a.aA(),
+version=a.aB(),
 newVersionMessage="You're using an old version of Infinite Yield RV",
 
 theme={
@@ -3648,10 +3656,10 @@ draggable=true
 }
 },
 
-links=a.aC(),
+links=a.aD(),
 storage=a.j(),
-}end a.aD=function()local c=a.cache.aD if not c then c={c=b()}a.cache.aD=c end return c.c end end do local b=function()
-local b=a.aD().ui.scale
+}end a.aE=function()local c=a.cache.aE if not c then c={c=b()}a.cache.aE=c end return c.c end end do local b=function()
+local b=a.aE().ui.scale
 
 return{
 client=true,
@@ -3665,7 +3673,7 @@ run=function(c,d)
 local e=d:nextValue()
 c.infiniteYield:setScale(e)
 end
-}end a.aE=function()local c=a.cache.aE if not c then c={c=b()}a.cache.aE=c end return c.c end end do local b=function()
+}end a.aF=function()local c=a.cache.aF if not c then c={c=b()}a.cache.aF=c end return c.c end end do local b=function()
 return{
 {
 client=true,
@@ -3683,7 +3691,7 @@ run=function(b)
 b.coreGui.PurchasePromptApp.Enabled=true
 end
 }
-}end a.aF=function()local c=a.cache.aF if not c then c={c=b()}a.cache.aF=c end return c.c end end do local b=function()
+}end a.aG=function()local c=a.cache.aG if not c then c={c=b()}a.cache.aG=c end return c.c end end do local b=function()
 local b={inventory=
 Enum.CoreGuiType.Backpack,leaderboard=
 Enum.CoreGuiType.PlayerList,emotes=
@@ -3724,7 +3732,7 @@ if g then
 c.starterGui:SetCoreGuiEnabled(g,f)
 end
 end
-}end a.aG=function()local c=a.cache.aG if not c then c={c=b()}a.cache.aG=c end return c.c end end do local b=function()local b=function(
+}end a.aH=function()local c=a.cache.aH if not c then c={c=b()}a.cache.aH=c end return c.c end end do local b=function()local b=function(
 b, c)
 local d=b:collectGarbage(c)
 if not d then return end
@@ -3791,7 +3799,7 @@ run=function(d)
 b(d,"invisibleGuiObjects")
 end
 }
-}end a.aH=function()local c=a.cache.aH if not c then c={c=b()}a.cache.aH=c end return c.c end end do local b=function()
+}end a.aI=function()local c=a.cache.aI if not c then c={c=b()}a.cache.aI=c end return c.c end end do local b=function()
 local b={
 connections={}
 }
@@ -3819,7 +3827,7 @@ table.insert(d.connections,g)
 return g end
 
 
-return b end a.aI=function()local c=a.cache.aI if not c then c={c=b()}a.cache.aI=c end return c.c end end do local b=function()
+return b end a.aJ=function()local c=a.cache.aJ if not c then c={c=b()}a.cache.aJ=c end return c.c end end do local b=function()
 
 
 
@@ -3882,7 +3890,7 @@ groups={
 {key="float",title="Float"},
 {key="freecam",title="Freecam"},
 },
-}end a.aJ=function()local c=a.cache.aJ if not c then c={c=b()}a.cache.aJ=c end return c.c end end do local b=function()local b=function(
+}end a.aK=function()local c=a.cache.aK if not c then c={c=b()}a.cache.aK=c end return c.c end end do local b=function()local b=function(
 
 b)
 local c={}
@@ -3940,7 +3948,7 @@ return b({Quote=
 "7",Eight=
 "8",Nine=
 "9"
-})end a.aK=function()local c=a.cache.aK if not c then c={c=b()}a.cache.aK=c end return c.c end end do local b=function()
+})end a.aL=function()local c=a.cache.aL if not c then c={c=b()}a.cache.aL=c end return c.c end end do local b=function()
 
 
 
@@ -3951,10 +3959,10 @@ return b({Quote=
 
 
 local b=a.f()
-local c=a.aI()
+local c=a.aJ()
 local d=a.n()
-local e=a.aJ()
-local f=a.aK()
+local e=a.aK()
+local f=a.aL()
 
 local g=b.UserInputService
 
@@ -4137,13 +4145,13 @@ h.getBindingName=function(s, t)
 return s:getKeyName(n(t))end
 
 
-return h end a.aL=function()local c=a.cache.aL if not c then c={c=b()}a.cache.aL=c end return c.c end end do local b=function()
+return h end a.aM=function()local c=a.cache.aM if not c then c={c=b()}a.cache.aM=c end return c.c end end do local b=function()
 
 
 
 
 
-local b=a.aL()local c=function(
+local b=a.aM()local c=function(
 
 c)
 local d=c.infiniteYield
@@ -4187,19 +4195,19 @@ run=function(e)
 d(e)
 end
 },
-}end a.aM=function()local c=a.cache.aM if not c then c={c=b()}a.cache.aM=c end return c.c end end do local b=function()
+}end a.aN=function()local c=a.cache.aN if not c then c={c=b()}a.cache.aN=c end return c.c end end do local b=function()
 
-return{a.aE()
+return{a.aF()
 
 
-,a.aF()
 ,a.aG()
 ,a.aH()
-,a.aM()
+,a.aI()
+,a.aN()
 
 ,
 
-}end a.aN=function()local c=a.cache.aN if not c then c={c=b()}a.cache.aN=c end return c.c end end do local b=function()
+}end a.aO=function()local c=a.cache.aO if not c then c={c=b()}a.cache.aO=c end return c.c end end do local b=function()
 
 
 
@@ -4207,8 +4215,8 @@ return{a.aE()
 
 
 local b=a.f()
-local c=a.aL()
-local d=a.av()
+local c=a.aM()
+local d=a.aw()
 
 local e=b.UserInputService
 
@@ -4336,9 +4344,9 @@ d.setProperty(p,"CFrame",workspace.CurrentCamera.CFrame)
 end)end
 
 
-return f end a.aO=function()local c=a.cache.aO if not c then c={c=b()}a.cache.aO=c end return c.c end end do local b=function()
+return f end a.aP=function()local c=a.cache.aP if not c then c={c=b()}a.cache.aP=c end return c.c end end do local b=function()
 
-local b=a.aO()
+local b=a.aP()
 
 local c=100
 
@@ -4406,9 +4414,9 @@ run=function(d)
 b.stop(d,"fly")
 end
 }
-}end a.aP=function()local c=a.cache.aP if not c then c={c=b()}a.cache.aP=c end return c.c end end do local b=function()
+}end a.aQ=function()local c=a.cache.aQ if not c then c={c=b()}a.cache.aQ=c end return c.c end end do local b=function()
 
-local b=a.av()
+local b=a.aw()
 
 
 local c="Noclip"
@@ -4485,9 +4493,9 @@ run=function(g)
 g:run(if g:hasGarbage("noclip")then"unnoclip"else"noclip")
 end
 }
-}end a.aQ=function()local c=a.cache.aQ if not c then c={c=b()}a.cache.aQ=c end return c.c end end do local b=function()
+}end a.aR=function()local c=a.cache.aR if not c then c={c=b()}a.cache.aR=c end return c.c end end do local b=function()
 
-local b=a.aO()
+local b=a.aP()
 
 local c=100
 
@@ -4552,9 +4560,9 @@ run=function(d)
 b.stop(d,"fly")
 end
 }
-}end a.aR=function()local c=a.cache.aR if not c then c={c=b()}a.cache.aR=c end return c.c end end do local b=function()
+}end a.aS=function()local c=a.cache.aS if not c then c={c=b()}a.cache.aS=c end return c.c end end do local b=function()
 
-local b=a.av()
+local b=a.aw()
 local c=50 local d=function(
 
 
@@ -4641,7 +4649,7 @@ run=function(f)
 d(f)
 end
 }
-}end a.aS=function()local c=a.cache.aS if not c then c={c=b()}a.cache.aS=c end return c.c end end do local b=function()
+}end a.aT=function()local c=a.cache.aT if not c then c={c=b()}a.cache.aT=c end return c.c end end do local b=function()
 
 return{
 action="qefly|flyqe",
@@ -4654,7 +4662,7 @@ run=function(b,c)
 
 b.privateEnv.qeFly=c:nextValue()~=false
 end
-}end a.aT=function()local c=a.cache.aT if not c then c={c=b()}a.cache.aT=c end return c.c end end do local b=function()local b=function(
+}end a.aU=function()local c=a.cache.aU if not c then c={c=b()}a.cache.aU=c end return c.c end end do local b=function()local b=function(
 
 
 b)
@@ -4714,10 +4722,10 @@ run=function(d)
 c(d)
 end
 },
-}end a.aU=function()local c=a.cache.aU if not c then c={c=b()}a.cache.aU=c end return c.c end end do local b=function()
+}end a.aV=function()local c=a.cache.aV if not c then c={c=b()}a.cache.aV=c end return c.c end end do local b=function()
 
-local b=a.aL()
-local c=a.av()
+local b=a.aM()
+local c=a.aw()
 
 local d=-3.1 local e=function(
 
@@ -4816,7 +4824,7 @@ e(g)
 g:notify("Float","Disabled")
 end
 }
-}end a.aV=function()local c=a.cache.aV if not c then c={c=b()}a.cache.aV=c end return c.c end end do local b=function()local b=function()
+}end a.aW=function()local c=a.cache.aW if not c then c={c=b()}a.cache.aW=c end return c.c end end do local b=function()local b=function()
 
 
 
@@ -4909,9 +4917,9 @@ d(e)
 end
 end
 }
-}end a.aW=function()local c=a.cache.aW if not c then c={c=b()}a.cache.aW=c end return c.c end end do local b=function()
+}end a.aX=function()local c=a.cache.aX if not c then c={c=b()}a.cache.aX=c end return c.c end end do local b=function()
 
-local b=a.av()local c=function(
+local b=a.aw()local c=function(
 
 c, d, e)
 local f=c.playerService:getHumanoid()
@@ -5031,7 +5039,7 @@ end
 end
 end
 }
-}end a.aX=function()local c=a.cache.aX if not c then c={c=b()}a.cache.aX=c end return c.c end end do local b=function()local b=function(
+}end a.aY=function()local c=a.cache.aY if not c then c={c=b()}a.cache.aY=c end return c.c end end do local b=function()local b=function(
 b, c, d)
 if b:hasGarbage(c)then
 b:notify(`{c} is already enabled`)
@@ -5196,7 +5204,7 @@ f.Parent=workspace
 end
 end
 }
-}end a.aY=function()local c=a.cache.aY if not c then c={c=b()}a.cache.aY=c end return c.c end end do local b=function()local b=function(
+}end a.aZ=function()local c=a.cache.aZ if not c then c={c=b()}a.cache.aZ=c end return c.c end end do local b=function()local b=function(
 
 
 b, c)
@@ -5330,9 +5338,9 @@ j:Destroy()
 end
 end
 }
-}end a.aZ=function()local c=a.cache.aZ if not c then c={c=b()}a.cache.aZ=c end return c.c end end do local b=function()
+}end a.a_=function()local c=a.cache.a_ if not c then c={c=b()}a.cache.a_=c end return c.c end end do local b=function()
 
-local b=a.af()local c=function(
+local b=a.ag()local c=function(
 
 c)
 return c:IsA("Tool")or c:IsA("HopperBin")end local d=function(
@@ -5433,7 +5441,7 @@ end
 end
 end
 }
-}end a.a_=function()local c=a.cache.a_ if not c then c={c=b()}a.cache.a_=c end return c.c end end do local b=function()
+}end a.a0=function()local c=a.cache.a0 if not c then c={c=b()}a.cache.a0=c end return c.c end end do local b=function()
 
 local b={
 "27789359","30196114","248263260","45834924","33796059","28488254","52155728"
@@ -5642,7 +5650,7 @@ run=function(i)
 g(i)
 end
 }
-}end a.a0=function()local c=a.cache.a0 if not c then c={c=b()}a.cache.a0=c end return c.c end end do local b=function()local b=function(
+}end a.a1=function()local c=a.cache.a1 if not c then c={c=b()}a.cache.a1=c end return c.c end end do local b=function()local b=function(
 
 b, c)
 local d=b.localPlayer.Character
@@ -5679,7 +5687,7 @@ run=function(c)
 b(c,0.7)
 end
 }
-}end a.a1=function()local c=a.cache.a1 if not c then c={c=b()}a.cache.a1=c end return c.c end end do local b=function()
+}end a.a2=function()local c=a.cache.a2 if not c then c={c=b()}a.cache.a2=c end return c.c end end do local b=function()
 
 
 local b=workspace.FallenPartsDestroyHeight
@@ -5716,9 +5724,9 @@ c:notify("antivoid","Disabled")
 end
 end
 }
-}end a.a2=function()local c=a.cache.a2 if not c then c={c=b()}a.cache.a2=c end return c.c end end do local b=function()
+}end a.a3=function()local c=a.cache.a3 if not c then c={c=b()}a.cache.a3=c end return c.c end end do local b=function()
 
-local b=a.av()local c=function(
+local b=a.aw()local c=function(
 c)
 local d=c:collectGarbage("spasm")
 if d and d.track then
@@ -5838,7 +5846,7 @@ d(f)
 end
 end
 }
-}end a.a3=function()local c=a.cache.a3 if not c then c={c=b()}a.cache.a3=c end return c.c end end do local b=function()local b=function(
+}end a.a4=function()local c=a.cache.a4 if not c then c={c=b()}a.cache.a4=c end return c.c end end do local b=function()local b=function(
 
 b)
 return b:IsA("BillboardGui")or b:IsA("SurfaceGui")end local c=function(
@@ -5950,7 +5958,7 @@ e.connection:Disconnect()
 end
 end
 }
-}end a.a4=function()local c=a.cache.a4 if not c then c={c=b()}a.cache.a4=c end return c.c end end do local b=function()
+}end a.a5=function()local c=a.cache.a5 if not c then c={c=b()}a.cache.a5=c end return c.c end end do local b=function()
 
 return{
 {
@@ -5991,7 +5999,7 @@ g.CFrame=f
 c.Parent=e
 end
 }
-}end a.a5=function()local c=a.cache.a5 if not c then c={c=b()}a.cache.a5=c end return c.c end end do local b=function()local b=function(
+}end a.a6=function()local c=a.cache.a6 if not c then c={c=b()}a.cache.a6=c end return c.c end end do local b=function()local b=function(
 
 
 
@@ -6051,9 +6059,9 @@ f:Disconnect()
 end
 end
 }
-}end a.a6=function()local c=a.cache.a6 if not c then c={c=b()}a.cache.a6=c end return c.c end end do local b=function()
+}end a.a7=function()local c=a.cache.a7 if not c then c={c=b()}a.cache.a7=c end return c.c end end do local b=function()
 
-local b=a.af()
+local b=a.ag()
 
 return{
 {
@@ -6103,9 +6111,9 @@ d.running=false
 end
 end
 }
-}end a.a7=function()local c=a.cache.a7 if not c then c={c=b()}a.cache.a7=c end return c.c end end do local b=function()
+}end a.a8=function()local c=a.cache.a8 if not c then c={c=b()}a.cache.a8=c end return c.c end end do local b=function()
 
-local b=a.av()local c=function(
+local b=a.aw()local c=function(
 
 c, d)
 b.setProperty(c,"WalkSpeed",d)end local d=function(
@@ -6180,9 +6188,9 @@ run=function(g)
 e(g,"loopjumppower")
 end
 }
-}end a.a8=function()local c=a.cache.a8 if not c then c={c=b()}a.cache.a8=c end return c.c end end do local b=function()
+}end a.a9=function()local c=a.cache.a9 if not c then c={c=b()}a.cache.a9=c end return c.c end end do local b=function()
 
-local b=a.V()
+local b=a.W()
 
 local c=PhysicalProperties.new(100,0.3,0.5)
 
@@ -6507,7 +6515,7 @@ o.connection:Disconnect()
 end
 end
 }
-}end a.a9=function()local c=a.cache.a9 if not c then c={c=b()}a.cache.a9=c end return c.c end end do local b=function()local b=function(
+}end a.ba=function()local c=a.cache.ba if not c then c={c=b()}a.cache.ba=c end return c.c end end do local b=function()local b=function(
 
 
 b, c)
@@ -6598,7 +6606,7 @@ run=function(e)
 c(e)
 end
 }
-}end a.ba=function()local c=a.cache.ba if not c then c={c=b()}a.cache.ba=c end return c.c end end do local b=function()local b=function(
+}end a.bb=function()local c=a.cache.bb if not c then c={c=b()}a.cache.bb=c end return c.c end end do local b=function()local b=function(
 
 b, c)
 for d,e in c do
@@ -6647,7 +6655,7 @@ or{"Right Leg","Left Leg","Right Arm","Left Arm"})
 end
 end
 }
-}end a.bb=function()local c=a.cache.bb if not c then c={c=b()}a.cache.bb=c end return c.c end end do local b=function()local b=function(
+}end a.bc=function()local c=a.cache.bc if not c then c={c=b()}a.cache.bc=c end return c.c end end do local b=function()local b=function(
 
 
 b)
@@ -6805,7 +6813,7 @@ end
 end)
 end
 }
-}end a.bc=function()local c=a.cache.bc if not c then c={c=b()}a.cache.bc=c end return c.c end end do local b=function()
+}end a.bd=function()local c=a.cache.bd if not c then c={c=b()}a.cache.bd=c end return c.c end end do local b=function()
 
 
 
@@ -7082,9 +7090,9 @@ end)
 end
 end
 }
-}end a.bd=function()local c=a.cache.bd if not c then c={c=b()}a.cache.bd=c end return c.c end end do local b=function()
+}end a.be=function()local c=a.cache.be if not c then c={c=b()}a.cache.be=c end return c.c end end do local b=function()
 
-local b=a.av()local c=function(
+local b=a.aw()local c=function(
 
 
 c, d)
@@ -7162,7 +7170,7 @@ run=function(e)
 c(e,"edgejump")
 end
 }
-}end a.be=function()local c=a.cache.be if not c then c={c=b()}a.cache.be=c end return c.c end end do local b=function()local b=function(
+}end a.bf=function()local c=a.cache.bf if not c then c={c=b()}a.cache.bf=c end return c.c end end do local b=function()local b=function(
 
 
 
@@ -7245,10 +7253,10 @@ b(c,"JumpPower",e)
 end
 end
 }
-}end a.bf=function()local c=a.cache.bf if not c then c={c=b()}a.cache.bf=c end return c.c end end do local b=function()
+}end a.bg=function()local c=a.cache.bg if not c then c={c=b()}a.cache.bg=c end return c.c end end do local b=function()
 
-local b=a.av()
-local c=a.af()local d=function(
+local b=a.aw()
+local c=a.ag()local d=function(
 
 
 d)
@@ -7319,9 +7327,9 @@ end
 end
 end
 }
-}end a.bg=function()local c=a.cache.bg if not c then c={c=b()}a.cache.bg=c end return c.c end end do local b=function()
+}end a.bh=function()local c=a.cache.bh if not c then c={c=b()}a.cache.bh=c end return c.c end end do local b=function()
 
-local b=a.af()local c=function(
+local b=a.ag()local c=function(
 
 c)
 local d=c:collectGarbage("orbit")
@@ -7411,9 +7419,9 @@ c(d)
 d:notify("Orbit","Stopped orbiting player")
 end
 }
-}end a.bh=function()local c=a.cache.bh if not c then c={c=b()}a.cache.bh=c end return c.c end end do local b=function()
+}end a.bi=function()local c=a.cache.bi if not c then c={c=b()}a.cache.bi=c end return c.c end end do local b=function()
 
-local b=a.af()local c=function(
+local b=a.ag()local c=function(
 
 c)
 local d=c:collectGarbage("headsit")
@@ -7454,7 +7462,7 @@ i.CFrame=k.CFrame*CFrame.new(0,1.6,0.4)
 end)
 end
 }
-}end a.bi=function()local c=a.cache.bi if not c then c={c=b()}a.cache.bi=c end return c.c end end do local b=function()
+}end a.bj=function()local c=a.cache.bj if not c then c={c=b()}a.cache.bj=c end return c.c end end do local b=function()
 
 return{
 {
@@ -7497,9 +7505,9 @@ end
 h.Health=h.MaxHealth
 end
 }
-}end a.bj=function()local c=a.cache.bj if not c then c={c=b()}a.cache.bj=c end return c.c end end do local b=function()
+}end a.bk=function()local c=a.cache.bk if not c then c={c=b()}a.cache.bk=c end return c.c end end do local b=function()
 
-local b=a.af()
+local b=a.ag()
 
 
 local c=workspace.FallenPartsDestroyHeight
@@ -7620,9 +7628,9 @@ end
 end)
 end
 }
-}end a.bk=function()local c=a.cache.bk if not c then c={c=b()}a.cache.bk=c end return c.c end end do local b=function()
+}end a.bl=function()local c=a.cache.bl if not c then c={c=b()}a.cache.bl=c end return c.c end end do local b=function()
 
-local b=a.af()
+local b=a.ag()
 
 local c="rbxassetid://148840371"
 local d="rbxassetid://5918726674"
@@ -7770,9 +7778,9 @@ run=function(j)
 i(j)
 end
 }
-}end a.bl=function()local c=a.cache.bl if not c then c={c=b()}a.cache.bl=c end return c.c end end do local b=function()
+}end a.bm=function()local c=a.cache.bm if not c then c={c=b()}a.cache.bm=c end return c.c end end do local b=function()
 
-local b=a.af()
+local b=a.ag()
 
 local c="507768375"
 local d="180435571"
@@ -7869,10 +7877,9 @@ g("Animations Copied\n\n"..table.concat(k,"\n\n"))
 e:notify("Animations","Copied to clipboard")
 end
 }
-}end a.bm=function()local c=a.cache.bm if not c then c={c=b()}a.cache.bm=c end return c.c end end do local b=function()
+}end a.bn=function()local c=a.cache.bn if not c then c={c=b()}a.cache.bn=c end return c.c end end do local b=function()
 
-return{a.aP()
-,a.aQ()
+return{a.aQ()
 ,a.aR()
 ,a.aS()
 ,a.aT()
@@ -7894,8 +7901,8 @@ return{a.aP()
 ,a.a8()
 ,a.a9()
 ,a.ba()
-
 ,a.bb()
+
 ,a.bc()
 ,a.bd()
 ,a.be()
@@ -7907,8 +7914,9 @@ return{a.aP()
 ,a.bk()
 ,a.bl()
 ,a.bm()
+,a.bn()
 
-}end a.bn=function()local c=a.cache.bn if not c then c={c=b()}a.cache.bn=c end return c.c end end do local b=function()
+}end a.bo=function()local c=a.cache.bo if not c then c={c=b()}a.cache.bo=c end return c.c end end do local b=function()
 
 local b={}
 
@@ -7946,7 +7954,7 @@ assert(h,"can't convert to value")
 return h(f)end
 
 
-return b end a.bo=function()local c=a.cache.bo if not c then c={c=b()}a.cache.bo=c end return c.c end end do local b=function()
+return b end a.bp=function()local c=a.cache.bp if not c then c={c=b()}a.cache.bp=c end return c.c end end do local b=function()
 
 
 
@@ -7960,8 +7968,8 @@ return b end a.bo=function()local c=a.cache.bo if not c then c={c=b()}a.cache.bo
 
 local b=a.l()
 local c=a.b()
-local d=a.ae()
-local e=a.bo()
+local d=a.af()
+local e=a.bp()
 
 local f="showingWaypoints"
 
@@ -8255,12 +8263,12 @@ h.show()
 end end
 
 
-return h end a.bp=function()local c=a.cache.bp if not c then c={c=b()}a.cache.bp=c end return c.c end end do local b=function()
+return h end a.bq=function()local c=a.cache.bq if not c then c={c=b()}a.cache.bq=c end return c.c end end do local b=function()
 
 
 
 
-local b=a.bp()
+local b=a.bq()
 
 local c="Waypoints"local d=function(
 
@@ -8429,7 +8437,7 @@ b.hide()
 f:notify(c,`deleted {i} waypoints from this game`)
 end
 }
-}end a.bq=function()local c=a.cache.bq if not c then c={c=b()}a.cache.bq=c end return c.c end end do local b=function()
+}end a.br=function()local c=a.cache.br if not c then c={c=b()}a.cache.br=c end return c.c end end do local b=function()
 
 return{
 action="tweenspeed|tspeed",
@@ -8439,9 +8447,9 @@ run=function(b,c)
 
 b.privateEnv.tweenSpeed=c:nextValue()
 end
-}end a.br=function()local c=a.cache.br if not c then c={c=b()}a.cache.br=c end return c.c end end do local b=function()
+}end a.bs=function()local c=a.cache.bs if not c then c={c=b()}a.cache.bs=c end return c.c end end do local b=function()
 
-local b=a.af()local c=function(
+local b=a.ag()local c=function(
 
 
 c)
@@ -8550,9 +8558,9 @@ run=function(f)
 c(f)
 end
 }
-}end a.bs=function()local c=a.cache.bs if not c then c={c=b()}a.cache.bs=c end return c.c end end do local b=function()
+}end a.bt=function()local c=a.cache.bt if not c then c={c=b()}a.cache.bt=c end return c.c end end do local b=function()
 
-local b=a.af()
+local b=a.ag()
 
 return{
 action="vehiclegoto|vgoto|vehicletp|vtp",
@@ -8576,9 +8584,9 @@ if i then
 i:PivotTo(h:GetPivot())
 end
 end
-}end a.bt=function()local c=a.cache.bt if not c then c={c=b()}a.cache.bt=c end return c.c end end do local b=function()
+}end a.bu=function()local c=a.cache.bu if not c then c={c=b()}a.cache.bu=c end return c.c end end do local b=function()
 
-local b=a.af()
+local b=a.ag()
 
 return{
 action="pulsetp|ptp",
@@ -8609,9 +8617,9 @@ task.wait(f)
 
 c.playerService:setRootCFrame(i)
 end
-}end a.bu=function()local c=a.cache.bu if not c then c={c=b()}a.cache.bu=c end return c.c end end do local b=function()
+}end a.bv=function()local c=a.cache.bv if not c then c={c=b()}a.cache.bv=c end return c.c end end do local b=function()
 
-local b=a.af()local c=function(
+local b=a.ag()local c=function(
 
 
 c, d)
@@ -8732,9 +8740,9 @@ c(d,nil)
 end
 end
 }
-}end a.bv=function()local c=a.cache.bv if not c then c={c=b()}a.cache.bv=c end return c.c end end do local b=function()
+}end a.bw=function()local c=a.cache.bw if not c then c={c=b()}a.cache.bw=c end return c.c end end do local b=function()
 
-local b=a.af()
+local b=a.ag()
 
 local c="IYFloatPlatform"
 
@@ -8775,7 +8783,7 @@ end
 end
 end
 }
-}end a.bw=function()local c=a.cache.bw if not c then c={c=b()}a.cache.bw=c end return c.c end end do local b=function()local b=function(
+}end a.bx=function()local c=a.cache.bx if not c then c={c=b()}a.cache.bx=c end return c.c end end do local b=function()local b=function(
 
 
 b, c)
@@ -8805,9 +8813,9 @@ run=function(c)
 b(c,1)
 end
 }
-}end a.bx=function()local c=a.cache.bx if not c then c={c=b()}a.cache.bx=c end return c.c end end do local b=function()
+}end a.by=function()local c=a.cache.by if not c then c={c=b()}a.cache.by=c end return c.c end end do local b=function()
 
-local b=a.av()local c=function(
+local b=a.aw()local c=function(
 
 c, d)
 local e=c.playerService:getRootPart()
@@ -8831,7 +8839,7 @@ run=function(d)
 c(d,false)
 end
 }
-}end a.by=function()local c=a.cache.by if not c then c={c=b()}a.cache.by=c end return c.c end end do local b=function()
+}end a.bz=function()local c=a.cache.bz if not c then c={c=b()}a.cache.bz=c end return c.c end end do local b=function()
 
 return{
 {
@@ -8919,9 +8927,9 @@ local g=e.CFrame.Position+f*d
 b.playerService:teleportTo(CFrame.new(g,g+f))
 end
 }
-}end a.bz=function()local c=a.cache.bz if not c then c={c=b()}a.cache.bz=c end return c.c end end do local b=function()
+}end a.bA=function()local c=a.cache.bA if not c then c={c=b()}a.cache.bA=c end return c.c end end do local b=function()
 
-local b=a.af()local c=function(
+local b=a.ag()local c=function(
 
 
 c, d)
@@ -8987,7 +8995,7 @@ d:notify("Position","character is not loaded")
 end
 end
 }
-}end a.bA=function()local c=a.cache.bA if not c then c={c=b()}a.cache.bA=c end return c.c end end do local b=function()
+}end a.bB=function()local c=a.cache.bB if not c then c={c=b()}a.cache.bB=c end return c.c end end do local b=function()
 
 return{
 action="walktoposition|walktopos",
@@ -9007,7 +9015,7 @@ if e then
 e.WalkToPoint=d
 end
 end
-}end a.bB=function()local c=a.cache.bB if not c then c={c=b()}a.cache.bB=c end return c.c end end do local b=function()local b=function(
+}end a.bC=function()local c=a.cache.bC if not c then c={c=b()}a.cache.bC=c end return c.c end end do local b=function()local b=function(
 
 b)
 local c=b:collectGarbage("spawnpoint")
@@ -9057,9 +9065,9 @@ c:notify("Spawn Point","Removed spawn point")
 end
 end
 }
-}end a.bC=function()local c=a.cache.bC if not c then c={c=b()}a.cache.bC=c end return c.c end end do local b=function()
+}end a.bD=function()local c=a.cache.bD if not c then c={c=b()}a.cache.bD=c end return c.c end end do local b=function()
 
-local b=a.aI()
+local b=a.aJ()
 local c=a.g()
 
 local d local e=function(
@@ -9092,7 +9100,7 @@ end
 
 f.playerService:teleportTo(d)
 end
-}end a.bD=function()local c=a.cache.bD if not c then c={c=b()}a.cache.bD=c end return c.c end end do local b=function()local b=function(
+}end a.bE=function()local c=a.cache.bE if not c then c={c=b()}a.cache.bE=c end return c.c end end do local b=function()local b=function(
 
 b)
 local c=b:collectGarbage("walltp")
@@ -9137,7 +9145,7 @@ run=function(c)
 b(c)
 end
 }
-}end a.bE=function()local c=a.cache.bE if not c then c={c=b()}a.cache.bE=c end return c.c end end do local b=function()
+}end a.bF=function()local c=a.cache.bF if not c then c={c=b()}a.cache.bF=c end return c.c end end do local b=function()
 
 return{
 action="teleporttool|tptool",
@@ -9164,7 +9172,7 @@ local g=f.Hit.Position+Vector3.new(0,3,0)
 b.playerService:teleportTo(CFrame.new(g)*(e.CFrame-e.CFrame.Position))
 end)
 end
-}end a.bF=function()local c=a.cache.bF if not c then c={c=b()}a.cache.bF=c end return c.c end end do local b=function()local b=function(
+}end a.bG=function()local c=a.cache.bG if not c then c={c=b()}a.cache.bG=c end return c.c end end do local b=function()local b=function(
 
 
 
@@ -9285,7 +9293,7 @@ run=function(g,h)
 g.privateEnv.gotopartDelay=h:nextValue()or 0.1
 end
 }
-}end a.bG=function()local c=a.cache.bG if not c then c={c=b()}a.cache.bG=c end return c.c end end do local b=function()
+}end a.bH=function()local c=a.cache.bH if not c then c={c=b()}a.cache.bH=c end return c.c end end do local b=function()
 
 return{
 action="mouseteleport|mousetp",
@@ -9299,7 +9307,7 @@ if not(c and d.Hit)then return end
 local e=d.Hit.Position+Vector3.new(0,3,0)
 b.playerService:teleportTo(CFrame.new(e)*(c.CFrame-c.CFrame.Position))
 end
-}end a.bH=function()local c=a.cache.bH if not c then c={c=b()}a.cache.bH=c end return c.c end end do local b=function()local b=function(
+}end a.bI=function()local c=a.cache.bI if not c then c={c=b()}a.cache.bI=c end return c.c end end do local b=function()local b=function(
 
 b)
 local c=b:collectGarbage("tpwalk")
@@ -9425,11 +9433,11 @@ end
 d:notify("Wallwalk",if f then"disabled"else"it is not running")
 end
 }
-}end a.bI=function()local c=a.cache.bI if not c then c={c=b()}a.cache.bI=c end return c.c end end do local b=function()
+}end a.bJ=function()local c=a.cache.bJ if not c then c={c=b()}a.cache.bJ=c end return c.c end end do local b=function()
 
 
 
-local b=a.af()
+local b=a.ag()
 local c=a.f()
 
 local d=c.PathfindingService
@@ -9653,10 +9661,9 @@ p:notify("Pathfind","nothing is walking right now")
 end
 end
 }
-}end a.bJ=function()local c=a.cache.bJ if not c then c={c=b()}a.cache.bJ=c end return c.c end end do local b=function()
+}end a.bK=function()local c=a.cache.bK if not c then c={c=b()}a.cache.bK=c end return c.c end end do local b=function()
 
-return{a.br()
-,a.bs()
+return{a.bs()
 ,a.bt()
 ,a.bu()
 ,a.bv()
@@ -9674,8 +9681,9 @@ return{a.br()
 ,a.bH()
 ,a.bI()
 ,a.bJ()
+,a.bK()
 
-}end a.bK=function()local c=a.cache.bK if not c then c={c=b()}a.cache.bK=c end return c.c end end do local b=function()
+}end a.bL=function()local c=a.cache.bL if not c then c={c=b()}a.cache.bL=c end return c.c end end do local b=function()
 
 
 
@@ -9703,7 +9711,7 @@ end)
 return e,if e then nil else tostring(f)end
 
 
-return c end a.bL=function()local c=a.cache.bL if not c then c={c=b()}a.cache.bL=c end return c.c end end do local b=function()
+return c end a.bM=function()local c=a.cache.bM if not c then c={c=b()}a.cache.bM=c end return c.c end end do local b=function()
 
 
 
@@ -9768,7 +9776,7 @@ local g=if f then c else b
 return g[d.value(e.Name)%#g+1]end
 
 
-return d end a.bM=function()local c=a.cache.bM if not c then c={c=b()}a.cache.bM=c end return c.c end end do local b=function()
+return d end a.bN=function()local c=a.cache.bN if not c then c={c=b()}a.cache.bN=c end return c.c end end do local b=function()
 
 
 
@@ -9780,9 +9788,9 @@ local c=a.a()
 local d=a.j()
 local e=a.t()
 local f=a.d()
-local g=a.aI()
-local h=a.bL()
-local i=a.bM()
+local g=a.aJ()
+local h=a.bM()
+local i=a.bN()
 
 local j=500
 local k="https://files.catbox.moe/i968v2.jpg"
@@ -10007,9 +10015,9 @@ end
 return false,tostring(y)end
 
 
-return m end a.bN=function()local c=a.cache.bN if not c then c={c=b()}a.cache.bN=c end return c.c end end do local b=function()
+return m end a.bO=function()local c=a.cache.bO if not c then c={c=b()}a.cache.bO=c end return c.c end end do local b=function()
 
-local b=a.bN()
+local b=a.bO()
 
 return{
 {
@@ -10067,10 +10075,10 @@ b.setWebhook(e)
 c:notify("Logs Webhook","chat logs will be sent to the webhook")
 end
 }
-}end a.bO=function()local c=a.cache.bO if not c then c={c=b()}a.cache.bO=c end return c.c end end do local b=function()
+}end a.bP=function()local c=a.cache.bP if not c then c={c=b()}a.cache.bP=c end return c.c end end do local b=function()
 
-local b=a.bL()
-local c=a.af()
+local b=a.bM()
+local c=a.ag()
 
 local d="spam"
 local e="pmspam:"local f=function(
@@ -10271,10 +10279,10 @@ run=function(n,o)
 n.privateEnv.spamSpeed=math.max(o:nextValue()or 1,0)
 end
 }
-}end a.bP=function()local c=a.cache.bP if not c then c={c=b()}a.cache.bP=c end return c.c end end do local b=function()
+}end a.bQ=function()local c=a.cache.bQ if not c then c={c=b()}a.cache.bQ=c end return c.c end end do local b=function()
 
 local b=a.f()
-local c=a.bL()local d=function(
+local c=a.bM()local d=function(
 
 
 d)
@@ -10302,10 +10310,10 @@ run=function()
 d(false)
 end
 }
-}end a.bQ=function()local c=a.cache.bQ if not c then c={c=b()}a.cache.bQ=c end return c.c end end do local b=function()
+}end a.bR=function()local c=a.cache.bR if not c then c={c=b()}a.cache.bR=c end return c.c end end do local b=function()
 
 local b=a.f()
-local c=a.bL()local d=function(
+local c=a.bM()local d=function(
 
 d)
 if c.isLegacy()then
@@ -10384,10 +10392,10 @@ end
 e()
 end
 }
-}end a.bR=function()local c=a.cache.bR if not c then c={c=b()}a.cache.bR=c end return c.c end end do local b=function()
+}end a.bS=function()local c=a.cache.bS if not c then c={c=b()}a.cache.bS=c end return c.c end end do local b=function()
 
 local b=a.f()
-local c=a.af()local d=function()
+local c=a.ag()local d=function()
 
 
 
@@ -10542,7 +10550,7 @@ h:notify("Phonebook","It seems you're not able to call anyone. Sorry!")
 end
 end
 }
-}end a.bS=function()local c=a.cache.bS if not c then c={c=b()}a.cache.bS=c end return c.c end end do local b=function()
+}end a.bT=function()local c=a.cache.bT if not c then c={c=b()}a.cache.bT=c end return c.c end end do local b=function()
 
 return{
 {
@@ -10586,9 +10594,9 @@ c.running=false
 end
 end
 }
-}end a.bT=function()local c=a.cache.bT if not c then c={c=b()}a.cache.bT=c end return c.c end end do local b=function()
+}end a.bU=function()local c=a.cache.bU if not c then c={c=b()}a.cache.bU=c end return c.c end end do local b=function()
 
-local b=a.af()
+local b=a.ag()
 
 return{
 {
@@ -10630,17 +10638,17 @@ end
 end
 end
 }
-}end a.bU=function()local c=a.cache.bU if not c then c={c=b()}a.cache.bU=c end return c.c end end do local b=function()
+}end a.bV=function()local c=a.cache.bV if not c then c={c=b()}a.cache.bV=c end return c.c end end do local b=function()
 
-return{a.bO()
-,a.bP()
+return{a.bP()
 ,a.bQ()
 ,a.bR()
 ,a.bS()
 ,a.bT()
 ,a.bU()
+,a.bV()
 
-}end a.bV=function()local c=a.cache.bV if not c then c={c=b()}a.cache.bV=c end return c.c end end do local b=function()
+}end a.bW=function()local c=a.cache.bW if not c then c={c=b()}a.cache.bW=c end return c.c end end do local b=function()
 
 
 
@@ -10651,7 +10659,7 @@ return{a.bO()
 
 
 local b=a.f()
-local c=a.ae()
+local c=a.af()
 local d=a.b()
 local e=a.d()
 
@@ -10882,15 +10890,15 @@ end
 n.folder:Destroy()end
 
 
-return m end a.bW=function()local c=a.cache.bW if not c then c={c=b()}a.cache.bW=c end return c.c end end do local b=function()
+return m end a.bX=function()local c=a.cache.bX if not c then c={c=b()}a.cache.bX=c end return c.c end end do local b=function()
 
 
 
 
 
 
-local b=a.bW()
-local c=a.af()
+local b=a.bX()
+local c=a.ag()
 local d=a.f()
 local e=a.b()
 
@@ -11208,7 +11216,7 @@ r(x,C)
 end
 end
 }
-}end a.bX=function()local c=a.cache.bX if not c then c={c=b()}a.cache.bX=c end return c.c end end do local b=function()local b=function(
+}end a.bY=function()local c=a.cache.bY if not c then c={c=b()}a.cache.bY=c end return c.c end end do local b=function()local b=function(
 
 
 b)
@@ -11287,7 +11295,7 @@ d.privateEnv.xrayEnabled=not d.privateEnv.xrayEnabled
 b(d)
 end
 }
-}end a.bY=function()local c=a.cache.bY if not c then c={c=b()}a.cache.bY=c end return c.c end end do local b=function()local b=function(
+}end a.bZ=function()local c=a.cache.bZ if not c then c={c=b()}a.cache.bZ=c end return c.c end end do local b=function()local b=function(
 
 
 
@@ -11370,7 +11378,7 @@ run=function(e)
 c(e)
 end
 }
-}end a.bZ=function()local c=a.cache.bZ if not c then c={c=b()}a.cache.bZ=c end return c.c end end do local b=function()local b=function(
+}end a.b_=function()local c=a.cache.b_ if not c then c={c=b()}a.cache.b_=c end return c.c end end do local b=function()local b=function(
 
 
 b, c)
@@ -11400,17 +11408,17 @@ run=function(c)
 b(c,false)
 end
 }
-}end a.b_=function()local c=a.cache.b_ if not c then c={c=b()}a.cache.b_=c end return c.c end end do local b=function()
-
-return{a.bX()
-,a.bY()
-,a.bZ()
-,a.b_()
-
 }end a.b0=function()local c=a.cache.b0 if not c then c={c=b()}a.cache.b0=c end return c.c end end do local b=function()
 
-return{}end a.b1=function()local c=a.cache.b1 if not c then c={c=b()}a.cache.b1=c end return c.c end end do local b=function()
-local b=a.b1()
+return{a.bY()
+,a.bZ()
+,a.b_()
+,a.b0()
+
+}end a.b1=function()local c=a.cache.b1 if not c then c={c=b()}a.cache.b1=c end return c.c end end do local b=function()
+
+return{}end a.b2=function()local c=a.cache.b2 if not c then c={c=b()}a.cache.b2=c end return c.c end end do local b=function()
+local b=a.b2()
 local c=a.d()
 
 local d={}
@@ -11452,7 +11460,7 @@ local f=Instance.new(e)
 return d.setup(f,...)end
 
 
-return d end a.b2=function()local c=a.cache.b2 if not c then c={c=b()}a.cache.b2=c end return c.c end end do local b=function()
+return d end a.b3=function()local c=a.cache.b3 if not c then c={c=b()}a.cache.b3=c end return c.c end end do local b=function()
 
 
 local b=a.f()
@@ -11475,7 +11483,7 @@ not c.KeyboardEnabled
 end
 )
 
-return d end a.b3=function()local c=a.cache.b3 if not c then c={c=b()}a.cache.b3=c end return c.c end end do local b=function()
+return d end a.b4=function()local c=a.cache.b4 if not c then c={c=b()}a.cache.b4=c end return c.c end end do local b=function()
 local b=a.f()
 local c=a.a()local d=function()
 
@@ -11499,7 +11507,7 @@ end
 return d end
 
 
-return d()end a.b4=function()local c=a.cache.b4 if not c then c={c=b()}a.cache.b4=c end return c.c end end do local b=function()
+return d()end a.b5=function()local c=a.cache.b5 if not c then c={c=b()}a.cache.b5=c end return c.c end end do local b=function()
 local b={}
 
 local c="abcdefghijklmnopqrstuvABCDEFGHIJKLMNOPQRSTUV_0123456789"
@@ -11598,7 +11606,7 @@ b.richFontSize=function(e, f)
 return`<font size="{f}">{e}</font>`end
 
 
-return b end a.b5=function()local c=a.cache.b5 if not c then c={c=b()}a.cache.b5=c end return c.c end end do local aa=function()
+return b end a.b6=function()local c=a.cache.b6 if not c then c={c=b()}a.cache.b6=c end return c.c end end do local aa=function()
 
 
 
@@ -11614,15 +11622,15 @@ return b end a.b5=function()local c=a.cache.b5 if not c then c={c=b()}a.cache.b5
 
 
 local b=a.f()
-local c=a.b2()
-local d=a.aL()
-local e=a.ae()
+local c=a.b3()
+local d=a.aM()
+local e=a.af()
 local f=a.g()
 
-local g=a.b3()
-local h=a.b4()
-local i=a.b5()
-local j=a.av()
+local g=a.b4()
+local h=a.b5()
+local i=a.b6()
+local j=a.aw()
 
 local k=b.ContextActionService
 local l=b.UserInputService
@@ -12141,10 +12149,10 @@ local ah=ag:getGarbage(o)
 return ah and ah.position end
 
 
-return m end a.b6=function()local ab=a.cache.b6 if not ab then ab={c=aa()}a.cache.b6=ab end return ab.c end end do local aa=function()
+return m end a.b7=function()local ab=a.cache.b7 if not ab then ab={c=aa()}a.cache.b7=ab end return ab.c end end do local aa=function()
 
-local aa=a.af()
-local ab=a.b6()local ac=function(
+local aa=a.ag()
+local ab=a.b7()local ac=function(
 
 
 ac)
@@ -12264,12 +12272,12 @@ ag:notify("Spectate","View turned off")
 end
 end
 }
-}end a.b7=function()local ab=a.cache.b7 if not ab then ab={c=aa()}a.cache.b7=ab end return ab.c end end do local aa=function()
+}end a.b8=function()local ab=a.cache.b8 if not ab then ab={c=aa()}a.cache.b8=ab end return ab.c end end do local aa=function()
 
 
 
-local aa=a.af()
-local ab=a.b6()
+local aa=a.ag()
+local ab=a.b7()
 
 local ac="Freecam"local ad=function(
 
@@ -12410,7 +12418,7 @@ local ai=ab.addBoost(af,ah)
 af:notify(ac,`freecam boost is now {ai}x`)
 end
 },
-}end a.b8=function()local ab=a.cache.b8 if not ab then ab={c=aa()}a.cache.b8=ab end return ab.c end end do local aa=function()
+}end a.b9=function()local ab=a.cache.b9 if not ab then ab={c=aa()}a.cache.b9=ab end return ab.c end end do local aa=function()
 
 return{
 {
@@ -12430,7 +12438,7 @@ speed=aa.privateEnv.tweenSpeed
 })
 end
 }
-}end a.b9=function()local ab=a.cache.b9 if not ab then ab={c=aa()}a.cache.b9=ab end return ab.c end end do local aa=function()
+}end a.ca=function()local ab=a.cache.ca if not ab then ab={c=aa()}a.cache.ca=ab end return ab.c end end do local aa=function()
 
 return{
 {
@@ -12449,7 +12457,7 @@ run=function(aa)
 aa.localPlayer.CameraMode=Enum.CameraMode.Classic
 end
 }
-}end a.ca=function()local ab=a.cache.ca if not ab then ab={c=aa()}a.cache.ca=ab end return ab.c end end do local aa=function()local aa=function(
+}end a.cb=function()local ab=a.cache.cb if not ab then ab={c=aa()}a.cache.cb=ab end return ab.c end end do local aa=function()local aa=function(
 
 
 aa)
@@ -12490,7 +12498,7 @@ end
 end
 end
 end
-}end a.cb=function()local ab=a.cache.cb if not ab then ab={c=aa()}a.cache.cb=ab end return ab.c end end do local aa=function()
+}end a.cc=function()local ab=a.cache.cc if not ab then ab={c=aa()}a.cache.cc=ab end return ab.c end end do local aa=function()
 
 return{
 {
@@ -12533,7 +12541,7 @@ ad.CameraMaxZoomDistance=ae
 ad.CameraMinZoomDistance=af
 end
 }
-}end a.cc=function()local ab=a.cache.cc if not ab then ab={c=aa()}a.cache.cc=ab end return ab.c end end do local aa=function()
+}end a.cd=function()local ab=a.cache.cd if not ab then ab={c=aa()}a.cache.cd=ab end return ab.c end end do local aa=function()
 
 return{
 client=true,
@@ -12544,9 +12552,9 @@ run=function(aa,ab)
 local ac=math.clamp(math.abs(ab:nextValue()or 70),1,120)
 workspace.CurrentCamera.FieldOfView=ac
 end
-}end a.cd=function()local ab=a.cache.cd if not ab then ab={c=aa()}a.cache.cd=ab end return ab.c end end do local aa=function()
+}end a.ce=function()local ab=a.cache.ce if not ab then ab={c=aa()}a.cache.ce=ab end return ab.c end end do local aa=function()
 
-local aa=a.b6()
+local aa=a.b7()
 
 return{
 client=true,
@@ -12580,7 +12588,7 @@ ad.CameraMode=Enum.CameraMode.Classic
 ab:notify("camera has been reseted successfully")
 end
 end
-}end a.ce=function()local ab=a.cache.ce if not ab then ab={c=aa()}a.cache.ce=ab end return ab.c end end do local aa=function()
+}end a.cf=function()local ab=a.cache.cf if not ab then ab={c=aa()}a.cache.cf=ab end return ab.c end end do local aa=function()
 
 return{
 client=true,
@@ -12600,9 +12608,9 @@ end)
 
 aa:notify("Shiftlock","Shift lock should now be available")
 end
-}end a.cf=function()local ab=a.cache.cf if not ab then ab={c=aa()}a.cache.cf=ab end return ab.c end end do local aa=function()
+}end a.cg=function()local ab=a.cache.cg if not ab then ab={c=aa()}a.cache.cg=ab end return ab.c end end do local aa=function()
 
-local aa=a.af()
+local aa=a.ag()
 
 
 local ab={max=400,min=0.5}
@@ -12643,9 +12651,9 @@ task.wait(0.1)
 ag.CameraMaxZoomDistance=ai.max
 ag.CameraMinZoomDistance=ai.min
 end
-}end a.cg=function()local ab=a.cache.cg if not ab then ab={c=aa()}a.cache.cg=ab end return ab.c end end do local aa=function()
+}end a.ch=function()local ab=a.cache.ch if not ab then ab={c=aa()}a.cache.ch=ab end return ab.c end end do local aa=function()
 
-local aa=a.af()local ab=function(
+local aa=a.ag()local ab=function(
 
 ab)
 local ac=ab:collectGarbage("stareat")
@@ -12695,10 +12703,9 @@ run=function(ac)
 ab(ac)
 end
 }
-}end a.ch=function()local ab=a.cache.ch if not ab then ab={c=aa()}a.cache.ch=ab end return ab.c end end do local aa=function()
+}end a.ci=function()local ab=a.cache.ci if not ab then ab={c=aa()}a.cache.ci=ab end return ab.c end end do local aa=function()
 
-return{a.b7()
-,a.b8()
+return{a.b8()
 ,a.b9()
 ,a.ca()
 ,a.cb()
@@ -12708,30 +12715,41 @@ return{a.b7()
 ,a.cf()
 ,a.cg()
 ,a.ch()
+,a.ci()
 
-}end a.ci=function()local ab=a.cache.ci if not ab then ab={c=aa()}a.cache.ci=ab end return ab.c end end do local aa=function()
+}end a.cj=function()local ab=a.cache.cj if not ab then ab={c=aa()}a.cache.cj=ab end return ab.c end end do local aa=function()
+
+local aa=a.y()local ab=function(
 
 
-local aa
+ab)
+local ac=aa.fetch(ab,"F3X","backups/f3x.luau","iy/f3x")
+if not ac then return end
+
+local ad,ae=pcall(ac)
+if not ad then
+ab:notify("F3X",`failed to run: {tostring(ae)}`)
+end end
+
 
 return{
 {
 client=true,
 action="btools",
 description="Gives you building tools (DOES NOT REPLICATE)",
-run=function(ab)
-local ac=ab.localPlayer:FindFirstChildWhichIsA("Backpack")
-if not ac then
-ab:notify("Btools","your backpack is not loaded")
+run=function(ac)
+local ad=ac.localPlayer:FindFirstChildWhichIsA("Backpack")
+if not ad then
+ac:notify("Btools","your backpack is not loaded")
 return
 end
 
 
-for ad,ae in Enum.BinType:GetEnumItems()do
-local af=Instance.new("HopperBin")
-af.BinType=ae
-af.Name="Building Tool"
-af.Parent=ac
+for ae,af in Enum.BinType:GetEnumItems()do
+local ag=Instance.new("HopperBin")
+ag.BinType=af
+ag.Name="Building Tool"
+ag.Parent=ad
 end
 end
 },
@@ -12739,25 +12757,9 @@ end
 client=true,
 action="f3x",
 description="Gives you F3X building tools (DOES NOT REPLICATE)",
-run=function(ab)
-if aa==nil then
-ab:notify("F3X","no script link is set, fill in F3X_SOURCE_URL at the top of workspace/clienttools.luau")
-return
-end
-
-local ac=ab:expectExploit("loadstring")
-if not ac then return end
-
-local ad,ae=pcall(function()
-ac(game:HttpGet(aa))()
-end)
-
-if not ad then
-ab:notify("F3X",`failed to load: {tostring(ae)}`)
-end
-end
+run=function(ac)task.spawn(ab,ac)end
 }
-}end a.cj=function()local ab=a.cache.cj if not ab then ab={c=aa()}a.cache.cj=ab end return ab.c end end do local aa=function()local aa=function(
+}end a.ck=function()local ab=a.cache.ck if not ab then ab={c=aa()}a.cache.ck=ab end return ab.c end end do local aa=function()local aa=function(
 
 
 
@@ -12807,7 +12809,7 @@ ac:notify("Modified Waypoints","Created waypoint: "..ae)
 end)
 end
 }
-}end a.ck=function()local ab=a.cache.ck if not ab then ab={c=aa()}a.cache.ck=ab end return ab.c end end do local aa=function()local aa=function(
+}end a.cl=function()local ab=a.cache.cl if not ab then ab={c=aa()}a.cache.cl=ab end return ab.c end end do local aa=function()local aa=function(
 
 
 aa, ab, ac)
@@ -12876,7 +12878,7 @@ end
 ab:notify("Item(s) Deleted","Deleted items with ClassName "..ad)
 end
 }
-}end a.cl=function()local ab=a.cache.cl if not ab then ab={c=aa()}a.cache.cl=ab end return ab.c end end do local aa=function()
+}end a.cm=function()local ab=a.cache.cm if not ab then ab={c=aa()}a.cache.cm=ab end return ab.c end end do local aa=function()
 
 
 
@@ -12922,7 +12924,7 @@ end
 aa:notify("Lock workspace","unlocked")
 end
 }
-}end a.cm=function()local ab=a.cache.cm if not ab then ab={c=aa()}a.cache.cm=ab end return ab.c end end do local aa=function()
+}end a.cn=function()local ab=a.cache.cn if not ab then ab={c=aa()}a.cache.cn=ab end return ab.c end end do local aa=function()
 
 return{
 {
@@ -12954,7 +12956,7 @@ end
 aa.privateEnv.shownParts={}
 end
 }
-}end a.cn=function()local ab=a.cache.cn if not ab then ab={c=aa()}a.cache.cn=ab end return ab.c end end do local aa=function()local aa=function(
+}end a.co=function()local ab=a.cache.co if not ab then ab={c=aa()}a.cache.co=ab end return ab.c end end do local aa=function()local aa=function(
 
 aa, ab, ac)
 return{
@@ -13013,7 +13015,7 @@ ac.connection:Disconnect()
 end
 end
 }
-}end a.co=function()local ab=a.cache.co if not ab then ab={c=aa()}a.cache.co=ab end return ab.c end end do local aa=function()
+}end a.cp=function()local ab=a.cache.cp if not ab then ab={c=aa()}a.cache.cp=ab end return ab.c end end do local aa=function()
 
 local aa=workspace.Gravity
 local ab=-500
@@ -13035,7 +13037,7 @@ run=function(ac,ad)
 workspace.FallenPartsDestroyHeight=ad:nextValue()or ab
 end
 }
-}end a.cp=function()local ab=a.cache.cp if not ab then ab={c=aa()}a.cache.cp=ab end return ab.c end end do local aa=function()
+}end a.cq=function()local ab=a.cache.cq if not ab then ab={c=aa()}a.cache.cq=ab end return ab.c end end do local aa=function()
 
 return{
 {
@@ -13059,7 +13061,7 @@ aa:Clear()
 end
 end
 }
-}end a.cq=function()local ab=a.cache.cq if not ab then ab={c=aa()}a.cache.cq=ab end return ab.c end end do local aa=function()local aa=function(
+}end a.cr=function()local ab=a.cache.cr if not ab then ab={c=aa()}a.cache.cr=ab end return ab.c end end do local aa=function()local aa=function(
 
 aa, ab)
 return ab==""
@@ -13207,8 +13209,8 @@ end
 end
 end
 }
-}end a.cr=function()local ab=a.cache.cr if not ab then ab={c=aa()}a.cache.cr=ab end return ab.c end end do local aa=function()
-local aa=a.af()local ab=function(
+}end a.cs=function()local ab=a.cache.cs if not ab then ab={c=aa()}a.cache.cs=ab end return ab.c end end do local aa=function()
+local aa=a.ag()local ab=function(
 
 
 ab)
@@ -13301,10 +13303,9 @@ end
 end
 end
 }
-}end a.cs=function()local ab=a.cache.cs if not ab then ab={c=aa()}a.cache.cs=ab end return ab.c end end do local aa=function()
+}end a.ct=function()local ab=a.cache.ct if not ab then ab={c=aa()}a.cache.ct=ab end return ab.c end end do local aa=function()
 
-return{a.cj()
-,a.ck()
+return{a.ck()
 ,a.cl()
 ,a.cm()
 ,a.cn()
@@ -13313,8 +13314,9 @@ return{a.cj()
 ,a.cq()
 ,a.cr()
 ,a.cs()
+,a.ct()
 
-}end a.ct=function()local ab=a.cache.ct if not ab then ab={c=aa()}a.cache.ct=ab end return ab.c end end do local aa=function()local aa=function(
+}end a.cu=function()local ab=a.cache.cu if not ab then ab={c=aa()}a.cache.cu=ab end return ab.c end end do local aa=function()local aa=function(
 
 aa)
 local ab=aa.robloxServices.Lighting
@@ -13362,7 +13364,7 @@ run=function(ac)
 ab(ac)
 end
 }
-}end a.cu=function()local ab=a.cache.cu if not ab then ab={c=aa()}a.cache.cu=ab end return ab.c end end do local aa=function()
+}end a.cv=function()local ab=a.cache.cv if not ab then ab={c=aa()}a.cache.cv=ab end return ab.c end end do local aa=function()
 
 return{
 client=true,
@@ -13376,7 +13378,7 @@ local ad=aa.robloxServices.Lighting
 ad.Ambient=ac
 ad.OutdoorAmbient=ac
 end
-}end a.cv=function()local ab=a.cache.cv if not ab then ab={c=aa()}a.cache.cv=ab end return ab.c end end do local aa=function()
+}end a.cw=function()local ab=a.cache.cw if not ab then ab={c=aa()}a.cache.cw=ab end return ab.c end end do local aa=function()
 
 return{
 {
@@ -13395,7 +13397,7 @@ run=function(aa)
 aa.robloxServices.Lighting.ClockTime=0
 end
 }
-}end a.cw=function()local ab=a.cache.cw if not ab then ab={c=aa()}a.cache.cw=ab end return ab.c end end do local aa=function()
+}end a.cx=function()local ab=a.cache.cx if not ab then ab={c=aa()}a.cache.cx=ab end return ab.c end end do local aa=function()
 
 return{
 client=true,
@@ -13411,7 +13413,7 @@ ad:Destroy()
 end
 end
 end
-}end a.cx=function()local ab=a.cache.cx if not ab then ab={c=aa()}a.cache.cx=ab end return ab.c end end do local aa=function()
+}end a.cy=function()local ab=a.cache.cy if not ab then ab={c=aa()}a.cache.cy=ab end return ab.c end end do local aa=function()
 
 return{
 client=true,
@@ -13421,7 +13423,7 @@ args={kind="number"},
 run=function(aa,ab)
 aa.robloxServices.Lighting.Brightness=ab:nextValue()
 end
-}end a.cy=function()local ab=a.cache.cy if not ab then ab={c=aa()}a.cache.cy=ab end return ab.c end end do local aa=function()
+}end a.cz=function()local ab=a.cache.cz if not ab then ab={c=aa()}a.cache.cz=ab end return ab.c end end do local aa=function()
 
 return{
 {
@@ -13440,10 +13442,10 @@ run=function(aa)
 aa.robloxServices.Lighting.GlobalShadows=false
 end
 }
-}end a.cz=function()local ab=a.cache.cz if not ab then ab={c=aa()}a.cache.cz=ab end return ab.c end end do local aa=function()
+}end a.cA=function()local ab=a.cache.cA if not ab then ab={c=aa()}a.cache.cA=ab end return ab.c end end do local aa=function()
 
 local aa=a.b()
-local ab=a.af()
+local ab=a.ag()
 
 
 local ac=a.f().Lighting
@@ -13529,17 +13531,17 @@ end
 end
 end
 }
-}end a.cA=function()local ab=a.cache.cA if not ab then ab={c=aa()}a.cache.cA=ab end return ab.c end end do local aa=function()
+}end a.cB=function()local ab=a.cache.cB if not ab then ab={c=aa()}a.cache.cB=ab end return ab.c end end do local aa=function()
 
-return{a.cu()
-,a.cv()
+return{a.cv()
 ,a.cw()
 ,a.cx()
 ,a.cy()
 ,a.cz()
 ,a.cA()
+,a.cB()
 
-}end a.cB=function()local ab=a.cache.cB if not ab then ab={c=aa()}a.cache.cB=ab end return ab.c end end do local aa=function()
+}end a.cC=function()local ab=a.cache.cC if not ab then ab={c=aa()}a.cache.cC=ab end return ab.c end end do local aa=function()
 
 
 
@@ -13625,9 +13627,9 @@ end
 end end
 
 
-return ab end a.cC=function()local ab=a.cache.cC if not ab then ab={c=aa()}a.cache.cC=ab end return ab.c end end do local aa=function()
+return ab end a.cD=function()local ab=a.cache.cD if not ab then ab={c=aa()}a.cache.cD=ab end return ab.c end end do local aa=function()
 
-local aa=a.cC()
+local aa=a.cD()
 
 return{
 {
@@ -13685,7 +13687,7 @@ local ad=aa.clear(ab.commandsList)
 ab:notify("Aliases Modified",`Removed {ad} custom alias(es)`)
 end
 }
-}end a.cD=function()local ab=a.cache.cD if not ab then ab={c=aa()}a.cache.cD=ab end return ab.c end end do local aa=function()
+}end a.cE=function()local ab=a.cache.cE if not ab then ab={c=aa()}a.cache.cE=ab end return ab.c end end do local aa=function()
 
 return{
 
@@ -13694,12 +13696,12 @@ extensions={".luau",".lua",".txt",".iy"},
 translateClassic=true,
 
 sectionName="plugin commands",
-}end a.cE=function()local ab=a.cache.cE if not ab then ab={c=aa()}a.cache.cE=ab end return ab.c end end do local aa=function()
+}end a.cF=function()local ab=a.cache.cF if not ab then ab={c=aa()}a.cache.cF=ab end return ab.c end end do local aa=function()
 
 
 
 local aa=a.a()
-local ab=a.af()
+local ab=a.ag()
 
 local ac={}
 local ad
@@ -13825,7 +13827,7 @@ af(ah)
 return ai end
 
 
-return ac end a.cF=function()local ab=a.cache.cF if not ab then ab={c=aa()}a.cache.cF=ab end return ab.c end end do local aa=function()
+return ac end a.cG=function()local ab=a.cache.cG if not ab then ab={c=aa()}a.cache.cG=ab end return ab.c end end do local aa=function()
 
 
 
@@ -13854,8 +13856,8 @@ return ac end a.cF=function()local ab=a.cache.cF if not ab then ab={c=aa()}a.cac
 local aa=a.a()
 local ab=a.j()
 local ac=a.m()
-local ad=a.cE()
-local ae=a.cF()
+local ad=a.cF()
+local ae=a.cG()
 
 local af={}
 
@@ -14417,9 +14419,9 @@ end)
 return p end
 
 
-return af end a.cG=function()local ab=a.cache.cG if not ab then ab={c=aa()}a.cache.cG=ab end return ab.c end end do local aa=function()
+return af end a.cH=function()local ab=a.cache.cH if not ab then ab={c=aa()}a.cache.cH=ab end return ab.c end end do local aa=function()
 
-local aa=a.cG()
+local aa=a.cH()
 
 return{
 {
@@ -14491,7 +14493,7 @@ end
 ab:notify("Plugins",ae)
 end
 }
-}end a.cH=function()local ab=a.cache.cH if not ab then ab={c=aa()}a.cache.cH=ab end return ab.c end end do local aa=function()
+}end a.cI=function()local ab=a.cache.cI if not ab then ab={c=aa()}a.cache.cI=ab end return ab.c end end do local aa=function()
 
 local aa=a.d()
 local ab=a.v()local ac=function(
@@ -14567,57 +14569,57 @@ changed=ab.new(),
 return ac({
 {
 name="general",
-commands=a.au()
+commands=a.av()
 },
 {
 name="bypass",
-commands=a.az()
+commands=a.aA()
 },
 {
 name="interface",
-commands=a.aN()
+commands=a.aO()
 },
 {
 name="character",
-commands=a.bn()
+commands=a.bo()
 },
 {
 name="waypoints",
-commands=a.bq()
+commands=a.br()
 },
 {
 name="teleport",
-commands=a.bK()
+commands=a.bL()
 },
 {
 name="communication",
-commands=a.bV()
+commands=a.bW()
 },
 {
 name="visual",
-commands=a.b0()
+commands=a.b1()
 },
 {
 name="camera",
-commands=a.ci()
+commands=a.cj()
 },
 {
 name="workspace",
-commands=a.ct()
+commands=a.cu()
 },
 {
 name="lighting",
-commands=a.cB()
+commands=a.cC()
 },
 {
 name="aliases",
-commands=a.cD()
+commands=a.cE()
 },
 {
 name="plugins",
-commands=a.cH()
+commands=a.cI()
 }
-})end a.cI=function()local ab=a.cache.cI if not ab then ab={c=aa()}a.cache.cI=ab end return ab.c end end do local aa=function()
+})end a.cJ=function()local ab=a.cache.cJ if not ab then ab={c=aa()}a.cache.cJ=ab end return ab.c end end do local aa=function()
 
 
 
@@ -15775,7 +15777,7 @@ end
 return ag end
 
 
-return aa end a.cJ=function()local ab=a.cache.cJ if not ab then ab={c=aa()}a.cache.cJ=ab end return ab.c end end do local aa=function()
+return aa end a.cK=function()local ab=a.cache.cK if not ab then ab={c=aa()}a.cache.cK=ab end return ab.c end end do local aa=function()
 
 
 
@@ -15786,7 +15788,7 @@ return aa end a.cJ=function()local ab=a.cache.cJ if not ab then ab={c=aa()}a.cac
 
 local aa=a.k()
 local ab=a.j()
-local ac=a.aA()
+local ac=a.aB()
 
 local ad={}
 
@@ -15828,10 +15830,10 @@ end
 aa:writeFile(ah,ag)end
 
 
-return ad end a.cK=function()local ab=a.cache.cK if not ab then ab={c=aa()}a.cache.cK=ab end return ab.c end end do local aa=function()
+return ad end a.cL=function()local ab=a.cache.cL if not ab then ab={c=aa()}a.cache.cL=ab end return ab.c end end do local aa=function()
 
-local aa=a.aB()
-local ab=a.cK()
+local aa=a.aC()
+local ab=a.cL()
 local ac=a.d()
 
 local ad=aa.owner
@@ -15952,7 +15954,7 @@ end
 return g end
 
 
-return ah end a.cL=function()local ab=a.cache.cL if not ab then ab={c=aa()}a.cache.cL=ab end return ab.c end end do local aa=function()
+return ah end a.cM=function()local ab=a.cache.cM if not ab then ab={c=aa()}a.cache.cM=ab end return ab.c end end do local aa=function()
 
 local aa=a.f()
 local ab=aa.CoreGui
@@ -15980,13 +15982,13 @@ message=Instance.new("Message")
 },ac)end
 
 
-return ac end a.cM=function()local ab=a.cache.cM if not ab then ab={c=aa()}a.cache.cM=ab end return ab.c end end do local aa=function()
+return ac end a.cN=function()local ab=a.cache.cN if not ab then ab={c=aa()}a.cache.cN=ab end return ab.c end end do local aa=function()
 return{
 isEnabled=true,
 animationScale=1,
 scrollSpeed=1
-}end a.cN=function()local ab=a.cache.cN if not ab then ab={c=aa()}a.cache.cN=ab end return ab.c end end do local aa=function()
-local aa=a.cN()
+}end a.cO=function()local ab=a.cache.cO if not ab then ab={c=aa()}a.cache.cO=ab end return ab.c end end do local aa=function()
+local aa=a.cO()
 
 local ab={}
 
@@ -15998,20 +16000,20 @@ ab.getScrollSpeed=function(ac, ad)
 return(ad*aa.scrollSpeed)end
 
 
-return ab end a.cO=function()local ab=a.cache.cO if not ab then ab={c=aa()}a.cache.cO=ab end return ab.c end end do local aa=function()
+return ab end a.cP=function()local ab=a.cache.cP if not ab then ab={c=aa()}a.cache.cP=ab end return ab.c end end do local aa=function()
 return{
-createService=a.b2(),
-specialProps=a.b1(),
+createService=a.b3(),
+specialProps=a.b2(),
 
-connectionService=a.aI(),
-fetchService=a.cL(),
-keyboardService=a.aL(),
+connectionService=a.aJ(),
+fetchService=a.cM(),
+keyboardService=a.aM(),
 localPlayer=a.g(),
-messageService=a.cM(),
-playerService=a.ae(),
+messageService=a.cN(),
+playerService=a.af(),
 rbxServices=a.f(),
-tweenService=a.cO(),
-}end a.cP=function()local ab=a.cache.cP if not ab then ab={c=aa()}a.cache.cP=ab end return ab.c end end do local aa=function()
+tweenService=a.cP(),
+}end a.cQ=function()local ab=a.cache.cQ if not ab then ab={c=aa()}a.cache.cQ=ab end return ab.c end end do local aa=function()
 
 return{
 DisplayName="Classic",
@@ -16066,7 +16068,7 @@ SliderBar=Color3.fromRGB(1,76,105),
 SliderNumber=Color3.fromRGB(232,233,235),
 },
 },
-}end a.cQ=function()local ab=a.cache.cQ if not ab then ab={c=aa()}a.cache.cQ=ab end return ab.c end end do local aa=function()
+}end a.cR=function()local ab=a.cache.cR if not ab then ab={c=aa()}a.cache.cR=ab end return ab.c end end do local aa=function()
 
 return{
 DisplayName="Dark",
@@ -16116,7 +16118,7 @@ SliderBar=Color3.fromRGB(1,76,105),
 SliderNumber=Color3.fromRGB(232,233,235),
 },
 }
-}end a.cR=function()local ab=a.cache.cR if not ab then ab={c=aa()}a.cache.cR=ab end return ab.c end end do local aa=function()
+}end a.cS=function()local ab=a.cache.cS if not ab then ab={c=aa()}a.cache.cS=ab end return ab.c end end do local aa=function()
 return{
 DisplayName="Light",
 
@@ -16165,7 +16167,7 @@ SliderBar=Color3.fromRGB(120,130,240),
 SliderNumber=Color3.fromRGB(40,40,48),
 },
 },
-}end a.cS=function()local ab=a.cache.cS if not ab then ab={c=aa()}a.cache.cS=ab end return ab.c end end do local aa=function()
+}end a.cT=function()local ab=a.cache.cT if not ab then ab={c=aa()}a.cache.cT=ab end return ab.c end end do local aa=function()
 
 return{
 DisplayName="M3 Dark",
@@ -16217,12 +16219,12 @@ SliderBar=Color3.fromRGB(208,188,255),
 SliderNumber=Color3.fromRGB(230,224,233),
 },
 },
-}end a.cT=function()local ab=a.cache.cT if not ab then ab={c=aa()}a.cache.cT=ab end return ab.c end end do local aa=function()
+}end a.cU=function()local ab=a.cache.cU if not ab then ab={c=aa()}a.cache.cU=ab end return ab.c end end do local aa=function()
 
-local aa={a.cQ()
-,a.cR()
+local aa={a.cR()
 ,a.cS()
 ,a.cT()
+,a.cU()
 
 }
 
@@ -16233,7 +16235,7 @@ local ae=string.lower(ad.DisplayName)
 ab[ae]=ad
 end
 
-return ab end a.cU=function()local ab=a.cache.cU if not ab then ab={c=aa()}a.cache.cU=ab end return ab.c end end do local aa=function()
+return ab end a.cV=function()local ab=a.cache.cV if not ab then ab={c=aa()}a.cache.cV=ab end return ab.c end end do local aa=function()
 
 
 
@@ -16250,14 +16252,14 @@ options={
 {key="darkGreen",color=Color3.fromRGB(34,110,62)},
 {key="red",color=Color3.fromRGB(214,58,58)},
 },
-}end a.cV=function()local ab=a.cache.cV if not ab then ab={c=aa()}a.cache.cV=ab end return ab.c end end do local aa=function()
+}end a.cW=function()local ab=a.cache.cW if not ab then ab={c=aa()}a.cache.cW=ab end return ab.c end end do local aa=function()
 
-local aa=a.cU()
-local ab=a.cV()
+local aa=a.cV()
+local ab=a.cW()
 local ac=a.n()
 
 local ad=a.d()
-local ae=a.b5()
+local ae=a.b6()
 
 
 
@@ -16439,15 +16441,15 @@ aj:selectTheme(ak.theme)
 end end
 
 
-return af end a.cW=function()local ab=a.cache.cW if not ab then ab={c=aa()}a.cache.cW=ab end return ab.c end end do local aa=function()
+return af end a.cX=function()local ab=a.cache.cX if not ab then ab={c=aa()}a.cache.cX=ab end return ab.c end end do local aa=function()
 
 
 
-local aa=a.cP()
+local aa=a.cQ()
 local ab=a.d()
 
 local ac=aa.specialProps
-local ad=a.cW()
+local ad=a.cX()
 
 ac.ThemeTag=function(ae, af)
 if type(af)~="table"then
@@ -16458,7 +16460,7 @@ end
 ad:addObject(ae,af)end
 
 
-return a.b2()end a.cX=function()local ab=a.cache.cX if not ab then ab={c=aa()}a.cache.cX=ab end return ab.c end end do local aa=function()local aa="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"local ab={}for ac=1,#aa do ab[string.byte(aa,ac)]=ac-1 end local ac={}ac.decode=function(ad)local ae={}local af=0 local ag=0
+return a.b3()end a.cY=function()local ab=a.cache.cY if not ab then ab={c=aa()}a.cache.cY=ab end return ab.c end end do local aa=function()local aa="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"local ab={}for ac=1,#aa do ab[string.byte(aa,ac)]=ac-1 end local ac={}ac.decode=function(ad)local ae={}local af=0 local ag=0
 
 for ah=1,#ad do
 local ai=ab[string.byte(ad,ah)]
@@ -16487,7 +16489,7 @@ end
 return table.concat(ae)end
 
 
-return ac end a.cY=function()local ab=a.cache.cY if not ab then ab={c=aa()}a.cache.cY=ab end return ab.c end end do local aa=function()
+return ac end a.cZ=function()local ab=a.cache.cZ if not ab then ab={c=aa()}a.cache.cZ=ab end return ab.c end end do local aa=function()
 
 return{
 
@@ -16537,7 +16539,7 @@ return{
 ["lucide-blend"]=138161723939087,
 ["lucide-eye-off"]=122453588278564,
 ["lucide-rotate-ccw-clock"]=94201058681961,
-}end a.cZ=function()local ab=a.cache.cZ if not ab then ab={c=aa()}a.cache.cZ=ab end return ab.c end end do local aa=function()
+}end a.c_=function()local ab=a.cache.c_ if not ab then ab={c=aa()}a.cache.c_=ab end return ab.c end end do local aa=function()
 
 
 
@@ -16554,7 +16556,7 @@ return{
 ["lucide-palette"]="edittheme",
 ["lucide-keyboard"]="editkeybinds",
 ["lucide-blocks"]="bindsandplugins",
-}end a.c_=function()local ab=a.cache.c_ if not ab then ab={c=aa()}a.cache.c_=ab end return ab.c end end do local aa=function()
+}end a.c0=function()local ab=a.cache.c0 if not ab then ab={c=aa()}a.cache.c0=ab end return ab.c end end do local aa=function()
 
 
 
@@ -16604,7 +16606,7 @@ return{remake=
 "iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAQAAABLCVATAAAABGdBTUEAALGPC/xhBQAAAAJiS0dEAP+Hj8y/AAAAB3RJTUUH4wcXDAMMCGuWNgAAAVtJREFUSMfdlr1OAkEUhc8YE9daTTaa+BYatHEfxG2gdSvs3QpCQg08gPY8gjaC+w5QGMOSXUuNlRybBRkzM8xMrDjd5s79cs+9Oz/A1kroQ7zENc5whBDfKFEiw4N4dqIz4A2nVGnKhIEtJmZBkwrGNpg72ijdhBlYYUhyYMK0rTEk2dZh6k4Ykqwrxs8AbzhQ8J/wCCDClSL2jlPx9beepqmtTDXR5jJ/Z0W6tfw7ZK2ydqt6agg1SyOmACJNNGRNjNeNdZwbvVRHtnbuZWwts7KGE+1C09QA4Fj64qd5M2inRn7I1hbe1iiDcm9QLoNm3qCZDMq8QS8yaOgNGsqgkWeXcowlkCC6XqCuqKb2e4zs4xWHiqWuxwjAhvM+a2jqZMsJ0zJYZs8a09/QvX+6jgCAMedGyNzqggQABkw4UUImTLinyjE9Ii4QV4+IBQqUyHAvRpa1bJN+AFElufnK4ja7AAAAAElFTkSuQmCC",settings=
 "iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAQAAAD9CzEMAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAHdElNRQfhCxoGHBsxJwxuAAACQklEQVRYw+2XvU9UQRTF5+0+I4Kria6xATWoJAoWliY2qBHJxlBYSG9iFFx1MYbOwkQrLUj8R1ArCxIbYyJYgWiDH2yWSk2AuLKS/Cx8u2Z27sybxz4KEk43d889Zz7u3Hmr1Da2CHhPM6bTlN+LhD0+uRkvh8MJoikaHNpCBl1itLM5wC4PLc5R5TVX2RGNu5lgWTzkMiN1STJcZopfHI+TD5mL0is8pIt7VHFhkQLt3ORTNJ6MMxglOfT1nXfJ5/m5AQMd8/XNlQyetSwPULTJn2I9FYMf7JcNXjrTZinRS548fYw1SkHGE0m+35FQ4xZZjZ3lDjUrf42jpkGBP1b6RXHFlxwWQ1LCWcoi+UbCol7lmi3hAK+Evc9aDbJ8MPjv6HHdhMDY26Jy8e82ndW4fTr/kz5qSSec3D6N+y1WXCmlWNGSdju5OY27bjKkdq03Xbxm9Q9VP4MlbeR+VvRfK7EGZBhXB7WQeAcaGNBGRygRONh0MmWU3RyhlR8yb/An2WejX+G7eHFKVoP7Iv8rZyTykPXa1xgQ5QetzaUmXDaOseawSNbs4LQ0o6e4MEuJk7TRRm9su34h72iOCmngN91imQYr6oFKAxPBgq0qMky3PP8lcg5zLmjkZS9JnTUSsz6eR8QFinRQsDxCdXxhkA5u87lRCmGcQQ+rzDBcJ9LOqMWkzHV2RqyQYWao0u9xRuYnLI9Fg0c+Jy5008BsuvJD4vW8+H2+b7rBYoLoRtDKn0Bfi7eG/JsU5bexqfgL1SjLmuYaxYMAAAAASUVORK5CYII=",
 },
-}end a.c0=function()local ab=a.cache.c0 if not ab then ab={c=aa()}a.cache.c0=ab end return ab.c end end do local aa=function()
+}end a.c1=function()local ab=a.cache.c1 if not ab then ab={c=aa()}a.cache.c1=ab end return ab.c end end do local aa=function()
 
 
 
@@ -16620,17 +16622,17 @@ return{remake=
 
 
 local aa=a.a()
-local ab=a.aD()
+local ab=a.aE()
 local ac=a.n()
 local ad=a.k()
-local ae=a.cK()
-local af=a.cL()
-local ag=a.cY()
+local ae=a.cL()
+local af=a.cM()
+local ag=a.cZ()
 local ah=a.d()
 
-local ai=a.cZ()
-local aj=a.c_()
-local ak=a.c0()
+local ai=a.c_()
+local aj=a.c0()
+local ak=a.c1()
 
 local al=ab.storage.imagePath
 local am=ab.ui.legacyIconsKey
@@ -16758,7 +16760,7 @@ m.Image=k(n)or""
 end end
 
 
-return b end a.c1=function()local ab=a.cache.c1 if not ab then ab={c=aa()}a.cache.c1=ab end return ab.c end end do local aa=function()
+return b end a.c2=function()local ab=a.cache.c2 if not ab then ab={c=aa()}a.cache.c2=ab end return ab.c end end do local aa=function()
 
 return{
 uiScale=Instance.new("UIScale"),
@@ -16774,7 +16776,7 @@ ac.Scale=ab
 ac:SetAttribute("REAL_SCALE",ab)
 end
 end
-}end a.c2=function()local ab=a.cache.c2 if not ab then ab={c=aa()}a.cache.c2=ab end return ab.c end end do local aa=function()
+}end a.c3=function()local ab=a.cache.c3 if not ab then ab={c=aa()}a.cache.c3=ab end return ab.c end end do local aa=function()
 
 
 
@@ -16814,7 +16816,7 @@ flashTime=0.5,
 
 
 copyFeedbackTime=1.5,
-}end a.c3=function()local ab=a.cache.c3 if not ab then ab={c=aa()}a.cache.c3=ab end return ab.c end end do local aa=function()
+}end a.c4=function()local ab=a.cache.c4 if not ab then ab={c=aa()}a.cache.c4=ab end return ab.c end end do local aa=function()
 
 local aa=Color3.fromRGB(248,109,115)
 local ab=Color3.fromRGB(223,215,136)
@@ -16849,7 +16851,7 @@ ah,client=
 ab,deprecated=
 ae
 }
-}end a.c4=function()local ab=a.cache.c4 if not ab then ab={c=aa()}a.cache.c4=ab end return ab.c end end do local aa=function()
+}end a.c5=function()local ab=a.cache.c5 if not ab then ab={c=aa()}a.cache.c5=ab end return ab.c end end do local aa=function()
 
 
 
@@ -16858,8 +16860,8 @@ ae
 
 
 
-local aa=a.c4().args
-local ab=a.b5()
+local aa=a.c5().args
+local ab=a.b6()
 
 local ac={}
 
@@ -16979,21 +16981,21 @@ end
 return table.concat(am)end
 
 
-return ac end a.c5=function()local ab=a.cache.c5 if not ab then ab={c=aa()}a.cache.c5=ab end return ab.c end end do local aa=function()
+return ac end a.c6=function()local ab=a.cache.c6 if not ab then ab={c=aa()}a.cache.c6=ab end return ab.c end end do local aa=function()
 
 
 
-local aa=a.cX()
-local ab=a.c1()
+local aa=a.cY()
+local ab=a.c2()
 local ac=a.a()
-local ad=a.cW()
-local ae=a.c2()
+local ad=a.cX()
+local ae=a.c3()
 
-local af=a.aI()
+local af=a.aJ()
 local ag=a.f()
-local ah=a.c3()
+local ah=a.c4()
 
-local ai=a.c5()
+local ai=a.c6()
 
 local aj=4
 local ak=8
@@ -17561,7 +17563,7 @@ table.clear(g.queue)
 g.container=nil end
 
 
-return c end a.c6=function()local ab=a.cache.c6 if not ab then ab={c=aa()}a.cache.c6=ab end return ab.c end end do local aa=function()
+return c end a.c7=function()local ab=a.cache.c7 if not ab then ab={c=aa()}a.cache.c7=ab end return ab.c end end do local aa=function()
 
 
 
@@ -17640,24 +17642,24 @@ ab:expect(af,{"number"},"'loopService:remove' #1")
 ae._callbacks[af]=nil end
 
 
-return ac end a.c7=function()local ab=a.cache.c7 if not ab then ab={c=aa()}a.cache.c7=ab end return ab.c end end do local aa=function()
+return ac end a.c8=function()local ab=a.cache.c8 if not ab then ab={c=aa()}a.cache.c8=ab end return ab.c end end do local aa=function()
 local aa=a.b()
 local ab=a.a()
 
-local ac=a.cI()
+local ac=a.cJ()
 local ad=a.v()
 local ae=a.d()
 
 local af=a.t().usedCmds
 local ag=a.j()
 local ah=a.f()
-local ai=a.aD()
+local ai=a.aE()
 
-local aj=a.cJ()
-local ak=a.V()
-local al=a.cC()
-local am=a.cG()
-local b=a.af()
+local aj=a.cK()
+local ak=a.W()
+local al=a.cD()
+local am=a.cH()
+local b=a.ag()
 
 local c=ai.commands.cmdsRank
 local d=c.maxTimesUsed
@@ -17902,9 +17904,9 @@ return b(o)end
 h.init=function(n, o)
 ae:assert(o,"'commandsController:init' #1 expected a config to init")
 
-local p=a.aI()
-local q=a.bo()
-local r=a.c6()
+local p=a.aJ()
+local q=a.bp()
+local r=a.c7()
 
 
 n.notify=function(s, ...)
@@ -17946,7 +17948,7 @@ n.getRootPart=n.getRoot
 n.Connect=n.connect
 
 
-local s=a.b3()
+local s=a.b4()
 n.isMobile=s
 n.isPC=not s
 
@@ -17978,7 +17980,7 @@ n.userGameSettings=n.userSettings:GetService("UserGameSettings")
 n.gameNetworkSettings=n.gameSettings:GetService("NetworkSettings")
 
 
-n.loopService=a.c7()
+n.loopService=a.c8()
 
 
 n.storage=a.t()
@@ -18010,7 +18012,7 @@ n:notify("Plugins",`'{t}' is still loading. It may be waiting for something that
 end)end
 
 
-return h end a.c8=function()local ab=a.cache.c8 if not ab then ab={c=aa()}a.cache.c8=ab end return ab.c end end do local aa=function()
+return h end a.c9=function()local ab=a.cache.c9 if not ab then ab={c=aa()}a.cache.c9=ab end return ab.c end end do local aa=function()
 
 
 return{
@@ -18022,15 +18024,15 @@ bundleName="compiled.luau",
 
 
 localBundlePath="iy-remake/compiled.luau",
-}end a.c9=function()local ab=a.cache.c9 if not ab then ab={c=aa()}a.cache.c9=ab end return ab.c end end do local aa=function()
+}end a.da=function()local ab=a.cache.da if not ab then ab={c=aa()}a.cache.da=ab end return ab.c end end do local aa=function()
 
 
 
 local aa=a.a()
-local ab=a.aI()
+local ab=a.aJ()
 local ac=a.f()
-local ad=a.cL()
-local ae=a.c9()
+local ad=a.cM()
+local ae=a.da()
 local af=a.n()
 local ag=a.d()
 
@@ -18097,7 +18099,7 @@ ah.enable(b)
 end end
 
 
-return ah end a.da=function()local ab=a.cache.da if not ab then ab={c=aa()}a.cache.da=ab end return ab.c end end do local aa=function()
+return ah end a.db=function()local ab=a.cache.db if not ab then ab={c=aa()}a.cache.db=ab end return ab.c end end do local aa=function()
 
 
 
@@ -18173,16 +18175,16 @@ conditions={
 },
 },
 },
-}end a.db=function()local ab=a.cache.db if not ab then ab={c=aa()}a.cache.db=ab end return ab.c end end do local aa=function()
+}end a.dc=function()local ab=a.cache.dc if not ab then ab={c=aa()}a.cache.dc=ab end return ab.c end end do local aa=function()
 
 local aa=a.f()
-local ab=a.af()
-local ac=a.cI()
+local ab=a.ag()
+local ac=a.cJ()
 local ad=a.l()
 local ae=a.p()
 local af=a.m()
-local ag=a.cG()
-local ah=a.b5()
+local ag=a.cH()
+local ah=a.b6()
 
 
 
@@ -18585,16 +18587,16 @@ end
 return v(u,t)end
 
 
-return ai end a.dc=function()local ab=a.cache.dc if not ab then ab={c=aa()}a.cache.dc=ab end return ab.c end end do local aa=function()
+return ai end a.dd=function()local ab=a.cache.dd if not ab then ab={c=aa()}a.cache.dd=ab end return ab.c end end do local aa=function()
 
-local aa=a.c8()
-local ab=a.cJ()
+local aa=a.c9()
+local ab=a.cK()
 
-local ac=a.cI()
-local ad=a.c4()
+local ac=a.cJ()
+local ad=a.c5()
 
-local ae=a.b5()
-local af=a.dc()
+local ae=a.b6()
+local af=a.dd()
 
 local ag=ae.colorFromRGB
 local ah=ae.escapeRichText
@@ -19251,17 +19253,17 @@ setCommentCallback=r
 },p)end
 
 
-return p end a.dd=function()local ab=a.cache.dd if not ab then ab={c=aa()}a.cache.dd=ab end return ab.c end end do local aa=function()
+return p end a.de=function()local ab=a.cache.de if not ab then ab={c=aa()}a.cache.de=ab end return ab.c end end do local aa=function()
 
 
 
 
 
 
-local aa=a.c8()
-local ab=a.dd()
-local ac=a.V()
-local ad=a.c7()
+local aa=a.c9()
+local ab=a.de()
+local ac=a.W()
+local ad=a.c8()
 local ae=a.d()
 
 local af={}
@@ -19372,7 +19374,7 @@ end
 return true end
 
 
-return af end a.de=function()local ab=a.cache.de if not ab then ab={c=aa()}a.cache.de=ab end return ab.c end end do local aa=function()
+return af end a.df=function()local ab=a.cache.df if not ab then ab={c=aa()}a.cache.df=ab end return ab.c end end do local aa=function()
 
 
 
@@ -19381,11 +19383,11 @@ return af end a.de=function()local ab=a.cache.de if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.db()
+local aa=a.dc()
 local ab=a.r()
-local ac=a.de()
-local ad=a.c8()
-local ae=a.af()
+local ac=a.df()
+local ad=a.c9()
+local ae=a.ag()
 
 local af=aa.ANY
 
@@ -19646,7 +19648,7 @@ end
 end end
 
 
-return ag end a.df=function()local ab=a.cache.df if not ab then ab={c=aa()}a.cache.df=ab end return ab.c end end do local aa=function()
+return ag end a.dg=function()local ab=a.cache.dg if not ab then ab={c=aa()}a.cache.dg=ab end return ab.c end end do local aa=function()
 
 
 
@@ -19656,8 +19658,8 @@ return ag end a.df=function()local ab=a.cache.df if not ab then ab={c=aa()}a.cac
 
 
 local aa=a.f()
-local ab=a.aI()
-local ac=a.df()
+local ab=a.aJ()
+local ac=a.dg()
 
 local ad=aa.Players
 local ae=aa.TextChatService
@@ -19794,7 +19796,7 @@ end
 ac.fire("OnExecute")end
 
 
-return af end a.dg=function()local ab=a.cache.dg if not ab then ab={c=aa()}a.cache.dg=ab end return ab.c end end do local aa=function()
+return af end a.dh=function()local ab=a.cache.dh if not ab then ab={c=aa()}a.cache.dh=ab end return ab.c end end do local aa=function()
 
 
 
@@ -19821,7 +19823,7 @@ defaultOpacity=0.5,
 
 
 slowSeconds=10,
-}end a.dh=function()local ab=a.cache.dh if not ab then ab={c=aa()}a.cache.dh=ab end return ab.c end end do local aa=function()
+}end a.di=function()local ab=a.cache.di if not ab then ab={c=aa()}a.cache.di=ab end return ab.c end end do local aa=function()
 
 
 
@@ -19840,8 +19842,8 @@ slowSeconds=10,
 
 
 
-local aa=a.c9()
-local ab=a.aD()
+local aa=a.da()
+local ab=a.aE()
 
 return{
 
@@ -20196,7 +20198,7 @@ items={
 },
 },
 },
-}end a.di=function()local ab=a.cache.di if not ab then ab={c=aa()}a.cache.di=ab end return ab.c end end do local aa=function()
+}end a.dj=function()local ab=a.cache.dj if not ab then ab={c=aa()}a.cache.dj=ab end return ab.c end end do local aa=function()
 
 
 
@@ -20211,13 +20213,13 @@ items={
 
 
 local aa=a.a()
-local ab=a.cL()
+local ab=a.cM()
 local ac=a.n()
 local ad=a.s()
 local ae=a.k()
 
-local af=a.dh()
-local ag=a.di().pages.background
+local af=a.di()
+local ag=a.dj().pages.background
 
 local ah={
 frame=nil,
@@ -20531,7 +20533,7 @@ end
 end)end
 
 
-return ah end a.dj=function()local ab=a.cache.dj if not ab then ab={c=aa()}a.cache.dj=ab end return ab.c end end do local aa=function()
+return ah end a.dk=function()local ab=a.cache.dk if not ab then ab={c=aa()}a.cache.dk=ab end return ab.c end end do local aa=function()
 
 return{NEW_YEAR=
 "🎆",VALENTINE_DAYS=
@@ -20540,14 +20542,14 @@ return{NEW_YEAR=
 "🎃",CHRISTMAS=
 "🎄",EASTER=
 "🥚",
-}end a.dk=function()local ab=a.cache.dk if not ab then ab={c=aa()}a.cache.dk=ab end return ab.c end end do local aa=function()
+}end a.dl=function()local ab=a.cache.dl if not ab then ab={c=aa()}a.cache.dl=ab end return ab.c end end do local aa=function()
 
 
 
 local aa={}
 
-local ab=a.aD()
-local ac=a.dk()
+local ab=a.aE()
+local ac=a.dl()
 
 aa.getEasterDate=function()
 local ad=tonumber(os.date("%Y"))
@@ -20605,7 +20607,7 @@ end
 return ad end
 
 
-return aa end a.dl=function()local ab=a.cache.dl if not ab then ab={c=aa()}a.cache.dl=ab end return ab.c end end do local aa=function()
+return aa end a.dm=function()local ab=a.cache.dm if not ab then ab={c=aa()}a.cache.dm=ab end return ab.c end end do local aa=function()
 
 
 
@@ -20686,14 +20688,14 @@ room=math.max(f,0),
 }end
 
 
-return aa end a.dm=function()local ab=a.cache.dm if not ab then ab={c=aa()}a.cache.dm=ab end return ab.c end end do local aa=function()
+return aa end a.dn=function()local ab=a.cache.dn if not ab then ab={c=aa()}a.cache.dn=ab end return ab.c end end do local aa=function()
 
 
 
 
 
 
-local aa=a.cX()
+local aa=a.cY()
 
 local ab={}
 
@@ -20766,9 +20768,9 @@ reference=ai
 }end
 
 
-return ab end a.dn=function()local ab=a.cache.dn if not ab then ab={c=aa()}a.cache.dn=ab end return ab.c end end do local aa=function()
+return ab end a.dp=function()local ab=a.cache.dp if not ab then ab={c=aa()}a.cache.dp=ab end return ab.c end end do local aa=function()
 
-local aa=a.cX()
+local aa=a.cY()
 
 local ab={up=
 function(ab,ac)
@@ -20849,11 +20851,11 @@ BackgroundColor3="Colors.Icons"
 end
 
 return ag
-end end a.dp=function()local ab=a.cache.dp if not ab then ab={c=aa()}a.cache.dp=ab end return ab.c end end do local aa=function()
+end end a.dq=function()local ab=a.cache.dq if not ab then ab={c=aa()}a.cache.dq=ab end return ab.c end end do local aa=function()
 
 
 
-local aa=a.aI()
+local aa=a.aJ()
 local ab=a.f()
 
 local ac=ab.UserInputService
@@ -20903,18 +20905,18 @@ af.isMovingInput=function(ag)
 return ae[ag.UserInputType]~=nil end
 
 
-return af end a.dq=function()local ab=a.cache.dq if not ab then ab={c=aa()}a.cache.dq=ab end return ab.c end end do local aa=function()
-local aa=a.aI()
-local ab=a.cX()
-local ac=a.ae()
-local ad=a.cW()
+return af end a.dr=function()local ab=a.cache.dr if not ab then ab={c=aa()}a.cache.dr=ab end return ab.c end end do local aa=function()
+local aa=a.aJ()
+local ab=a.cY()
+local ac=a.af()
+local ad=a.cX()
 
-local ae=a.dp()
-local af=a.c2()
+local ae=a.dq()
+local af=a.c3()
 
 local ag=a.v()
 
-local ah=a.dq()
+local ah=a.dr()
 
 local ai={}
 ai.__index=ai
@@ -21401,7 +21403,7 @@ ak.downButtoName=ak.isHorizontal and"right"or"down"
 return ak end
 
 
-return ai end a.dr=function()local ab=a.cache.dr if not ab then ab={c=aa()}a.cache.dr=ab end return ab.c end end do local aa=function()
+return ai end a.ds=function()local ab=a.cache.ds if not ab then ab={c=aa()}a.cache.ds=ab end return ab.c end end do local aa=function()
 local aa={}
 aa.__index=aa
 
@@ -21420,28 +21422,28 @@ description=ab.description
 },aa)end
 
 
-return aa end a.ds=function()local ab=a.cache.ds if not ab then ab={c=aa()}a.cache.ds=ab end return ab.c end end do local aa=function()
-local aa=a.aI()
+return aa end a.dt=function()local ab=a.cache.dt if not ab then ab={c=aa()}a.cache.dt=ab end return ab.c end end do local aa=function()
+local aa=a.aJ()
 local ab=a.f()
-local ac=a.ae()
-local ad=a.cX()
-local ae=a.ds()
+local ac=a.af()
+local ad=a.cY()
+local ae=a.dt()
 
-local af=a.dd()
-local ag=a.de()
+local af=a.de()
+local ag=a.df()
 
-local ah=a.dq()
-local ai=a.c1()
-local aj=a.cI()
+local ah=a.dr()
+local ai=a.c2()
+local aj=a.cJ()
 
 local ak=a.v()
 local al=a.d()
-local am=a.b5()
-local b=a.c2()
+local am=a.b6()
+local b=a.c3()
 
 local c=a.n()
-local d=a.c4().commands
-local e=a.b3()
+local d=a.c5().commands
+local e=a.b4()
 
 local f=ab.UserInputService
 local g=ab.RunService
@@ -22663,7 +22665,7 @@ end)
 return D end
 
 
-return k end a.dt=function()local ab=a.cache.dt if not ab then ab={c=aa()}a.cache.dt=ab end return ab.c end end do local aa=function()
+return k end a.du=function()local ab=a.cache.du if not ab then ab={c=aa()}a.cache.du=ab end return ab.c end end do local aa=function()
 
 
 
@@ -22677,7 +22679,7 @@ return k end a.dt=function()local ab=a.cache.dt if not ab then ab={c=aa()}a.cach
 
 
 
-local aa=a.dq()
+local aa=a.dr()
 local ab=a.f()
 local ac=a.v()
 
@@ -22926,11 +22928,11 @@ dragEnded=ac.new(),
 },ai)end
 
 
-return ai end a.du=function()local ab=a.cache.du if not ab then ab={c=aa()}a.cache.du=ab end return ab.c end end do local aa=function()
+return ai end a.dv=function()local ab=a.cache.dv if not ab then ab={c=aa()}a.cache.dv=ab end return ab.c end end do local aa=function()
 
-local aa=a.c2().uiScale
-return a.du().new(aa)end a.dv=function()local ab=a.cache.dv if not ab then ab={c=aa()}a.cache.dv=ab end return ab.c end end do local aa=function()
-local aa=a.b5()
+local aa=a.c3().uiScale
+return a.dv().new(aa)end a.dw=function()local ab=a.cache.dw if not ab then ab={c=aa()}a.cache.dw=ab end return ab.c end end do local aa=function()
+local aa=a.b6()
 
 local ab={a=
 "\a",b="\b",f="\f",n="\n",r=
@@ -22987,7 +22989,7 @@ supportsInterpolatedStrings=true,
 supportsTypeAnnotations=true,
 supportsCompounds=true,
 supportsIfElseInLine=true,
-}end a.dw=function()local ab=a.cache.dw if not ab then ab={c=aa()}a.cache.dw=ab end return ab.c end end do local aa=function()
+}end a.dx=function()local ab=a.cache.dx if not ab then ab={c=aa()}a.cache.dx=ab end return ab.c end end do local aa=function()
 
 
 
@@ -22998,9 +23000,9 @@ supportsIfElseInLine=true,
 
 
 
-local aa=a.dw()
-local ab=a.c4().args
-local ac=a.b5()
+local aa=a.dx()
+local ab=a.c5().args
+local ac=a.b6()
 
 local ad=ac.lookupify({
 "and","break","continue","do","else","elseif","end","export","for","function","if","in","local",
@@ -23291,16 +23293,16 @@ aj.new=function()
 return setmetatable({},aj)end
 
 
-return aj end a.dx=function()local ab=a.cache.dx if not ab then ab={c=aa()}a.cache.dx=ab end return ab.c end end do local aa=function()
+return aj end a.dy=function()local ab=a.cache.dy if not ab then ab={c=aa()}a.cache.dy=ab end return ab.c end end do local aa=function()
 
 
 
 
 
 
-local aa=a.dx()
+local aa=a.dy()
 local ab=a.j()
-local ac=a.cE()local ad=function(
+local ac=a.cF()local ad=function(
 ad)
 return aa:apply(ad)end
 
@@ -23380,12 +23382,12 @@ return{
 {"text","The full set of types for the plugin API, in Luau. Copy it to check your plugin files with a Luau type checker, so they use the same names and fields as the API."},
 {"file","plugins/types.luau"},
 },
-}end a.dy=function()local ab=a.cache.dy if not ab then ab={c=aa()}a.cache.dy=ab end return ab.c end end do local aa=function()
+}end a.dz=function()local ab=a.cache.dz if not ab then ab={c=aa()}a.cache.dz=ab end return ab.c end end do local aa=function()
 
-local aa=a.b5().colorFromRGB
-local ab=a.c4().commands
+local aa=a.b6().colorFromRGB
+local ab=a.c5().commands
 
-local ac=a.c5()local ad=function(
+local ac=a.c6()local ad=function(
 
 ad)
 return ac:apply(ad)end
@@ -23488,7 +23490,7 @@ sections={
 
 ae.pages={
 {id="types",title="Types",sections=ae.sections},
-{id="plugins",title="Plugins",sections=a.dy(),paged=true},
+{id="plugins",title="Plugins",sections=a.dz(),paged=true},
 }
 
 ae.navigation={
@@ -23502,26 +23504,26 @@ loading="Loading...",
 failed="Could not load this code. Open this page again to retry.",
 }
 
-return ae end a.dz=function()local ab=a.cache.dz if not ab then ab={c=aa()}a.cache.dz=ab end return ab.c end end do local aa=function()
+return ae end a.dA=function()local ab=a.cache.dA if not ab then ab={c=aa()}a.cache.dA=ab end return ab.c end end do local aa=function()
 
 
 
-local aa=a.cX()
-local ab=a.cW()
-local ac=a.c1()
-local ad=a.dv()
-local ae=a.dr()
+local aa=a.cY()
+local ab=a.cX()
+local ac=a.c2()
+local ad=a.dw()
+local ae=a.ds()
 
-local af=a.c2()
-local ag=a.aI()
+local af=a.c3()
+local ag=a.aJ()
 local ah=a.a()
-local ai=a.cL()
-local aj=a.aD()
+local ai=a.cM()
+local aj=a.aE()
 local ak=a.f()
-local al=a.cO()
+local al=a.cP()
 
-local am=a.dz()
-local b=a.dx()
+local am=a.dA()
+local b=a.dy()
 
 local c=ak.TweenService
 
@@ -24451,7 +24453,7 @@ aF.closeIcon=aJ
 return aG end
 
 
-return X end a.dA=function()local ab=a.cache.dA if not ab then ab={c=aa()}a.cache.dA=ab end return ab.c end end do local aa=function()
+return X end a.dB=function()local ab=a.cache.dB if not ab then ab={c=aa()}a.cache.dB=ab end return ab.c end end do local aa=function()
 
 
 
@@ -24518,27 +24520,27 @@ unknownPlace="Unknown",
 alreadyEnabled="the info menu is already enabled",
 noClipboard="this executor doesn't support clipboard",
 },
-}end a.dB=function()local ab=a.cache.dB if not ab then ab={c=aa()}a.cache.dB=ab end return ab.c end end do local aa=function()
+}end a.dC=function()local ab=a.cache.dC if not ab then ab={c=aa()}a.cache.dC=ab end return ab.c end end do local aa=function()
 
 
-local aa=a.cX()
-local ab=a.c1()
-local ac=a.cW()
+local aa=a.cY()
+local ab=a.c2()
+local ac=a.cX()
 
-local ad=a.dv()
-local ae=a.c6()
+local ad=a.dw()
+local ae=a.c7()
 
-local af=a.b5()
+local af=a.b6()
 
-local ag=a.c2()
-local ah=a.aI()
+local ag=a.c3()
+local ah=a.aJ()
 local ai=a.a()
 local aj=a.g()
 local ak=a.f()
 local al=a.b()
 
-local am=a.dB()
-local an=a.c5()
+local am=a.dC()
+local an=a.c6()
 
 local ao=UDim2.new(0.5,-am.window.width/2,0,am.window.shownY)
 local ap=UDim2.new(0.5,-am.window.width/2,0,am.window.hiddenY)
@@ -24872,7 +24874,7 @@ aD.frame:Destroy()
 end)end
 
 
-return aq end a.dC=function()local ab=a.cache.dC if not ab then ab={c=aa()}a.cache.dC=ab end return ab.c end end do local aa=function()
+return aq end a.dD=function()local ab=a.cache.dD if not ab then ab={c=aa()}a.cache.dD=ab end return ab.c end end do local aa=function()
 
 
 return{
@@ -24932,27 +24934,27 @@ chatCopied="Message copied to the clipboard",
 joinCopied="User ID copied to the clipboard:",
 noClipboard="Your executor has no clipboard function",
 },
-}end a.dD=function()local ab=a.cache.dD if not ab then ab={c=aa()}a.cache.dD=ab end return ab.c end end do local aa=function()
+}end a.dE=function()local ab=a.cache.dE if not ab then ab={c=aa()}a.cache.dE=ab end return ab.c end end do local aa=function()
 
 
 
-local aa=a.cX()
-local ab=a.c1()
-local ac=a.cW()
-local ad=a.dv()
-local ae=a.c2()
-local af=a.dr()
-local ag=a.c6()
+local aa=a.cY()
+local ab=a.c2()
+local ac=a.cX()
+local ad=a.dw()
+local ae=a.c3()
+local af=a.ds()
+local ag=a.c7()
 
 local ah=a.b()
-local ai=a.dD()
+local ai=a.dE()
 local aj=a.f()
 local ak=a.a()
-local al=a.cO()
-local am=a.bN()
-local an=a.c4().args
-local ao=a.c5()
-local ap=a.b5()
+local al=a.cP()
+local am=a.bO()
+local an=a.c5().args
+local ao=a.c6()
+local ap=a.b6()
 local aq=a.n()
 
 local ar=ai.window
@@ -25514,7 +25516,7 @@ end
 f.window=nil end
 
 
-return aJ end a.dE=function()local ab=a.cache.dE if not ab then ab={c=aa()}a.cache.dE=ab end return ab.c end end do local aa=function()
+return aJ end a.dF=function()local ab=a.cache.dF if not ab then ab={c=aa()}a.cache.dF=ab end return ab.c end end do local aa=function()
 
 
 
@@ -25522,14 +25524,14 @@ return aJ end a.dE=function()local ab=a.cache.dE if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.cX()
-local ab=a.c1()
-local ac=a.cW()
-local ad=a.aL()
+local aa=a.cY()
+local ab=a.c2()
+local ac=a.cX()
+local ad=a.aM()
 local ae=a.f()
-local af=a.dq()
-local ag=a.c2()
-local ah=a.di()
+local af=a.dr()
+local ag=a.c3()
+local ah=a.dj()
 
 local ai=ah.panel
 local aj=ah.row
@@ -26422,7 +26424,7 @@ PaddingLeft=UDim.new(0,aj.labelInset),
 })end
 
 
-return ap end a.dF=function()local ab=a.cache.dF if not ab then ab={c=aa()}a.cache.dF=ab end return ab.c end end do local aa=function()
+return ap end a.dG=function()local ab=a.cache.dG if not ab then ab={c=aa()}a.cache.dG=ab end return ab.c end end do local aa=function()
 
 
 
@@ -26430,10 +26432,10 @@ return ap end a.dF=function()local ab=a.cache.dF if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.dj()
-local ab=a.c6()
-local ac=a.dF()
-local ad=a.di()
+local aa=a.dk()
+local ab=a.c7()
+local ac=a.dG()
+local ad=a.dj()
 
 local ae=ad.pages.background
 
@@ -26527,7 +26529,7 @@ aa:setOpacity(an)
 end)end
 
 
-return af end a.dG=function()local ab=a.cache.dG if not ab then ab={c=aa()}a.cache.dG=ab end return ab.c end end do local aa=function()
+return af end a.dH=function()local ab=a.cache.dH if not ab then ab={c=aa()}a.cache.dH=ab end return ab.c end end do local aa=function()
 
 
 
@@ -26538,15 +26540,15 @@ return af end a.dG=function()local ab=a.cache.dG if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.cX()
-local ab=a.cW()
+local aa=a.cY()
+local ab=a.cX()
 local ac=a.n()
-local ad=a.di()
-local ae=a.dF()
-local af=a.dG()
+local ad=a.dj()
+local ae=a.dG()
+local af=a.dH()
 local ag=a.a()
-local ah=a.c1()
-local ai=a.c6()
+local ah=a.c2()
+local ai=a.c7()
 
 local aj=ad.panel
 local ak=ad.box
@@ -26741,7 +26743,7 @@ af.addSection(as)
 ay()end
 
 
-return aq end a.dH=function()local ab=a.cache.dH if not ab then ab={c=aa()}a.cache.dH=ab end return ab.c end end do local aa=function()
+return aq end a.dI=function()local ab=a.cache.dI if not ab then ab={c=aa()}a.cache.dI=ab end return ab.c end end do local aa=function()
 
 
 
@@ -26752,10 +26754,10 @@ return aq end a.dH=function()local ab=a.cache.dH if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.aL()
-local ab=a.aJ()
-local ac=a.di()
-local ad=a.dF()
+local aa=a.aM()
+local ab=a.aK()
+local ac=a.dj()
+local ad=a.dG()
 
 local ae=ac.panel
 local af=ac.value local ag=function(
@@ -26892,7 +26894,7 @@ resetIcon=ac.pages.commands.resetIcon,
 resetAtTop=true,
 groups=ab.groups,
 }),
-}end a.dI=function()local ab=a.cache.dI if not ab then ab={c=aa()}a.cache.dI=ab end return ab.c end end do local aa=function()
+}end a.dJ=function()local ab=a.cache.dJ if not ab then ab={c=aa()}a.cache.dJ=ab end return ab.c end end do local aa=function()
 
 
 
@@ -26903,13 +26905,13 @@ groups=ab.groups,
 
 
 
-local aa=a.cW()
-local ab=a.c6()
-local ac=a.dF()
+local aa=a.cX()
+local ab=a.c7()
+local ac=a.dG()
 
-local ad=a.aD()
+local ad=a.aE()
 local ae=a.a()
-local af=a.di()
+local af=a.dj()
 local ag=a.t()
 local ah=a.i()
 
@@ -27043,7 +27045,7 @@ ar.Size=UDim2.new(1,0,0,96)
 ac.note(aq,ai.hint)end
 
 
-return ao end a.dJ=function()local ab=a.cache.dJ if not ab then ab={c=aa()}a.cache.dJ=ab end return ab.c end end do local aa=function()
+return ao end a.dK=function()local ab=a.cache.dK if not ab then ab={c=aa()}a.cache.dK=ab end return ab.c end end do local aa=function()
 
 
 
@@ -27054,11 +27056,11 @@ return ao end a.dJ=function()local ab=a.cache.dJ if not ab then ab={c=aa()}a.cac
 
 
 local aa=a.p()
-local ab=a.cC()
-local ac=a.cI()
-local ad=a.di()
-local ae=a.c6()
-local af=a.dF()
+local ab=a.cD()
+local ac=a.cJ()
+local ad=a.dj()
+local ae=a.c7()
+local af=a.dG()
 
 local ag=ad.panel
 local ah=ad.value
@@ -27205,7 +27207,7 @@ end)
 at()end
 
 
-return al end a.dK=function()local ab=a.cache.dK if not ab then ab={c=aa()}a.cache.dK=ab end return ab.c end end do local aa=function()
+return al end a.dL=function()local ab=a.cache.dL if not ab then ab={c=aa()}a.cache.dL=ab end return ab.c end end do local aa=function()
 
 
 
@@ -27219,11 +27221,11 @@ return al end a.dK=function()local ab=a.cache.dK if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.bp()
-local ab=a.ae()
-local ac=a.di()
-local ad=a.c6()
-local ae=a.dF()
+local aa=a.bq()
+local ab=a.af()
+local ac=a.dj()
+local ad=a.c7()
+local ae=a.dG()
 
 local af=ac.panel
 local ag=ac.box
@@ -27475,7 +27477,7 @@ end)
 aD()end
 
 
-return al end a.dL=function()local ab=a.cache.dL if not ab then ab={c=aa()}a.cache.dL=ab end return ab.c end end do local aa=function()
+return al end a.dM=function()local ab=a.cache.dM if not ab then ab={c=aa()}a.cache.dM=ab end return ab.c end end do local aa=function()
 
 
 
@@ -27488,12 +27490,12 @@ return al end a.dL=function()local ab=a.cache.dL if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.cG()
-local ab=a.cI()
-local ac=a.di()
-local ad=a.cE()
-local ae=a.c6()
-local af=a.dF()
+local aa=a.cH()
+local ab=a.cJ()
+local ac=a.dj()
+local ad=a.cF()
+local ae=a.c7()
+local af=a.dG()
 
 local ag=ac.panel
 local ah=ac.value
@@ -27708,7 +27710,7 @@ end)
 at()end
 
 
-return ak end a.dM=function()local ab=a.cache.dM if not ab then ab={c=aa()}a.cache.dM=ab end return ab.c end end do local aa=function()
+return ak end a.dN=function()local ab=a.cache.dN if not ab then ab={c=aa()}a.cache.dN=ab end return ab.c end end do local aa=function()
 
 
 
@@ -27721,10 +27723,10 @@ return ak end a.dM=function()local ab=a.cache.dM if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.df()
-local ab=a.di()
-local ac=a.c6()
-local ad=a.dF()
+local aa=a.dg()
+local ab=a.dj()
+local ac=a.c7()
+local ad=a.dG()
 
 local ae=ab.panel
 local af=ab.value
@@ -27988,7 +27990,7 @@ end
 av()end
 
 
-return am end a.dN=function()local ab=a.cache.dN if not ab then ab={c=aa()}a.cache.dN=ab end return ab.c end end do local aa=function()
+return am end a.dO=function()local ab=a.cache.dO if not ab then ab={c=aa()}a.cache.dO=ab end return ab.c end end do local aa=function()
 
 
 
@@ -27999,10 +28001,10 @@ return am end a.dN=function()local ab=a.cache.dN if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.aD()
+local aa=a.aE()
 local ab=a.n()
-local ac=a.di()
-local ad=a.dF()
+local ac=a.dj()
+local ad=a.dG()
 
 local ae=ac.panel
 local af=ac.box
@@ -28091,7 +28093,7 @@ aq.setHidden(as)
 end)end
 
 
-return an end a.dO=function()local ab=a.cache.dO if not ab then ab={c=aa()}a.cache.dO=ab end return ab.c end end do local aa=function()
+return an end a.dP=function()local ab=a.cache.dP if not ab then ab={c=aa()}a.cache.dP=ab end return ab.c end end do local aa=function()
 
 
 
@@ -28101,24 +28103,24 @@ return an end a.dO=function()local ab=a.cache.dO if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.cX()
-local ab=a.aI()
+local aa=a.cY()
+local ab=a.aJ()
 local ac=a.n()
-local ad=a.di()
-local ae=a.aD()
+local ad=a.dj()
+local ae=a.aE()
 local af=a.f()
-local ag=a.cO()
+local ag=a.cP()
 local ah=a.t()
 
-local ai=a.dF()
-local aj=a.dH()
-local ak=a.dI()
-local al=a.dJ()
-local am=a.dK()
-local an=a.dL()
-local ao=a.dM()
-local ap=a.dN()
-local aq=a.dO()
+local ai=a.dG()
+local aj=a.dI()
+local ak=a.dJ()
+local al=a.dK()
+local am=a.dL()
+local an=a.dM()
+local ao=a.dN()
+local ap=a.dO()
+local aq=a.dP()
 
 local ar=ad.panel
 local as=ad.box
@@ -28753,7 +28755,7 @@ aK:setShown(aK.isOpen)
 end)end
 
 
-return aE end a.dP=function()local ab=a.cache.dP if not ab then ab={c=aa()}a.cache.dP=ab end return ab.c end end do local aa=function()
+return aE end a.dQ=function()local ab=a.cache.dQ if not ab then ab={c=aa()}a.cache.dQ=ab end return ab.c end end do local aa=function()
 
 
 
@@ -28812,7 +28814,7 @@ noPart="select a part first",
 noPath="select a part to copy its path",
 noClipboard="this executor doesn't support clipboard",
 },
-}end a.dQ=function()local ab=a.cache.dQ if not ab then ab={c=aa()}a.cache.dQ=ab end return ab.c end end do local aa=function()
+}end a.dR=function()local ab=a.cache.dR if not ab then ab={c=aa()}a.cache.dR=ab end return ab.c end end do local aa=function()
 
 
 
@@ -28884,7 +28886,7 @@ end
 return ah end
 
 
-return ae end a.dR=function()local ab=a.cache.dR if not ab then ab={c=aa()}a.cache.dR=ab end return ab.c end end do local aa=function()
+return ae end a.dS=function()local ab=a.cache.dS if not ab then ab={c=aa()}a.cache.dS=ab end return ab.c end end do local aa=function()
 
 
 
@@ -28892,21 +28894,21 @@ return ae end a.dR=function()local ab=a.cache.dR if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.cX()
-local ab=a.c1()
-local ac=a.cW()
-local ad=a.c6()
-local ae=a.dv()
-local af=a.b4()
+local aa=a.cY()
+local ab=a.c2()
+local ac=a.cX()
+local ad=a.c7()
+local ae=a.dw()
+local af=a.b5()
 
-local ag=a.aI()
-local ah=a.ae()
+local ag=a.aJ()
+local ah=a.af()
 local ai=a.a()
-local aj=a.dQ()
+local aj=a.dR()
 
-local ak=a.dR()
-local al=a.c5()
-local am=a.b5()
+local ak=a.dS()
+local al=a.c6()
+local am=a.b6()
 
 local an=aj.window
 local ao=aj.textSizes
@@ -29384,7 +29386,7 @@ aA.pathLabel=nil
 aA.copyButton=nil end
 
 
-return au end a.dS=function()local ab=a.cache.dS if not ab then ab={c=aa()}a.cache.dS=ab end return ab.c end end do local aa=function()
+return au end a.dT=function()local ab=a.cache.dT if not ab then ab={c=aa()}a.cache.dT=ab end return ab.c end end do local aa=function()
 
 
 
@@ -29433,8 +29435,8 @@ return au end a.dS=function()local ab=a.cache.dS if not ab then ab={c=aa()}a.cac
 
 
 local aa=a.f()
-local ab=a.aI()
-local ac=a.cO()
+local ab=a.aJ()
+local ac=a.cP()
 
 local ad=aa.TweenService
 local ae=aa.UserInputService
@@ -30117,49 +30119,49 @@ table.clear(az.touches)
 table.clear(az.outsideTouches)end
 
 
-return ax end a.dT=function()local ab=a.cache.dT if not ab then ab={c=aa()}a.cache.dT=ab end return ab.c end end do local aa=function()
+return ax end a.dU=function()local ab=a.cache.dU if not ab then ab={c=aa()}a.cache.dU=ab end return ab.c end end do local aa=function()
 
 
 
-local aa=a.aD()
-local ab=a.c3()
+local aa=a.aE()
+local ab=a.c4()
 local ac=a.b()
 local ad=a.a()
-local ae=a.aI()
-local af=a.aL()
+local ae=a.aJ()
+local af=a.aM()
 local ag=a.f()
-local ah=a.b3()
+local ah=a.b4()
 
-local ai=a.ae()
+local ai=a.af()
 
 local aj=a.n()
 local ak=a.d()
-local al=a.b5()
+local al=a.b6()
 
-local am=a.cX()
-local an=a.c1()
-local ao=a.cW()
-local ap=a.dj()
+local am=a.cY()
+local an=a.c2()
+local ao=a.cX()
+local ap=a.dk()
 
-local aq=a.cU()
-local ar=a.b4()
-local as=a.c6()
+local aq=a.cV()
+local ar=a.b5()
+local as=a.c7()
 
-local at=a.dl()
-local au=a.c2()
-local av=a.dm()
+local at=a.dm()
+local au=a.c3()
+local av=a.dn()
 
-local aw=a.dn()
-local ax=a.dr()
-local ay=a.dt()
-local az=a.dA()
-local aA=a.dC()
-local aB=a.dE()
-local aC=a.dP()
-local aD=a.dS()
+local aw=a.dp()
+local ax=a.ds()
+local ay=a.du()
+local az=a.dB()
+local aA=a.dD()
+local aB=a.dF()
+local aC=a.dQ()
+local aD=a.dT()
 
-local aE=a.dv()
-local aG=a.dT()
+local aE=a.dw()
+local aG=a.dU()
 
 local aH=450
 local aI=au.uiScale
@@ -30839,7 +30841,7 @@ aN.screenGui=nil
 aN.awoken=false end
 
 
-return aJ end a.dU=function()local ab=a.cache.dU if not ab then ab={c=aa()}a.cache.dU=ab end return ab.c end end do local aa=function()a.e()
+return aJ end a.dV=function()local ab=a.cache.dV if not ab then ab={c=aa()}a.cache.dV=ab end return ab.c end end do local aa=function()a.e()
 
 
 :init()a.u()
@@ -30848,17 +30850,17 @@ return aJ end a.dU=function()local ab=a.cache.dU if not ab then ab={c=aa()}a.cac
 
 
 
-local aa=a.c8()
-local ab=a.da()
-local ac=a.ae()
-local ad=a.cL()
-local ae=a.dg()
-local af=a.cF()
-local ag=a.de()
+local aa=a.c9()
+local ab=a.db()
+local ac=a.af()
+local ad=a.cM()
+local ae=a.dh()
+local af=a.cG()
+local ag=a.df()
 
 
 
-local ah=a.dU()
+local ah=a.dV()
 
 local ai={}
 
@@ -30881,7 +30883,7 @@ ah:awake()
 ae.start()end
 
 
-return ai end a.dV=function()local ab=a.cache.dV if not ab then ab={c=aa()}a.cache.dV=ab end return ab.c end end end
+return ai end a.dW=function()local ab=a.cache.dW if not ab then ab={c=aa()}a.cache.dW=ab end return ab.c end end end
 
 
 
@@ -30902,4 +30904,4 @@ return ai end a.dV=function()local ab=a.cache.dV if not ab then ab={c=aa()}a.cac
 
 
 
-return a.dV():boot()
+return a.dW():boot()
