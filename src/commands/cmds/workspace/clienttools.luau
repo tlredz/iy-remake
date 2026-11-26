@@ -1,5 +1,15 @@
--- Set this to the link of the F3X script (a raw .luau/.lua link). Left nil on purpose: the link is not in this project.
-local F3X_SOURCE_URL: string? = nil
+local scriptLoader = require("../../systems/scriptLoader")
+
+-- F3X is the script in backups/f3x.luau. It is loaded from the repo the same way as the other scripts
+local function f3x(self)
+	local chunk = scriptLoader.fetch(self, "F3X", "backups/f3x.luau", "iy/f3x")
+	if not chunk then return end
+
+	local ok, err = pcall(chunk)
+	if not ok then
+		self:notify("F3X", `failed to run: {tostring(err)}`)
+	end
+end
 
 return {
 	{
@@ -26,22 +36,6 @@ return {
 		client = true,
 		action = "f3x",
 		description = "Gives you F3X building tools (DOES NOT REPLICATE)",
-		run = function(self)
-			if F3X_SOURCE_URL == nil then
-				self:notify("F3X", "no script link is set, fill in F3X_SOURCE_URL at the top of workspace/clienttools.luau")
-				return
-			end
-
-			local loadstring = self:expectExploit("loadstring")
-			if not loadstring then return end
-
-			local ok, err = pcall(function()
-				loadstring(game:HttpGet(F3X_SOURCE_URL))()
-			end)
-
-			if not ok then
-				self:notify("F3X", `failed to load: {tostring(err)}`)
-			end
-		end
+		run = function(self) task.spawn(f3x, self) end
 	}
 }

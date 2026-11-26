@@ -1,34 +1,6 @@
--- The commands that load scripts from the repo. Each load tells the user what is happening: it starts, it is still
--- going after SLOW_LOAD seconds, it finishes, or it could not be loaded.
+-- The commands that load scripts from the repo. Each load tells the user what is happening (see systems/scriptLoader).
 
-local SLOW_LOAD = 3 -- seconds before a load that is still going gets a notice
-
--- loads a script (fetchService.load) with notices. Returns the chunk, or nil when it could not be loaded.
--- quiet: no notices for a load that works (for a script that is only a helper of another one)
-local function fetchScript(self, label: string, path: string, chunkName: string?, quiet: boolean?)
-	if not quiet then
-		self:notify(label, "started loading")
-	end
-
-	local finished = false
-
-	task.delay(SLOW_LOAD, function()
-		if not finished then
-			self:notify(label, "is taking a while to load, still loading...")
-		end
-	end)
-
-	local chunk = self.fetchService.load(path, chunkName)
-	finished = true
-
-	if chunk == nil then
-		self:notify(label, "could not be loaded")
-	elseif not quiet then
-		self:notify(label, "finished loading")
-	end
-
-	return chunk
-end
+local fetchScript = require("../../systems/scriptLoader").fetch
 
 local function oldConsole(self)
 	local chunk = fetchScript(self, "Old Console", "backups/oldconsole.luau", "iy/oldconsole")
