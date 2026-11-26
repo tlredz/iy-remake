@@ -14564,24 +14564,38 @@ Main = (function()
 		env.makefolder = makefolder
 		env.listfiles = listfiles
 		env.loadfile = loadfile
+		
 		env.saveinstance = saveinstance or (function()
 			--warn("No built-in saveinstance exists, using SynSaveInstance and wrapper...")
-			if game:GetService("RunService"):IsStudio() then return function() error("Cannot run in Roblox Studio!") end end
+			if game:GetService("RunService"):IsStudio() then
+				return function() error("Cannot run in Roblox Studio!") end
+			end
+			
 			local Params = {
 				RepoURL = "https://raw.githubusercontent.com/luau/SynSaveInstance/main/",
 				SSI = "saveinstance",
 			}
-			local synsaveinstance = loadstring(oldgame:HttpGet(Params.RepoURL .. Params.SSI .. ".luau", true), Params.SSI)()
-		
-			local function wrappedsaveinstance(obj, filepath, options)
-				options["FilePath"] = filepath
-				--options["ReadMe"] = false
-				options["Object"] = obj
-				return synsaveinstance(options)
-			end
 			
-			getgenv().saveinstance = wrappedsaveinstance
-			return wrappedsaveinstance
+			local success, synsaveinstance = pcall(function()
+			    loadstring(oldgame:HttpGet(Params.RepoURL .. Params.SSI .. ".luau", true), Params.SSI)()
+			end)
+			
+			if success then
+				local function wrappedsaveinstance(obj, filepath, options)
+					options = if type(options) == "table" then options else {}
+					
+					options["FilePath"] = filepath
+					options["Object"] = obj
+					--options["ReadMe"] = false
+					
+					return synsaveinstance(options)
+				end
+				
+				getgenv().saveinstance = wrappedsaveinstance
+				env.saveinstance = wrappedsaveinstance
+				
+				return wrappedsaveinstance
+			end
 		end)()
 		
 		env.parsefile = function(name)
