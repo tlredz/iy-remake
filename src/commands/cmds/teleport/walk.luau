@@ -1,3 +1,5 @@
+local scriptLoader = require("../../systems/scriptLoader")
+
 local function stopTpWalk(self)
 	local garbage = self:collectGarbage("tpwalk")
 	if garbage then
@@ -14,7 +16,7 @@ local function getWallwalk(self)
 	end
 	
 	local success, setEnabled = pcall(function()
-		return self.fetchService.load("backups/wallwalker.luau", "iy/wallwalker")()
+		return self.fetchService.load(scriptLoader.path("wallwalker.luau"), "iy/wallwalker")()
 	end)
 	
 	if not success then

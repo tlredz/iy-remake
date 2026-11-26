@@ -1,8 +1,8 @@
 local scriptLoader = require("../../systems/scriptLoader")
 
--- F3X is the script in backups/f3x.luau. It is loaded from the repo the same way as the other scripts
+-- F3X is the script f3x.luau of the scripts folder (see systems/scriptLoader), loaded like the other scripts
 local function f3x(self)
-	local chunk = scriptLoader.fetch(self, "F3X", "backups/f3x.luau", "iy/f3x")
+	local chunk = scriptLoader.fetch(self, "F3X", "f3x.luau", "iy/f3x")
 	if not chunk then return end
 
 	local ok, err = pcall(chunk)

@@ -809,53 +809,62 @@ end
 
 local b=3
 
-local c={}
+
+
+local c="backups/compiled/"
+
+local d={}
+
+
+d.path=function(e)
+return c..e end
 
 
 
 
-c.fetch=function(d, e, f, g, h)
-if not h then
-d:notify(e,"started loading")
+
+d.fetch=function(e, f, g, h, i)
+if not i then
+e:notify(f,"started loading")
 end
 
-local i=false
+local j=false
 
 task.delay(b,function()
-if not i then
-d:notify(e,"is taking a while to load, still loading...")
+if not j then
+e:notify(f,"is taking a while to load, still loading...")
 end
 end)
 
-local j=d.fetchService.load(f,g)
-i=true
+local k=e.fetchService.load(d.path(g),h)
+j=true
 
-if j==nil then
-d:notify(e,"could not be loaded")
-elseif not h then
-d:notify(e,"finished loading")
+if k==nil then
+e:notify(f,"could not be loaded")
+elseif not i then
+e:notify(f,"finished loading")
 end
 
-return j end
+return k end
 
 
-return c end a.y=function()local c=a.cache.y if not c then c={c=b()}a.cache.y=c end return c.c end end do local b=function()
+return d end a.y=function()local c=a.cache.y if not c then c={c=b()}a.cache.y=c end return c.c end end do local b=function()
 
 
 
 local b=a.y().fetch local c=function(
 
 c)
-local d=b(c,"Old Console","backups/oldconsole.luau","iy/oldconsole")
+local d=b(c,"Old Console","oldconsole.luau","iy/oldconsole")
 if d then d()end end local d=function(
 
 
 d, e)
 local f
 if e==true then
-f=b(d,"Dex Explorer","backups/explorer.luau","iy/explorer")
+f=b(d,"Dex Explorer","explorer.luau","iy/explorer")
 else
-f=b(d,"Dex Explorer","backups/dexPlusPlus.luau","iy/dexPlusPlus")
+f=b(d,"Dex Explorer","dexPlusPlus.luau","iy/dexPlusPlus")
 end
 
 if f then f()end end local e=function(
@@ -865,7 +874,7 @@ e, f)
 local g=f:nextValue()
 local h=f:nextValue()
 
-local i=b(e,"Emote Menu","backups/emotes/main.luau","iy/7yd7/emotes.luau")
+local i=b(e,"Emote Menu","emotes.luau","iy/7yd7/emotes.luau")
 if not i then return end
 
 i({
@@ -876,17 +885,17 @@ keycode=g,
 
 
 f)
-local g=b(f,"Cobalt","backups/cobalt.luau","iy/cobalt")
+local g=b(f,"Cobalt","cobalt.luau","iy/cobalt")
 if g then g()end end local g=function(
 
 
 g)
-local h=b(g,"Remote Spy","backups/remotespy/main.luau","iy/remotespy")
+local h=b(g,"Remote Spy","remotespy.luau","iy/remotespy")
 if h then h()end end local h=function(
 
 
 h)
-local i=b(h,"Audio Logger","backups/audiologger.luau","iy/audiologger")
+local i=b(h,"Audio Logger","audiologger.luau","iy/audiologger")
 if i then i()end end
 
 
@@ -3601,7 +3610,7 @@ return{a.ax()
 ,
 }end a.aA=function()local c=a.cache.aA if not c then c={c=b()}a.cache.aA=c end return c.c end end do local b=function()
 
-return"v0.10.1"end a.aB=function()local c=a.cache.aB if not c then c={c=b()}a.cache.aB=c end return c.c end end do local b=function()
+return"v0.10.2"end a.aB=function()local c=a.cache.aB if not c then c={c=b()}a.cache.aB=c end return c.c end end do local b=function()
 return{
 owner="tlredz",
 repository="iy-remake"
@@ -9307,34 +9316,36 @@ if not(c and d.Hit)then return end
 local e=d.Hit.Position+Vector3.new(0,3,0)
 b.playerService:teleportTo(CFrame.new(e)*(c.CFrame-c.CFrame.Position))
 end
-}end a.bI=function()local c=a.cache.bI if not c then c={c=b()}a.cache.bI=c end return c.c end end do local b=function()local b=function(
+}end a.bI=function()local c=a.cache.bI if not c then c={c=b()}a.cache.bI=c end return c.c end end do local b=function()
 
-b)
-local c=b:collectGarbage("tpwalk")
-if c then
-c.connection:Disconnect()
-end end local c=function(
-
-
-
+local b=a.y()local c=function(
 
 c)
-local d=c.privateEnv.wallwalkSetEnabled
+local d=c:collectGarbage("tpwalk")
 if d then
-return d
+d.connection:Disconnect()
+end end local d=function(
+
+
+
+
+d)
+local e=d.privateEnv.wallwalkSetEnabled
+if e then
+return e
 end
 
-local e,f=pcall(function()
-return c.fetchService.load("backups/wallwalker.luau","iy/wallwalker")()
+local f,g=pcall(function()
+return d.fetchService.load(b.path("wallwalker.luau"),"iy/wallwalker")()
 end)
 
-if not e then
-c:notify("Wallwalk","failed to fetch script")
+if not f then
+d:notify("Wallwalk","failed to fetch script")
 return
 end
 
-c.privateEnv.wallwalkSetEnabled=f
-return f end
+d.privateEnv.wallwalkSetEnabled=g
+return g end
 
 
 return{
@@ -9353,30 +9364,30 @@ name="stack distance",
 optional=true
 }
 },
-run=function(d,e)
-b(d)
+run=function(e,f)
+c(e)
 
-local f=e:nextValue()or 1
-local g=e:nextValue()
-if g then
-d.privateEnv.tpwalkStack=(d.privateEnv.tpwalkStack or 0)+f
+local g=f:nextValue()or 1
+local h=f:nextValue()
+if h then
+e.privateEnv.tpwalkStack=(e.privateEnv.tpwalkStack or 0)+g
 end
 
-local h=d.playerService:getCharacter()
-local i=d.playerService:getHumanoid()
-if not(h and i)then return end
+local i=e.playerService:getCharacter()
+local j=e.playerService:getHumanoid()
+if not(i and j)then return end
 
-local j=d:createGarbage("tpwalk")
-j.connection=d:connect(d.runService.Heartbeat,function(k)
-if not(h.Parent and i.Parent)then
-b(d)
+local k=e:createGarbage("tpwalk")
+k.connection=e:connect(e.runService.Heartbeat,function(l)
+if not(i.Parent and j.Parent)then
+c(e)
 return
 end
 
-local l=i.MoveDirection
-if l.Magnitude>0 then
-local m=f+(d.privateEnv.tpwalkStack or 0)
-h:TranslateBy(l*m*k*10)
+local m=j.MoveDirection
+if m.Magnitude>0 then
+local n=g+(e.privateEnv.tpwalkStack or 0)
+i:TranslateBy(m*n*l*10)
 end
 end)
 end
@@ -9384,53 +9395,53 @@ end
 {
 action="untpwalk|unteleportwalk",
 description="Undoes tpwalk / teleportwalk",
-run=function(d)
-d.privateEnv.tpwalkStack=0
-b(d)
+run=function(e)
+e.privateEnv.tpwalkStack=0
+c(e)
 end
 },
 {
 action="wallwalk|walkonwalls",
 description="Walk on walls",
-run=function(d)
-local e=d:collectGarbage("wallwalk")
-if e and e.active then
-e.stop()
-d:notify("Wallwalk","disabled")
+run=function(e)
+local f=e:collectGarbage("wallwalk")
+if f and f.active then
+f.stop()
+e:notify("Wallwalk","disabled")
 return
 end
 
-local f=c(d)
-if not f then return end
+local g=d(e)
+if not g then return end
 
-local g,h=pcall(f,true)
-if not g then
-d:notify("Wallwalk",`could not start: {tostring(h)}`)
+local h,i=pcall(g,true)
+if not h then
+e:notify("Wallwalk",`could not start: {tostring(i)}`)
 return
 end
 
-local i=d:createGarbage("wallwalk")
-i.active=true
-i.stop=function()
-i.active=false
-pcall(f,false)
+local j=e:createGarbage("wallwalk")
+j.active=true
+j.stop=function()
+j.active=false
+pcall(g,false)
 end
 
-d:notify("Wallwalk","walk on any surface; run wallwalk again to turn it off")
+e:notify("Wallwalk","walk on any surface; run wallwalk again to turn it off")
 end
 },
 {
 action="unwallwalk|nowallwalk",
 description="Turns off wallwalk",
-run=function(d)
-local e=d:collectGarbage("wallwalk")
-local f=e~=nil and e.active==true
+run=function(e)
+local f=e:collectGarbage("wallwalk")
+local g=f~=nil and f.active==true
 
-if e and e.stop then
-e.stop()
+if f and f.stop then
+f.stop()
 end
 
-d:notify("Wallwalk",if f then"disabled"else"it is not running")
+e:notify("Wallwalk",if g then"disabled"else"it is not running")
 end
 }
 }end a.bJ=function()local c=a.cache.bJ if not c then c={c=b()}a.cache.bJ=c end return c.c end end do local b=function()
@@ -12723,7 +12734,7 @@ local aa=a.y()local ab=function(
 
 
 ab)
-local ac=aa.fetch(ab,"F3X","backups/f3x.luau","iy/f3x")
+local ac=aa.fetch(ab,"F3X","f3x.luau","iy/f3x")
 if not ac then return end
 
 local ad,ae=pcall(ac)

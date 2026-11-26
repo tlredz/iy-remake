@@ -5,12 +5,21 @@
 
 local SLOW_LOAD = 3 -- seconds before a load that is still going gets a notice
 
+-- the folder of the compiled scripts in the repo. A script is named by its file name in it (remotespy.luau), so this
+-- is the only place that knows where the folder is
+local SCRIPTS_FOLDER = "backups/compiled/"
+
 local scriptLoader = {}
 
--- loads a script with notices. Returns the chunk, or nil when it could not be loaded.
+-- the path in the repo of a compiled script, from its file name
+function scriptLoader.path(name: string): string
+	return SCRIPTS_FOLDER .. name
+end
+
+-- loads a script (by its file name in the scripts folder) with notices. Returns the chunk, or nil when it could not be loaded.
 -- self: the self of the command (it has fetchService and notify)
 -- quiet: no notices for a load that works (for a script that is only a helper of another one)
-function scriptLoader.fetch(self, label: string, path: string, chunkName: string?, quiet: boolean?)
+function scriptLoader.fetch(self, label: string, name: string, chunkName: string?, quiet: boolean?)
 	if not quiet then
 		self:notify(label, "started loading")
 	end
@@ -23,7 +32,7 @@ function scriptLoader.fetch(self, label: string, path: string, chunkName: string
 		end
 	end)
 
-	local chunk = self.fetchService.load(path, chunkName)
+	local chunk = self.fetchService.load(scriptLoader.path(name), chunkName)
 	finished = true
 
 	if chunk == nil then
